@@ -1,5 +1,5 @@
 /**
- * @fileoverview Duel: client-side template engine
+ * @fileoverview duel: client-side template engine
  */
 
 var duel = (function() {
@@ -151,10 +151,10 @@ var duel = (function() {
 			// execute code block
 			output = node(model, index, count);
 
-			if (output instanceof Duel) {
+			if (output instanceof Template) {
 				// allow recursively binding templates
 				// useful for creating "switcher" methods
-				output = Duel.bind(model, index, count);
+				output = Template.bind(model, index, count);
 			}
 		}
 
@@ -202,21 +202,119 @@ var duel = (function() {
 		return output;
 	}
 
-	function Duel(view) {
+	function voidTag(tag) {
+		switch (tag)
+		{
+			case "area":
+			case "base":
+			case "basefont":
+			case "br":
+			case "col":
+			case "frame":
+			case "hr":
+			case "img":
+			case "input":
+			case "isindex":
+			case "keygen":
+			case "link":
+			case "meta":
+			case "param":
+			case "source":
+			case "wbr":
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	function htmlEncode(val) {
+		return (""+val)
+			.split('&').join('&amp;')
+			.split('<').join('&lt;')
+			.split('>').join('&gt;');
+	}
+
+	function attrEncode(val) {
+		return (""+val)
+			.split('&').join('&amp;')
+			.split('<').join('&lt;')
+			.split('>').join('&gt;')
+			.split('"').join('&quot;')
+			.split("'").join('&apos;');
+	}
+
+	function render(view) {
+		var stack = [view],
+			output = [],
+			name;
+
+		while (stack.length) {
+			var top = stack.pop();
+
+			if (top instanceof Array) {
+				name = top.shift();
+				if (name) {
+					output.push('<', name);
+					if (voidTag(name)) {
+						stack.push(' />');
+						stack = stack.concat(top.reverse());
+					} else {
+						stack.push('>', name, '</');
+						stack = stack.concat(top.reverse());
+
+						var attr = stack.pop();
+						if (typeof attr === "object" && !(attr instanceof Array)) {
+							stack.push('>');
+							stack.push(attr);
+						} else {
+							stack.push(attr);
+							stack.push('>');
+						}
+					}
+				}
+			} else if (typeof top === "object") {
+				for (name in top) {
+					if (top.hasOwnProperty(name)) {
+						output.push(" ", name);
+						var val = top[name];
+						if (val) {
+							output.push('="', attrEncode(val), '"');
+						}
+					}
+				}
+			} else {
+				output.push(top);
+			} 
+		}
+
+		return output.join("");
+	}
+	
+	function Result(view) {
+		this.toDOM = function(filter) {
+			return JsonML.parse(view, filter);
+		};
+
+		this.toString = function() {
+			return view ? render(view) : "";
+		};
+	}
+
+	function Template(view) {
 		if ("undefined" === typeof view) {
 			throw new Error("View is undefined");
 		}
 
 		this.bind = function(model) {
-			return visit(view, model);
-		}
+			return new Result( visit(view, model) );
+		};
 	}
 
 	/**
 	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} view
-	 * 			The view template
+	 *			The view template
 	 */
 	return function(view) {
-		return (view instanceof Duel) ? view : new Duel(view);
+		return (view instanceof Template) ? view : new Template(view);
 	};
 })();
