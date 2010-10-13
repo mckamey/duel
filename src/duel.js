@@ -228,15 +228,15 @@ var duel = (function() {
 	}
 
 	function htmlEncode(val) {
-		return (""+val)
-			.split('&').join('&amp;')
+		return (typeof val !== "string") ? val :
+			val.split('&').join('&amp;')
 			.split('<').join('&lt;')
 			.split('>').join('&gt;');
 	}
 
 	function attrEncode(val) {
-		return (""+val)
-			.split('&').join('&amp;')
+		return (typeof val !== "string") ? val :
+			val.split('&').join('&amp;')
 			.split('<').join('&lt;')
 			.split('>').join('&gt;')
 			.split('"').join('&quot;')
@@ -257,10 +257,14 @@ var duel = (function() {
 					output.push('<', name);
 					if (voidTag(name)) {
 						stack.push(' />');
-						stack = stack.concat(top.reverse());
+						while (top.length) {
+							stack.push(htmlEncode(top.pop()));
+						}
 					} else {
 						stack.push('>', name, '</');
-						stack = stack.concat(top.reverse());
+						while (top.length) {
+							stack.push(htmlEncode(top.pop()));
+						}
 
 						var attr = stack.pop();
 						if (typeof attr === "object" && !(attr instanceof Array)) {
