@@ -246,27 +246,28 @@ var duel = (function() {
 	function render(view) {
 		var stack = [view],
 			output = [],
-			name;
+			name, i;
 
 		while (stack.length) {
 			var top = stack.pop();
 
 			if (top instanceof Array) {
-				name = top.shift();
+				name = top[0];
 				if (name) {
+
 					output.push('<', name);
 					if (voidTag(name)) {
 						stack.push(' />');
-						while (top.length) {
-							stack.push(htmlEncode(top.pop()));
+						for (i=top.length-1; i>0; i--) {
+							stack.push(htmlEncode(top[i]));
 						}
 					} else {
 						stack.push('>', name, '</');
-						while (top.length) {
-							stack.push(htmlEncode(top.pop()));
+						for (i=top.length-1; i>1; i--) {
+							stack.push(htmlEncode(top[i]));
 						}
 
-						var attr = stack.pop();
+						var attr = top[1];
 						if (typeof attr === "object" && !(attr instanceof Array)) {
 							stack.push('>');
 							stack.push(attr);
