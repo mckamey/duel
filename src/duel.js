@@ -2,6 +2,10 @@
  * @fileoverview duel.js: client-side template engine
  */
 
+/**
+ * @param {Array|Object|string|function(*,number,number):Array|Object|string} view The view template
+ * @returns {Template}
+ */
 var duel = (function() {
 
 	/**
@@ -18,19 +22,21 @@ var duel = (function() {
 	/**
 	 * Renders the result as a string
 	 * 
-	 * @param {Array|Object|string} view The compiled view
+	 * @param {Array|Object|string} view The bound view
 	 * @returns {String}
 	 */
 	render,
 
 	/**
-	 * Builds DOM from JsonML
+	 * Builds the result as DOM
 	 * 
-	 * @param {Array} jml The JsonML structure to build
+	 * @param {Array} view The bound view
 	 * @returns {DOMElement}
 	 */
 	build;
-	
+
+	/* Types --------------------*/
+
 	/**
 	 * Wraps a binding result with rendering methods
 	 * 
@@ -99,22 +105,55 @@ var duel = (function() {
 	 * @this {Unparsed}
 	 * @param {string} value The value
 	 */
-	function Unparsed(/*string*/ value) {
+	function Unparsed(value) {
 		this.value = value;
 	}
 
+	/**
+	 * @constant
+	 */
 	var NUL = 0,
-		FUN = 1,
-		ARY = 2,
-		OBJ = 3,
-		VAL = 4,
+	/**
+	 * @constant
+	 */
+	FUN = 1,
+	/**
+	 * @constant
+	 */
+	ARY = 2,
+	/**
+	 * @constant
+	 */
+	OBJ = 3,
+	/**
+	 * @constant
+	 */
+	VAL = 4,
 
-		FOR = "$for",
-		CHOOSE = "$choose",
-		IF = "$if",
-		ELSE = "$else",
-		INIT = "$init",
-		LOAD = "$load";
+	/**
+	 * @constant
+	 */
+	FOR = "$for",
+	/**
+	 * @constant
+	 */
+	CHOOSE = "$choose",
+	/**
+	 * @constant
+	 */
+	IF = "$if",
+	/**
+	 * @constant
+	 */
+	ELSE = "$else",
+	/**
+	 * @constant
+	 */
+	INIT = "$init",
+	/**
+	 * @constant
+	 */
+	LOAD = "$load";
 
 	/**
 	 * Determines the type of the value
@@ -135,18 +174,7 @@ var duel = (function() {
 		}
 	}
 
-	/* ToString methods --------------------*/
-
-	/**
-	 * @type {Object}
-	 */
-	var VOID_TAGS = (function(names) {
-			var tags = {};
-			while (names.length) {
-				tags[names.pop()] = true;
-			}
-			return tags;
-		})("area,base,basefont,br,col,frame,hr,img,input,isindex,keygen,link,meta,param,source,wbr".split(','));
+	/* Binding methods --------------------*/
 
 	/**
 	 * Appends a node to a parent
@@ -374,6 +402,21 @@ var duel = (function() {
 		return result;
 	};
 
+	/* Rendering methods --------------------*/
+
+	/**
+	 * Void tag lookup 
+	 * @constant
+	 * @type {Object}
+	 */
+	var VOID_TAGS = (function(names) {
+			var tags = {};
+			while (names.length) {
+				tags[names.pop()] = true;
+			}
+			return tags;
+		})("area,base,basefont,br,col,frame,hr,img,input,isindex,keygen,link,meta,param,source,wbr".split(','));
+
 	/**
 	 * Encodes invalid literal characters in strings
 	 * 
@@ -462,9 +505,13 @@ var duel = (function() {
 		return output.join("");
 	};
 
-	/* ToDom methods --------------------*/
+	/* DOM Building methods --------------------*/
 
-	//attribute name mapping
+	/**
+	 * Attribute name map
+	 * @constant
+	 * @type {Object}
+	 */
 	var ATTRMAP = {
 		rowspan : "rowSpan",
 		colspan : "colSpan",
@@ -480,15 +527,23 @@ var duel = (function() {
 		// can add more attributes here as needed
 	},
 
-	// attribute duplicates
+	/**
+	 * Attribute duplicates map
+	 * @constant
+	 * @type {Object}
+	 */
 	ATTRDUP = {
 		enctype : "encoding",
 		onscroll : "DOMMouseScroll"
 		// can add more attributes here as needed
 	},
 
-	// event names
-	EVTS = (function(/*string[]*/ names) {
+	/**
+	 * Event names map
+	 * @constant
+	 * @type {Object}
+	 */
+	EVTS = (function(names) {
 		var evts = {};
 		while (names.length) {
 			var evt = names.pop();
@@ -761,16 +816,16 @@ var duel = (function() {
 	}
 
 	/**
-	 * Applies JsonML to DOM
+	 * Applies node to DOM
 	 * 
 	 * @param {DOMElement} elem The element to append
-	 * @param {Array} jml The JsonML structure to build
+	 * @param {Array} node The node to build
 	 * @returns {DOMElement}
 	 */
-	function patch(elem, jml) {
+	function patch(elem, node) {
 
-		for (var i=1; i<jml.length; i++) {
-			var child = jml[i];
+		for (var i=1; i<node.length; i++) {
+			var child = node[i];
 			switch (getType(child)) {
 				case ARY:
 				case VAL:
@@ -792,32 +847,32 @@ var duel = (function() {
 	}
 
 	/**
-	 * Builds DOM from JsonML
+	 * Builds the result as DOM
 	 * 
-	 * @param {Array} jml The JsonML structure to build
+	 * @param {Array} view The bound view
 	 * @returns {DOMElement}
 	 */
-	build = function(jml) {
+	build = function(view) {
 		try {
-			if (!jml) {
+			if (!view) {
 				return null;
 			}
-			if (typeof jml === "string") {
-				return document.createTextNode(jml);
+			if (typeof view === "string") {
+				return document.createTextNode(view);
 			}
-			if (jml instanceof Unparsed) {
-				return toDOM(jml.value);
+			if (view instanceof Unparsed) {
+				return toDOM(view.value);
 			}
 
-			var tag = jml[0]; // tagName
+			var tag = view[0]; // tagName
 			if (!tag) {
 				// correctly handle multiple-roots
 				// create a document fragment to hold elements
 				var frag = document.createDocumentFragment ?
 					document.createDocumentFragment() :
 					document.createElement("");
-				for (var i=1; i<jml.length; i++) {
-					appendChild(frag, build(jml[i]));
+				for (var i=1; i<view.length; i++) {
+					appendChild(frag, build(view[i]));
 				}
 
 				// trim extraneous whitespace
@@ -832,12 +887,12 @@ var duel = (function() {
 
 			if (tag.toLowerCase() === "style" && document.createStyleSheet) {
 				// IE requires this interface for styles
-				patch(document.createStyleSheet(), jml);
+				patch(document.createStyleSheet(), view);
 				// in IE styles are effective immediately
 				return null;
 			}
 
-			var elem = patch(document.createElement(tag), jml);
+			var elem = patch(document.createElement(tag), view);
 
 			// trim extraneous whitespace
 			trimWhitespace(elem);
@@ -850,14 +905,14 @@ var duel = (function() {
 			try {
 				// handle error with complete context
 				var err = (typeof duel.onerror === "function") ? duel.onerror : onError;
-				return err(ex, jml);
+				return err(ex, view);
 			} catch (ex2) {
 				return onError(ex2);
 			}
 		}
 	};
 
-	/* public methods --------------------*/
+	/* Factory methods --------------------*/
 
 	/**
 	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} view The view template
