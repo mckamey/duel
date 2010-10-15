@@ -184,7 +184,7 @@ var duel = (function() {
 	 */
 	function visit(node, model, index, count) {
 		/**
-		 * @type {Array|Object|string}
+		 * @type {Array|Object|string|Template}
 		 */
 		var result;
 
@@ -296,77 +296,64 @@ var duel = (function() {
 	/**
 	 * Renders the result as a string
 	 * 
-	 * @param {Array|Object|string} view The JsonML result tree
-	 * @returns {string}
+	 * @param {Array} output The output container
+	 * @param {Array} node The JsonML result tree
 	 */
-	function render(view) {
-		var name, i,
-			stack = [view],
-			output = [];
+	function renderElem(output, node) {
 
-		while (stack.length) {
-			var top = stack.pop();
+		var tag = node[0],
+			length = node.length,
+			i = 1,
+			child;
 
-			switch (getType(top)) {
-				case ARY:
-					name = top[0];
-					if (name) {
-						output.push('<', name);
-						if (voidTag(name)) {
-							stack.push(' />');
-							for (i=top.length-1; i>0; i--) {
-								// encode literals
-								stack.push(htmlEncode(top[i]));
-							}
-						} else {
-							stack.push('</'+name+'>');
-							for (i=top.length-1; i>1; i--) {
-								// encode literals
-								stack.push(htmlEncode(top[i]));
-							}
-	
-							var attr = top[1];
-							switch (getType(attr)) {
-								case ARY:
-									output.push('>');
-									stack.push(attr);
-									break;
-								case OBJ:
-									stack.push('>');
-									stack.push(attr);
-									break;
-								default:
-									output.push('>');
-									output.push(attr);
-									break;
-							}
-						}
-					} else {
-						for (i=top.length-1; i>0; i--) {
-							// encode literals
-							stack.push(htmlEncode(top[i]));
+		if (tag) {
+			// render open tag
+			output.push('<', tag);
+
+			child = node[i];
+			if (getType(child) === OBJ) {
+				// render attributes
+				for (var name in child) {
+					if (child.hasOwnProperty(name)) {
+						output.push(' ', name);
+						var val = child[name];
+						if (val) {
+							output.push('="', attrEncode(val), '"');
 						}
 					}
-					break;
-				case OBJ:
-					// render attributes
-					for (name in top) {
-						if (top.hasOwnProperty(name)) {
-							output.push(" ", name);
-							var val = top[name];
-							if (val) {
-								output.push('="', attrEncode(val), '"');
-							}
-						}
-					}
-					break;
-				default:
-					// render literals
-					output.push(top);
-					break;
+				}
+				i++;
+			}
+			output.push('>');
+		}
+
+		// render children
+		for (; i<length; i++) {
+			child = node[i];
+			if (getType(child) === ARY) {
+				renderElem(output, child);
+			} else {
+				// encode literals
+				output.push(htmlEncode(child));
 			}
 		}
 
+		if (tag) {
+			if (!voidTag(tag)) {
+				// render close tag
+				output.push('</', tag, '>');
+			}
+		}
+	}
+
+	function render(view) {
+		if (getType(view) !== ARY) {
+			// encode literals
+			return ""+htmlEncode(view);
+		}
+
+		var output = [];
+		renderElem(output, view)
 		return output.join("");
 	}
 
@@ -396,7 +383,7 @@ var duel = (function() {
 		 * @returns {string}
 		 */
 		this.toString = function() {
-			return view ? render(view) : "";
+			return render(view);
 		};
 
 		/**
