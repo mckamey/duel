@@ -4,6 +4,31 @@
 
 var duel = (function() {
 
+	var NUL = 0,
+		FUN = 1,
+		ARY = 2,
+		OBJ = 3,
+		VAL = 4;
+
+	/**
+	 * Determines the type of the value
+	 * 
+	 * @param {*} val the object being tested
+	 * @returns {string}
+	 */
+	function getType(val) {
+		switch (typeof val) {
+			case "object":
+				return (val instanceof Array) ? ARY : (!val ? NUL : OBJ);
+			case "function":
+				return FUN;
+			case "undefined":
+				return NUL;
+			default:
+				return VAL;
+		}
+	}
+
 	/**
 	 * Appends a node to a parent
 	 * 
@@ -11,122 +36,136 @@ var duel = (function() {
 	 * @param {Array|Object|string} child The child node
 	 */
 	function append(parent, child) {
-		if (!(parent instanceof Array) || typeof child === "undefined" || child === null) {
-			// ignore
+		if (getType(parent) !== ARY) {
+			// invalid
 			return;
 		}
 
-		if (child instanceof Array) {
-			if (child[0] === "") {
-				// child is multiple sub-trees (i.e. documentFragment)
-				child.shift();// remove fragment identifier
-
-				// directly append children
-				while (child.length) {
-					append(parent, child.shift());
-				}
-			} else {
-				// child is an element array
-				parent.push(child);
-			}
-
-		} else if (typeof child === "object") {
-			// child is attributes object
-			var old = parent[1];
-			if (!old || old instanceof Array || typeof old !== "object") {
-				// insert attributes
-				var name = parent.shift();
-				parent.unshift(child);
-				parent.unshift(name || "");
-			} else {
-				// merge attribute objects
-				for ( var key in child) {
-					if (child.hasOwnProperty(key)) {
-						old[key] = child[key];
+		switch (getType(child)) {
+			case ARY:
+				if (child[0] === "") {
+					// child is documentFragment
+					// directly append children, skip fragment identifier
+					for (var i=1, length=child.length; i<length; i++) {
+						append(parent, child[i]);
 					}
+				} else {
+					// child is an element array
+					parent.push(child);
 				}
-			}
+				break;
 
-		} else {
-			// convert primitive to string literal
-			child = "" + child;
+			case OBJ:
+				// child is attributes object
+				var old = parent[1];
+				if (getType(old) === OBJ) {
+					// merge attribute objects
+					for (var key in child) {
+						if (child.hasOwnProperty(key)) {
+							old[key] = child[key];
+						}
+					}
+				} else {
+					// insert attributes object
+					parent.splice(1, 0, child);
+				}
+				break;
 
-			var last = parent.length - 1;
-			if (last > 0 && typeof parent[last] === "string") {
-				// combine string literals
-				parent[last] += child;
-			} else {
-				// append
+			case VAL:
+				var last = parent.length - 1;
+				if (last > 0 && getType(parent[last]) === VAL) {
+					// combine string literals
+					parent[last] = "" + parent[last] + child;
+				} else {
+					// append and convert primitive to string literal
+					parent.push("" + child);
+				}
+				break;
+
+			case FUN:
+				// append and convert primitive to string literal
 				parent.push(child);
-			}
+				break;
 		}
 	}
 
 	/**
 	 * Binds the node once for each item in model
 	 * 
-	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node
-	 *            The template subtree root
+	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node The template subtree root
 	 * @param {*} model The data item being bound
-	 * @returns {Array|Object|string}
+	 * @returns {Array}
 	 */
 	function foreach(node, model, index, count) {
-
 		var args = node[1];
 		if (!args || !args.each) {
 			return null;
 		}
 
-		var output = [""];
 		// execute code block
-		var items = (typeof args.each !== "function") ?
-			args.each :
-			args.each(model, index, count);
-		node = node.slice(2);
-		node.unshift("");
+		var items = (getType(args.each) === FUN) ?
+			args.each(model, index, count) : args.each;
 
-		if (items instanceof Array) {
-			for (var i = 0, length = items.length; i < length; i++) {
-				append(output, visit(node, items[i], i, length));
-			}
-		} else if (typeof items === "object" && items) {
-			for (var key in items) {
-				if (items.hasOwnProperty(key)) {
-					append(output, visit(node, items[key], key, NaN));
-				}
-			}
+		if (node.length === 3) {
+			node = node[2];
+		} else {
+			node = [""].concat(node.slice(2));
 		}
 
-		return output;
+		var result = [""];
+		switch (getType(items)) {
+			case ARY:
+				for (var i=0, length=items.length; i<length; i++) {
+					append(result, visit(node, items[i], i, length));
+				}
+				break;
+			case OBJ:
+				for (var key in items) {
+					if (items.hasOwnProperty(key)) {
+						append(result, visit(node, items[key], key, NaN));
+					}
+				}
+				break;
+		}
+
+		return result;
 	}
 
 	/**
 	 * Binds the node to the first child block which evaluates to true
 	 * 
-	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node
-	 *            The template subtree root
+	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number=} index The index of the current data item
 	 * @param {number=} count The total number of data items
 	 * @returns {Array|Object|string}
 	 */
 	function choose(node, model, index, count) {
-		for (var i = 1, length = node.length; i < length; i++) {
-			var block = node[i], cmd = block[0], args = block[1];
+		for (var i=1, length=node.length; i<length; i++) {
+			var block = node[i],
+				cmd = block[0],
+				args = block[1];
 
 			if (cmd === "$if" && args && args.test) {
-				var test = (typeof args.test !== "function") ? args.test : args
-				        .test(model, index, count);
+				var test = (getType(args.test) === FUN) ?
+					args.test(model, index, count) : args.test;
+
 				if (test) {
 					// clone and bind block
-					block = block.slice(2);
-					block.unshift("");
+					if (block.length === 3) {
+						block = block[2];
+					} else {
+						node = [""].concat(node.slice(2));
+					}
 					return visit(block, model, index, count);
 				}
 			} else if (cmd === "$else") {
 				// clone and bind block
-				block = block.slice(1);
-				block.unshift("");
+				if (block.length === 2) {
+					block = block[1];
+				} else {
+					node = [""].concat(node.slice(1));
+				}
 				return visit(block, model, index, count);
 			}
 		}
@@ -137,74 +176,81 @@ var duel = (function() {
 	/**
 	 * Binds the node to model
 	 * 
-	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node
-	 *            The template subtree root
+	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number=|string=} index The index of the current data item
 	 * @param {number=} count The total number of data items
 	 * @returns {Array|Object|string}
 	 */
 	function visit(node, model, index, count) {
-		var output, length, i;
+		/**
+		 * @type {Array|Object|string}
+		 */
+		var result;
 
-		if (typeof node === "function") {
-			// execute code block
-			output = node(model, index, count);
+		switch (getType(node)) {
+			case FUN:
+				// execute code block
+				result = node(model, index, count);
 
-			if (output instanceof Template) {
-				// allow recursively binding templates
-				// useful for creating "switcher" methods
-				output = Template.bind(model, index, count);
-			}
-		}
-
-		// visit each child
-		else if (node instanceof Array) {
-			// inspect element name for template commands
-			switch (node[0]) {
-				case "$for":
-					output = foreach(node, model, index, count);
-					break;
-				case "$choose":
-					output = choose(node, model, index, count);
-					break;
-				case "$if":
-					output = choose([
-					        "$choose", node
-					], model, index, count);
-					break;
-				default:
-					// element array, first item is name
-					output = [
-						node[0]
-					];
-
-					for (i = 1, length = node.length; i < length; i++) {
-						append(output, visit(node[i], model, index, count));
-					}
-					break;
-			}
-
-		} else if (typeof node === "object" && node) {
-			// attribute object
-			output = {};
-			for (var key in node) {
-				if (node.hasOwnProperty(key)) {
-					output[key] = visit(node[key], model, index, count);
+				while (result instanceof Template) {
+					// allow recursively binding templates
+					// useful for creating "switcher" methods
+					result = result.bind(model, index, count);
 				}
-			}
+				break;
 
-		} else {
-			// ensure string
-			output = "" + node;
+			case ARY:
+				// inspect element name for template commands
+				switch (node[0]) {
+					case "$for":
+						result = foreach(node, model, index, count);
+						break;
+					case "$choose":
+						result = choose(node, model, index, count);
+						break;
+					case "$if":
+					case "$else":
+						result = choose(["$choose", node], model, index, count);
+						break;
+					default:
+						// element array, first item is name
+						result = [node[0]];
+
+						for (var i=1, length=node.length; i<length; i++) {
+							append(result, visit(node[i], model, index, count));
+						}
+						break;
+				}
+				break;
+
+			case OBJ:
+				// attribute object
+				result = {};
+				for (var key in node) {
+					if (node.hasOwnProperty(key)) {
+						result[key] = visit(node[key], model, index, count);
+					}
+				}
+				break;
+
+			default:
+				// ensure string
+				result = "" + node;
+				break;
 		}
 
-		return output;
+		return result;
 	}
 
+	/**
+	 * Determines if a tag is self-closing
+	 * 
+	 * @param {string} tag The tag name
+	 * @returns {boolean}
+	 */
 	function voidTag(tag) {
-		switch (tag)
-		{
+		switch (tag) {
 			case "area":
 			case "base":
 			case "basefont":
@@ -227,26 +273,36 @@ var duel = (function() {
 		}
 	}
 
+	/**
+	 * Encodes invalid literal characters in strings
+	 * 
+	 * @param {Array|Object|string} val The value
+	 * @returns {Array|Object|string}
+	 */
 	function htmlEncode(val) {
-		return (typeof val !== "string") ? val :
-			val.split('&').join('&amp;')
-			.split('<').join('&lt;')
-			.split('>').join('&gt;');
+		return (typeof val !== "string") ? val : val.split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;');
 	}
 
+	/**
+	 * Encodes invalid attribute characters in strings
+	 * 
+	 * @param {Array|Object|string} val The value
+	 * @returns {Array|Object|string}
+	 */
 	function attrEncode(val) {
-		return (typeof val !== "string") ? val :
-			val.split('&').join('&amp;')
-			.split('<').join('&lt;')
-			.split('>').join('&gt;')
-			.split('"').join('&quot;')
-			.split("'").join('&apos;');
+		return (typeof val !== "string") ? val : val.split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split("'").join('&apos;');
 	}
 
+	/**
+	 * Renders the result as a string
+	 * 
+	 * @param {Array|Object|string} view The JsonML result tree
+	 * @returns {string}
+	 */
 	function render(view) {
-		var stack = [view],
-			output = [],
-			name, i;
+		var name, i,
+			stack = [view],
+			output = [];
 
 		while (stack.length) {
 			var top = stack.pop();
@@ -289,35 +345,79 @@ var duel = (function() {
 				}
 			} else {
 				output.push(top);
-			} 
+			}
 		}
 
 		return output.join("");
 	}
-	
+
+	/**
+	 * Wraps a binding result with rendering methods
+	 * 
+	 * @constructor
+	 * @this {Result}
+	 * @param {Array|Object|string} view The result tree
+	 */
 	function Result(view) {
+		/**
+		 * Returns result as DOM objects
+		 * 
+		 * @this {Result}
+		 * @param {function} filter JsonML filter function
+		 * @returns {Object}
+		 */
 		this.toDOM = function(filter) {
 			return JsonML.parse(view, filter);
 		};
 
+		/**
+		 * Returns result as HTML text
+		 * 
+		 * @this {Result}
+		 * @returns {string}
+		 */
 		this.toString = function() {
 			return view ? render(view) : "";
 		};
+
+		/**
+		 * Returns result as JsonML
+		 * 
+		 * @this {Result}
+		 * @returns {Array|Object|string}
+		 */
+		this.toJsonML = function() {
+			return view;
+		};
 	}
 
+	/**
+	 * Wraps a template definition with binding methods
+	 * 
+	 * @constructor
+	 * @this {Template}
+	 * @param {Array|Object|string} view The template definition
+	 */
 	function Template(view) {
 		if ("undefined" === typeof view) {
 			throw new Error("View is undefined");
 		}
 
+		/**
+		 * Appends a node to a parent
+		 * 
+		 * @this {Template}
+		 * @param {*} model The data item being bound
+		 * @param {Array|Object|string} child The child node
+		 */
 		this.bind = function(model) {
-			return new Result( visit(view, model) );
+			return new Result(visit(view, model));
 		};
 	}
 
 	/**
-	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} view
-	 *			The view template
+	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} view The view template
+	 * @returns {Template}
 	 */
 	return function(view) {
 		return (view instanceof Template) ? view : new Template(view);
