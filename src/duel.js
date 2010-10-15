@@ -307,44 +307,63 @@ var duel = (function() {
 		while (stack.length) {
 			var top = stack.pop();
 
-			if (top instanceof Array) {
-				name = top[0];
-				if (name) {
-
-					output.push('<', name);
-					if (voidTag(name)) {
-						stack.push(' />');
-						for (i=top.length-1; i>0; i--) {
-							stack.push(htmlEncode(top[i]));
+			switch (getType(top)) {
+				case ARY:
+					name = top[0];
+					if (name) {
+						output.push('<', name);
+						if (voidTag(name)) {
+							stack.push(' />');
+							for (i=top.length-1; i>0; i--) {
+								// encode literals
+								stack.push(htmlEncode(top[i]));
+							}
+						} else {
+							stack.push('</'+name+'>');
+							for (i=top.length-1; i>1; i--) {
+								// encode literals
+								stack.push(htmlEncode(top[i]));
+							}
+	
+							var attr = top[1];
+							switch (getType(attr)) {
+								case ARY:
+									output.push('>');
+									stack.push(attr);
+									break;
+								case OBJ:
+									stack.push('>');
+									stack.push(attr);
+									break;
+								default:
+									output.push('>');
+									output.push(attr);
+									break;
+							}
 						}
 					} else {
-						stack.push('>', name, '</');
-						for (i=top.length-1; i>1; i--) {
+						for (i=top.length-1; i>0; i--) {
+							// encode literals
 							stack.push(htmlEncode(top[i]));
 						}
-
-						var attr = top[1];
-						if (typeof attr === "object" && !(attr instanceof Array)) {
-							stack.push('>');
-							stack.push(attr);
-						} else {
-							stack.push(attr);
-							stack.push('>');
+					}
+					break;
+				case OBJ:
+					// render attributes
+					for (name in top) {
+						if (top.hasOwnProperty(name)) {
+							output.push(" ", name);
+							var val = top[name];
+							if (val) {
+								output.push('="', attrEncode(val), '"');
+							}
 						}
 					}
-				}
-			} else if (typeof top === "object") {
-				for (name in top) {
-					if (top.hasOwnProperty(name)) {
-						output.push(" ", name);
-						var val = top[name];
-						if (val) {
-							output.push('="', attrEncode(val), '"');
-						}
-					}
-				}
-			} else {
-				output.push(top);
+					break;
+				default:
+					// render literals
+					output.push(top);
+					break;
 			}
 		}
 
