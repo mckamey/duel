@@ -693,9 +693,9 @@ var duel = (function() {
 	 * 
 	 * @param {DOMElement} elem The element
 	 * @param {string} key The callback name
-	 * @returns {DOMElement}
+	 * @returns {function(DOMElement)}
 	 */
-	function popMethod(elem, key) {
+	function popCallback(elem, key) {
 		var method = elem[key];
 		if (method) {
 			try {
@@ -703,6 +703,17 @@ var duel = (function() {
 			} catch (ex) {
 				// sometimes IE doesn't like deleting from DOM
 				elem[key] = undefined;
+			}
+
+			if (typeof method !== "function") {
+				try {
+					/*jslint evil:true */
+					method = new Function(""+method);
+					/*jslint evil:false */
+				} catch (ex2) {
+					// filter
+					method = null;
+				}
 			}
 		}
 		return method;
@@ -719,21 +730,23 @@ var duel = (function() {
 		}
 
 		// execute and remove oninit method
-		var method = popMethod(elem, INIT);
-		if (typeof method === "function") {
+		var method = popCallback(elem, INIT);
+		if (method) {
 			// execute in context of element
 			method.call(elem);
 		}
 
 		// execute and remove onload method
-		method = popMethod(elem, LOAD);
-		if (typeof method === "function") {
+		method = popCallback(elem, LOAD);
+		if (method) {
 			// queue up to execute after insertion into parentNode
 			setTimeout(function() {
 				// execute in context of element
 				method.call(elem);
 				method = elem = null;
 			}, 0);
+		} else {
+			method = elem = null;
 		}
 	}
 
