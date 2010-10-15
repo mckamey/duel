@@ -1,10 +1,36 @@
 /**
- * @fileoverview duel: client-side template engine
+ * @fileoverview duel.js: client-side template engine
  */
 
 var duel = (function() {
 
-	var visit, parse, render;
+	/**
+	 * Binds the node to model
+	 * 
+	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node The template subtree root
+	 * @param {*} model The data item being bound
+	 * @param {number|string} index The index of the current data item
+	 * @param {number} count The total number of data items
+	 * @returns {Array|Object|string}
+	 */
+	var visit,
+
+	/**
+	 * Renders the result as a string
+	 * 
+	 * @param {Array|Object|string} view The compiled view
+	 * @returns {String}
+	 */
+	render,
+
+	/**
+	 * Builds DOM from JsonML
+	 * 
+	 * @param {Array} jml The JsonML structure to build
+	 * @param {function(DOMElement):DOMElement} filter A filter method
+	 * @returns {DOMElement}
+	 */
+	build;
 	
 	/**
 	 * Wraps a binding result with rendering methods
@@ -22,7 +48,7 @@ var duel = (function() {
 		 * @returns {Object}
 		 */
 		this.toDOM = function(filter) {
-			return parse(view, filter);
+			return build(view, filter);
 		};
 
 		/**
@@ -54,10 +80,6 @@ var duel = (function() {
 	 * @param {Array|Object|string} view The template definition
 	 */
 	function Template(view) {
-		if ("undefined" === typeof view) {
-			throw new Error("View is undefined");
-		}
-
 		/**
 		 * Appends a node to a parent
 		 * 
@@ -92,12 +114,12 @@ var duel = (function() {
 	 * Determines the type of the value
 	 * 
 	 * @param {*} val the object being tested
-	 * @returns {string}
+	 * @returns {number}
 	 */
 	function getType(val) {
 		switch (typeof val) {
 			case "object":
-				return (val instanceof Array) ? ARY : (!val ? NUL : OBJ);
+				return !val ? NUL : ((val instanceof Array) ? ARY : OBJ);
 			case "function":
 				return FUN;
 			case "undefined":
@@ -108,6 +130,17 @@ var duel = (function() {
 	}
 
 	/* ToString methods --------------------*/
+
+	/**
+	 * @type {Object}
+	 */
+	var VOID_TAGS = (function(names) {
+			var tags = {};
+			while (names.length) {
+				tags[names.pop()] = true;
+			}
+			return tags;
+		})("area,base,basefont,br,col,frame,hr,img,input,isindex,keygen,link,meta,param,source,wbr".split(','));
 
 	/**
 	 * Appends a node to a parent
@@ -174,6 +207,8 @@ var duel = (function() {
 	 * 
 	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node The template subtree root
 	 * @param {*} model The data item being bound
+	 * @param {number|string} index The index of the current data item
+	 * @param {number} count The total number of data items
 	 * @returns {Array}
 	 */
 	function foreach(node, model, index, count) {
@@ -216,8 +251,8 @@ var duel = (function() {
 	 * 
 	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node The template subtree root
 	 * @param {*} model The data item being bound
-	 * @param {number=} index The index of the current data item
-	 * @param {number=} count The total number of data items
+	 * @param {number|string} index The index of the current data item
+	 * @param {number} count The total number of data items
 	 * @returns {Array|Object|string}
 	 */
 	function choose(node, model, index, count) {
@@ -288,7 +323,11 @@ var duel = (function() {
 
 			case ARY:
 				// inspect element name for template commands
-				switch (node[0]) {
+				/**
+				 * @type {string}
+				 */
+				var tag = node[0] || "";
+				switch (tag) {
 					case "$for":
 						result = foreach(node, model, index, count);
 						break;
@@ -301,7 +340,7 @@ var duel = (function() {
 						break;
 					default:
 						// element array, first item is name
-						result = [node[0]];
+						result = [tag];
 
 						for (var i=1, length=node.length; i<length; i++) {
 							append(result, visit(node[i], model, index, count));
@@ -328,36 +367,6 @@ var duel = (function() {
 
 		return result;
 	};
-
-	/**
-	 * Determines if a tag is self-closing
-	 * 
-	 * @param {string} tag The tag name
-	 * @returns {boolean}
-	 */
-	function voidTag(tag) {
-		switch (tag) {
-			case "area":
-			case "base":
-			case "basefont":
-			case "br":
-			case "col":
-			case "frame":
-			case "hr":
-			case "img":
-			case "input":
-			case "isindex":
-			case "keygen":
-			case "link":
-			case "meta":
-			case "param":
-			case "source":
-			case "wbr":
-				return true;
-			default:
-				return false;
-		}
-	}
 
 	/**
 	 * Encodes invalid literal characters in strings
@@ -424,14 +433,18 @@ var duel = (function() {
 			}
 		}
 
-		if (tag) {
-			if (!voidTag(tag)) {
-				// render close tag
-				output.push('</', tag, '>');
-			}
+		if (tag && !VOID_TAGS[tag]) {
+			// render close tag
+			output.push('</', tag, '>');
 		}
 	}
 
+	/**
+	 * Renders the result as a string
+	 * 
+	 * @param {Array|Object|string} view The compiled view
+	 * @returns {String}
+	 */
 	render = function(view) {
 		if (getType(view) !== ARY) {
 			// encode literals
@@ -472,7 +485,7 @@ var duel = (function() {
 	EVTS = (function(/*string[]*/ names) {
 		var evts = {};
 		while (names.length) {
-			var evt = names.shift();
+			var evt = names.pop();
 			evts["on"+evt.toLowerCase()] = evt;
 		}
 		return evts;
@@ -486,7 +499,6 @@ var duel = (function() {
 	 */
 	function appendChild(elem, child) {
 		if (child) {
-			
 			if (elem.tagName && elem.tagName.toLowerCase() === "table" && elem.tBodies) {
 				if (!child.tagName) {
 					// must unwrap documentFragment for tables
@@ -538,17 +550,15 @@ var duel = (function() {
 	 * @param {function(Event)} handler The event handler
 	 */
 	function addHandler(elem, name, handler) {
-		if ("string" === typeof handler) {
+		if (typeof handler === "string") {
 			/*jslint evil:true */
 			handler = new Function("event", handler);
 			/*jslint evil:false */
 		}
 
-		if ("function" !== typeof handler) {
-			return;
+		if (typeof handler === "function") {
+			elem[name] = handler;
 		}
-
-		elem[name] = handler;
 	}
 
 	/**
@@ -578,7 +588,7 @@ var duel = (function() {
 				if (name && value) {
 					name = ATTRMAP[name.toLowerCase()] || name;
 					if (name === "style") {
-						if ("undefined" !== typeof elem.style.cssText) {
+						if (typeof elem.style.cssText !== "undefined") {
 							elem.style.cssText = value;
 						} else {
 							elem.style = value;
@@ -592,7 +602,7 @@ var duel = (function() {
 						if (ATTRDUP[name]) {
 							addHandler(elem, ATTRDUP[name], value);
 						}
-					} else if ("string" === typeof value || "number" === typeof value || "boolean" === typeof value) {
+					} else if (getType(value) === VAL) {
 						elem.setAttribute(name, value);
 
 						// also set duplicated attributes
@@ -693,14 +703,21 @@ var duel = (function() {
 	function patch(elem, jml, filter) {
 
 		for (var i=1; i<jml.length; i++) {
-			if (jml[i] instanceof Array || "string" === typeof jml[i]) {
-				// append children
-				appendChild(elem, parse(jml[i], filter));
-			} else if (jml[i] instanceof Unparsed) {
-				appendChild(elem, hydrate(jml[i].value));
-			} else if ("object" === typeof jml[i] && jml[i] !== null && elem.nodeType === 1) {
-				// add attributes
-				elem = addAttributes(elem, jml[i]);
+			var child = jml[i];
+			switch (getType(child)) {
+				case ARY:
+				case VAL:
+					// append children
+					appendChild(elem, build(child, filter));
+					break;
+				case OBJ:
+					if (child instanceof Unparsed) {
+						appendChild(elem, hydrate(child.value));
+					} else if (elem.nodeType === 1) {
+						// add attributes
+						elem = addAttributes(elem, child);
+					}
+					break;
 			}
 		}
 
@@ -714,12 +731,12 @@ var duel = (function() {
 	 * @param {function(DOMElement):DOMElement} filter A filter method
 	 * @returns {DOMElement}
 	 */
-	parse = function(jml, filter) {
+	build = function(jml, filter) {
 		try {
 			if (!jml) {
 				return null;
 			}
-			if ("string" === typeof jml) {
+			if (typeof jml === "string") {
 				return document.createTextNode(jml);
 			}
 			if (jml instanceof Unparsed) {
@@ -734,7 +751,7 @@ var duel = (function() {
 					document.createDocumentFragment() :
 					document.createElement("");
 				for (var i=1; i<jml.length; i++) {
-					appendChild(frag, parse(jml[i], filter));
+					appendChild(frag, build(jml[i], filter));
 				}
 
 				// trim extraneous whitespace
@@ -758,11 +775,11 @@ var duel = (function() {
 
 			// trim extraneous whitespace
 			trimWhitespace(elem);
-			return (elem && "function" === typeof filter) ? filter(elem) : elem;
+			return (elem && typeof filter === "function") ? filter(elem) : elem;
 		} catch (ex) {
 			try {
 				// handle error with complete context
-				var err = ("function" === typeof duel.onerror) ? duel.onerror : onError;
+				var err = (typeof duel.onerror === "function") ? duel.onerror : onError;
 				return err(ex, jml, filter);
 			} catch (ex2) {
 				return onError(ex2);
@@ -780,6 +797,10 @@ var duel = (function() {
 		return (view instanceof Template) ? view : new Template(view);
 	};
 	
+	/**
+	 * @param {string} value Markup text
+	 * @returns {Unparsed}
+	 */
 	duel.raw = function(/*string*/ value) {
 		return new Unparsed(value);
 	};
