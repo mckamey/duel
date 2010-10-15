@@ -27,7 +27,6 @@ var duel = (function() {
 	 * Builds DOM from JsonML
 	 * 
 	 * @param {Array} jml The JsonML structure to build
-	 * @param {function(DOMElement):DOMElement} filter A filter method
 	 * @returns {DOMElement}
 	 */
 	build;
@@ -44,11 +43,11 @@ var duel = (function() {
 		 * Returns result as DOM objects
 		 * 
 		 * @this {Result}
-		 * @param {function(DOMElement):DOMElement} filter JsonML filter function
 		 * @returns {Object}
 		 */
-		this.toDOM = function(filter) {
-			return build(view, filter);
+		this.toDOM = function() {
+			return build(view);
+//			return toDOM(render(view));
 		};
 
 		/**
@@ -108,7 +107,14 @@ var duel = (function() {
 		FUN = 1,
 		ARY = 2,
 		OBJ = 3,
-		VAL = 4;
+		VAL = 4,
+
+		FOR = "$for",
+		CHOOSE = "$choose",
+		IF = "$if",
+		ELSE = "$else",
+		INIT = "$init",
+		LOAD = "$load";
 
 	/**
 	 * Determines the type of the value
@@ -262,7 +268,7 @@ var duel = (function() {
 				args = block[1];
 
 			switch (cmd) {
-				case "$if":
+				case IF:
 					var test = args && args.test;
 					if (getType(args.test) === FUN) {
 						test = test(model, index, count);
@@ -280,7 +286,7 @@ var duel = (function() {
 					}
 					return visit(block, model, index, count);
 
-				case  "$else":
+				case ELSE:
 					// clone and bind block
 					if (block.length === 2) {
 						block = block[1];
@@ -328,15 +334,15 @@ var duel = (function() {
 				 */
 				var tag = node[0] || "";
 				switch (tag) {
-					case "$for":
+					case FOR:
 						result = foreach(node, model, index, count);
 						break;
-					case "$choose":
+					case CHOOSE:
 						result = choose(node, model, index, count);
 						break;
-					case "$if":
-					case "$else":
-						result = choose(["$choose", node], model, index, count);
+					case IF:
+					case ELSE:
+						result = choose([CHOOSE, node], model, index, count);
 						break;
 					default:
 						// element array, first item is name
@@ -659,9 +665,9 @@ var duel = (function() {
 	 * @param {string} value The node
 	 * @returns {DOMElement}
 	 */
-	function hydrate(value) {
+	function toDOM(value) {
 		var wrapper = document.createElement("div");
-		wrapper.innerHTML = value;
+		wrapper.innerHTML = ""+value;
 
 		// trim extraneous whitespace
 		trimWhitespace(wrapper);
@@ -683,6 +689,55 @@ var duel = (function() {
 	}
 
 	/**
+	 * Retrieve and remove method
+	 * 
+	 * @param {DOMElement} elem The element
+	 * @param {string} key The callback name
+	 * @returns {DOMElement}
+	 */
+	function popMethod(elem, key) {
+		var method = elem[key];
+		if (method) {
+			try {
+				delete elem[key];
+			} catch (ex) {
+				// sometimes IE doesn't like deleting from DOM
+				elem[key] = undefined;
+			}
+		}
+		return method;
+	}
+
+	/**
+	 * Executes oninit/onload callbacks
+	 * 
+	 * @param {DOMElement} elem The element
+	 */
+	function onInit(elem) {
+		if (!elem) {
+			return;
+		}
+
+		// execute and remove oninit method
+		var method = popMethod(elem, INIT);
+		if (typeof method === "function") {
+			// execute in context of element
+			method.call(elem);
+		}
+
+		// execute and remove onload method
+		method = popMethod(elem, LOAD);
+		if (typeof method === "function") {
+			// queue up to execute after insertion into parentNode
+			setTimeout(function() {
+				// execute in context of element
+				method.call(elem);
+				method = elem = null;
+			}, 0);
+		}
+	}
+
+	/**
 	 * Renders an error as a text node
 	 * 
 	 * @param {Error} ex The exception
@@ -697,10 +752,9 @@ var duel = (function() {
 	 * 
 	 * @param {DOMElement} elem The element to append
 	 * @param {Array} jml The JsonML structure to build
-	 * @param {function(DOMElement):DOMElement} filter A filter method
 	 * @returns {DOMElement}
 	 */
-	function patch(elem, jml, filter) {
+	function patch(elem, jml) {
 
 		for (var i=1; i<jml.length; i++) {
 			var child = jml[i];
@@ -708,11 +762,11 @@ var duel = (function() {
 				case ARY:
 				case VAL:
 					// append children
-					appendChild(elem, build(child, filter));
+					appendChild(elem, build(child));
 					break;
 				case OBJ:
 					if (child instanceof Unparsed) {
-						appendChild(elem, hydrate(child.value));
+						appendChild(elem, toDOM(child.value));
 					} else if (elem.nodeType === 1) {
 						// add attributes
 						elem = addAttributes(elem, child);
@@ -728,10 +782,9 @@ var duel = (function() {
 	 * Builds DOM from JsonML
 	 * 
 	 * @param {Array} jml The JsonML structure to build
-	 * @param {function(DOMElement):DOMElement} filter A filter method
 	 * @returns {DOMElement}
 	 */
-	build = function(jml, filter) {
+	build = function(jml) {
 		try {
 			if (!jml) {
 				return null;
@@ -740,7 +793,7 @@ var duel = (function() {
 				return document.createTextNode(jml);
 			}
 			if (jml instanceof Unparsed) {
-				return hydrate(jml.value);
+				return toDOM(jml.value);
 			}
 
 			var tag = jml[0]; // tagName
@@ -751,7 +804,7 @@ var duel = (function() {
 					document.createDocumentFragment() :
 					document.createElement("");
 				for (var i=1; i<jml.length; i++) {
-					appendChild(frag, build(jml[i], filter));
+					appendChild(frag, build(jml[i]));
 				}
 
 				// trim extraneous whitespace
@@ -766,21 +819,25 @@ var duel = (function() {
 
 			if (tag.toLowerCase() === "style" && document.createStyleSheet) {
 				// IE requires this interface for styles
-				patch(document.createStyleSheet(), jml, filter);
+				patch(document.createStyleSheet(), jml);
 				// in IE styles are effective immediately
 				return null;
 			}
 
-			var elem = patch(document.createElement(tag), jml, filter);
+			var elem = patch(document.createElement(tag), jml);
 
 			// trim extraneous whitespace
 			trimWhitespace(elem);
-			return (elem && typeof filter === "function") ? filter(elem) : elem;
+
+			// trigger callbacks
+			onInit(elem);
+
+			return elem;
 		} catch (ex) {
 			try {
 				// handle error with complete context
 				var err = (typeof duel.onerror === "function") ? duel.onerror : onError;
-				return err(ex, jml, filter);
+				return err(ex, jml);
 			} catch (ex2) {
 				return onError(ex2);
 			}
