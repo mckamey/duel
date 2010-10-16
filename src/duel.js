@@ -1,5 +1,5 @@
 /**
- * @fileOverview  duel.js: client-side template engine
+ * @fileoverview  duel.js: client-side template engine
  * 
  * http://duelengine.org
  * 
@@ -41,11 +41,16 @@ var duel = (function() {
 	/**
 	 * Wraps a binding result with rendering methods
 	 * 
-	 * @constructor
 	 * @this {Result}
 	 * @param {Array|Object|string} view The result tree
+	 * @constructor
 	 */
 	function Result(view) {
+		/**
+		 * @type {Array|Object|string}
+		 * @const
+		 * @protected
+		 */
 		this.value = view;
 	}
 
@@ -53,7 +58,7 @@ var duel = (function() {
 	 * Returns result as DOM objects
 	 * 
 	 * @this {Result}
-	 * @returns {Object}
+	 * @returns {DOMElement}
 	 */
 	Result.prototype.toDOM = function() {
 		return build(this.value);
@@ -73,32 +78,54 @@ var duel = (function() {
 	/**
 	 * Wraps a template definition with binding methods
 	 * 
-	 * @constructor
 	 * @this {View}
 	 * @param {Array|Object|string} view The template definition
+	 * @constructor
 	 */
 	function View(view) {
 		/**
-		 * Appends a node to a parent
-		 * 
-		 * @this {View}
-		 * @param {*} model The data item being bound
-		 * @param {Array|Object|string} child The child node
+		 * @type {Array|Object|string}
+		 * @const
+		 * @protected
 		 */
-		this.bind = function(model) {
-			var result = bind(view, model);
-			return new Result(result);
-		};
+		this.value = view;
 	}
+
+	/**
+	 * Binds and wraps the result
+	 * 
+	 * @this {View}
+	 * @param {*} model The data item being bound
+	 * @param {Array|Object|string} child The child node
+	 */
+	View.prototype.bind = function(model) {
+		var result = bind(this.value, model);
+		return new Result(result);
+	};
+
+	/**
+	 * Returns result as HTML text
+	 * 
+	 * @this {Result}
+	 * @returns {string}
+	 */
+	View.prototype.toString = function() {
+		return render(this.value);
+	};
 
 	/**
 	 * Wraps a data value to maintain as raw markup in output
 	 * 
-	 * @constructor
 	 * @this {Markup}
 	 * @param {string} value The value
+	 * @constructor
 	 */
 	function Markup(value) {
+		/**
+		 * @type {string}
+		 * @const
+		 * @protected
+		 */
 		this.value = value;
 	}
 
@@ -113,56 +140,69 @@ var duel = (function() {
 	};
 
 	/**
-	 * @constant
+	 * @type {number}
+	 * @const
 	 */
 	var NUL = 0,
 	/**
-	 * @constant
+	 * @type {number}
+	 * @const
 	 */
 	FUN = 1,
 	/**
-	 * @constant
+	 * @type {number}
+	 * @const
 	 */
 	ARY = 2,
 	/**
-	 * @constant
+	 * @type {number}
+	 * @const
 	 */
 	OBJ = 3,
 	/**
-	 * @constant
+	 * @type {number}
+	 * @const
 	 */
 	VAL = 4,
 	/**
-	 * @constant
+	 * @type {number}
+	 * @const
 	 */
 	RAW = 5,
 
 	/**
-	 * @constant
+	 * @type {string}
+	 * @const
 	 */
 	FOR = "$for",
 	/**
-	 * @constant
+	 * @type {string}
+	 * @const
 	 */
 	CHOOSE = "$choose",
 	/**
-	 * @constant
+	 * @type {string}
+	 * @const
 	 */
 	IF = "$if",
 	/**
-	 * @constant
+	 * @type {string}
+	 * @const
 	 */
 	ELSE = "$else",
 	/**
-	 * @constant
+	 * @type {string}
+	 * @const
 	 */
 	CALL = "$call",
 	/**
-	 * @constant
+	 * @type {string}
+	 * @const
 	 */
 	INIT = "$init",
 	/**
-	 * @constant
+	 * @type {string}
+	 * @const
 	 */
 	LOAD = "$load";
 
@@ -354,7 +394,17 @@ var duel = (function() {
 	 */
 	function call(node, model, index, count) {
 		var args = node[1];
-		return "TODO";
+		if (!args) {
+			return null;
+		}
+
+		// evaluate the arguments
+		var v = bind(args.view, model, index, count),
+			m = bind(args.model, model, index, count),
+			i = bind(args.index, model, index, count),
+			c = bind(args.count, model, index, count);
+
+		return bind(duel(v).value, m, i, c);
 	}
 
 	/**
@@ -376,12 +426,6 @@ var duel = (function() {
 			case FUN:
 				// execute code block
 				result = node(model, index, count);
-
-				while (result instanceof View) {
-					// allow recursively binding templates
-					// useful for creating "switcher" methods
-					result = result.bind(model, index, count);
-				}
 				break;
 
 			case ARY:
