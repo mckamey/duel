@@ -1,11 +1,12 @@
 /**
  * @fileoverview duel.js: client-side template engine
+ * 
+ * http://duelengine.org
+ * 
+ * Copyright (c) 2006-2010 Stephen McKamey
+ * Licensed under the MIT License (http://duelengine.org/license.txt)
  */
 
-/**
- * @param {Array|Object|string|function(*,number,number):Array|Object|string} view The view template
- * @returns {Template}
- */
 var duel = (function() {
 
 	/**
@@ -17,7 +18,7 @@ var duel = (function() {
 	 * @param {number} count The total number of data items
 	 * @returns {Array|Object|string}
 	 */
-	var visit,
+	var bind,
 
 	/**
 	 * Renders the result as a string
@@ -81,19 +82,19 @@ var duel = (function() {
 	 * Wraps a template definition with binding methods
 	 * 
 	 * @constructor
-	 * @this {Template}
+	 * @this {View}
 	 * @param {Array|Object|string} view The template definition
 	 */
-	function Template(view) {
+	function View(view) {
 		/**
 		 * Appends a node to a parent
 		 * 
-		 * @this {Template}
+		 * @this {View}
 		 * @param {*} model The data item being bound
 		 * @param {Array|Object|string} child The child node
 		 */
 		this.bind = function(model) {
-			var result = visit(view, model);
+			var result = bind(view, model);
 			return new Result(result);
 		};
 	}
@@ -265,13 +266,13 @@ var duel = (function() {
 		switch (getType(items)) {
 			case ARY:
 				for (var i=0, length=items.length; i<length; i++) {
-					append(result, visit(node, items[i], i, length));
+					append(result, bind(node, items[i], i, length));
 				}
 				break;
 			case OBJ:
 				for (var key in items) {
 					if (items.hasOwnProperty(key)) {
-						append(result, visit(node, items[key], key, NaN));
+						append(result, bind(node, items[key], key, NaN));
 					}
 				}
 				break;
@@ -312,7 +313,7 @@ var duel = (function() {
 					} else {
 						node = [""].concat(node.slice(2));
 					}
-					return visit(block, model, index, count);
+					return bind(block, model, index, count);
 
 				case ELSE:
 					// clone and bind block
@@ -321,7 +322,7 @@ var duel = (function() {
 					} else {
 						node = [""].concat(node.slice(1));
 					}
-					return visit(block, model, index, count);
+					return bind(block, model, index, count);
 			}
 		}
 
@@ -337,9 +338,9 @@ var duel = (function() {
 	 * @param {number} count The total number of data items
 	 * @returns {Array|Object|string}
 	 */
-	visit = function(node, model, index, count) {
+	bind = function(node, model, index, count) {
 		/**
-		 * @type {Array|Object|string|Template}
+		 * @type {Array|Object|string|View}
 		 */
 		var result;
 
@@ -348,7 +349,7 @@ var duel = (function() {
 				// execute code block
 				result = node(model, index, count);
 
-				while (result instanceof Template) {
+				while (result instanceof View) {
 					// allow recursively binding templates
 					// useful for creating "switcher" methods
 					result = result.bind(model, index, count);
@@ -377,18 +378,18 @@ var duel = (function() {
 						result = [tag];
 
 						for (var i=1, length=node.length; i<length; i++) {
-							append(result, visit(node[i], model, index, count));
+							append(result, bind(node[i], model, index, count));
 						}
 						break;
 				}
 				break;
 
 			case OBJ:
-				// attribute object
+				// attribute map
 				result = {};
 				for (var key in node) {
 					if (node.hasOwnProperty(key)) {
-						result[key] = visit(node[key], model, index, count);
+						result[key] = bind(node[key], model, index, count);
 					}
 				}
 				break;
@@ -916,10 +917,10 @@ var duel = (function() {
 
 	/**
 	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} view The view template
-	 * @returns {Template}
+	 * @returns {View}
 	 */
 	var duel = function(view) {
-		return (view instanceof Template) ? view : new Template(view);
+		return (view instanceof View) ? view : new View(view);
 	};
 	
 	/**
