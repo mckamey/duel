@@ -46,37 +46,29 @@ var duel = (function() {
 	 * @param {Array|Object|string} view The result tree
 	 */
 	function Result(view) {
-		/**
-		 * Returns result as DOM objects
-		 * 
-		 * @this {Result}
-		 * @returns {Object}
-		 */
-		this.toDOM = function() {
-			return build(view);
-//			return toDOM(render(view));
-		};
-
-		/**
-		 * Returns result as HTML text
-		 * 
-		 * @this {Result}
-		 * @returns {string}
-		 */
-		this.toString = function() {
-			return render(view);
-		};
-
-		/**
-		 * Returns result as JsonML
-		 * 
-		 * @this {Result}
-		 * @returns {Array|Object|string}
-		 */
-		this.toJsonML = function() {
-			return view;
-		};
+		this.value = view;
 	}
+
+	/**
+	 * Returns result as DOM objects
+	 * 
+	 * @this {Result}
+	 * @returns {Object}
+	 */
+	Result.prototype.toDOM = function() {
+		return build(this.value);
+//		return toDOM(render(this.value));
+	};
+
+	/**
+	 * Returns result as HTML text
+	 * 
+	 * @this {Result}
+	 * @returns {string}
+	 */
+	Result.prototype.toString = function() {
+		return render(this.value);
+	};
 
 	/**
 	 * Wraps a template definition with binding methods
@@ -100,15 +92,25 @@ var duel = (function() {
 	}
 
 	/**
-	 * Wraps a value to signal no encoding
+	 * Wraps a data value to maintain as raw markup in output
 	 * 
 	 * @constructor
-	 * @this {Unparsed}
+	 * @this {Markup}
 	 * @param {string} value The value
 	 */
-	function Unparsed(value) {
+	function Markup(value) {
 		this.value = value;
 	}
+
+	/**
+	 * Renders the value
+	 * 
+	 * @this {Markup}
+	 * @returns {string} value
+	 */
+	Markup.prototype.toString = function() {
+		return this.value;
+	};
 
 	/**
 	 * @constant
@@ -130,6 +132,10 @@ var duel = (function() {
 	 * @constant
 	 */
 	VAL = 4,
+	/**
+	 * @constant
+	 */
+	RAW = 5,
 
 	/**
 	 * @constant
@@ -165,7 +171,7 @@ var duel = (function() {
 	function getType(val) {
 		switch (typeof val) {
 			case "object":
-				return !val ? NUL : ((val instanceof Array) ? ARY : OBJ);
+				return !val ? NUL : ((val instanceof Array) ? ARY : ((val instanceof Markup) ? RAW : OBJ));
 			case "function":
 				return FUN;
 			case "undefined":
@@ -230,8 +236,12 @@ var duel = (function() {
 				}
 				break;
 
-			case FUN:
-				// append and convert primitive to string literal
+			case NUL:
+				// cull empty values
+				break;
+
+			default:
+				// directly append
 				parent.push(child);
 				break;
 		}
@@ -395,8 +405,7 @@ var duel = (function() {
 				break;
 
 			default:
-				// ensure string
-				result = "" + node;
+				result = node;
 				break;
 		}
 
@@ -478,7 +487,7 @@ var duel = (function() {
 			if (getType(child) === ARY) {
 				renderElem(output, child);
 			} else {
-				// encode literals
+				// encode string literals
 				output.push(htmlEncode(child));
 			}
 		}
@@ -497,8 +506,8 @@ var duel = (function() {
 	 */
 	render = function(view) {
 		if (getType(view) !== ARY) {
-			// encode literals
-			return ""+htmlEncode(view);
+			// encode string literals
+			return "" + htmlEncode(view);
 		}
 
 		var output = [];
@@ -718,7 +727,7 @@ var duel = (function() {
 	/**
 	 * Removes leading and trailing whitespace nodes
 	 * 
-	 * @param {string} value The node
+	 * @param {string|Markup} value The node
 	 * @returns {DOMElement}
 	 */
 	function toDOM(value) {
@@ -834,8 +843,8 @@ var duel = (function() {
 					appendChild(elem, build(child));
 					break;
 				case OBJ:
-					if (child instanceof Unparsed) {
-						appendChild(elem, toDOM(child.value));
+					if (child instanceof Markup) {
+						appendChild(elem, toDOM(child));
 					} else if (elem.nodeType === 1) {
 						// add attributes
 						elem = addAttributes(elem, child);
@@ -861,8 +870,8 @@ var duel = (function() {
 			if (typeof view === "string") {
 				return document.createTextNode(view);
 			}
-			if (view instanceof Unparsed) {
-				return toDOM(view.value);
+			if (view instanceof Markup) {
+				return toDOM(view);
 			}
 
 			var tag = view[0]; // tagName
@@ -922,13 +931,13 @@ var duel = (function() {
 	var duel = function(view) {
 		return (view instanceof View) ? view : new View(view);
 	};
-	
+
 	/**
 	 * @param {string} value Markup text
-	 * @returns {Unparsed}
+	 * @returns {Markup}
 	 */
 	duel.raw = function(/*string*/ value) {
-		return new Unparsed(value);
+		return new Markup(value);
 	};
 
 	return duel;
