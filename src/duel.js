@@ -375,7 +375,23 @@ var duel = (function() {
 	 * @returns {Array|Object|string|number}
 	 */
 	function htmlEncode(val) {
-		return (typeof val !== "string") ? val : val.split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;');
+		if (typeof val !== "string") {
+			return val;
+		}
+
+		return val.replace(/[&<>]/g,
+			function(ch) {
+				switch(ch) {
+					case '&':
+						return "&amp;";
+					case '<':
+						return "&lt;";
+					case '>':
+						return "&gt;";
+					default:
+						return ch;
+				}
+			});
 	}
 
 	/**
@@ -385,7 +401,25 @@ var duel = (function() {
 	 * @returns {Array|Object|string|number}
 	 */
 	function attrEncode(val) {
-		return (typeof val !== "string") ? val : val.split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split("'").join('&apos;');
+		if (typeof val !== "string") {
+			return val;
+		}
+
+		return val.replace(/[&<>"]/g,
+			function(ch) {
+				switch(ch) {
+					case '&':
+						return "&amp;";
+					case '<':
+						return "&lt;";
+					case '>':
+						return "&gt;";
+					case '"':
+						return "&quot;";
+					default:
+						return ch;
+				}
+			});
 	}
 
 	/**

@@ -60,6 +60,34 @@ test("docFrag inner", function() {
 	same(actual, expected, "");
 });
 
+test("encoding literal", function() {
+
+	var view = duel(
+		["p",
+		 	'&hello"foo<bar><&>'
+		]);
+
+	var actual = view.bind().toString();
+
+	var expected =  '<p>&amp;hello"foo&lt;bar&gt;&lt;&amp;&gt;</p>';
+	
+	same(actual, expected, "");
+});
+
+test("encoding attributes", function() {
+
+	var view = duel(
+		["p", { "title" : '&hello"foo<bar><&>' },
+		 	"Encoded attributes"
+		]);
+
+	var actual = view.bind().toString();
+
+	var expected =  '<p title="&amp;hello&quot;foo&lt;bar&gt;&lt;&amp;&gt;">Encoded attributes</p>';
+	
+	same(actual, expected, "");
+});
+
 test("markup data", function() {
 
 	var view = duel(
