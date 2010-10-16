@@ -156,6 +156,10 @@ var duel = (function() {
 	/**
 	 * @constant
 	 */
+	CALL = "$call",
+	/**
+	 * @constant
+	 */
 	INIT = "$init",
 	/**
 	 * @constant
@@ -340,9 +344,23 @@ var duel = (function() {
 	}
 
 	/**
-	 * Binds the node to model
+	 * Calls into another view
 	 * 
 	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node The template subtree root
+	 * @param {*} model The data item being bound
+	 * @param {number|string} index The index of the current data item
+	 * @param {number} count The total number of data items
+	 * @returns {Array|Object|string}
+	 */
+	function call(node, model, index, count) {
+		var args = node[1];
+		return "TODO";
+	}
+
+	/**
+	 * Binds the node to model
+	 * 
+	 * @param {Array|Object|string|function(*,number,number):Array|Object|string|View|Result} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
@@ -382,6 +400,9 @@ var duel = (function() {
 					case IF:
 					case ELSE:
 						result = choose([CHOOSE, node], model, index, count);
+						break;
+					case CALL:
+						result = call(node, model, index, count);
 						break;
 					default:
 						// element array, first item is name
@@ -843,12 +864,13 @@ var duel = (function() {
 					appendChild(elem, build(child));
 					break;
 				case OBJ:
-					if (child instanceof Markup) {
-						appendChild(elem, toDOM(child));
-					} else if (elem.nodeType === 1) {
+					if (elem.nodeType === 1) {
 						// add attributes
 						elem = addAttributes(elem, child);
 					}
+					break;
+				case RAW:
+					appendChild(elem, toDOM(child));
 					break;
 			}
 		}
