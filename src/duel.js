@@ -9,202 +9,74 @@
 
 var duel = (function() {
 
-	/**
-	 * Binds the node to model
-	 * 
-	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node The template subtree root
-	 * @param {*} model The data item being bound
-	 * @param {number|string} index The index of the current data item
-	 * @param {number} count The total number of data items
-	 * @returns {Array|Object|string}
-	 */
-	var bind,
+	/* Const --------------------*/
 
 	/**
-	 * Renders the result as a string
-	 * 
-	 * @param {Array|Object|string} view The bound view
-	 * @returns {String}
+	 * @type {string}
+	 * @const
 	 */
-	render,
-
+	var FOR = "$for";
 	/**
-	 * Builds the result as DOM
-	 * 
-	 * @param {Array} view The bound view
-	 * @returns {DOMElement}
+	 * @type {string}
+	 * @const
 	 */
-	build;
-
-	/* Types --------------------*/
-
+	var CHOOSE = "$choose";
 	/**
-	 * Wraps a binding result with rendering methods
-	 * 
-	 * @this {Result}
-	 * @param {Array|Object|string} view The result tree
-	 * @constructor
+	 * @type {string}
+	 * @const
 	 */
-	function Result(view) {
-		/**
-		 * @type {Array|Object|string}
-		 * @const
-		 * @protected
-		 */
-		this.value = view;
-	}
-
+	var IF = "$if";
 	/**
-	 * Returns result as DOM objects
-	 * 
-	 * @this {Result}
-	 * @returns {DOMElement}
+	 * @type {string}
+	 * @const
 	 */
-	Result.prototype.toDOM = function() {
-		return build(this.value);
-//		return toDOM(render(this.value));
-	};
-
+	var ELSE = "$else";
 	/**
-	 * Returns result as HTML text
-	 * 
-	 * @this {Result}
-	 * @returns {string}
+	 * @type {string}
+	 * @const
 	 */
-	Result.prototype.toString = function() {
-		return render(this.value);
-	};
-
+	var CALL = "$call";
 	/**
-	 * Wraps a template definition with binding methods
-	 * 
-	 * @this {View}
-	 * @param {Array|Object|string} view The template definition
-	 * @constructor
+	 * @type {string}
+	 * @const
 	 */
-	function View(view) {
-		/**
-		 * @type {Array|Object|string}
-		 * @const
-		 * @protected
-		 */
-		this.value = view;
-	}
-
+	var INIT = "$init";
 	/**
-	 * Binds and wraps the result
-	 * 
-	 * @this {View}
-	 * @param {*} model The data item being bound
-	 * @param {Array|Object|string} child The child node
+	 * @type {string}
+	 * @const
 	 */
-	View.prototype.bind = function(model) {
-		var result = bind(this.value, model);
-		return new Result(result);
-	};
-
-	/**
-	 * Returns result as HTML text
-	 * 
-	 * @this {Result}
-	 * @returns {string}
-	 */
-	View.prototype.toString = function() {
-		return render(this.value);
-	};
-
-	/**
-	 * Wraps a data value to maintain as raw markup in output
-	 * 
-	 * @this {Markup}
-	 * @param {string} value The value
-	 * @constructor
-	 */
-	function Markup(value) {
-		/**
-		 * @type {string}
-		 * @const
-		 * @protected
-		 */
-		this.value = value;
-	}
-
-	/**
-	 * Renders the value
-	 * 
-	 * @this {Markup}
-	 * @returns {string} value
-	 */
-	Markup.prototype.toString = function() {
-		return this.value;
-	};
+	var LOAD = "$load";
 
 	/**
 	 * @type {number}
 	 * @const
 	 */
-	var NUL = 0,
+	var NUL = 0;
 	/**
 	 * @type {number}
 	 * @const
 	 */
-	FUN = 1,
+	var FUN = 1;
 	/**
 	 * @type {number}
 	 * @const
 	 */
-	ARY = 2,
+	var ARY = 2;
 	/**
 	 * @type {number}
 	 * @const
 	 */
-	OBJ = 3,
+	var OBJ = 3;
 	/**
 	 * @type {number}
 	 * @const
 	 */
-	VAL = 4,
+	var VAL = 4;
 	/**
 	 * @type {number}
 	 * @const
 	 */
-	RAW = 5,
-
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	FOR = "$for",
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	CHOOSE = "$choose",
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	IF = "$if",
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	ELSE = "$else",
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	CALL = "$call",
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	INIT = "$init",
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	LOAD = "$load";
+	var RAW = 5;
 
 	/**
 	 * Determines the type of the value
@@ -231,7 +103,7 @@ var duel = (function() {
 	 * Appends a node to a parent
 	 * 
 	 * @param {Array} parent The parent node
-	 * @param {Array|Object|string} child The child node
+	 * @param {Array|Object|string|number} child The child node
 	 */
 	function append(parent, child) {
 		if (getType(parent) !== ARY) {
@@ -294,7 +166,7 @@ var duel = (function() {
 	/**
 	 * Binds the node once for each item in model
 	 * 
-	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node The template subtree root
+	 * @param {Array|Object|string|number|function(*,number,number):*} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
@@ -326,7 +198,7 @@ var duel = (function() {
 			case OBJ:
 				for (var key in items) {
 					if (items.hasOwnProperty(key)) {
-						append(result, bind(node, items[key], key, NaN));
+						append(result, bind(node, items[key], key, 0));
 					}
 				}
 				break;
@@ -338,14 +210,15 @@ var duel = (function() {
 	/**
 	 * Binds the node to the first child block which evaluates to true
 	 * 
-	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node The template subtree root
+	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
-	 * @returns {Array|Object|string}
+	 * @returns {Array|Object|string|number}
 	 */
 	function choose(node, model, index, count) {
 		for (var i=1, length=node.length; i<length; i++) {
+			
 			var block = node[i],
 				cmd = block[0],
 				args = block[1];
@@ -386,11 +259,11 @@ var duel = (function() {
 	/**
 	 * Calls into another view
 	 * 
-	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} node The template subtree root
+	 * @param {Array|Object|string|number|function (*, *, *): (Object|null)} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
-	 * @returns {Array|Object|string}
+	 * @returns {Array|Object|string|number}
 	 */
 	function call(node, model, index, count) {
 		var args = node[1];
@@ -401,8 +274,10 @@ var duel = (function() {
 		// evaluate the arguments
 		var v = bind(args.view, model, index, count),
 			m = bind(args.model, model, index, count),
-			i = bind(args.index, model, index, count),
-			c = bind(args.count, model, index, count);
+			// Closure Compiler type cast
+			i = /** @type {number|string} */ (bind(args.index, model, index, count)),
+			// Closure Compiler type cast
+			c = /** @type {number} */ (bind(args.count, model, index, count));
 
 		return bind(duel(v).value, m, i, c);
 	}
@@ -410,22 +285,23 @@ var duel = (function() {
 	/**
 	 * Binds the node to model
 	 * 
-	 * @param {Array|Object|string|function(*,number,number):Array|Object|string|View|Result} node The template subtree root
+	 * @param {Array|Object|string|number|function (*, *, *): (Object|null)} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
-	 * @returns {Array|Object|string}
+	 * @returns {Array|Object|string|number}
 	 */
-	bind = function(node, model, index, count) {
+	function bind(node, model, index, count) {
 		/**
-		 * @type {Array|Object|string|View}
+		 * @type {Array|Object|string|number}
 		 */
 		var result;
 
 		switch (getType(node)) {
 			case FUN:
 				// execute code block
-				result = node(model, index, count);
+				// Closure Compiler type cast
+				result = (/** @type {function (*, *, *): (Object|null)} */ (node))(model, index, count);
 				break;
 
 			case ARY:
@@ -475,14 +351,14 @@ var duel = (function() {
 		}
 
 		return result;
-	};
+	}
 
 	/* Rendering methods --------------------*/
 
 	/**
 	 * Void tag lookup 
 	 * @constant
-	 * @type {Object}
+	 * @type {Object.<boolean>}
 	 */
 	var VOID_TAGS = (function(names) {
 			var tags = {};
@@ -495,8 +371,8 @@ var duel = (function() {
 	/**
 	 * Encodes invalid literal characters in strings
 	 * 
-	 * @param {Array|Object|string} val The value
-	 * @returns {Array|Object|string}
+	 * @param {Array|Object|string|number} val The value
+	 * @returns {Array|Object|string|number}
 	 */
 	function htmlEncode(val) {
 		return (typeof val !== "string") ? val : val.split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;');
@@ -505,8 +381,8 @@ var duel = (function() {
 	/**
 	 * Encodes invalid attribute characters in strings
 	 * 
-	 * @param {Array|Object|string} val The value
-	 * @returns {Array|Object|string}
+	 * @param {Array|Object|string|number} val The value
+	 * @returns {Array|Object|string|number}
 	 */
 	function attrEncode(val) {
 		return (typeof val !== "string") ? val : val.split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split("'").join('&apos;');
@@ -566,26 +442,27 @@ var duel = (function() {
 	/**
 	 * Renders the result as a string
 	 * 
-	 * @param {Array|Object|string} view The compiled view
-	 * @returns {String}
+	 * @param {Array|Object|string|number} view The compiled view
+	 * @returns {string}
 	 */
-	render = function(view) {
+	 function render(view) {
 		if (getType(view) !== ARY) {
 			// encode string literals
 			return "" + htmlEncode(view);
 		}
 
 		var output = [];
-		renderElem(output, view);
+		// Closure Compiler type cast
+		renderElem(output, /** @type {Array} */ (view));
 		return output.join("");
-	};
+	}
 
 	/* DOM Building methods --------------------*/
 
 	/**
 	 * Attribute name map
 	 * @constant
-	 * @type {Object}
+	 * @type {Object.<string>}
 	 */
 	var ATTRMAP = {
 		rowspan : "rowSpan",
@@ -600,25 +477,25 @@ var duel = (function() {
 		readonly : "readOnly",
 		contenteditable : "contentEditable"
 		// can add more attributes here as needed
-	},
+	};
 
 	/**
 	 * Attribute duplicates map
 	 * @constant
-	 * @type {Object}
+	 * @type {Object.<string>}
 	 */
-	ATTRDUP = {
+	var ATTRDUP = {
 		enctype : "encoding",
 		onscroll : "DOMMouseScroll"
 		// can add more attributes here as needed
-	},
+	};
 
 	/**
 	 * Event names map
 	 * @constant
-	 * @type {Object}
+	 * @type {Object.<string>}
 	 */
-	EVTS = (function(names) {
+	var EVTS = (function(names) {
 		var evts = {};
 		while (names.length) {
 			var evt = names.pop();
@@ -630,8 +507,8 @@ var duel = (function() {
 	/**
 	 * Appends a child to an element
 	 * 
-	 * @param {DOMElement} elem The parent element
-	 * @param {DOMElement} child The child
+	 * @param {Node} elem The parent element
+	 * @param {Node} child The child
 	 */
 	function appendChild(elem, child) {
 		if (child) {
@@ -681,7 +558,7 @@ var duel = (function() {
 	/**
 	 * Appends a child to an element
 	 * 
-	 * @param {DOMElement} elem The element
+	 * @param {Node} elem The element
 	 * @param {string} name The event name
 	 * @param {function(Event)} handler The event handler
 	 */
@@ -700,9 +577,9 @@ var duel = (function() {
 	/**
 	 * Appends a child to an element
 	 * 
-	 * @param {DOMElement} elem The element
+	 * @param {Node} elem The element
 	 * @param {Object} attr Attributes object
-	 * @returns {DOMElement}
+	 * @returns {Node}
 	 */
 	function addAttributes(elem, attr) {
 		if (attr.name && document.attachEvent) {
@@ -764,17 +641,17 @@ var duel = (function() {
 	/**
 	 * Tests a node for whitespace
 	 * 
-	 * @param {DOMElement} node The node
+	 * @param {Node} node The node
 	 * @returns {boolean}
 	 */
 	function isWhitespace(node) {
-		return node && (node.nodeType === 3) && (!node.nodeValue || !/\S/.exec(node.nodeValue));
+		return !!node && (node.nodeType === 3) && (!node.nodeValue || !/\S/.exec(node.nodeValue));
 	}
 
 	/**
 	 * Removes leading and trailing whitespace nodes
 	 * 
-	 * @param {DOMElement} elem The node
+	 * @param {Node} elem The node
 	 */
 	function trimWhitespace(elem) {
 		if (elem) {
@@ -793,7 +670,7 @@ var duel = (function() {
 	 * Removes leading and trailing whitespace nodes
 	 * 
 	 * @param {string|Markup} value The node
-	 * @returns {DOMElement}
+	 * @returns {Node}
 	 */
 	function toDOM(value) {
 		var wrapper = document.createElement("div");
@@ -821,9 +698,9 @@ var duel = (function() {
 	/**
 	 * Retrieve and remove method
 	 * 
-	 * @param {DOMElement} elem The element
+	 * @param {Node} elem The element
 	 * @param {string} key The callback name
-	 * @returns {function(DOMElement)}
+	 * @returns {function(Node)}
 	 */
 	function popCallback(elem, key) {
 		var method = elem[key];
@@ -852,7 +729,7 @@ var duel = (function() {
 	/**
 	 * Executes oninit/onload callbacks
 	 * 
-	 * @param {DOMElement} elem The element
+	 * @param {Node} elem The element
 	 */
 	function onInit(elem) {
 		if (!elem) {
@@ -884,7 +761,7 @@ var duel = (function() {
 	 * Renders an error as a text node
 	 * 
 	 * @param {Error} ex The exception
-	 * @returns {DOMElement}
+	 * @returns {Node}
 	 */
 	function onError(ex) {
 		return document.createTextNode("["+ex+"]");
@@ -893,9 +770,9 @@ var duel = (function() {
 	/**
 	 * Applies node to DOM
 	 * 
-	 * @param {DOMElement} elem The element to append
-	 * @param {Array} node The node to build
-	 * @returns {DOMElement}
+	 * @param {Node} elem The element to append
+	 * @param {Array|Object|string|number} node The node to build
+	 * @returns {Node}
 	 */
 	function patch(elem, node) {
 
@@ -925,10 +802,10 @@ var duel = (function() {
 	/**
 	 * Builds the result as DOM
 	 * 
-	 * @param {Array} view The bound view
-	 * @returns {DOMElement}
+	 * @param {Array|Object|string|number} view The bound view
+	 * @returns {Node}
 	 */
-	build = function(view) {
+	function build(view) {
 		try {
 			if (!view) {
 				return null;
@@ -986,12 +863,117 @@ var duel = (function() {
 				return onError(ex2);
 			}
 		}
+	}
+
+	/* Types --------------------*/
+
+	/**
+	 * Wraps a data value to maintain as raw markup in output
+	 * 
+	 * @this {Markup}
+	 * @param {string} value The value
+	 * @constructor
+	 */
+	function Markup(value) {
+		/**
+		 * @type {string}
+		 * @const
+		 * @protected
+		 */
+		this.value = value;
+	}
+
+	/**
+	 * Renders the value
+	 * 
+	 * @override
+	 * @this {Markup}
+	 * @returns {string} value
+	 */
+	Markup.prototype.toString = function() {
+		return this.value;
+	};
+
+	/**
+	 * Wraps a binding result with rendering methods
+	 * 
+	 * @this {Result}
+	 * @param {Array|Object|string|number} view The result tree
+	 * @constructor
+	 */
+	function Result(view) {
+		/**
+		 * @type {Array|Object|string|number}
+		 * @const
+		 * @protected
+		 */
+		this.value = view;
+	}
+
+	/**
+	 * Returns result as DOM objects
+	 * 
+	 * @this {Result}
+	 * @returns {Node}
+	 */
+	Result.prototype.toDOM = function() {
+		return build(this.value);
+//		return toDOM(render(this.value));
+	};
+
+	/**
+	 * Returns result as HTML text
+	 * 
+	 * @override
+	 * @this {Result}
+	 * @returns {string}
+	 */
+	Result.prototype.toString = function() {
+		return render(this.value);
+	};
+
+	/**
+	 * Wraps a template definition with binding methods
+	 * 
+	 * @this {View}
+	 * @param {Array|Object|string|number} view The template definition
+	 * @constructor
+	 */
+	function View(view) {
+		/**
+		 * @type {Array|Object|string|number}
+		 * @const
+		 * @protected
+		 */
+		this.value = view;
+	}
+
+	/**
+	 * Binds and wraps the result
+	 * 
+	 * @this {View}
+	 * @param {*} model The data item being bound
+	 */
+	View.prototype.bind = function(model) {
+		var result = bind(this.value, model, 0, 1);
+		return new Result(result);
+	};
+
+	/**
+	 * Returns result as HTML text
+	 * 
+	 * @override
+	 * @this {Result}
+	 * @returns {string}
+	 */
+	View.prototype.toString = function() {
+		return render(this.value);
 	};
 
 	/* Factory methods --------------------*/
 
 	/**
-	 * @param {Array|Object|string|function(*,number,number):Array|Object|string} view The view template
+	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
 	 * @returns {View}
 	 */
 	var duel = function(view) {
