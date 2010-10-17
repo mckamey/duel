@@ -1,5 +1,5 @@
 /**
- * @fileoverview  duel.js: client-side template engine
+ * @fileoverview duel.js: client-side template engine
  * 
  * http://duelengine.org
  * 
@@ -7,10 +7,18 @@
  * Licensed under the MIT License (http://duelengine.org/license.txt)
  */
 
-var duel = (function() {
+/*jslint browser: true, undef: true, eqeqeq: true, regexp: true, newcap: true */
+
+var duel = (
+
+/**
+ * @param {Document} document Document sandboxed to correct window
+ * @param {*=} undef undefined
+ */
+function(document, undef) {
 
 	/* types.js --------------------*/
-
+	
 	/**
 	 * @type {string}
 	 * @const
@@ -46,7 +54,7 @@ var duel = (function() {
 	 * @const
 	 */
 	var LOAD = "$load";
-
+	
 	/**
 	 * @type {number}
 	 * @const
@@ -77,7 +85,7 @@ var duel = (function() {
 	 * @const
 	 */
 	var RAW = 5;
-
+	
 	/**
 	 * Wraps a data value to maintain as raw markup in output
 	 * 
@@ -93,7 +101,7 @@ var duel = (function() {
 		 */
 		this.value = value;
 	}
-
+	
 	/**
 	 * Renders the value
 	 * 
@@ -104,7 +112,7 @@ var duel = (function() {
 	Markup.prototype.toString = function() {
 		return this.value;
 	};
-
+	
 	/**
 	 * Determines the type of the value
 	 * 
@@ -123,7 +131,7 @@ var duel = (function() {
 				return VAL;
 		}
 	}
-
+	
 	/**
 	 * Wraps a binding result with rendering methods
 	 * 
@@ -136,7 +144,7 @@ var duel = (function() {
 			// ensure is rooted element
 			view = ["", view];
 		}
-
+	
 		/**
 		 * @type {Array}
 		 * @const
@@ -145,7 +153,7 @@ var duel = (function() {
 		// Closure Compiler type cast
 		this.value = /** @type {Array} */(view);
 	}
-
+	
 	/**
 	 * Wraps a template definition with binding methods
 	 * 
@@ -158,7 +166,7 @@ var duel = (function() {
 			// ensure is rooted element
 			view = ["", view];
 		}
-
+	
 		/**
 		 * @type {Array}
 		 * @const
@@ -169,7 +177,7 @@ var duel = (function() {
 	}
 
 	/* bind.js --------------------*/
-
+	
 	var bind;
 	
 	/**
@@ -183,7 +191,7 @@ var duel = (function() {
 			// invalid
 			return;
 		}
-
+	
 		switch (getType(child)) {
 			case ARY:
 				if (child[0] === "") {
@@ -197,7 +205,7 @@ var duel = (function() {
 					parent.push(child);
 				}
 				break;
-
+	
 			case OBJ:
 				// child is attributes object
 				var old = parent[1];
@@ -213,7 +221,7 @@ var duel = (function() {
 					parent.splice(1, 0, child);
 				}
 				break;
-
+	
 			case VAL:
 				var last = parent.length - 1;
 				if (last > 0 && getType(parent[last]) === VAL) {
@@ -224,18 +232,18 @@ var duel = (function() {
 					parent.push("" + child);
 				}
 				break;
-
+	
 			case NUL:
 				// cull empty values
 				break;
-
+	
 			default:
 				// directly append
 				parent.push(child);
 				break;
 		}
 	}
-
+	
 	/**
 	 * Binds the node once for each item in model
 	 * 
@@ -250,17 +258,17 @@ var duel = (function() {
 		if (!args || !args.each) {
 			return null;
 		}
-
+	
 		// execute code block
 		var items = (getType(args.each) === FUN) ?
 			args.each(model, index, count) : args.each;
-
+	
 		if (node.length === 3) {
 			node = node[2];
 		} else {
 			node = [""].concat(node.slice(2));
 		}
-
+	
 		var result = [""];
 		switch (getType(items)) {
 			case ARY:
@@ -276,10 +284,10 @@ var duel = (function() {
 				}
 				break;
 		}
-
+	
 		return result;
 	}
-
+	
 	/**
 	 * Binds the node to the first child block which evaluates to true
 	 * 
@@ -295,7 +303,7 @@ var duel = (function() {
 			var block = node[i],
 				cmd = block[0],
 				args = block[1];
-
+	
 			switch (cmd) {
 				case IF:
 					var test = args && args.test;
@@ -306,7 +314,7 @@ var duel = (function() {
 					if (!test) {
 						continue;
 					}
-
+	
 					// clone and process block
 					if (block.length === 3) {
 						block = block[2];
@@ -314,7 +322,7 @@ var duel = (function() {
 						node = [""].concat(node.slice(2));
 					}
 					return bind(block, model, index, count);
-
+	
 				case ELSE:
 					// clone and process block
 					if (block.length === 2) {
@@ -325,10 +333,10 @@ var duel = (function() {
 					return bind(block, model, index, count);
 			}
 		}
-
+	
 		return null;
 	}
-
+	
 	/**
 	 * Calls into another view
 	 * 
@@ -343,7 +351,7 @@ var duel = (function() {
 		if (!args) {
 			return null;
 		}
-
+	
 		// evaluate the arguments
 		var v = bind(args.view, model, index, count),
 			m = bind(args.model, model, index, count),
@@ -351,10 +359,10 @@ var duel = (function() {
 			i = /** @type {number|string} */ (bind(args.index, model, index, count)),
 			// Closure Compiler type cast
 			c = /** @type {number} */ (bind(args.count, model, index, count));
-
+	
 		return bind(duel(v).value, m, i, c);
 	}
-
+	
 	/**
 	 * Binds the node to model
 	 * 
@@ -369,14 +377,14 @@ var duel = (function() {
 		 * @type {Array|Object|string|number}
 		 */
 		var result;
-
+	
 		switch (getType(node)) {
 			case FUN:
 				// execute code block
 				// Closure Compiler type cast
 				result = (/** @type {function (*, *, *): (Object|null)} */ (node))(model, index, count);
 				break;
-
+	
 			case ARY:
 				// inspect element name for template commands
 				/**
@@ -400,14 +408,14 @@ var duel = (function() {
 					default:
 						// element array, first item is name
 						result = [tag];
-
+	
 						for (var i=1, length=node.length; i<length; i++) {
 							append(result, bind(node[i], model, index, count));
 						}
 						break;
 				}
 				break;
-
+	
 			case OBJ:
 				// attribute map
 				result = {};
@@ -417,15 +425,15 @@ var duel = (function() {
 					}
 				}
 				break;
-
+	
 			default:
 				result = node;
 				break;
 		}
-
+	
 		return result;
 	};
-
+	
 	/**
 	 * Binds and wraps the result
 	 * 
@@ -438,7 +446,7 @@ var duel = (function() {
 	};
 
 	/* render.js --------------------*/
-
+	
 	/**
 	 * Void tag lookup 
 	 * @constant
@@ -451,7 +459,7 @@ var duel = (function() {
 			}
 			return tags;
 		})("area,base,basefont,br,col,frame,hr,img,input,isindex,keygen,link,meta,param,source,wbr".split(','));
-
+	
 	/**
 	 * Encodes invalid literal characters in strings
 	 * 
@@ -462,7 +470,7 @@ var duel = (function() {
 		if (typeof val !== "string") {
 			return val;
 		}
-
+	
 		return val.replace(/[&<>]/g,
 			function(ch) {
 				switch(ch) {
@@ -477,7 +485,7 @@ var duel = (function() {
 				}
 			});
 	}
-
+	
 	/**
 	 * Encodes invalid attribute characters in strings
 	 * 
@@ -488,7 +496,7 @@ var duel = (function() {
 		if (typeof val !== "string") {
 			return val;
 		}
-
+	
 		return val.replace(/[&<>"]/g,
 			function(ch) {
 				switch(ch) {
@@ -505,7 +513,7 @@ var duel = (function() {
 				}
 			});
 	}
-
+	
 	/**
 	 * Renders the result as a string
 	 * 
@@ -513,16 +521,16 @@ var duel = (function() {
 	 * @param {Array} node The result tree
 	 */
 	function renderElem(output, node) {
-
+	
 		var tag = node[0],
 			length = node.length,
 			i = 1,
 			child;
-
+	
 		if (tag) {
 			// emit open tag
 			output.push('<', tag);
-
+	
 			child = node[i];
 			if (getType(child) === OBJ) {
 				// emit attributes
@@ -539,7 +547,7 @@ var duel = (function() {
 			}
 			output.push('>');
 		}
-
+	
 		// emit children
 		for (; i<length; i++) {
 			child = node[i];
@@ -550,13 +558,13 @@ var duel = (function() {
 				output.push(htmlEncode(child));
 			}
 		}
-
+	
 		if (tag && !VOID_TAGS[tag]) {
 			// emit close tag
 			output.push('</', tag, '>');
 		}
 	}
-
+	
 	/**
 	 * Renders the result as a string
 	 * 
@@ -568,7 +576,7 @@ var duel = (function() {
 		renderElem(output, view);
 		return output.join("");
 	}
-
+	
 	/**
 	 * Returns result as HTML text
 	 * 
@@ -579,7 +587,7 @@ var duel = (function() {
 	Result.prototype.toString = function() {
 		return render(this.value);
 	};
-
+	
 	/**
 	 * Returns result as HTML text
 	 * 
@@ -592,7 +600,7 @@ var duel = (function() {
 	};
 
 	/* dom.js --------------------*/
-
+	
 	/**
 	 * Attribute name map
 	 * @constant
@@ -680,6 +688,7 @@ var duel = (function() {
 					}
 					return;
 				}
+
 				// in IE must explicitly nest TRs in TBODY
 				var childTag = child.tagName.toLowerCase();// child tagName
 				if (childTag && childTag !== "tbody" && childTag !== "thead") {
@@ -693,11 +702,14 @@ var duel = (function() {
 				} else if (elem.canHaveChildren !== false) {
 					elem.appendChild(child);
 				}
+
 			} else if (elem.tagName && elem.tagName.toLowerCase() === "style" && document.createStyleSheet) {
 				// IE requires this interface for styles
 				elem.cssText = child;
+
 			} else if (elem.canHaveChildren !== false) {
 				elem.appendChild(child);
+
 			} else if (elem.tagName && elem.tagName.toLowerCase() === "object" &&
 				child.tagName && child.tagName.toLowerCase() === "param") {
 					// IE-only path
@@ -726,7 +738,7 @@ var duel = (function() {
 			handler = new Function("event", handler);
 			/*jslint evil:false */
 		}
-
+	
 		if (typeof handler === "function") {
 			elem[name] = handler;
 		}
@@ -775,16 +787,16 @@ var duel = (function() {
 						}
 					} else if (getType(value) === VAL) {
 						elem.setAttribute(name, value);
-
+	
 						// also set duplicated attributes
 						if (ATTRDUP[name]) {
 							elem.setAttribute(ATTRDUP[name], value);
 						}
 					} else {
-
+	
 						// allow direct setting of complex properties
 						elem[name] = value;
-
+	
 						// also set duplicated attributes
 						if (ATTRDUP[name]) {
 							elem[ATTRDUP[name]] = value;
@@ -833,7 +845,7 @@ var duel = (function() {
 	function toDOM(value) {
 		var wrapper = createElement("div");
 		wrapper.innerHTML = ""+value;
-
+	
 		// trim extraneous whitespace
 		trimWhitespace(wrapper);
 
@@ -864,7 +876,7 @@ var duel = (function() {
 				delete elem[key];
 			} catch (ex) {
 				// sometimes IE doesn't like deleting from DOM
-				elem[key] = undefined;
+				elem[key] = undef;
 			}
 
 			if (typeof method !== "function") {
@@ -890,14 +902,14 @@ var duel = (function() {
 		if (!elem) {
 			return;
 		}
-
+	
 		// execute and remove oninit method
 		var method = popCallback(elem, INIT);
 		if (method) {
 			// execute in context of element
 			method.call(elem);
 		}
-
+	
 		// execute and remove onload method
 		method = popCallback(elem, LOAD);
 		if (method) {
@@ -921,7 +933,7 @@ var duel = (function() {
 	function onError(ex) {
 		return document.createTextNode("["+ex+"]");
 	}
-	
+
 	/**
 	 * Applies node to DOM
 	 * 
@@ -985,12 +997,10 @@ var duel = (function() {
 				return onError(ex2);
 			}
 		}
-
-//		return toDOM(render(this.value));
 	};
 
 	/* factory.js --------------------*/
-
+	
 	/**
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
 	 * @returns {View}
@@ -998,7 +1008,7 @@ var duel = (function() {
 	var duel = function(view) {
 		return (view instanceof View) ? view : new View(view);
 	};
-
+	
 	/**
 	 * @param {string} value Markup text
 	 * @returns {Markup}
@@ -1008,4 +1018,5 @@ var duel = (function() {
 	};
 
 	return duel;
-})();
+
+})(document);

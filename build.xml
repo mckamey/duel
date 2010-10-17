@@ -1,14 +1,48 @@
 ﻿<?xml version="1.0"?>
-<project basedir="." default="compile">
+<project basedir="." default="jscompile">
 	<taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask" classpath="lib/closure/compiler.jar" />
-	<target name="compile">
-		<jscomp compilationLevel="simple" warning="verbose" debug="false" output="${basedir}/src/duel.min.js">
-			<!--<externs dir="${basedir}/src">
+
+    <property description="Source Folder" name="SRC_DIR" value="${basedir}/src" />
+    <property description="Library Folder" name="LIB_DIR" value="${basedir}/lib" />
+    <property description="Tests Folder" name="TEST_DIR" value="${basedir}/test" />
+    <property description="Build Folder" name="BUILD_DIR" value="${basedir}/build" />
+	<property description="Rhino JS Engine" name="RHINO" value="${LIB_DIR}/rhino/js.jar" />
+
+	<target name="jsconcat" description="Concatenates js files">
+		<echo message="Building duel.js..." />
+		<concat destfile="${BUILD_DIR}/duel.js">
+			<fileset file="${SRC_DIR}/js/intro.js" />
+			<fileset file="${SRC_DIR}/js/types.js" />
+			<fileset file="${SRC_DIR}/js/bind.js" />
+			<fileset file="${SRC_DIR}/js/render.js" />
+			<fileset file="${SRC_DIR}/js/dom.js" />
+			<fileset file="${SRC_DIR}/js/factory.js" />
+			<fileset file="${SRC_DIR}/js/outro.js" />
+		</concat>
+		<echo message="duel.js built." />
+	</target>
+
+	<target name="jscompile" depends="jsconcat" description="Compiles js files">
+		<jscomp compilationLevel="simple" warning="verbose" debug="false" output="${BUILD_DIR}/duel.min.js">
+			<!--<externs dir="${SRC_DIR}/js/extern">
 				<file name="extern.js"/>
 			</externs>-->
-			<sources dir="${basedir}/src">
+			<sources dir="${BUILD_DIR}">
 				<file name="duel.js"/>
 			</sources>
 		</jscomp>
 	</target>
+
+	<target name="jslint" depends="jscompile">
+		<echo message="Running Automated Test Suite" />
+		<java jar="${RHINO}" fork="true">
+			<arg value="${LIB_DIR}/jslint/jslint.js" />
+		</java>
+		<echo message="JS Unit Tests Finished" />
+	</target>
+
+	<target name="all" depends="jscompile,jslint">
+		<echo message="Done." />
+	</target>
+
 </project>
