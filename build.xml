@@ -1,47 +1,109 @@
 ﻿<?xml version="1.0"?>
-<project basedir="." default="all">
+<project name="duel" basedir="." default="all">
 	<taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask" classpath="lib/closure/compiler.jar" />
 
-    <property description="Source Folder" name="SRC_DIR" value="${basedir}/src" />
-    <property description="Library Folder" name="LIB_DIR" value="${basedir}/lib" />
-    <property description="Tests Folder" name="TEST_DIR" value="${basedir}/test" />
-    <property description="Build Folder" name="BUILD_DIR" value="${basedir}/build" />
+	<target name="init" description="Concatenates js">
+		<echo message="Building..." />
+		<property name="src.dir" value="${basedir}/src" />
+		<property name="lib.dir" value="${basedir}/lib" />
+		<property name="test.dir" value="${basedir}/test" />
+		<property name="bin.dir" value="${basedir}/bin" />
+		<property name="build.dir" value="${basedir}/build" />
+		<property name="docs.dir" value="${build.dir}/docs" />
+		<property name="jarfile" value="${build.dir}/${ant.project.name}.jar" />
 
-	<target name="jsconcat" description="Concatenates js files">
+		<!-- set the classpath for the project              -->
+		<!-- this includes the generated source class files -->
+		<!-- and every jar in the /lib directory            -->
+		<path id="classpath.path">
+			<pathelement location="${classes.dir}" />
+			<fileset dir="${lib.dir}">
+				<include name="*.jar" />
+			</fileset>
+		</path>
+	</target>
+
+	<target name="jsconcat" depends="init" description="Concatenate JS">
 		<echo message="Concatenating duel.js..." />
-		<concat destfile="${BUILD_DIR}/duel.js">
-			<fileset file="${SRC_DIR}/js/intro.js" />
-			<fileset file="${SRC_DIR}/js/types.js" />
-			<fileset file="${SRC_DIR}/js/bind.js" />
-			<fileset file="${SRC_DIR}/js/render.js" />
-			<fileset file="${SRC_DIR}/js/dom.js" />
-			<fileset file="${SRC_DIR}/js/factory.js" />
-			<fileset file="${SRC_DIR}/js/outro.js" />
+		<concat destfile="${build.dir}/duel.js">
+			<fileset file="${src.dir}/js/intro.js" />
+			<fileset file="${src.dir}/js/types.js" />
+			<fileset file="${src.dir}/js/bind.js" />
+			<fileset file="${src.dir}/js/render.js" />
+			<fileset file="${src.dir}/js/dom.js" />
+			<fileset file="${src.dir}/js/factory.js" />
+			<fileset file="${src.dir}/js/outro.js" />
 		</concat>
 		<echo message="Concatenation done." />
 	</target>
 
-	<target name="jscompile" depends="jsconcat" description="Compiles js files">
-		<jscomp compilationLevel="simple" warning="verbose" debug="false" output="${BUILD_DIR}/duel.min.js">
-			<!--<externs dir="${SRC_DIR}/js/extern">
-				<file name="extern.js"/>
-			</externs>-->
-			<sources dir="${BUILD_DIR}">
+	<target name="jscompile" depends="jsconcat" description="Compile JS">
+		<jscomp compilationLevel="simple" warning="verbose" debug="false" output="${build.dir}/duel.min.js">
+			<sources dir="${build.dir}">
 				<file name="duel.js"/>
 			</sources>
 		</jscomp>
 	</target>
 
-	<target name="jslint" depends="jscompile" description="Check against JSLint">
+	<target name="jslint" depends="jscompile" description="Check JS with JSLint">
 		<echo message="Running JSLint static analysis..." />
-		<java jar="${LIB_DIR}/rhino/js.jar" fork="true">
-			<arg value="${TEST_DIR}/lint.js" />
+		<java jar="${lib.dir}/rhino/js.jar" fork="true">
+			<arg value="${test.dir}/lint.js" />
 		</java>
 		<echo message="JSLint static analysis done." />
 	</target>
 
-	<target name="all" depends="jscompile,jslint">
-		<echo message="Build all done." />
+	<target name="clean" depends="init">
+		<delete dir="${bin.dir}" />
+	</target>
+
+	<target name="prepare" depends="clean">
+		<mkdir dir="${bin.dir}" />
+	</target>
+
+	<target name="compile" depends="prepare" description="Compile Java">
+		<javac
+			srcdir="${src.dir}"
+			destdir="${bin.dir}"
+			debug="${javac.debug}"
+		/>
+	</target>
+
+	<target name="jar" depends="compile" description="Package as a jar">
+		<jar destfile="${jarfile}" update="true">
+			<fileset dir="${bin.dir}" />
+			<manifest>
+				<attribute name="Main-Class" value="org.duelengine.duelc.CommandLineRunner" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="docs" description="Generate docs">
+		<mkdir dir="${docs.dir}" />
+		<javadoc
+			destdir="${docs.dir}"
+			author="false"
+			protected="true"
+			windowtitle="${ant.project.name}"
+			additionalparam=" -notimestamp "
+			stylesheetfile="${stylesheetfile}">
+			<sourcepath>
+				<pathelement location="${src.dir}" />
+			</sourcepath>
+			<classpath refid="classpath.path" />
+			<link href="http://java.sun.com/javase/6/docs/api/" />
+			<bottom><![CDATA[
+				<div id="footer">
+					<div id="copyright">
+						<p>&copy; 2010  <a href="http://duelengine.org">duel</a></p>
+					</div>
+				</div>
+			]]></bottom>
+		</javadoc>
+	</target>
+
+	<target name="all" depends="jslint,jar">
+		<echo message="Build completed." />
 	</target>
 
 </project>
