@@ -9,7 +9,7 @@
 
 var duel = (function() {
 
-	/* Const --------------------*/
+	/* types.js --------------------*/
 
 	/**
 	 * @type {string}
@@ -79,6 +79,33 @@ var duel = (function() {
 	var RAW = 5;
 
 	/**
+	 * Wraps a data value to maintain as raw markup in output
+	 * 
+	 * @this {Markup}
+	 * @param {string} value The value
+	 * @constructor
+	 */
+	function Markup(value) {
+		/**
+		 * @type {string}
+		 * @const
+		 * @protected
+		 */
+		this.value = value;
+	}
+
+	/**
+	 * Renders the value
+	 * 
+	 * @override
+	 * @this {Markup}
+	 * @returns {string} value
+	 */
+	Markup.prototype.toString = function() {
+		return this.value;
+	};
+
+	/**
 	 * Determines the type of the value
 	 * 
 	 * @param {*} val the object being tested
@@ -97,8 +124,54 @@ var duel = (function() {
 		}
 	}
 
-	/* Binding methods --------------------*/
+	/**
+	 * Wraps a binding result with rendering methods
+	 * 
+	 * @this {Result}
+	 * @param {Array|Object|string|number} view The result tree
+	 * @constructor
+	 */
+	function Result(view) {
+		if (getType(view) !== ARY) {
+			// ensure is rooted element
+			view = ["", view];
+		}
 
+		/**
+		 * @type {Array}
+		 * @const
+		 * @protected
+		 */
+		// Closure Compiler type cast
+		this.value = /** @type {Array} */(view);
+	}
+
+	/**
+	 * Wraps a template definition with binding methods
+	 * 
+	 * @this {View}
+	 * @param {Array|Object|string|number} view The template definition
+	 * @constructor
+	 */
+	function View(view) {
+		if (getType(view) !== ARY) {
+			// ensure is rooted element
+			view = ["", view];
+		}
+
+		/**
+		 * @type {Array}
+		 * @const
+		 * @protected
+		 */
+		// Closure Compiler type cast
+		this.value = /** @type {Array} */(view);
+	}
+
+	/* bind.js --------------------*/
+
+	var bind;
+	
 	/**
 	 * Appends a node to a parent
 	 * 
@@ -234,7 +307,7 @@ var duel = (function() {
 						continue;
 					}
 
-					// clone and bind block
+					// clone and process block
 					if (block.length === 3) {
 						block = block[2];
 					} else {
@@ -243,7 +316,7 @@ var duel = (function() {
 					return bind(block, model, index, count);
 
 				case ELSE:
-					// clone and bind block
+					// clone and process block
 					if (block.length === 2) {
 						block = block[1];
 					} else {
@@ -291,7 +364,7 @@ var duel = (function() {
 	 * @param {number} count The total number of data items
 	 * @returns {Array|Object|string|number}
 	 */
-	function bind(node, model, index, count) {
+	bind = function(node, model, index, count) {
 		/**
 		 * @type {Array|Object|string|number}
 		 */
@@ -351,9 +424,20 @@ var duel = (function() {
 		}
 
 		return result;
-	}
+	};
 
-	/* Rendering methods --------------------*/
+	/**
+	 * Binds and wraps the result
+	 * 
+	 * @this {View}
+	 * @param {*} model The data item being bound
+	 */
+	View.prototype.bind = function(model) {
+		var result = bind(this.value, model, 0, 1);
+		return new Result(result);
+	};
+
+	/* render.js --------------------*/
 
 	/**
 	 * Void tag lookup 
@@ -436,12 +520,12 @@ var duel = (function() {
 			child;
 
 		if (tag) {
-			// render open tag
+			// emit open tag
 			output.push('<', tag);
 
 			child = node[i];
 			if (getType(child) === OBJ) {
-				// render attributes
+				// emit attributes
 				for (var name in child) {
 					if (child.hasOwnProperty(name)) {
 						output.push(' ', name);
@@ -456,7 +540,7 @@ var duel = (function() {
 			output.push('>');
 		}
 
-		// render children
+		// emit children
 		for (; i<length; i++) {
 			child = node[i];
 			if (getType(child) === ARY) {
@@ -468,7 +552,7 @@ var duel = (function() {
 		}
 
 		if (tag && !VOID_TAGS[tag]) {
-			// render close tag
+			// emit close tag
 			output.push('</', tag, '>');
 		}
 	}
@@ -476,22 +560,38 @@ var duel = (function() {
 	/**
 	 * Renders the result as a string
 	 * 
-	 * @param {Array|Object|string|number} view The compiled view
+	 * @param {Array} view The compiled view
 	 * @returns {string}
 	 */
 	 function render(view) {
-		if (getType(view) !== ARY) {
-			// encode string literals
-			return "" + htmlEncode(view);
-		}
-
 		var output = [];
-		// Closure Compiler type cast
-		renderElem(output, /** @type {Array} */ (view));
+		renderElem(output, view);
 		return output.join("");
 	}
 
-	/* DOM Building methods --------------------*/
+	/**
+	 * Returns result as HTML text
+	 * 
+	 * @override
+	 * @this {Result}
+	 * @returns {string}
+	 */
+	Result.prototype.toString = function() {
+		return render(this.value);
+	};
+
+	/**
+	 * Returns result as HTML text
+	 * 
+	 * @override
+	 * @this {Result}
+	 * @returns {string}
+	 */
+	View.prototype.toString = function() {
+		return render(this.value);
+	};
+
+	/* dom.js --------------------*/
 
 	/**
 	 * Attribute name map
@@ -539,19 +639,43 @@ var duel = (function() {
 	})("blur,change,click,dblclick,error,focus,keydown,keypress,keyup,load,mousedown,mouseenter,mouseleave,mousemove,mouseout,mouseover,mouseup,resize,scroll,select,submit,unload".split(','));
 
 	/**
+	 * Creates a DOM element 
+	 * 
+	 * @param {string} tag The element's tag name
+	 * @returns {Node}
+	 */
+	function createElement(tag) {
+		if (!tag) {
+			// create a document fragment to hold multiple-root elements
+			if (document.createDocumentFragment) {
+				return document.createDocumentFragment();
+			}
+
+			tag = "";
+		}
+
+		if (tag.toLowerCase() === "style" && document.createStyleSheet) {
+			// IE requires this interface for styles
+			return document.createStyleSheet();
+		}
+
+		return document.createElement(tag);
+	}
+
+	/**
 	 * Appends a child to an element
 	 * 
 	 * @param {Node} elem The parent element
 	 * @param {Node} child The child
 	 */
-	function appendChild(elem, child) {
+	function appendDOM(elem, child) {
 		if (child) {
 			if (elem.tagName && elem.tagName.toLowerCase() === "table" && elem.tBodies) {
 				if (!child.tagName) {
 					// must unwrap documentFragment for tables
 					if (child.nodeType === 11) {
 						while (child.firstChild) {
-							appendChild(elem, child.removeChild(child.firstChild));
+							appendDOM(elem, child.removeChild(child.firstChild));
 						}
 					}
 					return;
@@ -562,7 +686,7 @@ var duel = (function() {
 					// insert in last tbody
 					var tBody = elem.tBodies.length > 0 ? elem.tBodies[elem.tBodies.length-1] : null;
 					if (!tBody) {
-						tBody = document.createElement(childTag === "th" ? "thead" : "tbody");
+						tBody = createElement(childTag === "th" ? "thead" : "tbody");
 						elem.appendChild(tBody);
 					}
 					tBody.appendChild(child);
@@ -619,7 +743,7 @@ var duel = (function() {
 		if (attr.name && document.attachEvent) {
 			try {
 				// IE fix for not being able to programatically change the name attribute
-				var alt = document.createElement("<"+elem.tagName+" name='"+attr.name+"'>");
+				var alt = createElement("<"+elem.tagName+" name='"+attr.name+"'>");
 				// fix for Opera 8.5 and Netscape 7.1 creating malformed elements
 				if (elem.tagName === alt.tagName) {
 					elem = alt;
@@ -707,7 +831,7 @@ var duel = (function() {
 	 * @returns {Node}
 	 */
 	function toDOM(value) {
-		var wrapper = document.createElement("div");
+		var wrapper = createElement("div");
 		wrapper.innerHTML = ""+value;
 
 		// trim extraneous whitespace
@@ -719,10 +843,7 @@ var duel = (function() {
 		}
 
 		// create a document fragment to hold elements
-		var frag = document.createDocumentFragment ?
-			document.createDocumentFragment() :
-			document.createElement("");
-
+		var frag = createElement("");
 		while (wrapper.firstChild) {
 			frag.appendChild(wrapper.firstChild);
 		}
@@ -800,23 +921,25 @@ var duel = (function() {
 	function onError(ex) {
 		return document.createTextNode("["+ex+"]");
 	}
-
+	
 	/**
 	 * Applies node to DOM
 	 * 
 	 * @param {Node} elem The element to append
-	 * @param {Array|Object|string|number} node The node to build
+	 * @param {Array} node The node to populate
 	 * @returns {Node}
 	 */
-	function patch(elem, node) {
-
+	function patchDOM(elem, node) {
 		for (var i=1; i<node.length; i++) {
 			var child = node[i];
 			switch (getType(child)) {
 				case ARY:
+					// append child element
+					appendDOM(elem, patchDOM(createElement(child[0]), child));
+					break;
 				case VAL:
-					// append children
-					appendChild(elem, build(child));
+					// append child value
+					appendDOM(elem, document.createTextNode(""+child));
 					break;
 				case OBJ:
 					if (elem.nodeType === 1) {
@@ -825,123 +948,23 @@ var duel = (function() {
 					}
 					break;
 				case RAW:
-					appendChild(elem, toDOM(child));
+					appendDOM(elem, toDOM(child));
 					break;
 			}
 		}
 
-		return elem;
-	}
+		// trim extraneous whitespace
+		trimWhitespace(elem);
 
-	/**
-	 * Builds the result as DOM
-	 * 
-	 * @param {Array|Object|string|number} view The bound view
-	 * @returns {Node}
-	 */
-	function build(view) {
-		try {
-			if (!view) {
-				return null;
-			}
-			if (typeof view === "string") {
-				return document.createTextNode(view);
-			}
-			if (view instanceof Markup) {
-				return toDOM(view);
-			}
+		// trigger callbacks
+		onInit(elem);
 
-			var tag = view[0]; // tagName
-			if (!tag) {
-				// correctly handle multiple-roots
-				// create a document fragment to hold elements
-				var frag = document.createDocumentFragment ?
-					document.createDocumentFragment() :
-					document.createElement("");
-				for (var i=1; i<view.length; i++) {
-					appendChild(frag, build(view[i]));
-				}
-
-				// trim extraneous whitespace
-				trimWhitespace(frag);
-
-				// eliminate wrapper for single nodes
-				if (frag.childNodes.length === 1) {
-					return frag.firstChild;
-				}
-				return frag;
-			}
-
-			if (tag.toLowerCase() === "style" && document.createStyleSheet) {
-				// IE requires this interface for styles
-				patch(document.createStyleSheet(), view);
-				// in IE styles are effective immediately
-				return null;
-			}
-
-			var elem = patch(document.createElement(tag), view);
-
-			// trim extraneous whitespace
-			trimWhitespace(elem);
-
-			// trigger callbacks
-			onInit(elem);
-
-			return elem;
-		} catch (ex) {
-			try {
-				// handle error with complete context
-				var err = (typeof duel.onerror === "function") ? duel.onerror : onError;
-				return err(ex, view);
-			} catch (ex2) {
-				return onError(ex2);
-			}
+		// eliminate wrapper for single nodes
+		if (elem.nodeType === 11 && elem.childNodes.length === 1) {
+			elem = elem.firstChild;
 		}
-	}
 
-	/* Types --------------------*/
-
-	/**
-	 * Wraps a data value to maintain as raw markup in output
-	 * 
-	 * @this {Markup}
-	 * @param {string} value The value
-	 * @constructor
-	 */
-	function Markup(value) {
-		/**
-		 * @type {string}
-		 * @const
-		 * @protected
-		 */
-		this.value = value;
-	}
-
-	/**
-	 * Renders the value
-	 * 
-	 * @override
-	 * @this {Markup}
-	 * @returns {string} value
-	 */
-	Markup.prototype.toString = function() {
-		return this.value;
-	};
-
-	/**
-	 * Wraps a binding result with rendering methods
-	 * 
-	 * @this {Result}
-	 * @param {Array|Object|string|number} view The result tree
-	 * @constructor
-	 */
-	function Result(view) {
-		/**
-		 * @type {Array|Object|string|number}
-		 * @const
-		 * @protected
-		 */
-		this.value = view;
+		return elem;
 	}
 
 	/**
@@ -951,60 +974,22 @@ var duel = (function() {
 	 * @returns {Node}
 	 */
 	Result.prototype.toDOM = function() {
-		return build(this.value);
+		try {
+			return patchDOM(createElement(this.value[0]), this.value);
+		} catch (ex) {
+			try {
+				// handle error with complete context
+				var err = (typeof duel.onerror === "function") ? duel.onerror : onError;
+				return err(ex, this.value);
+			} catch (ex2) {
+				return onError(ex2);
+			}
+		}
+
 //		return toDOM(render(this.value));
 	};
 
-	/**
-	 * Returns result as HTML text
-	 * 
-	 * @override
-	 * @this {Result}
-	 * @returns {string}
-	 */
-	Result.prototype.toString = function() {
-		return render(this.value);
-	};
-
-	/**
-	 * Wraps a template definition with binding methods
-	 * 
-	 * @this {View}
-	 * @param {Array|Object|string|number} view The template definition
-	 * @constructor
-	 */
-	function View(view) {
-		/**
-		 * @type {Array|Object|string|number}
-		 * @const
-		 * @protected
-		 */
-		this.value = view;
-	}
-
-	/**
-	 * Binds and wraps the result
-	 * 
-	 * @this {View}
-	 * @param {*} model The data item being bound
-	 */
-	View.prototype.bind = function(model) {
-		var result = bind(this.value, model, 0, 1);
-		return new Result(result);
-	};
-
-	/**
-	 * Returns result as HTML text
-	 * 
-	 * @override
-	 * @this {Result}
-	 * @returns {string}
-	 */
-	View.prototype.toString = function() {
-		return render(this.value);
-	};
-
-	/* Factory methods --------------------*/
+	/* factory.js --------------------*/
 
 	/**
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
