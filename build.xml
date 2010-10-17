@@ -1,0 +1,14 @@
+﻿<?xml version="1.0"?>
+<project basedir="." default="compile">
+	<taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask" classpath="lib/closure/compiler.jar" />
+	<target name="compile">
+		<jscomp compilationLevel="simple" warning="verbose" debug="false" output="${basedir}/src/duel.min.js">
+			<!--<externs dir="${basedir}/src">
+				<file name="extern.js"/>
+			</externs>-->
+			<sources dir="${basedir}/src">
+				<file name="duel.js"/>
+			</sources>
+		</jscomp>
+	</target>
+</project>
