@@ -1,75 +1,51 @@
 	/* types.js --------------------*/
-	
+
 	/**
-	 * @type {string}
+	 * @private
 	 * @const
-	 */
-	var FOR = "$for";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var CHOOSE = "$choose";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var IF = "$if";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var ELSE = "$else";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var CALL = "$call";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var INIT = "$init";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var LOAD = "$load";
-	
-	/**
 	 * @type {number}
-	 * @const
 	 */
 	var NUL = 0;
+
 	/**
-	 * @type {number}
+	 * @private
 	 * @const
+	 * @type {number}
 	 */
 	var FUN = 1;
+
 	/**
-	 * @type {number}
+	 * @private
 	 * @const
+	 * @type {number}
 	 */
 	var ARY = 2;
+
 	/**
-	 * @type {number}
+	 * @private
 	 * @const
+	 * @type {number}
 	 */
 	var OBJ = 3;
+
 	/**
-	 * @type {number}
+	 * @private
 	 * @const
+	 * @type {number}
 	 */
 	var VAL = 4;
+
 	/**
-	 * @type {number}
+	 * @private
 	 * @const
+	 * @type {number}
 	 */
 	var RAW = 5;
-	
+
 	/**
 	 * Wraps a data value to maintain as raw markup in output
 	 * 
+	 * @private
 	 * @this {Markup}
 	 * @param {string} value The value
 	 * @constructor
@@ -82,10 +58,11 @@
 		 */
 		this.value = value;
 	}
-	
+
 	/**
 	 * Renders the value
 	 * 
+	 * @public
 	 * @override
 	 * @this {Markup}
 	 * @returns {string} value
@@ -93,10 +70,11 @@
 	Markup.prototype.toString = function() {
 		return this.value;
 	};
-	
+
 	/**
 	 * Determines the type of the value
 	 * 
+	 * @private
 	 * @param {*} val the object being tested
 	 * @returns {number}
 	 */
@@ -112,10 +90,11 @@
 				return VAL;
 		}
 	}
-	
+
 	/**
 	 * Wraps a binding result with rendering methods
 	 * 
+	 * @private
 	 * @this {Result}
 	 * @param {Array|Object|string|number} view The result tree
 	 * @constructor
@@ -134,10 +113,11 @@
 		// Closure Compiler type cast
 		this.value = /** @type {Array} */(view);
 	}
-	
+
 	/**
 	 * Wraps a template definition with binding methods
 	 * 
+	 * @private
 	 * @this {View}
 	 * @param {Array|Object|string|number} view The template definition
 	 * @constructor
@@ -147,7 +127,7 @@
 			// ensure is rooted element
 			view = ["", view];
 		}
-	
+
 		/**
 		 * @type {Array}
 		 * @const

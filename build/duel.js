@@ -1,3 +1,5 @@
+/*global window */
+
 /**
  * @fileoverview duel.js: client-side template engine
  * 
@@ -7,88 +9,69 @@
  * Licensed under the MIT License (http://duelengine.org/license.txt)
  */
 
-/*jslint browser: true, undef: true, eqeqeq: true, regexp: true, newcap: true */
-
 var duel = (
 
 /**
- * @param {Document} document Document sandboxed to correct window
- * @param {*=} undef undefined
+ * @param {Window} window Window reference
+ * @param {*=} undefn undefined constant
  */
-function(document, undef) {
+function(window, undefn) {
+
+	"use strict";
+
+	/**
+	 * @type {Document} document Document reference
+	 */
+	var document = window.document;
 
 	/* types.js --------------------*/
-	
+
 	/**
-	 * @type {string}
+	 * @private
 	 * @const
-	 */
-	var FOR = "$for";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var CHOOSE = "$choose";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var IF = "$if";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var ELSE = "$else";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var CALL = "$call";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var INIT = "$init";
-	/**
-	 * @type {string}
-	 * @const
-	 */
-	var LOAD = "$load";
-	
-	/**
 	 * @type {number}
-	 * @const
 	 */
 	var NUL = 0;
+
 	/**
-	 * @type {number}
+	 * @private
 	 * @const
+	 * @type {number}
 	 */
 	var FUN = 1;
+
 	/**
-	 * @type {number}
+	 * @private
 	 * @const
+	 * @type {number}
 	 */
 	var ARY = 2;
+
 	/**
-	 * @type {number}
+	 * @private
 	 * @const
+	 * @type {number}
 	 */
 	var OBJ = 3;
+
 	/**
-	 * @type {number}
+	 * @private
 	 * @const
+	 * @type {number}
 	 */
 	var VAL = 4;
+
 	/**
-	 * @type {number}
+	 * @private
 	 * @const
+	 * @type {number}
 	 */
 	var RAW = 5;
-	
+
 	/**
 	 * Wraps a data value to maintain as raw markup in output
 	 * 
+	 * @private
 	 * @this {Markup}
 	 * @param {string} value The value
 	 * @constructor
@@ -101,10 +84,11 @@ function(document, undef) {
 		 */
 		this.value = value;
 	}
-	
+
 	/**
 	 * Renders the value
 	 * 
+	 * @public
 	 * @override
 	 * @this {Markup}
 	 * @returns {string} value
@@ -112,10 +96,11 @@ function(document, undef) {
 	Markup.prototype.toString = function() {
 		return this.value;
 	};
-	
+
 	/**
 	 * Determines the type of the value
 	 * 
+	 * @private
 	 * @param {*} val the object being tested
 	 * @returns {number}
 	 */
@@ -131,10 +116,11 @@ function(document, undef) {
 				return VAL;
 		}
 	}
-	
+
 	/**
 	 * Wraps a binding result with rendering methods
 	 * 
+	 * @private
 	 * @this {Result}
 	 * @param {Array|Object|string|number} view The result tree
 	 * @constructor
@@ -153,10 +139,11 @@ function(document, undef) {
 		// Closure Compiler type cast
 		this.value = /** @type {Array} */(view);
 	}
-	
+
 	/**
 	 * Wraps a template definition with binding methods
 	 * 
+	 * @private
 	 * @this {View}
 	 * @param {Array|Object|string|number} view The template definition
 	 * @constructor
@@ -166,7 +153,7 @@ function(document, undef) {
 			// ensure is rooted element
 			view = ["", view];
 		}
-	
+
 		/**
 		 * @type {Array}
 		 * @const
@@ -178,11 +165,110 @@ function(document, undef) {
 
 	/* bind.js --------------------*/
 	
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var BIND_EXTERN = "bind";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var FOR = "$for";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var CHOOSE = "$choose";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var IF = "$if";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var ELSE = "$else";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var CALL = "$call";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var INIT = "$init";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var LOAD = "$load";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var EACH = "each";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var TEST = "test";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var VIEW = "view";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var MODEL = "model";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var INDEX = "index";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var COUNT = "count";
+
 	var bind;
-	
+
 	/**
 	 * Appends a node to a parent
 	 * 
+	 * @private
 	 * @param {Array} parent The parent node
 	 * @param {Array|Object|string|number} child The child node
 	 */
@@ -191,7 +277,7 @@ function(document, undef) {
 			// invalid
 			return;
 		}
-	
+
 		switch (getType(child)) {
 			case ARY:
 				if (child[0] === "") {
@@ -243,10 +329,11 @@ function(document, undef) {
 				break;
 		}
 	}
-	
+
 	/**
 	 * Binds the node once for each item in model
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number|function(*,number,number):*} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
@@ -254,14 +341,12 @@ function(document, undef) {
 	 * @returns {Array}
 	 */
 	function foreach(node, model, index, count) {
-		var args = node[1];
-		if (!args || !args.each) {
-			return null;
-		}
-	
+		var each = node[1] && node[1][EACH];
+
 		// execute code block
-		var items = (getType(args.each) === FUN) ?
-			args.each(model, index, count) : args.each;
+		if (getType(each) === FUN) {
+			each = each(model, index, count);
+		}
 	
 		if (node.length === 3) {
 			node = node[2];
@@ -270,16 +355,16 @@ function(document, undef) {
 		}
 	
 		var result = [""];
-		switch (getType(items)) {
+		switch (getType(each)) {
 			case ARY:
-				for (var i=0, length=items.length; i<length; i++) {
-					append(result, bind(node, items[i], i, length));
+				for (var i=0, length=each.length; i<length; i++) {
+					append(result, bind(node, each[i], i, length));
 				}
 				break;
 			case OBJ:
-				for (var key in items) {
-					if (items.hasOwnProperty(key)) {
-						append(result, bind(node, items[key], key, 0));
+				for (var key in each) {
+					if (each.hasOwnProperty(key)) {
+						append(result, bind(node, each[key], key, 0));
 					}
 				}
 				break;
@@ -291,6 +376,7 @@ function(document, undef) {
 	/**
 	 * Binds the node to the first child block which evaluates to true
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
@@ -302,12 +388,11 @@ function(document, undef) {
 			
 			var block = node[i],
 				cmd = block[0],
-				args = block[1];
+				test = block[1] && block[1][TEST];
 	
 			switch (cmd) {
 				case IF:
-					var test = args && args.test;
-					if (getType(args.test) === FUN) {
+					if (getType(test) === FUN) {
 						test = test(model, index, count);
 					}
 	
@@ -336,10 +421,11 @@ function(document, undef) {
 	
 		return null;
 	}
-	
+
 	/**
 	 * Calls into another view
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number|function (*, *, *): (Object|null)} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
@@ -348,24 +434,25 @@ function(document, undef) {
 	 */
 	function call(node, model, index, count) {
 		var args = node[1];
-		if (!args) {
+		if (!args || !args[VIEW]) {
 			return null;
 		}
-	
+
 		// evaluate the arguments
-		var v = bind(args.view, model, index, count),
-			m = bind(args.model, model, index, count),
+		var v = bind(args[VIEW], model, index, count),
+			m = bind(args[MODEL], model, index, count),
 			// Closure Compiler type cast
-			i = /** @type {number|string} */ (bind(args.index, model, index, count)),
+			i = /** @type {number|string} */ (bind(args[INDEX], model, index, count)),
 			// Closure Compiler type cast
-			c = /** @type {number} */ (bind(args.count, model, index, count));
-	
+			c = /** @type {number} */ (bind(args[COUNT], model, index, count));
+
 		return bind(duel(v).value, m, i, c);
 	}
 	
 	/**
 	 * Binds the node to model
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number|function (*, *, *): (Object|null)} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
@@ -415,7 +502,7 @@ function(document, undef) {
 						break;
 				}
 				break;
-	
+
 			case OBJ:
 				// attribute map
 				result = {};
@@ -437,32 +524,48 @@ function(document, undef) {
 	/**
 	 * Binds and wraps the result
 	 * 
+	 * @public
 	 * @this {View}
 	 * @param {*} model The data item being bound
 	 */
-	View.prototype.bind = function(model) {
+	View.prototype[BIND_EXTERN] = View.prototype.bind = function(model) {
 		var result = bind(this.value, model, 0, 1);
 		return new Result(result);
 	};
 
+
 	/* render.js --------------------*/
 	
 	/**
-	 * Void tag lookup 
+	 * Void tag lookup
+	 *  
+	 * @private
 	 * @constant
 	 * @type {Object.<boolean>}
 	 */
-	var VOID_TAGS = (function(names) {
-			var tags = {};
-			while (names.length) {
-				tags[names.pop()] = true;
-			}
-			return tags;
-		})("area,base,basefont,br,col,frame,hr,img,input,isindex,keygen,link,meta,param,source,wbr".split(','));
+	var VOID_TAGS = {
+		"area" : true,
+		"base" : true,
+		"basefont" : true,
+		"br" : true,
+		"col" : true,
+		"frame" : true,
+		"hr" : true,
+		"img" : true,
+		"input" : true,
+		"isindex" : true,
+		"keygen" : true,
+		"link" : true,
+		"meta" : true,
+		"param" : true,
+		"source" : true,
+		"wbr" : true
+	};
 	
 	/**
 	 * Encodes invalid literal characters in strings
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number} val The value
 	 * @returns {Array|Object|string|number}
 	 */
@@ -489,6 +592,7 @@ function(document, undef) {
 	/**
 	 * Encodes invalid attribute characters in strings
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number} val The value
 	 * @returns {Array|Object|string|number}
 	 */
@@ -517,6 +621,7 @@ function(document, undef) {
 	/**
 	 * Renders the result as a string
 	 * 
+	 * @private
 	 * @param {Array} output The output container
 	 * @param {Array} node The result tree
 	 */
@@ -568,6 +673,7 @@ function(document, undef) {
 	/**
 	 * Renders the result as a string
 	 * 
+	 * @private
 	 * @param {Array} view The compiled view
 	 * @returns {string}
 	 */
@@ -580,6 +686,7 @@ function(document, undef) {
 	/**
 	 * Returns result as HTML text
 	 * 
+	 * @public
 	 * @override
 	 * @this {Result}
 	 * @returns {string}
@@ -591,6 +698,7 @@ function(document, undef) {
 	/**
 	 * Returns result as HTML text
 	 * 
+	 * @public
 	 * @override
 	 * @this {Result}
 	 * @returns {string}
@@ -600,55 +708,86 @@ function(document, undef) {
 	};
 
 	/* dom.js --------------------*/
-	
+
+	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
+	var TODOM = "toDOM";
+
 	/**
 	 * Attribute name map
+	 * 
+	 * @private
 	 * @constant
 	 * @type {Object.<string>}
 	 */
 	var ATTRMAP = {
-		rowspan : "rowSpan",
-		colspan : "colSpan",
-		cellpadding : "cellPadding",
-		cellspacing : "cellSpacing",
-		tabindex : "tabIndex",
-		accesskey : "accessKey",
-		hidefocus : "hideFocus",
-		usemap : "useMap",
-		maxlength : "maxLength",
-		readonly : "readOnly",
-		contenteditable : "contentEditable"
+		"rowspan" : "rowSpan",
+		"colspan" : "colSpan",
+		"cellpadding" : "cellPadding",
+		"cellspacing" : "cellSpacing",
+		"tabindex" : "tabIndex",
+		"accesskey" : "accessKey",
+		"hidefocus" : "hideFocus",
+		"usemap" : "useMap",
+		"maxlength" : "maxLength",
+		"readonly" : "readOnly",
+		"contenteditable" : "contentEditable"
 		// can add more attributes here as needed
 	};
 
 	/**
 	 * Attribute duplicates map
+	 * 
+	 * @private
 	 * @constant
 	 * @type {Object.<string>}
 	 */
 	var ATTRDUP = {
-		enctype : "encoding",
-		onscroll : "DOMMouseScroll"
+		"enctype" : "encoding",
+		"onscroll" : "DOMMouseScroll"
 		// can add more attributes here as needed
 	};
 
 	/**
 	 * Event names map
+	 * 
+	 * @private
 	 * @constant
-	 * @type {Object.<string>}
+	 * @type {Object.<boolean>}
 	 */
-	var EVTS = (function(names) {
-		var evts = {};
-		while (names.length) {
-			var evt = names.pop();
-			evts["on"+evt.toLowerCase()] = evt;
-		}
-		return evts;
-	})("blur,change,click,dblclick,error,focus,keydown,keypress,keyup,load,mousedown,mouseenter,mouseleave,mousemove,mouseout,mouseover,mouseup,resize,scroll,select,submit,unload".split(','));
+	var EVTS = {
+		"onblur" : true,
+		"onchange" : true,
+		"onclick" : true,
+		"ondblclick" : true,
+		"onerror" : true,
+		"onfocus" : true,
+		"onkeydown" : true,
+		"onkeypress" : true,
+		"onkeyup" : true,
+		"onload" : true,
+		"onmousedown" : true,
+		"onmouseenter" : true,
+		"onmouseleave" : true,
+		"onmousemove" : true,
+		"onmouseout" : true,
+		"onmouseover" : true,
+		"onmouseup" : true,
+		"onresize" : true,
+		"onscroll" : true,
+		"onselect" : true,
+		"onsubmit" : true,
+		"onunload" : true
+		// can add more events here as needed
+	};
 
 	/**
 	 * Creates a DOM element 
 	 * 
+	 * @private
 	 * @param {string} tag The element's tag name
 	 * @returns {Node}
 	 */
@@ -673,6 +812,7 @@ function(document, undef) {
 	/**
 	 * Appends a child to an element
 	 * 
+	 * @private
 	 * @param {Node} elem The parent element
 	 * @param {Node} child The child
 	 */
@@ -728,6 +868,7 @@ function(document, undef) {
 	/**
 	 * Appends a child to an element
 	 * 
+	 * @private
 	 * @param {Node} elem The element
 	 * @param {string} name The event name
 	 * @param {function(Event)} handler The event handler
@@ -747,6 +888,7 @@ function(document, undef) {
 	/**
 	 * Appends a child to an element
 	 * 
+	 * @private
 	 * @param {Node} elem The element
 	 * @param {Object} attr Attributes object
 	 * @returns {Node}
@@ -811,6 +953,7 @@ function(document, undef) {
 	/**
 	 * Tests a node for whitespace
 	 * 
+	 * @private
 	 * @param {Node} node The node
 	 * @returns {boolean}
 	 */
@@ -821,6 +964,7 @@ function(document, undef) {
 	/**
 	 * Removes leading and trailing whitespace nodes
 	 * 
+	 * @private
 	 * @param {Node} elem The node
 	 */
 	function trimWhitespace(elem) {
@@ -839,6 +983,7 @@ function(document, undef) {
 	/**
 	 * Removes leading and trailing whitespace nodes
 	 * 
+	 * @private
 	 * @param {string|Markup} value The node
 	 * @returns {Node}
 	 */
@@ -865,6 +1010,7 @@ function(document, undef) {
 	/**
 	 * Retrieve and remove method
 	 * 
+	 * @private
 	 * @param {Node} elem The element
 	 * @param {string} key The callback name
 	 * @returns {function(Node)}
@@ -876,7 +1022,7 @@ function(document, undef) {
 				delete elem[key];
 			} catch (ex) {
 				// sometimes IE doesn't like deleting from DOM
-				elem[key] = undef;
+				elem[key] = undefn;
 			}
 
 			if (typeof method !== "function") {
@@ -896,6 +1042,7 @@ function(document, undef) {
 	/**
 	 * Executes oninit/onload callbacks
 	 * 
+	 * @private
 	 * @param {Node} elem The element
 	 */
 	function onInit(elem) {
@@ -927,6 +1074,7 @@ function(document, undef) {
 	/**
 	 * Renders an error as a text node
 	 * 
+	 * @private
 	 * @param {Error} ex The exception
 	 * @returns {Node}
 	 */
@@ -937,6 +1085,7 @@ function(document, undef) {
 	/**
 	 * Applies node to DOM
 	 * 
+	 * @private
 	 * @param {Node} elem The element to append
 	 * @param {Array} node The node to populate
 	 * @returns {Node}
@@ -982,10 +1131,11 @@ function(document, undef) {
 	/**
 	 * Returns result as DOM objects
 	 * 
+	 * @public
 	 * @this {Result}
 	 * @returns {Node}
 	 */
-	Result.prototype.toDOM = function() {
+	Result.prototype[TODOM] = Result.prototype.toDOM = function() {
 		try {
 			return patchDOM(createElement(this.value[0]), this.value);
 		} catch (ex) {
@@ -1000,23 +1150,39 @@ function(document, undef) {
 	};
 
 	/* factory.js --------------------*/
-	
+
 	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var DUEL_EXTERN = "duel";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var RAW_EXTERN = "raw";
+
+	/**
+	 * @public
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
 	 * @returns {View}
 	 */
-	var duel = function(view) {
+	var duel = window[DUEL_EXTERN] = function(view) {
 		return (view instanceof View) ? view : new View(view);
 	};
 	
 	/**
+	 * @public
 	 * @param {string} value Markup text
 	 * @returns {Markup}
 	 */
-	duel.raw = function(/*string*/ value) {
+	duel[RAW_EXTERN] = duel.raw = function(/*string*/ value) {
 		return new Markup(value);
 	};
 
 	return duel;
 
-})(document);
+})(window);

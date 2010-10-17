@@ -1,21 +1,35 @@
 	/* render.js --------------------*/
 	
 	/**
-	 * Void tag lookup 
+	 * Void tag lookup
+	 *  
+	 * @private
 	 * @constant
 	 * @type {Object.<boolean>}
 	 */
-	var VOID_TAGS = (function(names) {
-			var tags = {};
-			while (names.length) {
-				tags[names.pop()] = true;
-			}
-			return tags;
-		})("area,base,basefont,br,col,frame,hr,img,input,isindex,keygen,link,meta,param,source,wbr".split(','));
+	var VOID_TAGS = {
+		"area" : true,
+		"base" : true,
+		"basefont" : true,
+		"br" : true,
+		"col" : true,
+		"frame" : true,
+		"hr" : true,
+		"img" : true,
+		"input" : true,
+		"isindex" : true,
+		"keygen" : true,
+		"link" : true,
+		"meta" : true,
+		"param" : true,
+		"source" : true,
+		"wbr" : true
+	};
 	
 	/**
 	 * Encodes invalid literal characters in strings
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number} val The value
 	 * @returns {Array|Object|string|number}
 	 */
@@ -42,6 +56,7 @@
 	/**
 	 * Encodes invalid attribute characters in strings
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number} val The value
 	 * @returns {Array|Object|string|number}
 	 */
@@ -70,6 +85,7 @@
 	/**
 	 * Renders the result as a string
 	 * 
+	 * @private
 	 * @param {Array} output The output container
 	 * @param {Array} node The result tree
 	 */
@@ -121,6 +137,7 @@
 	/**
 	 * Renders the result as a string
 	 * 
+	 * @private
 	 * @param {Array} view The compiled view
 	 * @returns {string}
 	 */
@@ -133,6 +150,7 @@
 	/**
 	 * Returns result as HTML text
 	 * 
+	 * @public
 	 * @override
 	 * @this {Result}
 	 * @returns {string}
@@ -144,6 +162,7 @@
 	/**
 	 * Returns result as HTML text
 	 * 
+	 * @public
 	 * @override
 	 * @this {Result}
 	 * @returns {string}

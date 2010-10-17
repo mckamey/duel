@@ -1,53 +1,84 @@
 	/* dom.js --------------------*/
-	
+
+	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
+	var TODOM = "toDOM";
+
 	/**
 	 * Attribute name map
+	 * 
+	 * @private
 	 * @constant
 	 * @type {Object.<string>}
 	 */
 	var ATTRMAP = {
-		rowspan : "rowSpan",
-		colspan : "colSpan",
-		cellpadding : "cellPadding",
-		cellspacing : "cellSpacing",
-		tabindex : "tabIndex",
-		accesskey : "accessKey",
-		hidefocus : "hideFocus",
-		usemap : "useMap",
-		maxlength : "maxLength",
-		readonly : "readOnly",
-		contenteditable : "contentEditable"
+		"rowspan" : "rowSpan",
+		"colspan" : "colSpan",
+		"cellpadding" : "cellPadding",
+		"cellspacing" : "cellSpacing",
+		"tabindex" : "tabIndex",
+		"accesskey" : "accessKey",
+		"hidefocus" : "hideFocus",
+		"usemap" : "useMap",
+		"maxlength" : "maxLength",
+		"readonly" : "readOnly",
+		"contenteditable" : "contentEditable"
 		// can add more attributes here as needed
 	};
 
 	/**
 	 * Attribute duplicates map
+	 * 
+	 * @private
 	 * @constant
 	 * @type {Object.<string>}
 	 */
 	var ATTRDUP = {
-		enctype : "encoding",
-		onscroll : "DOMMouseScroll"
+		"enctype" : "encoding",
+		"onscroll" : "DOMMouseScroll"
 		// can add more attributes here as needed
 	};
 
 	/**
 	 * Event names map
+	 * 
+	 * @private
 	 * @constant
-	 * @type {Object.<string>}
+	 * @type {Object.<boolean>}
 	 */
-	var EVTS = (function(names) {
-		var evts = {};
-		while (names.length) {
-			var evt = names.pop();
-			evts["on"+evt.toLowerCase()] = evt;
-		}
-		return evts;
-	})("blur,change,click,dblclick,error,focus,keydown,keypress,keyup,load,mousedown,mouseenter,mouseleave,mousemove,mouseout,mouseover,mouseup,resize,scroll,select,submit,unload".split(','));
+	var EVTS = {
+		"onblur" : true,
+		"onchange" : true,
+		"onclick" : true,
+		"ondblclick" : true,
+		"onerror" : true,
+		"onfocus" : true,
+		"onkeydown" : true,
+		"onkeypress" : true,
+		"onkeyup" : true,
+		"onload" : true,
+		"onmousedown" : true,
+		"onmouseenter" : true,
+		"onmouseleave" : true,
+		"onmousemove" : true,
+		"onmouseout" : true,
+		"onmouseover" : true,
+		"onmouseup" : true,
+		"onresize" : true,
+		"onscroll" : true,
+		"onselect" : true,
+		"onsubmit" : true,
+		"onunload" : true
+		// can add more events here as needed
+	};
 
 	/**
 	 * Creates a DOM element 
 	 * 
+	 * @private
 	 * @param {string} tag The element's tag name
 	 * @returns {Node}
 	 */
@@ -72,6 +103,7 @@
 	/**
 	 * Appends a child to an element
 	 * 
+	 * @private
 	 * @param {Node} elem The parent element
 	 * @param {Node} child The child
 	 */
@@ -127,6 +159,7 @@
 	/**
 	 * Appends a child to an element
 	 * 
+	 * @private
 	 * @param {Node} elem The element
 	 * @param {string} name The event name
 	 * @param {function(Event)} handler The event handler
@@ -146,6 +179,7 @@
 	/**
 	 * Appends a child to an element
 	 * 
+	 * @private
 	 * @param {Node} elem The element
 	 * @param {Object} attr Attributes object
 	 * @returns {Node}
@@ -210,6 +244,7 @@
 	/**
 	 * Tests a node for whitespace
 	 * 
+	 * @private
 	 * @param {Node} node The node
 	 * @returns {boolean}
 	 */
@@ -220,6 +255,7 @@
 	/**
 	 * Removes leading and trailing whitespace nodes
 	 * 
+	 * @private
 	 * @param {Node} elem The node
 	 */
 	function trimWhitespace(elem) {
@@ -238,6 +274,7 @@
 	/**
 	 * Removes leading and trailing whitespace nodes
 	 * 
+	 * @private
 	 * @param {string|Markup} value The node
 	 * @returns {Node}
 	 */
@@ -264,6 +301,7 @@
 	/**
 	 * Retrieve and remove method
 	 * 
+	 * @private
 	 * @param {Node} elem The element
 	 * @param {string} key The callback name
 	 * @returns {function(Node)}
@@ -275,7 +313,7 @@
 				delete elem[key];
 			} catch (ex) {
 				// sometimes IE doesn't like deleting from DOM
-				elem[key] = undef;
+				elem[key] = undefn;
 			}
 
 			if (typeof method !== "function") {
@@ -295,6 +333,7 @@
 	/**
 	 * Executes oninit/onload callbacks
 	 * 
+	 * @private
 	 * @param {Node} elem The element
 	 */
 	function onInit(elem) {
@@ -326,6 +365,7 @@
 	/**
 	 * Renders an error as a text node
 	 * 
+	 * @private
 	 * @param {Error} ex The exception
 	 * @returns {Node}
 	 */
@@ -336,6 +376,7 @@
 	/**
 	 * Applies node to DOM
 	 * 
+	 * @private
 	 * @param {Node} elem The element to append
 	 * @param {Array} node The node to populate
 	 * @returns {Node}
@@ -381,10 +422,11 @@
 	/**
 	 * Returns result as DOM objects
 	 * 
+	 * @public
 	 * @this {Result}
 	 * @returns {Node}
 	 */
-	Result.prototype.toDOM = function() {
+	Result.prototype[TODOM] = Result.prototype.toDOM = function() {
 		try {
 			return patchDOM(createElement(this.value[0]), this.value);
 		} catch (ex) {

@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0"?>
-<project basedir="." default="jscompile">
+<project basedir="." default="all">
 	<taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask" classpath="lib/closure/compiler.jar" />
 
     <property description="Source Folder" name="SRC_DIR" value="${basedir}/src" />
     <property description="Library Folder" name="LIB_DIR" value="${basedir}/lib" />
     <property description="Tests Folder" name="TEST_DIR" value="${basedir}/test" />
     <property description="Build Folder" name="BUILD_DIR" value="${basedir}/build" />
-	<property description="Rhino JS Engine" name="RHINO" value="${LIB_DIR}/rhino/js.jar" />
 
 	<target name="jsconcat" description="Concatenates js files">
-		<echo message="Building duel.js..." />
+		<echo message="Concatenating duel.js..." />
 		<concat destfile="${BUILD_DIR}/duel.js">
 			<fileset file="${SRC_DIR}/js/intro.js" />
 			<fileset file="${SRC_DIR}/js/types.js" />
@@ -19,7 +18,7 @@
 			<fileset file="${SRC_DIR}/js/factory.js" />
 			<fileset file="${SRC_DIR}/js/outro.js" />
 		</concat>
-		<echo message="duel.js built." />
+		<echo message="Concatenation done." />
 	</target>
 
 	<target name="jscompile" depends="jsconcat" description="Compiles js files">
@@ -33,16 +32,16 @@
 		</jscomp>
 	</target>
 
-	<target name="jslint" depends="jscompile">
-		<echo message="Running Automated Test Suite" />
-		<java jar="${RHINO}" fork="true">
-			<arg value="${LIB_DIR}/jslint/jslint.js" />
+	<target name="jslint" depends="jscompile" description="Check against JSLint">
+		<echo message="Running JSLint static analysis..." />
+		<java jar="${LIB_DIR}/rhino/js.jar" fork="true">
+			<arg value="${TEST_DIR}/lint.js" />
 		</java>
-		<echo message="JS Unit Tests Finished" />
+		<echo message="JSLint static analysis done." />
 	</target>
 
 	<target name="all" depends="jscompile,jslint">
-		<echo message="Done." />
+		<echo message="Build all done." />
 	</target>
 
 </project>

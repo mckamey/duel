@@ -1,4 +1,4 @@
 
 	return duel;
 
-})(document);
+})(window);

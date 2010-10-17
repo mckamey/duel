@@ -1,3 +1,5 @@
+/*global window */
+
 /**
  * @fileoverview duel.js: client-side template engine
  * 
@@ -7,13 +9,18 @@
  * Licensed under the MIT License (http://duelengine.org/license.txt)
  */
 
-/*jslint browser: true, undef: true, eqeqeq: true, regexp: true, newcap: true */
-
 var duel = (
 
 /**
- * @param {Document} document Document sandboxed to correct window
- * @param {*=} undef undefined
+ * @param {Window} window Window reference
+ * @param {*=} undefn undefined constant
  */
-function(document, undef) {
+function(window, undefn) {
+
+	"use strict";
+
+	/**
+	 * @type {Document} document Document reference
+	 */
+	var document = window.document;
 

@@ -1,10 +1,109 @@
 	/* bind.js --------------------*/
 	
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var BIND_EXTERN = "bind";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var FOR = "$for";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var CHOOSE = "$choose";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var IF = "$if";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var ELSE = "$else";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var CALL = "$call";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var INIT = "$init";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var LOAD = "$load";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var EACH = "each";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var TEST = "test";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var VIEW = "view";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var MODEL = "model";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var INDEX = "index";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var COUNT = "count";
+
 	var bind;
-	
+
 	/**
 	 * Appends a node to a parent
 	 * 
+	 * @private
 	 * @param {Array} parent The parent node
 	 * @param {Array|Object|string|number} child The child node
 	 */
@@ -13,7 +112,7 @@
 			// invalid
 			return;
 		}
-	
+
 		switch (getType(child)) {
 			case ARY:
 				if (child[0] === "") {
@@ -65,10 +164,11 @@
 				break;
 		}
 	}
-	
+
 	/**
 	 * Binds the node once for each item in model
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number|function(*,number,number):*} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
@@ -76,14 +176,12 @@
 	 * @returns {Array}
 	 */
 	function foreach(node, model, index, count) {
-		var args = node[1];
-		if (!args || !args.each) {
-			return null;
-		}
-	
+		var each = node[1] && node[1][EACH];
+
 		// execute code block
-		var items = (getType(args.each) === FUN) ?
-			args.each(model, index, count) : args.each;
+		if (getType(each) === FUN) {
+			each = each(model, index, count);
+		}
 	
 		if (node.length === 3) {
 			node = node[2];
@@ -92,16 +190,16 @@
 		}
 	
 		var result = [""];
-		switch (getType(items)) {
+		switch (getType(each)) {
 			case ARY:
-				for (var i=0, length=items.length; i<length; i++) {
-					append(result, bind(node, items[i], i, length));
+				for (var i=0, length=each.length; i<length; i++) {
+					append(result, bind(node, each[i], i, length));
 				}
 				break;
 			case OBJ:
-				for (var key in items) {
-					if (items.hasOwnProperty(key)) {
-						append(result, bind(node, items[key], key, 0));
+				for (var key in each) {
+					if (each.hasOwnProperty(key)) {
+						append(result, bind(node, each[key], key, 0));
 					}
 				}
 				break;
@@ -113,6 +211,7 @@
 	/**
 	 * Binds the node to the first child block which evaluates to true
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
@@ -124,12 +223,11 @@
 			
 			var block = node[i],
 				cmd = block[0],
-				args = block[1];
+				test = block[1] && block[1][TEST];
 	
 			switch (cmd) {
 				case IF:
-					var test = args && args.test;
-					if (getType(args.test) === FUN) {
+					if (getType(test) === FUN) {
 						test = test(model, index, count);
 					}
 	
@@ -158,10 +256,11 @@
 	
 		return null;
 	}
-	
+
 	/**
 	 * Calls into another view
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number|function (*, *, *): (Object|null)} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
@@ -170,24 +269,25 @@
 	 */
 	function call(node, model, index, count) {
 		var args = node[1];
-		if (!args) {
+		if (!args || !args[VIEW]) {
 			return null;
 		}
-	
+
 		// evaluate the arguments
-		var v = bind(args.view, model, index, count),
-			m = bind(args.model, model, index, count),
+		var v = bind(args[VIEW], model, index, count),
+			m = bind(args[MODEL], model, index, count),
 			// Closure Compiler type cast
-			i = /** @type {number|string} */ (bind(args.index, model, index, count)),
+			i = /** @type {number|string} */ (bind(args[INDEX], model, index, count)),
 			// Closure Compiler type cast
-			c = /** @type {number} */ (bind(args.count, model, index, count));
-	
+			c = /** @type {number} */ (bind(args[COUNT], model, index, count));
+
 		return bind(duel(v).value, m, i, c);
 	}
 	
 	/**
 	 * Binds the node to model
 	 * 
+	 * @private
 	 * @param {Array|Object|string|number|function (*, *, *): (Object|null)} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
@@ -237,7 +337,7 @@
 						break;
 				}
 				break;
-	
+
 			case OBJ:
 				// attribute map
 				result = {};
@@ -259,11 +359,13 @@
 	/**
 	 * Binds and wraps the result
 	 * 
+	 * @public
 	 * @this {View}
 	 * @param {*} model The data item being bound
 	 */
-	View.prototype.bind = function(model) {
+	View.prototype[BIND_EXTERN] = View.prototype.bind = function(model) {
 		var result = bind(this.value, model, 0, 1);
 		return new Result(result);
 	};
+
 
