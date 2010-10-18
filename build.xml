@@ -10,15 +10,14 @@
 		<property name="bin.dir" value="${basedir}/bin" />
 		<property name="build.dir" value="${basedir}/build" />
 		<property name="docs.dir" value="${build.dir}/docs" />
+		<property name="reports.dir" value="${build.dir}/test" />
 		<property name="jarfile" value="${build.dir}/${ant.project.name}.jar" />
 
-		<!-- set the classpath for the project              -->
-		<!-- this includes the generated source class files -->
-		<!-- and every jar in the /lib directory            -->
+		<!-- set the classpath for the project including /bin and /lib -->
 		<path id="classpath.path">
-			<pathelement location="${classes.dir}" />
+			<pathelement location="${bin.dir}" />
 			<fileset dir="${lib.dir}">
-				<include name="*.jar" />
+				<include name="**/*.jar" />
 			</fileset>
 		</path>
 	</target>
@@ -54,11 +53,15 @@
 	</target>
 
 	<target name="clean" depends="init">
+		<delete dir="${docs.dir}" />
+		<delete dir="${reports.dir}" />
 		<delete dir="${bin.dir}" />
 	</target>
 
 	<target name="prepare" depends="clean">
 		<mkdir dir="${bin.dir}" />
+		<mkdir dir="${reports.dir}" />
+		<mkdir dir="${docs.dir}" />
 	</target>
 
 	<target name="compile" depends="prepare" description="Compile Java">
@@ -78,7 +81,34 @@
 		</jar>
 	</target>
 
-	<target name="docs" description="Generate docs">
+	<target name="testcompile" depends="prepare,jar" description="Compile Java tests">
+		<javac
+			srcdir="${test.dir}"
+			destdir="${bin.dir}"
+			debug="${javac.debug}"
+		/>
+	</target>
+
+	<target name="test" depends="compile" description="Run Java unit tests">
+		<junit fork="yes" printsummary="no" haltonfailure="no">
+			<batchtest fork="yes" todir="${reports.dir}" >
+				<fileset dir="${bin.dir}">
+					<include name="**/*Test.class" />
+				</fileset>
+			</batchtest>
+			<formatter type="xml" />
+			<classpath refid="classpath.path" />
+		</junit>
+
+		<junitreport todir="${reports.dir}">
+			<fileset dir="${reports.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report todir="${reports.dir}" />
+		</junitreport>
+	</target>
+
+	<target name="docs" depends="prepare" description="Generate docs">
 		<mkdir dir="${docs.dir}" />
 		<javadoc
 			destdir="${docs.dir}"
@@ -95,14 +125,14 @@
 			<bottom><![CDATA[
 				<div id="footer">
 					<div id="copyright">
-						<p>&copy; 2010  <a href="http://duelengine.org">duel</a></p>
+						<p>&copy; 2010 <a href="http://duelengine.org">duel</a></p>
 					</div>
 				</div>
 			]]></bottom>
 		</javadoc>
 	</target>
 
-	<target name="all" depends="jslint,jar">
+	<target name="all" depends="jslint,test">
 		<echo message="Build completed." />
 	</target>
 
