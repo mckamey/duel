@@ -91,7 +91,7 @@ function(window, undefn) {
 	 * @public
 	 * @override
 	 * @this {Markup}
-	 * @returns {string} value
+	 * @return {string} value
 	 */
 	Markup.prototype.toString = function() {
 		return this.value;
@@ -102,7 +102,7 @@ function(window, undefn) {
 	 * 
 	 * @private
 	 * @param {*} val the object being tested
-	 * @returns {number}
+	 * @return {number}
 	 */
 	function getType(val) {
 		switch (typeof val) {
@@ -338,7 +338,7 @@ function(window, undefn) {
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
-	 * @returns {Array}
+	 * @return {Array}
 	 */
 	function foreach(node, model, index, count) {
 		var each = node[1] && node[1][EACH];
@@ -381,7 +381,7 @@ function(window, undefn) {
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
-	 * @returns {Array|Object|string|number}
+	 * @return {Array|Object|string|number}
 	 */
 	function choose(node, model, index, count) {
 		for (var i=1, length=node.length; i<length; i++) {
@@ -430,7 +430,7 @@ function(window, undefn) {
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
-	 * @returns {Array|Object|string|number}
+	 * @return {Array|Object|string|number}
 	 */
 	function call(node, model, index, count) {
 		var args = node[1];
@@ -457,7 +457,7 @@ function(window, undefn) {
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
-	 * @returns {Array|Object|string|number}
+	 * @return {Array|Object|string|number}
 	 */
 	bind = function(node, model, index, count) {
 		/**
@@ -567,7 +567,7 @@ function(window, undefn) {
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number} val The value
-	 * @returns {Array|Object|string|number}
+	 * @return {Array|Object|string|number}
 	 */
 	function htmlEncode(val) {
 		if (typeof val !== "string") {
@@ -594,7 +594,7 @@ function(window, undefn) {
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number} val The value
-	 * @returns {Array|Object|string|number}
+	 * @return {Array|Object|string|number}
 	 */
 	function attrEncode(val) {
 		if (typeof val !== "string") {
@@ -675,7 +675,7 @@ function(window, undefn) {
 	 * 
 	 * @private
 	 * @param {Array} view The compiled view
-	 * @returns {string}
+	 * @return {string}
 	 */
 	 function render(view) {
 		var output = [];
@@ -689,7 +689,7 @@ function(window, undefn) {
 	 * @public
 	 * @override
 	 * @this {Result}
-	 * @returns {string}
+	 * @return {string}
 	 */
 	Result.prototype.toString = function() {
 		return render(this.value);
@@ -701,7 +701,7 @@ function(window, undefn) {
 	 * @public
 	 * @override
 	 * @this {Result}
-	 * @returns {string}
+	 * @return {string}
 	 */
 	View.prototype.toString = function() {
 		return render(this.value);
@@ -789,7 +789,7 @@ function(window, undefn) {
 	 * 
 	 * @private
 	 * @param {string} tag The element's tag name
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	function createElement(tag) {
 		if (!tag) {
@@ -891,7 +891,7 @@ function(window, undefn) {
 	 * @private
 	 * @param {Node} elem The element
 	 * @param {Object} attr Attributes object
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	function addAttributes(elem, attr) {
 		if (attr.name && document.attachEvent) {
@@ -955,7 +955,7 @@ function(window, undefn) {
 	 * 
 	 * @private
 	 * @param {Node} node The node
-	 * @returns {boolean}
+	 * @return {boolean}
 	 */
 	function isWhitespace(node) {
 		return !!node && (node.nodeType === 3) && (!node.nodeValue || !/\S/.exec(node.nodeValue));
@@ -985,7 +985,7 @@ function(window, undefn) {
 	 * 
 	 * @private
 	 * @param {string|Markup} value The node
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	function toDOM(value) {
 		var wrapper = createElement("div");
@@ -1013,7 +1013,7 @@ function(window, undefn) {
 	 * @private
 	 * @param {Node} elem The element
 	 * @param {string} key The callback name
-	 * @returns {function(Node)}
+	 * @return {function(Node)}
 	 */
 	function popCallback(elem, key) {
 		var method = elem[key];
@@ -1076,7 +1076,7 @@ function(window, undefn) {
 	 * 
 	 * @private
 	 * @param {Error} ex The exception
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	function onError(ex) {
 		return document.createTextNode("["+ex+"]");
@@ -1088,7 +1088,7 @@ function(window, undefn) {
 	 * @private
 	 * @param {Node} elem The element to append
 	 * @param {Array} node The node to populate
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	function patchDOM(elem, node) {
 		for (var i=1; i<node.length; i++) {
@@ -1133,7 +1133,7 @@ function(window, undefn) {
 	 * 
 	 * @public
 	 * @this {Result}
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	Result.prototype[TODOM] = Result.prototype.toDOM = function() {
 		try {
@@ -1168,7 +1168,7 @@ function(window, undefn) {
 	/**
 	 * @public
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
-	 * @returns {View}
+	 * @return {View}
 	 */
 	var duel = window[DUEL_EXTERN] = function(view) {
 		return (view instanceof View) ? view : new View(view);
@@ -1177,7 +1177,7 @@ function(window, undefn) {
 	/**
 	 * @public
 	 * @param {string} value Markup text
-	 * @returns {Markup}
+	 * @return {Markup}
 	 */
 	duel[RAW_EXTERN] = duel.raw = function(/*string*/ value) {
 		return new Markup(value);

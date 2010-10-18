@@ -65,7 +65,7 @@
 	 * @public
 	 * @override
 	 * @this {Markup}
-	 * @returns {string} value
+	 * @return {string} value
 	 */
 	Markup.prototype.toString = function() {
 		return this.value;
@@ -76,7 +76,7 @@
 	 * 
 	 * @private
 	 * @param {*} val the object being tested
-	 * @returns {number}
+	 * @return {number}
 	 */
 	function getType(val) {
 		switch (typeof val) {

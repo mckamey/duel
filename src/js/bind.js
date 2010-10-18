@@ -173,7 +173,7 @@
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
-	 * @returns {Array}
+	 * @return {Array}
 	 */
 	function foreach(node, model, index, count) {
 		var each = node[1] && node[1][EACH];
@@ -216,7 +216,7 @@
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
-	 * @returns {Array|Object|string|number}
+	 * @return {Array|Object|string|number}
 	 */
 	function choose(node, model, index, count) {
 		for (var i=1, length=node.length; i<length; i++) {
@@ -265,7 +265,7 @@
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
-	 * @returns {Array|Object|string|number}
+	 * @return {Array|Object|string|number}
 	 */
 	function call(node, model, index, count) {
 		var args = node[1];
@@ -292,7 +292,7 @@
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
-	 * @returns {Array|Object|string|number}
+	 * @return {Array|Object|string|number}
 	 */
 	bind = function(node, model, index, count) {
 		/**

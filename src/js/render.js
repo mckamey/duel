@@ -31,7 +31,7 @@
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number} val The value
-	 * @returns {Array|Object|string|number}
+	 * @return {Array|Object|string|number}
 	 */
 	function htmlEncode(val) {
 		if (typeof val !== "string") {
@@ -58,7 +58,7 @@
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number} val The value
-	 * @returns {Array|Object|string|number}
+	 * @return {Array|Object|string|number}
 	 */
 	function attrEncode(val) {
 		if (typeof val !== "string") {
@@ -139,7 +139,7 @@
 	 * 
 	 * @private
 	 * @param {Array} view The compiled view
-	 * @returns {string}
+	 * @return {string}
 	 */
 	 function render(view) {
 		var output = [];
@@ -153,7 +153,7 @@
 	 * @public
 	 * @override
 	 * @this {Result}
-	 * @returns {string}
+	 * @return {string}
 	 */
 	Result.prototype.toString = function() {
 		return render(this.value);
@@ -165,7 +165,7 @@
 	 * @public
 	 * @override
 	 * @this {Result}
-	 * @returns {string}
+	 * @return {string}
 	 */
 	View.prototype.toString = function() {
 		return render(this.value);

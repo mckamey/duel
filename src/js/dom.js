@@ -80,7 +80,7 @@
 	 * 
 	 * @private
 	 * @param {string} tag The element's tag name
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	function createElement(tag) {
 		if (!tag) {
@@ -182,7 +182,7 @@
 	 * @private
 	 * @param {Node} elem The element
 	 * @param {Object} attr Attributes object
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	function addAttributes(elem, attr) {
 		if (attr.name && document.attachEvent) {
@@ -246,7 +246,7 @@
 	 * 
 	 * @private
 	 * @param {Node} node The node
-	 * @returns {boolean}
+	 * @return {boolean}
 	 */
 	function isWhitespace(node) {
 		return !!node && (node.nodeType === 3) && (!node.nodeValue || !/\S/.exec(node.nodeValue));
@@ -276,7 +276,7 @@
 	 * 
 	 * @private
 	 * @param {string|Markup} value The node
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	function toDOM(value) {
 		var wrapper = createElement("div");
@@ -304,7 +304,7 @@
 	 * @private
 	 * @param {Node} elem The element
 	 * @param {string} key The callback name
-	 * @returns {function(Node)}
+	 * @return {function(Node)}
 	 */
 	function popCallback(elem, key) {
 		var method = elem[key];
@@ -367,7 +367,7 @@
 	 * 
 	 * @private
 	 * @param {Error} ex The exception
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	function onError(ex) {
 		return document.createTextNode("["+ex+"]");
@@ -379,7 +379,7 @@
 	 * @private
 	 * @param {Node} elem The element to append
 	 * @param {Array} node The node to populate
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	function patchDOM(elem, node) {
 		for (var i=1; i<node.length; i++) {
@@ -424,7 +424,7 @@
 	 * 
 	 * @public
 	 * @this {Result}
-	 * @returns {Node}
+	 * @return {Node}
 	 */
 	Result.prototype[TODOM] = Result.prototype.toDOM = function() {
 		try {
