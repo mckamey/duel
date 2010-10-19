@@ -27,6 +27,13 @@
 	};
 
 	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
+	var MSIE = "ScriptEngineMajorVersion";
+	
+	/**
 	 * String buffer
 	 * 
 	 * @private
@@ -46,7 +53,7 @@
 	 * @constant
 	 * @type {boolean}
 	 */
-	Buffer.FAST = (window.navigator.userAgent.indexOf("MSIE") < 0);
+	Buffer.FAST = !window[MSIE];
 
 	/**
 	 * Appends to the internal value
@@ -129,7 +136,7 @@
 				}
 			});
 	}
-	
+
 	/**
 	 * Encodes invalid attribute characters in strings
 	 * 
@@ -158,7 +165,7 @@
 				}
 			});
 	}
-	
+
 	/**
 	 * Renders the result as a string
 	 * 
@@ -167,16 +174,16 @@
 	 * @param {Array} node The result tree
 	 */
 	function renderElem(buffer, node) {
-	
+
 		var tag = node[0],
 			length = node.length,
 			i = 1,
 			child;
-	
+
 		if (tag) {
 			// emit open tag
 			buffer.append('<', tag);
-	
+
 			child = node[i];
 			if (getType(child) === OBJ) {
 				// emit attributes
@@ -193,7 +200,7 @@
 			}
 			buffer.append('>');
 		}
-	
+
 		// emit children
 		for (; i<length; i++) {
 			child = node[i];
@@ -204,13 +211,13 @@
 				buffer.append(htmlEncode(child));
 			}
 		}
-	
+
 		if (tag && !VOID_TAGS[tag]) {
 			// emit close tag
 			buffer.append('</', tag, '>');
 		}
 	}
-	
+
 	/**
 	 * Renders the result as a string
 	 * 
@@ -223,7 +230,7 @@
 		renderElem(buffer, view);
 		return buffer.toString();
 	}
-	
+
 	/**
 	 * Returns result as HTML text
 	 * 
@@ -235,7 +242,7 @@
 	Result.prototype.toString = function() {
 		return render(this.value);
 	};
-	
+
 	/**
 	 * Returns result as HTML text
 	 * 

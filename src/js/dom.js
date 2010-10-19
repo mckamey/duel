@@ -8,6 +8,20 @@
 	var TODOM = "toDOM";
 
 	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
+	var INIT = "$init";
+
+	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
+	var LOAD = "$load";
+
+	/**
 	 * Attribute name map
 	 * 
 	 * @private

@@ -2,98 +2,84 @@
 	
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var BIND_EXTERN = "bind";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var FOR = "$for";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var CHOOSE = "$choose";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var IF = "$if";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var ELSE = "$else";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var CALL = "$call";
 
 	/**
 	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var INIT = "$init";
-
-	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var LOAD = "$load";
-
-	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var EACH = "each";
-
-	/**
-	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var TEST = "test";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
+	 * @type {string}
+	 */
+	var EACH = "each";
+
+	/**
+	 * @private
+	 * @constant
 	 * @type {string}
 	 */
 	var VIEW = "view";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var MODEL = "model";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var INDEX = "index";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var COUNT = "count";

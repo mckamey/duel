@@ -167,98 +167,84 @@ function(window, undefn) {
 	
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var BIND_EXTERN = "bind";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var FOR = "$for";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var CHOOSE = "$choose";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var IF = "$if";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var ELSE = "$else";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var CALL = "$call";
 
 	/**
 	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var INIT = "$init";
-
-	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var LOAD = "$load";
-
-	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var EACH = "each";
-
-	/**
-	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var TEST = "test";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
+	 * @type {string}
+	 */
+	var EACH = "each";
+
+	/**
+	 * @private
+	 * @constant
 	 * @type {string}
 	 */
 	var VIEW = "view";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var MODEL = "model";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var INDEX = "index";
 
 	/**
 	 * @private
-	 * @const
+	 * @constant
 	 * @type {string}
 	 */
 	var COUNT = "count";
@@ -563,6 +549,13 @@ function(window, undefn) {
 	};
 
 	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
+	var MSIE = "ScriptEngineMajorVersion";
+	
+	/**
 	 * String buffer
 	 * 
 	 * @private
@@ -582,7 +575,7 @@ function(window, undefn) {
 	 * @constant
 	 * @type {boolean}
 	 */
-	Buffer.FAST = (window.navigator.userAgent.indexOf("MSIE") < 0);
+	Buffer.FAST = !window[MSIE];
 
 	/**
 	 * Appends to the internal value
@@ -665,7 +658,7 @@ function(window, undefn) {
 				}
 			});
 	}
-	
+
 	/**
 	 * Encodes invalid attribute characters in strings
 	 * 
@@ -694,7 +687,7 @@ function(window, undefn) {
 				}
 			});
 	}
-	
+
 	/**
 	 * Renders the result as a string
 	 * 
@@ -703,16 +696,16 @@ function(window, undefn) {
 	 * @param {Array} node The result tree
 	 */
 	function renderElem(buffer, node) {
-	
+
 		var tag = node[0],
 			length = node.length,
 			i = 1,
 			child;
-	
+
 		if (tag) {
 			// emit open tag
 			buffer.append('<', tag);
-	
+
 			child = node[i];
 			if (getType(child) === OBJ) {
 				// emit attributes
@@ -729,7 +722,7 @@ function(window, undefn) {
 			}
 			buffer.append('>');
 		}
-	
+
 		// emit children
 		for (; i<length; i++) {
 			child = node[i];
@@ -740,13 +733,13 @@ function(window, undefn) {
 				buffer.append(htmlEncode(child));
 			}
 		}
-	
+
 		if (tag && !VOID_TAGS[tag]) {
 			// emit close tag
 			buffer.append('</', tag, '>');
 		}
 	}
-	
+
 	/**
 	 * Renders the result as a string
 	 * 
@@ -759,7 +752,7 @@ function(window, undefn) {
 		renderElem(buffer, view);
 		return buffer.toString();
 	}
-	
+
 	/**
 	 * Returns result as HTML text
 	 * 
@@ -771,7 +764,7 @@ function(window, undefn) {
 	Result.prototype.toString = function() {
 		return render(this.value);
 	};
-	
+
 	/**
 	 * Returns result as HTML text
 	 * 
@@ -792,6 +785,20 @@ function(window, undefn) {
 	 * @type {string}
 	 */
 	var TODOM = "toDOM";
+
+	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
+	var INIT = "$init";
+
+	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
+	var LOAD = "$load";
 
 	/**
 	 * Attribute name map
