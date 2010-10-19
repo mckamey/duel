@@ -5,7 +5,8 @@ var src = readFile("build/duel.js");
 JSLINT(src, { browser: true, undef: true, eqeqeq: true, regexp: true, newcap: true, maxerr: 100 });
 
 var ok = {
-	// "Expected an identifier and instead saw 'undefined' (a reserved word).": true
+	"Use '===' to compare with 'null'.": true,
+	"Use '!==' to compare with 'null'.": true
 };
 
 var e = JSLINT.errors, found = 0, w;

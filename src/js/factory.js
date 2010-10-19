@@ -22,7 +22,7 @@
 	var duel = window[DUEL_EXTERN] = function(view) {
 		return (view instanceof View) ? view : new View(view);
 	};
-	
+
 	/**
 	 * @public
 	 * @param {string} value Markup text

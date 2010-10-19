@@ -579,9 +579,10 @@ function(window, undefn) {
 
 	/**
 	 * @private
+	 * @constant
 	 * @type {boolean}
 	 */
-	Buffer.FAST = (window.navigator.userAgent.indexOf('MSIE') < 0);
+	Buffer.FAST = (window.navigator.userAgent.indexOf("MSIE") < 0);
 
 	/**
 	 * Appends to the internal value
@@ -596,23 +597,20 @@ function(window, undefn) {
 		if (Buffer.FAST) {
 			this.value += v1;
 
-			if (typeof v2 !== "undefined") {
+			/*jslint eqeqeq: false */
+			if (v2 != null) {
 				this.value += v2;
 
-				if (typeof v3 !== "undefined") {
+				if (v3 != null) {
 					this.value += v3;
 				}
 			}
+			/*jslint eqeqeq: true */
 		} else {
-			this.value.push(v1);
-
-			if (typeof v2 !== "undefined") {
-				this.value.push(v2);
-
-				if (typeof v3 !== "undefined") {
-					this.value.push(v3);
-				}
-			}
+			this.value.push.apply(
+				// Closure Compiler type cast
+				/** @type{Array} */(this.value),
+				arguments);
 		}
 	};
 
