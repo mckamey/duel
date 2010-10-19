@@ -36,20 +36,20 @@
 		<echo message="Concatenation done." />
 	</target>
 
-	<target name="jscompile" depends="jsconcat" description="Compile JS">
-		<jscomp compilationLevel="simple" warning="verbose" debug="false" output="${build.dir}/duel.min.js">
-			<sources dir="${build.dir}">
-				<file name="duel.js"/>
-			</sources>
-		</jscomp>
-	</target>
-
-	<target name="jslint" depends="jscompile" description="Check JS with JSLint">
+	<target name="jslint" depends="jsconcat" description="Check JS with JSLint">
 		<echo message="Running JSLint static analysis..." />
 		<java jar="${lib.dir}/rhino/js.jar" fork="true">
 			<arg value="${test.dir}/lint.js" />
 		</java>
 		<echo message="JSLint static analysis done." />
+	</target>
+
+	<target name="jscompile" depends="jslint" description="Compile JS">
+		<jscomp compilationLevel="simple" warning="verbose" debug="false" output="${build.dir}/duel.min.js">
+			<sources dir="${build.dir}">
+				<file name="duel.js"/>
+			</sources>
+		</jscomp>
 	</target>
 
 	<target name="clean" depends="init">
@@ -132,7 +132,7 @@
 		</javadoc>
 	</target>
 
-	<target name="all" depends="jslint,test">
+	<target name="all" depends="jscompile,test">
 		<echo message="Build completed." />
 	</target>
 
