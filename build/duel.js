@@ -551,7 +551,7 @@
 				return new Result(result);
 			} catch (ex) {
 				// handle error with context
-				return onError(ex);
+				return new Result(onError(ex));
 			}
 		};
 
