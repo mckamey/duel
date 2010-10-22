@@ -19,7 +19,7 @@ test("nested elements with attributes", function() {
 			]
 		]);
 
-	var actual = view.bind().toDOM();
+	var actual = view().toDOM();
 
 	var temp, expected = document.createElement("div");
 	expected.setAttribute("class", "download");
@@ -54,7 +54,7 @@ test("docFrag root", function() {
 		 	["p", "Inner child two." ]
 		]);
 
-	var actual = view.bind().toDOM();
+	var actual = view().toDOM();
 
 	var expected = document.createDocumentFragment();
 
@@ -79,7 +79,7 @@ test("docFrag inner", function() {
 			]
 		]);
 
-	var actual = view.bind().toDOM();
+	var actual = view().toDOM();
 
 	var expected = document.createElement("div");
 
@@ -107,7 +107,7 @@ test("markup data", function() {
 			]
 		]);
 
-	var actual = view.bind().toDOM();
+	var actual = view().toDOM();
 
 	var expected = document.createElement("div");
 	expected.className = "test";

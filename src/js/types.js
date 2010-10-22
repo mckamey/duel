@@ -92,6 +92,28 @@
 	}
 
 	/**
+	 * Determines if the value is a string
+	 * 
+	 * @private
+	 * @param {*} val the object being tested
+	 * @return {boolean}
+	 */
+	function isString(val) {
+		return (typeof val === "string");
+	}
+
+	/**
+	 * Determines if the value is a function
+	 * 
+	 * @private
+	 * @param {*} val the object being tested
+	 * @return {boolean}
+	 */
+	function isFunction(val) {
+		return (typeof val === "function");
+	}
+
+	/**
 	 * Wraps a binding result with rendering methods
 	 * 
 	 * @private
@@ -105,29 +127,6 @@
 			view = ["", view];
 		}
 	
-		/**
-		 * @type {Array}
-		 * @const
-		 * @protected
-		 */
-		// Closure Compiler type cast
-		this.value = /** @type {Array} */(view);
-	}
-
-	/**
-	 * Wraps a template definition with binding methods
-	 * 
-	 * @private
-	 * @this {View}
-	 * @param {Array|Object|string|number} view The template definition
-	 * @constructor
-	 */
-	function View(view) {
-		if (getType(view) !== ARY) {
-			// ensure is rooted element
-			view = ["", view];
-		}
-
 		/**
 		 * @type {Array}
 		 * @const

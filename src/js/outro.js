@@ -1,4 +1,1 @@
-
-	return duel;
-
 })(window);

@@ -118,7 +118,7 @@
 	 * @return {Array|Object|string|number}
 	 */
 	function htmlEncode(val) {
-		if (typeof val !== "string") {
+		if (!isString(val)) {
 			return val;
 		}
 	
@@ -145,7 +145,7 @@
 	 * @return {Array|Object|string|number}
 	 */
 	function attrEncode(val) {
-		if (typeof val !== "string") {
+		if (!isString(val)) {
 			return val;
 		}
 	
@@ -226,9 +226,14 @@
 	 * @return {string}
 	 */
 	 function render(view) {
-		var buffer = new Buffer();
-		renderElem(buffer, view);
-		return buffer.toString();
+		try {
+			var buffer = new Buffer();
+			renderElem(buffer, view);
+			return buffer.toString();
+		} catch (ex) {
+			// handle error with context
+			return onError(ex);
+		}
 	}
 
 	/**
@@ -240,18 +245,6 @@
 	 * @return {string}
 	 */
 	Result.prototype.toString = function() {
-		return render(this.value);
-	};
-
-	/**
-	 * Returns result as HTML text
-	 * 
-	 * @public
-	 * @override
-	 * @this {Result}
-	 * @return {string}
-	 */
-	View.prototype.toString = function() {
 		return render(this.value);
 	};
 

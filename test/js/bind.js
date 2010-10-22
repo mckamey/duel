@@ -1,4 +1,4 @@
-module("View.bind()");
+module("duel(model)");
 
 test("static view", function() {
 
@@ -19,7 +19,7 @@ test("static view", function() {
 			]
 		];
 
-	var actual = duel(expected).bind().value;
+	var actual = duel(expected)().value;
 
 	same(actual, expected, "");
 });
@@ -54,7 +54,7 @@ test("simple expressions", function() {
 			]
 		]);
 
-	var actual = view.bind(model).value;
+	var actual = view(model).value;
 
 	var expected = 
 		["div", { "class" : "download" },
@@ -92,7 +92,7 @@ test("simple orphaned if/else", function() {
 		]);
 
 	var model1 = { name: "Example" };
-	var actual1 = view.bind(model1).value;
+	var actual1 = view(model1).value;
 	var expected1 =
 		["",
 		 	["p", "True: Example === Example"],
@@ -102,7 +102,7 @@ test("simple orphaned if/else", function() {
 	same(actual1, expected1, "Binding with simple if statements.");
 
 	var model2 = { name: "Sample" };
-	var actual2 = view.bind(model2).value;
+	var actual2 = view(model2).value;
 	var expected2 =
 		["",
 		 	["p", "False: Example !== Sample"],
@@ -128,19 +128,19 @@ test("choose", function() {
 	 	]);
 
 	var model1 = { name: "Three", children: [0,2,4] };
-	var actual1 = view.bind(model1).value;
+	var actual1 = view(model1).value;
 	var expected1 = ["p", "Has 3 items."];
 
 	same(actual1, expected1, "Binding with choose block.");
 
 	var model2 = { name: "One", children: [42] };
-	var actual2 = view.bind(model2).value;
+	var actual2 = view(model2).value;
 	var expected2 = ["p", "Has only one item."];
 
 	same(actual2, expected2, "Binding with choose block.");
 
 	var model3 = { name: "Zero", children: [] };
-	var actual3 = view.bind(model3).value;
+	var actual3 = view(model3).value;
 	var expected3 = ["p", "Has no items."];
 
 	same(actual3, expected3, "");
@@ -181,7 +181,7 @@ test("foreach array", function() {
 			]
 		]);
 
-	var actual = view.bind(model).value;
+	var actual = view(model).value;
 
 	var expected =
 		["div", { "class" : "list", "style" : "color:blue" },
@@ -249,7 +249,7 @@ test("foreach object", function() {
 		 	]
 	 	]);
 
-	var actual = view.bind(model).value;
+	var actual = view(model).value;
 
 	var expected =
 		["",
@@ -281,7 +281,7 @@ test("markup data", function() {
 			]
 		]);
 
-	var actual = view.bind(model).value;
+	var actual = view(model).value;
 
 	var expected = 
 		["div", { "class" : "test" },
@@ -330,7 +330,7 @@ test("call view", function() {
 					])
 			};
 
-	var actual = Foo.listView.bind(model).value;
+	var actual = Foo.listView(model).value;
 
 	var expected = 
 		["div",

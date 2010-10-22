@@ -9,13 +9,10 @@
  * Licensed under the MIT License (http://duelengine.org/license.txt)
  */
 
-var duel = (
-
 /**
  * @param {Window} window Window reference
- * @param {*=} undefn undefined constant
  */
-function(window, undefn) {
+(function(window) {
 
 	"use strict";
 

@@ -1,11 +1,4 @@
 	/* bind.js --------------------*/
-	
-	/**
-	 * @private
-	 * @constant
-	 * @type {string}
-	 */
-	var BIND_EXTERN = "bind";
 
 	/**
 	 * @private
@@ -165,7 +158,7 @@
 		var each = node[1] && node[1][EACH];
 
 		// execute code block
-		if (getType(each) === FUN) {
+		if (isFunction(each)) {
 			each = each(model, index, count);
 		}
 	
@@ -213,7 +206,7 @@
 	
 			switch (cmd) {
 				case IF:
-					if (getType(test) === FUN) {
+					if (isFunction(test)) {
 						test = test(model, index, count);
 					}
 	
@@ -267,9 +260,10 @@
 			// Closure Compiler type cast
 			c = /** @type {number} */ (bind(args[COUNT], model, index, count));
 
-		return bind(duel(v).value, m, i, c);
+		return (v && isFunction(v.getView)) ?
+			bind(v.getView(), m, i, c) : null;
 	}
-	
+
 	/**
 	 * Binds the node to model
 	 * 
@@ -341,17 +335,4 @@
 	
 		return result;
 	};
-	
-	/**
-	 * Binds and wraps the result
-	 * 
-	 * @public
-	 * @this {View}
-	 * @param {*} model The data item being bound
-	 */
-	View.prototype[BIND_EXTERN] = View.prototype.bind = function(model) {
-		var result = bind(this.value, model, 0, 1);
-		return new Result(result);
-	};
-
 

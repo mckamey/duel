@@ -179,13 +179,13 @@
 	 * @param {function(Event)} handler The event handler
 	 */
 	function addHandler(elem, name, handler) {
-		if (typeof handler === "string") {
+		if (isString(handler)) {
 			/*jslint evil:true */
 			handler = new Function("event", handler);
 			/*jslint evil:false */
 		}
 	
-		if (typeof handler === "function") {
+		if (isFunction(handler)) {
 			elem[name] = handler;
 		}
 	}
@@ -327,10 +327,10 @@
 				delete elem[key];
 			} catch (ex) {
 				// sometimes IE doesn't like deleting from DOM
-				elem[key] = undefn;
+				elem[key] = undefined;
 			}
 
-			if (typeof method !== "function") {
+			if (!isFunction(method)) {
 				try {
 					/*jslint evil:true */
 					method = new Function(""+method);
@@ -341,6 +341,7 @@
 				}
 			}
 		}
+
 		return method;
 	}
 
@@ -374,17 +375,6 @@
 		} else {
 			method = elem = null;
 		}
-	}
-
-	/**
-	 * Renders an error as a text node
-	 * 
-	 * @private
-	 * @param {Error} ex The exception
-	 * @return {Node}
-	 */
-	function onError(ex) {
-		return document.createTextNode("["+ex+"]");
 	}
 
 	/**
@@ -434,6 +424,17 @@
 	}
 
 	/**
+	 * Renders an error as a text node
+	 * 
+	 * @private
+	 * @param {Error} ex The exception
+	 * @return {Node}
+	 */
+	function onErrorDOM(ex) {
+		return document.createTextNode(onError(ex));
+	}
+
+	/**
 	 * Returns result as DOM objects
 	 * 
 	 * @public
@@ -444,13 +445,8 @@
 		try {
 			return patchDOM(createElement(this.value[0]), this.value);
 		} catch (ex) {
-			try {
-				// handle error with complete context
-				var err = (typeof duel.onerror === "function") ? duel.onerror : onError;
-				return err(ex, this.value);
-			} catch (ex2) {
-				return onError(ex2);
-			}
+			// handle error with context
+			return onErrorDOM(ex);
 		}
 	};
 

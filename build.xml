@@ -4,14 +4,14 @@
 
 	<target name="init" description="Concatenates js">
 		<echo message="Building..." />
-		<property name="src.dir" value="${basedir}/src" />
 		<property name="lib.dir" value="${basedir}/lib" />
+		<property name="src.dir" value="${basedir}/src" />
 		<property name="test.dir" value="${basedir}/test" />
 		<property name="bin.dir" value="${basedir}/bin" />
 		<property name="build.dir" value="${basedir}/build" />
-		<property name="docs.dir" value="${build.dir}/docs" />
-		<property name="reports.dir" value="${build.dir}/test" />
 		<property name="jarfile" value="${build.dir}/${ant.project.name}.jar" />
+		<property name="reports.dir" value="${build.dir}/test" />
+		<property name="docs.dir" value="${build.dir}/docs" />
 
 		<!-- set the classpath for the project including /bin and /lib -->
 		<path id="classpath.path">
@@ -28,9 +28,9 @@
 			<fileset file="${src.dir}/js/intro.js" />
 			<fileset file="${src.dir}/js/types.js" />
 			<fileset file="${src.dir}/js/bind.js" />
+			<fileset file="${src.dir}/js/factory.js" />
 			<fileset file="${src.dir}/js/render.js" />
 			<fileset file="${src.dir}/js/dom.js" />
-			<fileset file="${src.dir}/js/factory.js" />
 			<fileset file="${src.dir}/js/outro.js" />
 		</concat>
 		<echo message="Concatenation done." />
@@ -44,7 +44,7 @@
 		<echo message="JSLint static analysis done." />
 	</target>
 
-	<target name="jscompile" depends="jslint" description="Compile JS">
+	<target name="compile.js" depends="jslint" description="Compile JS">
 		<jscomp compilationLevel="simple" warning="verbose" debug="false" output="${build.dir}/duel.min.js">
 			<sources dir="${build.dir}">
 				<file name="duel.js"/>
@@ -53,18 +53,13 @@
 	</target>
 
 	<target name="clean" depends="init">
-		<delete dir="${docs.dir}" />
-		<delete dir="${reports.dir}" />
+		<delete dir="${build.dir}" />
 		<delete dir="${bin.dir}" />
-	</target>
-
-	<target name="prepare" depends="clean">
 		<mkdir dir="${bin.dir}" />
-		<mkdir dir="${reports.dir}" />
-		<mkdir dir="${docs.dir}" />
+		<mkdir dir="${build.dir}" />
 	</target>
 
-	<target name="compile" depends="prepare" description="Compile Java">
+	<target name="compile.src" depends="clean" description="Compile Java">
 		<javac
 			srcdir="${src.dir}"
 			destdir="${bin.dir}"
@@ -72,7 +67,7 @@
 		/>
 	</target>
 
-	<target name="jar" depends="compile" description="Package as a jar">
+	<target name="jar" depends="compile.src" description="Package as a jar">
 		<jar destfile="${jarfile}" update="true">
 			<fileset dir="${bin.dir}" />
 			<manifest>
@@ -81,34 +76,45 @@
 		</jar>
 	</target>
 
-	<target name="testcompile" depends="prepare,jar" description="Compile Java tests">
+	<target name="compile.test" depends="jar" description="Compile Java tests">
 		<javac
 			srcdir="${test.dir}"
 			destdir="${bin.dir}"
+			classpathref="classpath.path"
 			debug="${javac.debug}"
 		/>
 	</target>
 
-	<target name="test" depends="compile" description="Run Java unit tests">
-		<junit fork="yes" printsummary="no" haltonfailure="no">
+	<target name="test" depends="compile.src,compile.test" description="Run Java unit tests">
+		<mkdir dir="${reports.dir}" />
+
+		<junit fork="yes" printsummary="yes" haltonfailure="no" haltonerror="no">
 			<batchtest fork="yes" todir="${reports.dir}" >
 				<fileset dir="${bin.dir}">
-					<include name="**/*Test.class" />
+					<include name="**/*Tests.class" />
 				</fileset>
 			</batchtest>
 			<formatter type="xml" />
-			<classpath refid="classpath.path" />
+			<classpath>
+				<pathelement location="${bin.dir}" />
+				<fileset dir="${lib.dir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
 		</junit>
+	</target>
 
+	<target name="test.report" depends="test">
 		<junitreport todir="${reports.dir}">
 			<fileset dir="${reports.dir}">
-				<include name="TEST-*.xml" />
+				<include name="**/TESTS-*.xml" />
+				<include name="**/TEST-*.xml" />
 			</fileset>
 			<report todir="${reports.dir}" />
 		</junitreport>
 	</target>
 
-	<target name="docs" depends="prepare" description="Generate docs">
+	<target name="docs" depends="clean" description="Generate docs">
 		<mkdir dir="${docs.dir}" />
 		<javadoc
 			destdir="${docs.dir}"
@@ -132,7 +138,7 @@
 		</javadoc>
 	</target>
 
-	<target name="all" depends="jscompile,test">
+	<target name="all" depends="clean,compile.js,test.report">
 		<echo message="Build completed." />
 	</target>
 

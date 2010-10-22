@@ -9,13 +9,10 @@
  * Licensed under the MIT License (http://duelengine.org/license.txt)
  */
 
-var duel = (
-
 /**
  * @param {Window} window Window reference
- * @param {*=} undefn undefined constant
  */
-function(window, undefn) {
+(function(window) {
 
 	"use strict";
 
@@ -118,6 +115,28 @@ function(window, undefn) {
 	}
 
 	/**
+	 * Determines if the value is a string
+	 * 
+	 * @private
+	 * @param {*} val the object being tested
+	 * @return {boolean}
+	 */
+	function isString(val) {
+		return (typeof val === "string");
+	}
+
+	/**
+	 * Determines if the value is a function
+	 * 
+	 * @private
+	 * @param {*} val the object being tested
+	 * @return {boolean}
+	 */
+	function isFunction(val) {
+		return (typeof val === "function");
+	}
+
+	/**
 	 * Wraps a binding result with rendering methods
 	 * 
 	 * @private
@@ -140,37 +159,7 @@ function(window, undefn) {
 		this.value = /** @type {Array} */(view);
 	}
 
-	/**
-	 * Wraps a template definition with binding methods
-	 * 
-	 * @private
-	 * @this {View}
-	 * @param {Array|Object|string|number} view The template definition
-	 * @constructor
-	 */
-	function View(view) {
-		if (getType(view) !== ARY) {
-			// ensure is rooted element
-			view = ["", view];
-		}
-
-		/**
-		 * @type {Array}
-		 * @const
-		 * @protected
-		 */
-		// Closure Compiler type cast
-		this.value = /** @type {Array} */(view);
-	}
-
 	/* bind.js --------------------*/
-	
-	/**
-	 * @private
-	 * @constant
-	 * @type {string}
-	 */
-	var BIND_EXTERN = "bind";
 
 	/**
 	 * @private
@@ -330,7 +319,7 @@ function(window, undefn) {
 		var each = node[1] && node[1][EACH];
 
 		// execute code block
-		if (getType(each) === FUN) {
+		if (isFunction(each)) {
 			each = each(model, index, count);
 		}
 	
@@ -378,7 +367,7 @@ function(window, undefn) {
 	
 			switch (cmd) {
 				case IF:
-					if (getType(test) === FUN) {
+					if (isFunction(test)) {
 						test = test(model, index, count);
 					}
 	
@@ -432,9 +421,10 @@ function(window, undefn) {
 			// Closure Compiler type cast
 			c = /** @type {number} */ (bind(args[COUNT], model, index, count));
 
-		return bind(duel(v).value, m, i, c);
+		return (v && isFunction(v.getView)) ?
+			bind(v.getView(), m, i, c) : null;
 	}
-	
+
 	/**
 	 * Binds the node to model
 	 * 
@@ -506,19 +496,96 @@ function(window, undefn) {
 	
 		return result;
 	};
-	
+
+	/* factory.js --------------------*/
+
 	/**
-	 * Binds and wraps the result
-	 * 
-	 * @public
-	 * @this {View}
-	 * @param {*} model The data item being bound
+	 * @private
+	 * @const
+	 * @type {string}
 	 */
-	View.prototype[BIND_EXTERN] = View.prototype.bind = function(model) {
-		var result = bind(this.value, model, 0, 1);
-		return new Result(result);
+	var DUEL_EXTERN = "duel";
+
+	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var RAW_EXTERN = "raw";
+
+	/**
+	 * Renders an error as text
+	 * 
+	 * @private
+	 * @param {Error} ex The exception
+	 * @return {string}
+	 */
+	function onError(ex) {
+		return "["+ex+"]";
+	}
+
+	/**
+	 * Wraps a view definition with binding method
+	 * 
+	 * @private
+	 * @param {Array|Object|string|number} view The template definition
+	 * @return {function(*)}
+	 */
+	function factory(view) {
+		if (getType(view) !== ARY) {
+			// ensure is rooted element
+			view = ["", view];
+		}
+
+		/**
+		 * Binds and wraps the result
+		 * 
+		 * @public
+		 * @param {*} model The data item being bound
+		 * @return {Result}
+		 */
+		var self = function(model) {
+			try {
+				// Closure Compiler type cast
+				var result = bind(/** @type {Array} */(view), model, 0, 1);
+				return new Result(result);
+			} catch (ex) {
+				// handle error with context
+				return onError(ex);
+			}
+		};
+
+		/**
+		 * Gets the internal view definition
+		 * 
+		 * @private
+		 * @return {Array}
+		 */
+		self.getView = function() {
+			// Closure Compiler type cast
+			return /** @type {Array} */(view);
+		};
+
+		return self;
+	}
+
+	/**
+	 * @public
+	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
+	 * @return {function(*)}
+	 */
+	var duel = window[DUEL_EXTERN] = function(view) {
+		return (isFunction(view) && isFunction(view.getView)) ? view : factory(view);
 	};
 
+	/**
+	 * @public
+	 * @param {string} value Markup text
+	 * @return {Markup}
+	 */
+	duel[RAW_EXTERN] = duel.raw = function(/*string*/ value) {
+		return new Markup(value);
+	};
 
 	/* render.js --------------------*/
 	
@@ -640,7 +707,7 @@ function(window, undefn) {
 	 * @return {Array|Object|string|number}
 	 */
 	function htmlEncode(val) {
-		if (typeof val !== "string") {
+		if (!isString(val)) {
 			return val;
 		}
 	
@@ -667,7 +734,7 @@ function(window, undefn) {
 	 * @return {Array|Object|string|number}
 	 */
 	function attrEncode(val) {
-		if (typeof val !== "string") {
+		if (!isString(val)) {
 			return val;
 		}
 	
@@ -748,9 +815,14 @@ function(window, undefn) {
 	 * @return {string}
 	 */
 	 function render(view) {
-		var buffer = new Buffer();
-		renderElem(buffer, view);
-		return buffer.toString();
+		try {
+			var buffer = new Buffer();
+			renderElem(buffer, view);
+			return buffer.toString();
+		} catch (ex) {
+			// handle error with context
+			return onError(ex);
+		}
 	}
 
 	/**
@@ -762,18 +834,6 @@ function(window, undefn) {
 	 * @return {string}
 	 */
 	Result.prototype.toString = function() {
-		return render(this.value);
-	};
-
-	/**
-	 * Returns result as HTML text
-	 * 
-	 * @public
-	 * @override
-	 * @this {Result}
-	 * @return {string}
-	 */
-	View.prototype.toString = function() {
 		return render(this.value);
 	};
 
@@ -958,13 +1018,13 @@ function(window, undefn) {
 	 * @param {function(Event)} handler The event handler
 	 */
 	function addHandler(elem, name, handler) {
-		if (typeof handler === "string") {
+		if (isString(handler)) {
 			/*jslint evil:true */
 			handler = new Function("event", handler);
 			/*jslint evil:false */
 		}
 	
-		if (typeof handler === "function") {
+		if (isFunction(handler)) {
 			elem[name] = handler;
 		}
 	}
@@ -1106,10 +1166,10 @@ function(window, undefn) {
 				delete elem[key];
 			} catch (ex) {
 				// sometimes IE doesn't like deleting from DOM
-				elem[key] = undefn;
+				elem[key] = undefined;
 			}
 
-			if (typeof method !== "function") {
+			if (!isFunction(method)) {
 				try {
 					/*jslint evil:true */
 					method = new Function(""+method);
@@ -1120,6 +1180,7 @@ function(window, undefn) {
 				}
 			}
 		}
+
 		return method;
 	}
 
@@ -1153,17 +1214,6 @@ function(window, undefn) {
 		} else {
 			method = elem = null;
 		}
-	}
-
-	/**
-	 * Renders an error as a text node
-	 * 
-	 * @private
-	 * @param {Error} ex The exception
-	 * @return {Node}
-	 */
-	function onError(ex) {
-		return document.createTextNode("["+ex+"]");
 	}
 
 	/**
@@ -1213,6 +1263,17 @@ function(window, undefn) {
 	}
 
 	/**
+	 * Renders an error as a text node
+	 * 
+	 * @private
+	 * @param {Error} ex The exception
+	 * @return {Node}
+	 */
+	function onErrorDOM(ex) {
+		return document.createTextNode(onError(ex));
+	}
+
+	/**
 	 * Returns result as DOM objects
 	 * 
 	 * @public
@@ -1223,50 +1284,9 @@ function(window, undefn) {
 		try {
 			return patchDOM(createElement(this.value[0]), this.value);
 		} catch (ex) {
-			try {
-				// handle error with complete context
-				var err = (typeof duel.onerror === "function") ? duel.onerror : onError;
-				return err(ex, this.value);
-			} catch (ex2) {
-				return onError(ex2);
-			}
+			// handle error with context
+			return onErrorDOM(ex);
 		}
 	};
-
-	/* factory.js --------------------*/
-
-	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var DUEL_EXTERN = "duel";
-
-	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var RAW_EXTERN = "raw";
-
-	/**
-	 * @public
-	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
-	 * @return {View}
-	 */
-	var duel = window[DUEL_EXTERN] = function(view) {
-		return (view instanceof View) ? view : new View(view);
-	};
-
-	/**
-	 * @public
-	 * @param {string} value Markup text
-	 * @return {Markup}
-	 */
-	duel[RAW_EXTERN] = duel.raw = function(/*string*/ value) {
-		return new Markup(value);
-	};
-
-	return duel;
 
 })(window);
