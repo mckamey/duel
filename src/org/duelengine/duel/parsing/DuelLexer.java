@@ -13,6 +13,10 @@ public class DuelLexer implements Iterator<DuelToken> {
 	private int column = -1;
 	private int line = -1;
 	private int ch;
+	private int mark_index = -1;
+	private int mark_column = -1;
+	private int mark_line = -1;
+	private int mark_ch;
 	private final StringBuilder buffer = new StringBuilder();
 	private DuelToken token = DuelToken.Start;
 	private Exception lastError;
@@ -72,7 +76,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	}
 
 	/**
-	 * Not supported.
+	 * Altering the input is not supported
 	 */
 	public void remove()
 		throws UnsupportedOperationException {
@@ -80,6 +84,9 @@ public class DuelLexer implements Iterator<DuelToken> {
 		throw new UnsupportedOperationException("Not supported");
 	}
 
+	/**
+	 * Finds the next token in the input
+	 */
 	public DuelToken next()
 		throws NoSuchElementException {
 
@@ -94,7 +101,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 				case UNPARSED:
 					switch (this.ch) {
 						case DuelGrammar.OP_ELEM_BEGIN:
-							if (this.tryScanTag()) {
+							if (this.tryScanUnparsedBlock() || this.tryScanTag()) {
 								return this.token;
 							}
 							break;
@@ -115,6 +122,11 @@ public class DuelLexer implements Iterator<DuelToken> {
 		}
 	}
 
+	/**
+	 * Scans the next token as a literal sequence
+	 * @return
+	 * @throws IOException
+	 */
 	private DuelToken scanLiteral()
 		throws IOException {
 
@@ -151,13 +163,18 @@ public class DuelLexer implements Iterator<DuelToken> {
 		}
 	}
 
+	/**
+	 * Decodes HTML/XML/SGML character references
+	 * @throws IOException
+	 */
 	private void decodeEntity()
 		throws IOException {
 
-		this.reader.mark(16);
+		final int CAPACITY = 32;
+		this.setMark(CAPACITY+2);
 
 		// should be short enough that string concat is pretty fast
-		StringBuilder entity = new StringBuilder(16);
+		StringBuilder entity = new StringBuilder(CAPACITY);
 		boolean isValid = false;
 
 		if (this.nextChar() == DuelGrammar.OP_ENTITY_NUM) {
@@ -171,18 +188,18 @@ public class DuelLexer implements Iterator<DuelToken> {
 			if (isHex) {
 				// skip over the 'x'
 				// consume hex digits
-				while (CharUtility.isHexDigit(this.nextChar())) {
+				while (CharUtility.isHexDigit(this.nextChar()) && entity.length() < 8) {
 					entity.append((char)this.ch);
 				}
 			} else {
 				// consume digits
-				while (CharUtility.isDigit(this.ch)) {
+				while (CharUtility.isDigit(this.ch) && entity.length() < 10) {
 					entity.append((char)this.ch);
 					this.nextChar();
 				}
 			}
 
-			int codePoint = Integer.parseInt(entity.toString(), isHex ? 16 : 10);
+			int codePoint = Integer.parseInt(entity.toString(), isHex ? 0x10 : 10);
 			if (codePoint > 0) {
 				this.buffer.append(Character.toChars(codePoint));
 				isValid = true;
@@ -191,7 +208,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 		} else {
 
 			// consume letters
-			while (CharUtility.isLetter(this.ch)) {
+			while (CharUtility.isLetter(this.ch) && entity.length() < CAPACITY) {
 				entity.append((char)this.ch);
 				this.nextChar();
 			}
@@ -205,8 +222,8 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 		if (!isValid) {
 			// not an entity, add as simple ampersand
-			this.buffer.append(DuelGrammar.OP_ENTITY_BEGIN);
-			this.reader.reset();
+			this.resetMark();
+			this.buffer.append((char)this.ch);
 			this.nextChar();
 
 		} else if (this.ch == DuelGrammar.OP_ENTITY_END) {
@@ -215,7 +232,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	}
 
 	/**
-	 * Decodes HTML5 character references
+	 * Decodes HTML5 character reference names
 	 * @param name
 	 * @return
 	 */
@@ -237,15 +254,42 @@ public class DuelLexer implements Iterator<DuelToken> {
 		return null;
 	}
 
-	private boolean tryScanTag()
+	/**
+	 * Tries to scan the next token as an unparsed block
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean tryScanUnparsedBlock()
 		throws IOException {
 
-		this.reader.mark(16);
+		this.setMark(3);
 		this.buffer.setLength(0);
 
+		// TODO
 		return false;
 	}
 
+	/**
+	 * Tries to scan the next token as a tag
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean tryScanTag()
+		throws IOException {
+
+		final int CAPACITY = 64;
+		this.setMark(CAPACITY+1);
+		this.buffer.setLength(0);
+
+		// TODO
+		return false;
+	}
+
+	/**
+	 * Gets the next character in the input and updates statistics
+	 * @return
+	 * @throws IOException
+	 */
 	private int nextChar() throws IOException {
 		int prevLine = this.line;
 
@@ -263,6 +307,26 @@ public class DuelLexer implements Iterator<DuelToken> {
 		return this.ch;
 	}
 
+	private void setMark(int bufferSize) throws IOException {
+		this.reader.mark(bufferSize);
+
+		// store current statistics
+		this.mark_line = this.line;
+		this.mark_column = this.column;
+		this.mark_index = this.index;
+		this.mark_ch = this.ch;
+	}
+
+	private void resetMark() throws IOException {
+		this.reader.reset();
+
+		// restore current statistics
+		this.line = this.mark_line;
+		this.column = this.mark_column;
+		this.index = this.mark_index;
+		this.ch = this.mark_ch;
+	}
+	
 	public ArrayList<DuelToken> toList() {
 
 		ArrayList<DuelToken> list = new ArrayList<DuelToken>();
