@@ -38,12 +38,12 @@ public class DuelToken {
 
 	@Override
 	public String toString() {
-		StringBuilder buffer = new StringBuilder(this.type+": ");
+		StringBuilder buffer = new StringBuilder(this.type.toString());
 		if (this.value != null) {
-			buffer.append(this.value);
+			buffer.append(": "+this.value);
 		}
 		else if (this.unparsed != null) {
-			buffer.append(this.unparsed);
+			buffer.append(": "+this.unparsed);
 		}
 		return buffer.toString();
 	}
@@ -80,7 +80,10 @@ public class DuelToken {
 	
 	public static final DuelToken Start = new DuelToken(DuelTokenType.START);
 	public static final DuelToken End = new DuelToken(DuelTokenType.END);
-	public static final DuelToken Error = new DuelToken(DuelTokenType.ERROR);
+
+	public static DuelToken Error(String message) {
+		return new DuelToken(DuelTokenType.ERROR, message);
+	}
 
 	public static DuelToken ElemBegin(String name) {
 		return new DuelToken(DuelTokenType.ELEM_BEGIN, name);

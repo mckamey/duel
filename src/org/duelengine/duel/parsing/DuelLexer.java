@@ -17,7 +17,8 @@ public class DuelLexer implements Iterator<DuelToken> {
 	private int mark_column = -1;
 	private int mark_line = -1;
 	private int mark_ch;
-	private final StringBuilder buffer = new StringBuilder();
+	private String lastTag;
+	private final StringBuilder buffer = new StringBuilder(1024);
 	private DuelToken token = DuelToken.Start;
 	private Exception lastError;
 
@@ -63,7 +64,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	public void clearLastError() {
 		this.lastError = null;
 
-		if (this.token.equals(DuelToken.Error)) {
+		if (this.token.getToken().equals(DuelTokenType.ERROR)) {
 			this.token = DuelToken.Start;
 		}
 	}
@@ -72,7 +73,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	 * Determines if any more tokens exist
 	 */
 	public boolean hasNext() {
-		return (this.ch != DuelGrammar.EOF) && !this.token.equals(DuelToken.End);
+		return !this.token.equals(DuelToken.End);
 	}
 
 	/**
@@ -87,40 +88,92 @@ public class DuelLexer implements Iterator<DuelToken> {
 	/**
 	 * Finds the next token in the input
 	 */
-	public DuelToken next()
-		throws NoSuchElementException {
-
-		if (this.token.equals(DuelToken.End)) {
-			throw new NoSuchElementException("Passed end of file.");
-		}
+	public DuelToken next() {
 
 		try {
-			switch (this.token.getToken()) {
-				case START:
-				case LITERAL:
-				case UNPARSED:
-					switch (this.ch) {
-						case DuelGrammar.OP_ELEM_BEGIN:
-							if (this.tryScanUnparsedBlock() || this.tryScanTag()) {
-								return this.token;
-							}
-							break;
-						case DuelGrammar.EOF:
-							return (this.token = DuelToken.End);
-					}
+			while (true) {
+				switch (this.token.getToken()) {
+					case START:
+					case LITERAL:
+					case UNPARSED:
+						switch (this.ch) {
+							case DuelGrammar.OP_ELEM_BEGIN:
+								if (this.tryScanUnparsedBlock() || this.tryScanTag()) {
+									return this.token;
+								}
+								break;
+							case DuelGrammar.EOF:
+								return (this.token = DuelToken.End);
+						}
 
-					return this.scanLiteral();
+						return this.scanLiteral();
+
+					case ELEM_BEGIN:
+					case ATTR_LITERAL:
+					case ATTR_UNPARSED:
+						// skip whitespace
+						while (CharUtility.isWhiteSpace(this.ch)) {
+							this.nextChar();
+						}
+
+						switch (this.ch) {
+							case DuelGrammar.OP_ELEM_CLOSE:
+								// immediately close the last tag
+								this.nextChar();
+								return (this.token = DuelToken.ElemEnd(this.lastTag));
+
+							case DuelGrammar.OP_ELEM_END:
+								// reset to start state
+								this.nextChar();
+								this.token = DuelToken.Start;
+								continue;
+
+							case DuelGrammar.EOF:
+								return (this.token = DuelToken.End);
+						}
+
+						if (this.tryScanAttrName()) {
+							return this.token;
+						}
+
+						return this.scanLiteral();
+					case ATTR_NAME:
+						if (this.tryScanAttrValue()) {
+							return this.token;
+						}
+
+						// reset to elem state
+						this.token = DuelToken.ElemBegin(this.lastTag);
+						continue;
+
+					case ELEM_END:
+						// skip until end of close tag
+						while (this.ch != DuelGrammar.OP_ELEM_END && this.ch != DuelGrammar.EOF) {
+							this.nextChar();
+						}
+
+						if (this.ch != DuelGrammar.EOF) {
+							this.nextChar();
+						}
+
+						// reset to start state
+						this.token = DuelToken.Start;
+						continue;
+
+					case END:
+					case ERROR:
+						// remain in these states
+						return this.token;
+				}
 			}
-
-			return this.token;
-
 		} catch (IOException ex) {
 			ex.printStackTrace();
 
 			this.lastError = ex;
-			return (this.token = DuelToken.Error);
+			return (this.token = DuelToken.Error(ex.getMessage()));
 		}
 	}
+
 
 	/**
 	 * Scans the next token as a literal sequence
@@ -137,31 +190,32 @@ public class DuelLexer implements Iterator<DuelToken> {
 			switch (this.ch) {
 				case DuelGrammar.EOF:
 					// flush the buffer
-					return DuelToken.Literal(this.buffer.toString());
+					return (this.token = DuelToken.Literal(this.buffer.toString()));
 
 				case DuelGrammar.OP_ENTITY_BEGIN:
+					// attempt to decode
 					this.decodeEntity();
-					break;
+					continue;
 
 				case DuelGrammar.OP_ELEM_BEGIN:
 					if (this.buffer.length() != 0) {
 						// flush the buffer
-						return DuelToken.Literal(this.buffer.toString());
+						return (this.token = DuelToken.Literal(this.buffer.toString()));
 					}
 
 					this.buffer.append((char)this.ch);
 					this.nextChar();
-					break;
+					continue;
 
 				default:
 					// consume until reach a special char
 					this.buffer.append((char)this.ch);
 					this.nextChar();
-					break;
+					continue;
 			}
-
 		}
 	}
+
 
 	/**
 	 * Decodes HTML/XML/SGML character references
@@ -221,7 +275,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 		}
 
 		if (!isValid) {
-			// not an entity, add as simple ampersand
+			// not an entity, emit as simple ampersand
 			this.resetMark();
 			this.buffer.append((char)this.ch);
 			this.nextChar();
@@ -231,7 +285,9 @@ public class DuelLexer implements Iterator<DuelToken> {
 		}
 	}
 
+
 	/**
+
 	 * Decodes HTML5 character reference names
 	 * @param name
 	 * @return
@@ -254,24 +310,26 @@ public class DuelLexer implements Iterator<DuelToken> {
 		return null;
 	}
 
+
 	/**
+
 	 * Tries to scan the next token as an unparsed block
-	 * @return
+	 * @return true if block token was found
 	 * @throws IOException
 	 */
 	private boolean tryScanUnparsedBlock()
 		throws IOException {
 
 		this.setMark(3);
-		this.buffer.setLength(0);
 
 		// TODO
+		this.resetMark();
 		return false;
 	}
 
 	/**
 	 * Tries to scan the next token as a tag
-	 * @return
+	 * @return true if tag token was found
 	 * @throws IOException
 	 */
 	private boolean tryScanTag()
@@ -280,6 +338,71 @@ public class DuelLexer implements Iterator<DuelToken> {
 		final int CAPACITY = 64;
 		this.setMark(CAPACITY+1);
 		this.buffer.setLength(0);
+
+		boolean isEndTag = (this.nextChar() == DuelGrammar.OP_ELEM_CLOSE);
+		if (isEndTag) {
+			// consume end char
+			this.nextChar();
+		}
+
+		if (CharUtility.isNameStartChar(this.ch)) {
+			this.buffer.append((char)this.ch);
+
+			// consume tag name
+			while (CharUtility.isNameChar(this.nextChar()) && this.buffer.length() < CAPACITY) {
+				this.buffer.append((char)this.ch);
+			}
+		}
+
+		if (this.buffer.length() == 0) {
+			// not a valid tag name
+			this.resetMark();
+			return false;
+		}
+
+		this.lastTag = this.buffer.toString().toLowerCase();
+		this.token = isEndTag ? DuelToken.ElemEnd(this.lastTag) : DuelToken.ElemBegin(this.lastTag);
+		return true;
+	}
+
+	/**
+	 * Tries to scan the next token as an attribute name
+	 * @return true if attribute name was found
+	 * @throws IOException
+	 */
+	private boolean tryScanAttrName()
+		throws IOException {
+
+		final int CAPACITY = 64;
+		this.setMark(CAPACITY+1);
+		this.buffer.setLength(0);
+
+		if (CharUtility.isNameStartChar(this.ch)) {
+			this.buffer.append((char)this.ch);
+
+			// consume tag name
+			while (CharUtility.isNameChar(this.nextChar()) && this.buffer.length() < CAPACITY) {
+				this.buffer.append((char)this.ch);
+			}
+		}
+
+		if (this.buffer.length() == 0) {
+			// not a valid tag name
+			this.resetMark();
+			return false;
+		}
+
+		this.token = DuelToken.AttrName(this.buffer.toString().toLowerCase());
+		return true;
+	}
+
+	/**
+	 * Tries to scan the next token as an attribute value
+	 * @return true if attribute value was found
+	 * @throws IOException
+	 */
+	private boolean tryScanAttrValue()
+		throws IOException {
 
 		// TODO
 		return false;
@@ -307,6 +430,11 @@ public class DuelLexer implements Iterator<DuelToken> {
 		return this.ch;
 	}
 
+	/**
+	 * Marks the input location to enable resetting
+	 * @param bufferSize
+	 * @throws IOException
+	 */
 	private void setMark(int bufferSize) throws IOException {
 		this.reader.mark(bufferSize);
 
@@ -317,6 +445,10 @@ public class DuelLexer implements Iterator<DuelToken> {
 		this.mark_ch = this.ch;
 	}
 
+	/**
+	 * Resets the input location to the marked location
+	 * @throws IOException
+	 */
 	private void resetMark() throws IOException {
 		this.reader.reset();
 
@@ -326,7 +458,11 @@ public class DuelLexer implements Iterator<DuelToken> {
 		this.index = this.mark_index;
 		this.ch = this.mark_ch;
 	}
-	
+
+	/**
+	 * Produces a list of the remaining tokens
+	 * @return
+	 */
 	public ArrayList<DuelToken> toList() {
 
 		ArrayList<DuelToken> list = new ArrayList<DuelToken>();
@@ -334,7 +470,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 			DuelToken token = this.next();
 			list.add(token);
 
-			if (token.equals(DuelToken.Error)) {
+			if (token.getToken().equals(DuelTokenType.ERROR)) {
 				break;
 			}
 		}
