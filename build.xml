@@ -65,6 +65,9 @@
 			destdir="${bin.dir}"
 			debug="${javac.debug}"
 		/>
+		<!-- copy config into output -->
+		<copy file="${src.dir}/org/duelengine/duel/parsing/HTML5.properties"
+			todir="${bin.dir}/org/duelengine/duel/parsing/"/>
 	</target>
 
 	<target name="jar" depends="compile.src" description="Package as a jar">
