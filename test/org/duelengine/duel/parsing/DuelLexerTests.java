@@ -20,6 +20,20 @@ public class DuelLexerTests {
 	}
 
 	@Test
+	public void entityOnlyTest() {
+
+		String input = "&vert;&semi;&comma;";
+
+		Object[] expected = {
+				DuelToken.Literal("|;,")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void entityDecimalTest() {
 
 		String input = "This is &#39;just &#60;literal te&#34;xt &#38; some entities&#62;.";
@@ -152,6 +166,20 @@ public class DuelLexerTests {
 
 		Object[] expected = {
 				DuelToken.Literal("This is& just &THISISWRONG;literal te&123456;xt & some entities`.")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void singleElemTest() {
+
+		String input = "<div>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();

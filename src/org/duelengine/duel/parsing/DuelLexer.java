@@ -90,6 +90,8 @@ public class DuelLexer implements Iterator<DuelToken> {
 		try {
 			switch (this.token.getToken()) {
 				case START:
+				case LITERAL:
+				case UNPARSED:
 					switch (this.ch) {
 						case DuelGrammar.OP_ELEM_BEGIN:
 							if (this.tryScanTag()) {
@@ -118,18 +120,25 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 		// reset the buffer
 		this.buffer.setLength(0);
-		this.buffer.append((char)this.ch);
-		this.nextChar();
 
 		while (true) {
 			switch (this.ch) {
-				case DuelGrammar.OP_ELEM_BEGIN:
 				case DuelGrammar.EOF:
 					// flush the buffer
 					return DuelToken.Literal(this.buffer.toString());
 
 				case DuelGrammar.OP_ENTITY_BEGIN:
 					this.decodeEntity();
+					break;
+
+				case DuelGrammar.OP_ELEM_BEGIN:
+					if (this.buffer.length() != 0) {
+						// flush the buffer
+						return DuelToken.Literal(this.buffer.toString());
+					}
+
+					this.buffer.append((char)this.ch);
+					this.nextChar();
 					break;
 
 				default:
