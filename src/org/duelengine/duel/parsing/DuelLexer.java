@@ -98,7 +98,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 					case UNPARSED:
 						switch (this.ch) {
 							case DuelGrammar.OP_ELEM_BEGIN:
-								if (this.tryScanUnparsedBlock() || this.tryScanTag()) {
+								if (this.tryScanUnparsedBlock(false) || this.tryScanTag()) {
 									return this.token;
 								}
 								break;
@@ -136,13 +136,27 @@ public class DuelLexer implements Iterator<DuelToken> {
 							return this.token;
 						}
 
-						return this.scanLiteral();
+						boolean skip = true;
+						while (skip) {
+							switch (this.ch) {
+								case DuelGrammar.OP_ELEM_CLOSE:
+								case DuelGrammar.OP_ELEM_END:
+								case DuelGrammar.EOF:
+									skip = false;
+									break;
+								default:
+									this.nextChar();
+									break;
+							}
+						}
+						continue;
+
 					case ATTR_NAME:
 						if (this.tryScanAttrValue()) {
 							return this.token;
 						}
 
-						// reset to elem state
+						// no value, reset to elem state
 						this.token = DuelToken.ElemBegin(this.lastTag);
 						continue;
 
@@ -317,7 +331,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	 * @return true if block token was found
 	 * @throws IOException
 	 */
-	private boolean tryScanUnparsedBlock()
+	private boolean tryScanUnparsedBlock(boolean asAttr)
 		throws IOException {
 
 		this.setMark(3);
@@ -392,7 +406,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 			return false;
 		}
 
-		this.token = DuelToken.AttrName(this.buffer.toString().toLowerCase());
+		this.token = DuelToken.AttrName(this.buffer.toString());
 		return true;
 	}
 
@@ -404,8 +418,72 @@ public class DuelLexer implements Iterator<DuelToken> {
 	private boolean tryScanAttrValue()
 		throws IOException {
 
-		// TODO
-		return false;
+		// skip whitespace
+		while (CharUtility.isWhiteSpace(this.ch)) {
+			this.nextChar();
+		}
+
+		if (this.ch != DuelGrammar.OP_PAIR_DELIM) {
+			return false;
+		}
+
+		int delim;
+		switch (this.nextChar()) {
+			case DuelGrammar.OP_STRING_DELIM:
+			case DuelGrammar.OP_STRING_DELIM_ALT:
+				delim = this.ch;
+				this.nextChar();
+				break;
+			default:
+				delim = DuelGrammar.OP_ATTR_DELIM;
+		}
+
+		if (!this.tryScanUnparsedBlock(true)) {
+			this.scanAttrLiteral(delim);
+		}
+
+		if (this.ch == delim) {
+			this.nextChar();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Scans the next token as a literal attribute value
+	 * @return
+	 * @throws IOException
+	 */
+	private DuelToken scanAttrLiteral(int delim)
+		throws IOException {
+
+		// reset the buffer
+		this.buffer.setLength(0);
+
+		while (true) {
+			switch (this.ch) {
+				case DuelGrammar.EOF:
+				case DuelGrammar.OP_ELEM_END:
+					// flush the buffer
+					return (this.token = DuelToken.AttrValue(this.buffer.toString()));
+
+				case DuelGrammar.OP_ENTITY_BEGIN:
+					// attempt to decode entities
+					this.decodeEntity();
+					continue;
+
+				default:
+					if (this.ch == delim) {
+						// flush the buffer
+						return (this.token = DuelToken.AttrValue(this.buffer.toString()));
+					}
+
+					// consume until reach a special char
+					this.buffer.append((char)this.ch);
+					this.nextChar();
+					continue;
+			}
+		}
 	}
 
 	/**

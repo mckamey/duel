@@ -246,6 +246,22 @@ public class DuelLexerTests {
 	}
 
 	@Test
+	public void elemBeginEndTest() {
+
+		String input = "<div></div>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void elemVoidTest() {
 
 		String input = "<div/>";
@@ -275,5 +291,193 @@ public class DuelLexerTests {
 		Object[] actual = new DuelLexer(input).toList().toArray();
 
 		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrNoValueTest() {
+
+		String input = "<div noValue/>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.AttrName("noValue"),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrNoValueWhitespaceTest() {
+
+		String input = "<div noValue      ></div>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.AttrName("noValue"),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrEmptyTest() {
+
+		String input = "<div emptyValue=\"\" />";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.AttrName("emptyValue"),
+				DuelToken.AttrValue(""),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrEmptyAltDelimTest() {
+
+		String input = "<div emptyValue=''></div>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.AttrName("emptyValue"),
+				DuelToken.AttrValue(""),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrSimpleTest() {
+
+		String input = "<div simpleValue=\" this is the 'value' \"></div>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.AttrName("simpleValue"),
+				DuelToken.AttrValue(" this is the 'value' "),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrSimpleAltDelimTest() {
+
+		String input = "<div simpleValue=' this is the \"value\" '></div>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.AttrName("simpleValue"),
+				DuelToken.AttrValue(" this is the \"value\" "),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+		
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrNoDelimTest() {
+
+		String input = "<div simpleValue=this_is_the_value another></div>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.AttrName("simpleValue"),
+				DuelToken.AttrValue("this_is_the_value"),
+				DuelToken.AttrName("another"),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrOnlyEntitiesTest() {
+
+		String input = "<div simpleValue='&vert;&semi;&comma;'></div>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.AttrName("simpleValue"),
+				DuelToken.AttrValue("|;,"),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrQuotEntityTest() {
+
+		String input = "<div simpleValue=\"the &quot;quote&quot;ed value &nothin\"></div>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.AttrName("simpleValue"),
+				DuelToken.AttrValue("the \"quote\"ed value &nothin"),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrAposEntityTest() {
+
+		String input = "<div simpleValue='the attribute&apos;s apos &nothin'></div>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.AttrName("simpleValue"),
+				DuelToken.AttrValue("the attribute's apos &nothin"),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	private void dumpList(String label, Object[] tokens) {
+		System.out.println();
+		System.out.print(label+":");
+		for (Object token : tokens) {
+			System.out.print("\n\t"+token);
+		}
+		System.out.println();
 	}
 }
