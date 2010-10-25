@@ -548,7 +548,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 					default:	// "<!", ">"			SGML declaration (e.g. DOCTYPE or server-side include)
 						begin = "<!";
 						end = ">";
-						value = this.scanBlockValue("!", ">");
+						value = this.scanBlockValue("", ">");
 						break;
 				}
 				break;

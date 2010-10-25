@@ -506,6 +506,78 @@ public class DuelLexerTests {
 		assertArrayEquals(expected, actual);
 	}
 
+	@Test
+	public void codeCommentTest() {
+
+		String input = "<span><%-- comment --%></span>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("span"),
+				DuelToken.Unparsed(new UnparsedBlock("<%--", "--%>", " comment ")),
+				DuelToken.ElemEnd("span"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void htmlCommentTest() {
+
+		String input = "<span><!-- comment --></span>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("span"),
+				DuelToken.Unparsed(new UnparsedBlock("<!--", "-->", " comment ")),
+				DuelToken.ElemEnd("span"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+	
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void html5DocTypeTest() {
+
+		String input = "<!doctype html><html />";
+
+		Object[] expected = {
+				DuelToken.Unparsed(new UnparsedBlock("<!", ">", "doctype html")),
+				DuelToken.ElemBegin("html"),
+				DuelToken.ElemEnd("html"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+	
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void xhtmlDocTypeTest() {
+
+		String input = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" />";
+
+		Object[] expected = {
+				DuelToken.Unparsed(new UnparsedBlock("<!", ">", "DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
+				DuelToken.ElemBegin("html"),
+				DuelToken.AttrName("xmlns"),
+				DuelToken.AttrValue("http://www.w3.org/1999/xhtml"),
+				DuelToken.AttrName("xml:lang"),
+				DuelToken.AttrValue("en"),
+				DuelToken.ElemEnd("html"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
 	private void dumpList(String label, Object[] tokens) {
 		System.out.println();
 		System.out.print(label+":");

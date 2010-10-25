@@ -1,7 +1,7 @@
 package org.duelengine.duel.parsing;
 
 /**
- * Provides simplified (ASCII) definitions of character classes
+ * Provides simplified definitions of character classes
  */
 final class CharUtility {
 
