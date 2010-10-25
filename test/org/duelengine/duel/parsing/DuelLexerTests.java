@@ -262,6 +262,25 @@ public class DuelLexerTests {
 	}
 
 	@Test
+	public void elemNestedTest() {
+
+		String input = "<div><span><img></span></div>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("div"),
+				DuelToken.ElemBegin("span"),
+				DuelToken.ElemBegin("img"),
+				DuelToken.ElemEnd("span"),
+				DuelToken.ElemEnd("div"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void elemVoidTest() {
 
 		String input = "<div/>";
@@ -575,6 +594,30 @@ public class DuelLexerTests {
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
 
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void scriptBlockTest() {
+
+		String input =
+			"<script type=\"text/javascript\">" +
+			"function foo() { for (var i=0, length=10; i<length; i++) { alert(i); } }" +
+			"</script>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("script"),
+				DuelToken.AttrName("type"),
+				DuelToken.AttrValue("text/javascript"),
+				DuelToken.Literal("function foo() { for(var i=0, length=10; i<length; i++) { alert(i); } }"),
+				DuelToken.ElemEnd("script"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		dumpList("JS test", actual);
+		
 		assertArrayEquals(expected, actual);
 	}
 

@@ -130,9 +130,11 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 						switch (this.ch) {
 							case DuelGrammar.OP_ELEM_CLOSE:
-								// immediately close the last tag
-								this.nextChar();
-								return (this.token = DuelToken.ElemEnd(this.lastTag));
+								if (this.nextChar() == DuelGrammar.OP_ELEM_END) {
+									// immediately close the last tag
+									return (this.token = DuelToken.ElemEnd(this.lastTag));
+								}
+								break;
 
 							case DuelGrammar.OP_ELEM_END:
 								// reset to start state
@@ -200,7 +202,6 @@ public class DuelLexer implements Iterator<DuelToken> {
 		}
 	}
 
-
 	/**
 	 * Scans the next token as a literal sequence
 	 * @return
@@ -241,7 +242,6 @@ public class DuelLexer implements Iterator<DuelToken> {
 			}
 		}
 	}
-
 
 	/**
 	 * Decodes HTML/XML/SGML character references
@@ -311,7 +311,6 @@ public class DuelLexer implements Iterator<DuelToken> {
 		}
 	}
 
-
 	/**
 
 	 * Decodes HTML5 character reference names
@@ -335,7 +334,6 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 		return null;
 	}
-
 
 	/**
 	 * Tries to scan the next token as a tag
@@ -370,6 +368,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 			return false;
 		}
 
+		// always generates lowercase tags
 		this.lastTag = this.buffer.toString().toLowerCase();
 		this.token = isEndTag ? DuelToken.ElemEnd(this.lastTag) : DuelToken.ElemBegin(this.lastTag);
 		return true;
