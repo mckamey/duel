@@ -667,6 +667,94 @@ public class DuelLexerTests {
 		assertArrayEquals(expected, actual);
 	}
 
+	@Test
+	public void styleUnwrapCommentTest() {
+
+		String input =
+			"<style type=\"text/css\"><!--" +
+			".my-class { color:red; }" +
+			"--></style>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("style"),
+				DuelToken.AttrName("type"),
+				DuelToken.AttrValue("text/css"),
+				DuelToken.Literal(".my-class { color:red; }"),
+				DuelToken.ElemEnd("style"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void styleUnwrapCDATATest() {
+
+		String input =
+			"<style type=\"text/css\"><![CDATA[" +
+			".my-class { color:red; }" +
+			"]]></style>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("style"),
+				DuelToken.AttrName("type"),
+				DuelToken.AttrValue("text/css"),
+				DuelToken.Literal(".my-class { color:red; }"),
+				DuelToken.ElemEnd("style"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void scriptUnwrapCommentTest() {
+
+		String input =
+			"<script type=\"text/javascript\"><!--" +
+			"function foo() { for(var i=0, length=10; i<length; i++) { alert(i); } }" +
+			"--></script>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("script"),
+				DuelToken.AttrName("type"),
+				DuelToken.AttrValue("text/javascript"),
+				DuelToken.Literal("function foo() { for(var i=0, length=10; i<length; i++) { alert(i); } }"),
+				DuelToken.ElemEnd("script"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void scriptUnwrapCDATATest() {
+
+		String input =
+			"<script type=\"text/javascript\"><![CDATA[" +
+			"function foo() { for(var i=0, length=10; i<length; i++) { alert(i); } }" +
+			"]]></script>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("script"),
+				DuelToken.AttrName("type"),
+				DuelToken.AttrValue("text/javascript"),
+				DuelToken.Literal("function foo() { for(var i=0, length=10; i<length; i++) { alert(i); } }"),
+				DuelToken.ElemEnd("script"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
 	private void dumpList(String label, Object[] tokens) {
 		System.out.println();
 		System.out.print(label+":");

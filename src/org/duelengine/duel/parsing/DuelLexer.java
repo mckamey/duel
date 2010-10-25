@@ -18,7 +18,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	private int mark_line = -1;
 	private int mark_ch;
 	private String lastTag;
-	private boolean suspend;
+	private boolean suspendMode;
 	private final StringBuilder buffer = new StringBuilder(1024);
 	private DuelToken token = DuelToken.None;
 	private Exception lastError;
@@ -373,9 +373,9 @@ public class DuelLexer implements Iterator<DuelToken> {
 		String tagName = this.buffer.toString().toLowerCase();
 
 		// check if should unsuspend lexer
-		if (this.suspend) {
+		if (this.suspendMode) {
 			if (isEndTag && this.lastTag.equals(tagName)) {
-				this.suspend = false;
+				this.suspendMode = false;
 			} else {
 				// treat as literal text
 				this.resetMark();
@@ -387,7 +387,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 		this.token = isEndTag ? DuelToken.ElemEnd(this.lastTag) : DuelToken.ElemBegin(this.lastTag);
 
 		// tags with unparsed content put lexer into suspended mode
-		this.suspend = (lastTag.equals("script")) || (lastTag.equals("style"));
+		this.suspendMode = (lastTag.equals("script")) || (lastTag.equals("style"));
 		return true;
 	}
 
@@ -555,7 +555,11 @@ public class DuelLexer implements Iterator<DuelToken> {
 					case '[':	// "<![CDATA[", "]]>"	CDATA section
 						value = this.scanBlockValue("[CDATA[", "]]>");
 						if (value != null) {
-							// unwrap CDATA as plain literal text
+							if (this.ch == DuelGrammar.OP_ELEM_END) {
+								this.nextChar();
+							}
+
+							// always unwrap CDATA as plain literal text
 							this.token = asAttr ? DuelToken.AttrValue(value) : DuelToken.Literal(value);
 							return true;
 						}
@@ -619,6 +623,13 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 		if (this.ch == DuelGrammar.OP_ELEM_END) {
 			this.nextChar();
+		}
+
+		if (this.suspendMode && !asAttr && (begin.equals(DuelGrammar.OP_COMMENT))) {
+
+			// always unwrap commented content of suspend-mode elements
+			this.token = DuelToken.Literal(value);
+			return true;
 		}
 
 		UnparsedBlock block = new UnparsedBlock(begin, end, value);
