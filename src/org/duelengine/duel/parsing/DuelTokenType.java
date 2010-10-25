@@ -2,23 +2,48 @@ package org.duelengine.duel.parsing;
 
 public enum DuelTokenType {
 
-	NONE,
+	/**
+	 * Literal text
+	 */
+	LITERAL,
 
-	END,
-
-	ERROR,
-
+	/**
+	 * Element begin tag 
+	 */
 	ELEM_BEGIN,
 
+	/**
+	 * Element end tag
+	 */
 	ELEM_END,
 
+	/**
+	 * Attribute name
+	 */
 	ATTR_NAME,
 
+	/**
+	 * Attribute value as literal text
+	 */
 	ATTR_LITERAL,
 
-	ATTR_UNPARSED,
+	/**
+	 * Attribute value as unparsed block
+	 */
+	ATTR_BLOCK,
 
-	UNPARSED,
+	/**
+	 * Unparsed block
+	 */
+	BLOCK,
 
-	LITERAL
+	/**
+	 * Error state
+	 */
+	ERROR,
+
+	/**
+	 * End of file
+	 */
+	END
 }

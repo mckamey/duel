@@ -5,8 +5,6 @@ final class DuelGrammar {
 	// static class
 	private DuelGrammar() {}
 
-	public static final int EOF = -1;
-
 	public static final char OP_ELEM_BEGIN = '<';
 	public static final char OP_ELEM_END = '>';
 	public static final char OP_ELEM_CLOSE = '/';
@@ -24,7 +22,9 @@ final class DuelGrammar {
 	public static final char OP_ENTITY_END = ';';
 
 	public static final String OP_COMMENT = "<!--";
+	public static final String OP_COMMENT_END = "-->";
 	public static final String OP_CODE_COMMENT = "<%--";
+	public static final String OP_CODE_COMMENT_END = "--%>";
 
 	public static final String OP_CODE_BLOCK = "<%";
 	public static final String OP_CODE_DIRECTIVE = "<%@";
@@ -32,4 +32,5 @@ final class DuelGrammar {
 	public static final String OP_CODE_RESOURCE = "<%$";
 	public static final String OP_CODE_DECLARATION = "<%!";
 	public static final String OP_CODE_DATABIND = "<%#";
+	public static final String OP_CODE_BLOCK_END = "%>";
 }

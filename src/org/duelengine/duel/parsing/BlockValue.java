@@ -1,13 +1,12 @@
 package org.duelengine.duel.parsing;
 
-public class UnparsedBlock {
+public class BlockValue {
 
 	private final String begin;
 	private final String end;
-
 	private final String value;
 
-	public UnparsedBlock(String begin, String end, String value) {
+	public BlockValue(String begin, String end, String value) {
 		this.begin = begin;
 		this.end = end;
 		this.value = value;
@@ -42,12 +41,12 @@ public class UnparsedBlock {
 
 	@Override
 	public boolean equals(Object arg) {
-		if (!(arg instanceof UnparsedBlock)) {
+		if (!(arg instanceof BlockValue)) {
 			// includes null
 			return false;
 		}
 
-		UnparsedBlock that = (UnparsedBlock)arg;
+		BlockValue that = (BlockValue)arg;
 		return
 			(this.begin == null ? that.begin == null : this.begin.equals(that.begin)) &&
 			(this.end == null ? that.end == null : this.end.equals(that.end)) &&

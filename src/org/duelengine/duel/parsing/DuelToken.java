@@ -4,24 +4,24 @@ public class DuelToken {
 
 	private final DuelTokenType type;
 	private final String value;
-	private final UnparsedBlock unparsed;
+	private final BlockValue block;
 
 	private DuelToken(DuelTokenType type) {
 		this.type = type;
 		this.value = null;
-		this.unparsed = null;
+		this.block = null;
 	}
 
 	private DuelToken(DuelTokenType type, String value) {
 		this.type = type;
 		this.value = value;
-		this.unparsed = null;
+		this.block = null;
 	}
 
-	private DuelToken(DuelTokenType type, UnparsedBlock value) {
+	private DuelToken(DuelTokenType type, BlockValue value) {
 		this.type = type;
 		this.value = null;
-		this.unparsed = value;
+		this.block = value;
 	}
 
 	public DuelTokenType getToken() {
@@ -32,8 +32,8 @@ public class DuelToken {
 		return this.value;
 	}
 
-	public UnparsedBlock getUnparsed() {
-		return this.unparsed;
+	public BlockValue getBlock() {
+		return this.block;
 	}
 
 	@Override
@@ -42,8 +42,8 @@ public class DuelToken {
 		if (this.value != null) {
 			buffer.append(": "+this.value);
 		}
-		else if (this.unparsed != null) {
-			buffer.append(": "+this.unparsed);
+		else if (this.block != null) {
+			buffer.append(": "+this.block);
 		}
 		return buffer.toString();
 	}
@@ -59,7 +59,7 @@ public class DuelToken {
 		return
 			(this.type.equals(that.type)) &&
 			(this.value == null ? that.value == null : this.value.equals(that.value)) &&
-			(this.unparsed == null ? that.unparsed == null : this.unparsed.equals(that.unparsed));
+			(this.block == null ? that.block == null : this.block.equals(that.block));
 	}
 
 	@Override
@@ -70,46 +70,46 @@ public class DuelToken {
 		if (this.value != null) {
 			hash = hash * HASH_PRIME + this.value.hashCode();
 		}
-		if (this.unparsed != null) {
-			hash = hash * HASH_PRIME + this.unparsed.hashCode();
+		if (this.block != null) {
+			hash = hash * HASH_PRIME + this.block.hashCode();
 		}
 		return hash;
 	}
 
 	/* reusable tokens and helper methods */
 
-	static final DuelToken None = new DuelToken(DuelTokenType.NONE);
-	static final DuelToken End = new DuelToken(DuelTokenType.END);
+	static final DuelToken start = new DuelToken(DuelTokenType.LITERAL);
+	static final DuelToken end = new DuelToken(DuelTokenType.END);
 
-	public static DuelToken Error(String message) {
+	public static DuelToken error(String message) {
 		return new DuelToken(DuelTokenType.ERROR, message);
 	}
 
-	public static DuelToken ElemBegin(String name) {
+	public static DuelToken elemBegin(String name) {
 		return new DuelToken(DuelTokenType.ELEM_BEGIN, name);
 	}
 
-	public static DuelToken ElemEnd(String name) {
+	public static DuelToken elemEnd(String name) {
 		return new DuelToken(DuelTokenType.ELEM_END, name);
 	}
 
-	public static DuelToken AttrName(String name) {
+	public static DuelToken attrName(String name) {
 		return new DuelToken(DuelTokenType.ATTR_NAME, name);
 	}
 
-	public static DuelToken AttrValue(String value) {
+	public static DuelToken attrValue(String value) {
 		return new DuelToken(DuelTokenType.ATTR_LITERAL, value);
 	}
 
-	public static DuelToken AttrValue(UnparsedBlock value) {
-		return new DuelToken(DuelTokenType.ATTR_UNPARSED, value);
+	public static DuelToken attrValue(BlockValue value) {
+		return new DuelToken(DuelTokenType.ATTR_BLOCK, value);
 	}
 
-	public static DuelToken Unparsed(UnparsedBlock value) {
-		return new DuelToken(DuelTokenType.UNPARSED, value);
+	public static DuelToken block(BlockValue value) {
+		return new DuelToken(DuelTokenType.BLOCK, value);
 	}
 
-	public static DuelToken Literal(String value) {
+	public static DuelToken literal(String value) {
 		return new DuelToken(DuelTokenType.LITERAL, value);
 	}
 }
