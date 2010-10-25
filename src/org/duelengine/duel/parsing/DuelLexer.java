@@ -510,12 +510,11 @@ public class DuelLexer implements Iterator<DuelToken> {
 						break;
 
 					case '@':	// "<%@",  "%>"			ASP/PSP/JSP directive
-					case '=':	// "<%=",  "%>"			ASP/PSP/JSP/Duel expression
+					case '=':	// "<%=",  "%>"			ASP/PSP/JSP expression
 					case '!':	// "<%!",  "%>"			JSP/JBST declaration
-					case '#':	// "<%#",  "%>"			ASP.NET/Duel databind expression
-					case '$':	// "<%$",  "%>"			ASP.NET/Duel extension
+					case '#':	// "<%#",  "%>"			ASP.NET databind expression
+					case '$':	// "<%$",  "%>"			ASP.NET extension
 					case ':':	// "<%:",  "%>"			ASP.NET 4 HTML-encoded expression
-
 						begin = "<%"+(char)this.ch;
 						end = "%>";
 						value = this.scanBlockValue(""+(char)this.ch, end);
@@ -540,7 +539,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 					case '[':	// "<![CDATA[", "]]>"	CDATA section
 						value = this.scanBlockValue("[CDATA[", "]]>");
 						if (value != null) {
-							// unwrap CDATA as literal text
+							// unwrap CDATA as plain literal text
 							this.token = asAttr ? DuelToken.AttrValue(value) : DuelToken.Literal(value);
 							return true;
 						}
@@ -550,6 +549,47 @@ public class DuelLexer implements Iterator<DuelToken> {
 						begin = "<!";
 						end = ">";
 						value = this.scanBlockValue("!", ">");
+						break;
+				}
+				break;
+
+			case '?':
+				switch (this.nextChar()) {
+					case '=':	// "<?=", "?>"			PHP-style expression
+						begin = "<?=";
+						end = "?>";
+						value = this.scanBlockValue("--", end);
+						break;
+
+					default:	// "<?", "?>"			PHP code block / XML processing instruction (e.g. XML declaration)
+						begin = "<?";
+						end = "?>";
+						value = this.scanBlockValue("", end);
+						break;
+				}
+				break;
+
+			case '#':
+				switch (this.nextChar()) {
+					case '-':	// "<#--", "--#>"		T4-style code comment
+						begin = "<#--";
+						end = "--#>";
+						value = this.scanBlockValue("--", end);
+						break;
+
+					case '@':	// "<#@",  "#>"			T4 directive
+					case '=':	// "<#=",  "#>"			T4 expression
+					case '+':	// "<#+",  "#>"			T4 ClassFeature blocks
+
+						begin = "<#"+(char)this.ch;
+						end = "#>";
+						value = this.scanBlockValue(""+(char)this.ch, end);
+						break;
+
+					default:
+						begin = "<#";
+						end = "#>";
+						value = this.scanBlockValue("", end);
 						break;
 				}
 				break;
