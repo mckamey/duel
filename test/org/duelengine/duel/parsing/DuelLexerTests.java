@@ -602,22 +602,68 @@ public class DuelLexerTests {
 
 		String input =
 			"<script type=\"text/javascript\">" +
-			"function foo() { for (var i=0, length=10; i<length; i++) { alert(i); } }" +
+			"function foo() { for(var i=0, length=10; i<length; i++) { alert(i); } }" +
 			"</script>";
 
 		Object[] expected = {
 				DuelToken.ElemBegin("script"),
 				DuelToken.AttrName("type"),
 				DuelToken.AttrValue("text/javascript"),
-				DuelToken.Literal("function foo() { for(var i=0, length=10; i<length; i++) { alert(i); } }"),
+				DuelToken.Literal("function foo() { for(var i=0, length=10; i"),// breaks because tag suspected
+				DuelToken.Literal("<length; i++) { alert(i); } }"),
 				DuelToken.ElemEnd("script"),
 				DuelToken.End
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
 
-		dumpList("JS test", actual);
-		
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void styleBlockTest() {
+
+		String input =
+			"<style type=\"text/css\">" +
+			"invalid<selector { color:red; }" +
+			"</style>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("style"),
+				DuelToken.AttrName("type"),
+				DuelToken.AttrValue("text/css"),
+				DuelToken.Literal("invalid"),
+				DuelToken.Literal("<selector { color:red; }"),
+				DuelToken.ElemEnd("style"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void styleCodeBlockTest() {
+
+		String input =
+			"<style type=\"text/css\">" +
+			"#<%= \"hacky-technique\" %> { color:red; }" +
+			"</style>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("style"),
+				DuelToken.AttrName("type"),
+				DuelToken.AttrValue("text/css"),
+				DuelToken.Literal("#"),
+				DuelToken.Unparsed(new UnparsedBlock("<%=", "%>", " \"hacky-technique\" ")),
+				DuelToken.Literal(" { color:red; }"),
+				DuelToken.ElemEnd("style"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
 		assertArrayEquals(expected, actual);
 	}
 

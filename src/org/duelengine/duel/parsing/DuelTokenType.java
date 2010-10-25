@@ -2,7 +2,7 @@ package org.duelengine.duel.parsing;
 
 public enum DuelTokenType {
 
-	START,
+	NONE,
 
 	END,
 

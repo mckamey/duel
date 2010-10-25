@@ -18,8 +18,9 @@ public class DuelLexer implements Iterator<DuelToken> {
 	private int mark_line = -1;
 	private int mark_ch;
 	private String lastTag;
+	private boolean suspend;
 	private final StringBuilder buffer = new StringBuilder(1024);
-	private DuelToken token = DuelToken.Start;
+	private DuelToken token = DuelToken.None;
 	private Exception lastError;
 
 	public DuelLexer(String text) {
@@ -77,7 +78,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 		this.lastError = null;
 
 		if (this.token.getToken().equals(DuelTokenType.ERROR)) {
-			this.token = DuelToken.Start;
+			this.token = DuelToken.None;
 		}
 	}
 
@@ -105,7 +106,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 		try {
 			while (true) {
 				switch (this.token.getToken()) {
-					case START:
+					case NONE:
 					case LITERAL:
 					case UNPARSED:
 						switch (this.ch) {
@@ -139,7 +140,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 							case DuelGrammar.OP_ELEM_END:
 								// reset to start state
 								this.nextChar();
-								this.token = DuelToken.Start;
+								this.token = DuelToken.None;
 								continue;
 
 							case DuelGrammar.EOF:
@@ -185,7 +186,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 						}
 
 						// reset to start state
-						this.token = DuelToken.Start;
+						this.token = DuelToken.None;
 						continue;
 
 					case END:
@@ -361,7 +362,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 				this.buffer.append((char)this.ch);
 			}
 		}
-
+		
 		if (this.buffer.length() == 0) {
 			// not a valid tag name
 			this.resetMark();
@@ -369,8 +370,24 @@ public class DuelLexer implements Iterator<DuelToken> {
 		}
 
 		// always generates lowercase tags
-		this.lastTag = this.buffer.toString().toLowerCase();
+		String tagName = this.buffer.toString().toLowerCase();
+
+		// check if should unsuspend lexer
+		if (this.suspend) {
+			if (isEndTag && this.lastTag.equals(tagName)) {
+				this.suspend = false;
+			} else {
+				// treat as literal text
+				this.resetMark();
+				return false;
+			}
+		}
+
+		this.lastTag = tagName;
 		this.token = isEndTag ? DuelToken.ElemEnd(this.lastTag) : DuelToken.ElemBegin(this.lastTag);
+
+		// tags with unparsed content put lexer into suspended mode
+		this.suspend = (lastTag.equals("script")) || (lastTag.equals("style"));
 		return true;
 	}
 
@@ -488,7 +505,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	 */
 	private boolean tryScanBlock(boolean asAttr)
 		throws IOException {
-
+		
 		// mark current position with capacity to check start delims
 		final int CAPACITY = 16;
 		this.setMark(CAPACITY);
