@@ -21,7 +21,7 @@ public class DuelParser {
 
 			switch (root.getToken()) {
 				case LITERAL:
-					nodes.add(new LiteralNode(root.getValue()));
+					this.parseLiteral(nodes, root);
 					break;
 				case END:
 					continue;
@@ -29,5 +29,19 @@ public class DuelParser {
 		}
 	
 		return nodes;
+	}
+
+	private void parseLiteral(List<Node> nodes, DuelToken root) {
+		Node last = nodes.isEmpty() ? null : nodes.get(nodes.size()-1);
+
+		if (last instanceof LiteralNode) {
+			LiteralNode lastLit = ((LiteralNode)last);
+
+			// perform constant folding of literal strings
+			lastLit.setValue(lastLit.getValue() + root.getValue());
+		} else {
+			// add directly to output
+			nodes.add(new LiteralNode(root.getValue()));
+		}
 	}
 }
