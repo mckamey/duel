@@ -19,6 +19,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	private int mark_ch;
 	private String lastTag;
 	private boolean suspendMode;
+	private boolean hasToken;
 	private final StringBuilder buffer = new StringBuilder(1024);
 	private DuelToken token = DuelToken.None;
 	private Exception lastError;
@@ -86,7 +87,18 @@ public class DuelLexer implements Iterator<DuelToken> {
 	 * Determines if any more tokens exist
 	 */
 	public boolean hasNext() {
-		return !this.token.equals(DuelToken.End);
+		return !this.ensureToken().equals(DuelToken.End);
+	}
+
+	/**
+	 * Returns the next token in the input
+	 */
+	public DuelToken next() {
+		try {
+			return this.ensureToken();
+		} finally {
+			this.hasToken = false;
+		}
 	}
 
 	/**
@@ -99,9 +111,12 @@ public class DuelLexer implements Iterator<DuelToken> {
 	}
 
 	/**
-	 * Finds the next token in the input
+	 * Processes the next token in the input
 	 */
-	public DuelToken next() {
+	private DuelToken ensureToken() {
+		if (this.hasToken) {
+			return this.token;
+		}
 
 		try {
 			while (true) {
@@ -200,6 +215,9 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 			this.lastError = ex;
 			return (this.token = DuelToken.Error(ex.getMessage()));
+
+		} finally {
+			this.hasToken = true;
 		}
 	}
 
@@ -439,8 +457,11 @@ public class DuelLexer implements Iterator<DuelToken> {
 			return false;
 		}
 
+		// skip whitespace
+		while (CharUtility.isWhiteSpace(this.nextChar()));
+
 		int delim;
-		switch (this.nextChar()) {
+		switch (this.ch) {
 			case DuelGrammar.OP_STRING_DELIM:
 			case DuelGrammar.OP_STRING_DELIM_ALT:
 				delim = this.ch;

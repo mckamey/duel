@@ -11,8 +11,7 @@ public class DuelLexerTests {
 		String input = "This is just literal text.";
 
 		Object[] expected = {
-				DuelToken.Literal("This is just literal text."),
-				DuelToken.End
+				DuelToken.Literal("This is just literal text.")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -26,8 +25,7 @@ public class DuelLexerTests {
 		String input = "&vert;&semi;&comma;";
 
 		Object[] expected = {
-				DuelToken.Literal("|;,"),
-				DuelToken.End
+				DuelToken.Literal("|;,")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -41,8 +39,7 @@ public class DuelLexerTests {
 		String input = "This is &#39;just &#60;literal te&#34;xt &#38; some entities&#62;.";
 
 		Object[] expected = {
-				DuelToken.Literal("This is 'just <literal te\"xt & some entities>."),
-				DuelToken.End
+				DuelToken.Literal("This is 'just <literal te\"xt & some entities>.")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -56,8 +53,7 @@ public class DuelLexerTests {
 		String input = "This is &#39just &#60literal te&#34xt &#38 some entities&#62.";
 
 		Object[] expected = {
-				DuelToken.Literal("This is 'just <literal te\"xt & some entities>."),
-				DuelToken.End
+				DuelToken.Literal("This is 'just <literal te\"xt & some entities>.")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -71,8 +67,7 @@ public class DuelLexerTests {
 		String input = "This is &#x27;just &#x3C;literal te&#X22;xt &#x26; some entities&#X3e;.";
 
 		Object[] expected = {
-				DuelToken.Literal("This is 'just <literal te\"xt & some entities>."),
-				DuelToken.End
+				DuelToken.Literal("This is 'just <literal te\"xt & some entities>.")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -86,8 +81,7 @@ public class DuelLexerTests {
 		String input = "This is &#x27just &#x3Cliteral te&#X22xt &#x26 some entities&#X3e.";
 
 		Object[] expected = {
-				DuelToken.Literal("This is 'just <literal te\"xt & some entities>."),
-				DuelToken.End
+				DuelToken.Literal("This is 'just <literal te\"xt & some entities>.")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -101,8 +95,7 @@ public class DuelLexerTests {
 		String input = "This is &apos;just &lt;literal te&quot;xt &amp; some entities&gt;.";
 
 		Object[] expected = {
-				DuelToken.Literal("This is 'just <literal te\"xt & some entities>."),
-				DuelToken.End
+				DuelToken.Literal("This is 'just <literal te\"xt & some entities>.")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -116,8 +109,7 @@ public class DuelLexerTests {
 		String input = "This is &apos:just &lt.literal te&quot xt &AMP some entities&GT.";
 
 		Object[] expected = {
-				DuelToken.Literal("This is ':just <.literal te\" xt & some entities>."),
-				DuelToken.End
+				DuelToken.Literal("This is ':just <.literal te\" xt & some entities>.")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -131,8 +123,7 @@ public class DuelLexerTests {
 		String input = "This is &copy;just &dot;literal te&trade;xt &middot; some entities&eacute;.";
 
 		Object[] expected = {
-				DuelToken.Literal("This is \u00A9just \u02D9literal te\u2122xt \u00B7 some entities\u00E9."),
-				DuelToken.End
+				DuelToken.Literal("This is \u00A9just \u02D9literal te\u2122xt \u00B7 some entities\u00E9.")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -146,8 +137,7 @@ public class DuelLexerTests {
 		String input = "This is &semi;just &sol;literal te&Tab;xt &bsol; some entities&zwnj;.";
 
 		Object[] expected = {
-				DuelToken.Literal("This is ;just /literal te\txt \\ some entities\u200C."),
-				DuelToken.End
+				DuelToken.Literal("This is ;just /literal te\txt \\ some entities\u200C.")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -161,8 +151,7 @@ public class DuelLexerTests {
 		String input = "This is &Sscr;just &smallsetminus;literal te&shy;xt &rfr; some entities&spades;.";
 
 		Object[] expected = {
-				DuelToken.Literal("This is \u1D4AEjust \u2216literal te\u00ADxt \u1D52F some entities\u2660."),
-				DuelToken.End
+				DuelToken.Literal("This is \u1D4AEjust \u2216literal te\u00ADxt \u1D52F some entities\u2660.")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -176,8 +165,7 @@ public class DuelLexerTests {
 		String input = "This is&amp just &THISISWRONG;literal te&123456;xt & some entities&grave.";
 
 		Object[] expected = {
-				DuelToken.Literal("This is& just &THISISWRONG;literal te&123456;xt & some entities`."),
-				DuelToken.End
+				DuelToken.Literal("This is& just &THISISWRONG;literal te&123456;xt & some entities`.")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -191,8 +179,7 @@ public class DuelLexerTests {
 		String input = "<div>";
 
 		Object[] expected = {
-				DuelToken.ElemBegin("div"),
-				DuelToken.End
+				DuelToken.ElemBegin("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -206,8 +193,7 @@ public class DuelLexerTests {
 		String input = "<div  \t >";
 
 		Object[] expected = {
-				DuelToken.ElemBegin("div"),
-				DuelToken.End
+				DuelToken.ElemBegin("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -221,8 +207,7 @@ public class DuelLexerTests {
 		String input = "</div>";
 
 		Object[] expected = {
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -236,8 +221,7 @@ public class DuelLexerTests {
 		String input = "</div\r\n\t\n>";
 
 		Object[] expected = {
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -252,8 +236,7 @@ public class DuelLexerTests {
 
 		Object[] expected = {
 				DuelToken.ElemBegin("div"),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -271,8 +254,7 @@ public class DuelLexerTests {
 				DuelToken.ElemBegin("span"),
 				DuelToken.ElemBegin("img"),
 				DuelToken.ElemEnd("span"),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -287,8 +269,7 @@ public class DuelLexerTests {
 
 		Object[] expected = {
 				DuelToken.ElemBegin("div"),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -303,8 +284,7 @@ public class DuelLexerTests {
 
 		Object[] expected = {
 				DuelToken.ElemBegin("div"),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -320,8 +300,7 @@ public class DuelLexerTests {
 		Object[] expected = {
 				DuelToken.ElemBegin("div"),
 				DuelToken.AttrName("noValue"),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -337,8 +316,7 @@ public class DuelLexerTests {
 		Object[] expected = {
 				DuelToken.ElemBegin("div"),
 				DuelToken.AttrName("noValue"),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -355,8 +333,7 @@ public class DuelLexerTests {
 				DuelToken.ElemBegin("div"),
 				DuelToken.AttrName("emptyValue"),
 				DuelToken.AttrValue(""),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -373,8 +350,7 @@ public class DuelLexerTests {
 				DuelToken.ElemBegin("div"),
 				DuelToken.AttrName("emptyValue"),
 				DuelToken.AttrValue(""),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -391,8 +367,7 @@ public class DuelLexerTests {
 				DuelToken.ElemBegin("div"),
 				DuelToken.AttrName("simpleValue"),
 				DuelToken.AttrValue(" this is the 'value' "),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -409,8 +384,7 @@ public class DuelLexerTests {
 				DuelToken.ElemBegin("div"),
 				DuelToken.AttrName("simpleValue"),
 				DuelToken.AttrValue(" this is the \"value\" "),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -428,8 +402,7 @@ public class DuelLexerTests {
 				DuelToken.AttrName("simpleValue"),
 				DuelToken.AttrValue("this_is_the_value"),
 				DuelToken.AttrName("another"),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -446,8 +419,7 @@ public class DuelLexerTests {
 				DuelToken.ElemBegin("div"),
 				DuelToken.AttrName("simpleValue"),
 				DuelToken.AttrValue("|;,"),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -464,8 +436,7 @@ public class DuelLexerTests {
 				DuelToken.ElemBegin("div"),
 				DuelToken.AttrName("simpleValue"),
 				DuelToken.AttrValue("the \"quote\"ed value &nothin"),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -482,8 +453,27 @@ public class DuelLexerTests {
 				DuelToken.ElemBegin("div"),
 				DuelToken.AttrName("simpleValue"),
 				DuelToken.AttrValue("the attribute's apos &nothin"),
-				DuelToken.ElemEnd("div"),
-				DuelToken.End
+				DuelToken.ElemEnd("div")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrWhitespaceTest() {
+
+		String input = "<test-elem\tsimple-value = \" this is the 'value' \"\r\n \t empty-value mixed-delims\r\n\t= ' foo ' ></test-elem>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("test-elem"),
+				DuelToken.AttrName("simple-value"),
+				DuelToken.AttrValue(" this is the 'value' "),
+				DuelToken.AttrName("empty-value"),
+				DuelToken.AttrName("mixed-delims"),
+				DuelToken.AttrValue(" foo "),
+				DuelToken.ElemEnd("test-elem")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -497,8 +487,7 @@ public class DuelLexerTests {
 		String input = "<% code block %>";
 
 		Object[] expected = {
-				DuelToken.Unparsed(new UnparsedBlock("<%", "%>", " code block ")),
-				DuelToken.End
+				DuelToken.Unparsed(new UnparsedBlock("<%", "%>", " code block "))
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -516,8 +505,7 @@ public class DuelLexerTests {
 				DuelToken.AttrName("href"),
 				DuelToken.AttrValue(new UnparsedBlock("<%=", "%>", " simple expr ")),
 				DuelToken.Literal("foo"),
-				DuelToken.ElemEnd("a"),
-				DuelToken.End
+				DuelToken.ElemEnd("a")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -533,8 +521,7 @@ public class DuelLexerTests {
 		Object[] expected = {
 				DuelToken.ElemBegin("span"),
 				DuelToken.Unparsed(new UnparsedBlock("<%--", "--%>", " comment ")),
-				DuelToken.ElemEnd("span"),
-				DuelToken.End
+				DuelToken.ElemEnd("span")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -550,8 +537,7 @@ public class DuelLexerTests {
 		Object[] expected = {
 				DuelToken.ElemBegin("span"),
 				DuelToken.Unparsed(new UnparsedBlock("<!--", "-->", " comment ")),
-				DuelToken.ElemEnd("span"),
-				DuelToken.End
+				DuelToken.ElemEnd("span")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -567,8 +553,7 @@ public class DuelLexerTests {
 		Object[] expected = {
 				DuelToken.Unparsed(new UnparsedBlock("<!", ">", "doctype html")),
 				DuelToken.ElemBegin("html"),
-				DuelToken.ElemEnd("html"),
-				DuelToken.End
+				DuelToken.ElemEnd("html")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -588,8 +573,7 @@ public class DuelLexerTests {
 				DuelToken.AttrValue("http://www.w3.org/1999/xhtml"),
 				DuelToken.AttrName("xml:lang"),
 				DuelToken.AttrValue("en"),
-				DuelToken.ElemEnd("html"),
-				DuelToken.End
+				DuelToken.ElemEnd("html")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -611,8 +595,7 @@ public class DuelLexerTests {
 				DuelToken.AttrValue("text/javascript"),
 				DuelToken.Literal("function foo() { for(var i=0, length=10; i"),// breaks because tag suspected
 				DuelToken.Literal("<length; i++) { alert(i); } }"),
-				DuelToken.ElemEnd("script"),
-				DuelToken.End
+				DuelToken.ElemEnd("script")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -634,8 +617,7 @@ public class DuelLexerTests {
 				DuelToken.AttrValue("text/css"),
 				DuelToken.Literal("invalid"),
 				DuelToken.Literal("<selector { color:red; }"),
-				DuelToken.ElemEnd("style"),
-				DuelToken.End
+				DuelToken.ElemEnd("style")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -658,8 +640,7 @@ public class DuelLexerTests {
 				DuelToken.Literal("#"),
 				DuelToken.Unparsed(new UnparsedBlock("<%=", "%>", " \"hacky-technique\" ")),
 				DuelToken.Literal(" { color:red; }"),
-				DuelToken.ElemEnd("style"),
-				DuelToken.End
+				DuelToken.ElemEnd("style")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -680,8 +661,7 @@ public class DuelLexerTests {
 				DuelToken.AttrName("type"),
 				DuelToken.AttrValue("text/css"),
 				DuelToken.Literal(".my-class { color:red; }"),
-				DuelToken.ElemEnd("style"),
-				DuelToken.End
+				DuelToken.ElemEnd("style")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -702,8 +682,7 @@ public class DuelLexerTests {
 				DuelToken.AttrName("type"),
 				DuelToken.AttrValue("text/css"),
 				DuelToken.Literal(".my-class { color:red; }"),
-				DuelToken.ElemEnd("style"),
-				DuelToken.End
+				DuelToken.ElemEnd("style")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -724,8 +703,7 @@ public class DuelLexerTests {
 				DuelToken.AttrName("type"),
 				DuelToken.AttrValue("text/javascript"),
 				DuelToken.Literal("function foo() { for(var i=0, length=10; i<length; i++) { alert(i); } }"),
-				DuelToken.ElemEnd("script"),
-				DuelToken.End
+				DuelToken.ElemEnd("script")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -746,8 +724,7 @@ public class DuelLexerTests {
 				DuelToken.AttrName("type"),
 				DuelToken.AttrValue("text/javascript"),
 				DuelToken.Literal("function foo() { for(var i=0, length=10; i<length; i++) { alert(i); } }"),
-				DuelToken.ElemEnd("script"),
-				DuelToken.End
+				DuelToken.ElemEnd("script")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();

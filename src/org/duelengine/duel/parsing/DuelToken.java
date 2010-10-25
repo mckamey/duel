@@ -79,7 +79,7 @@ public class DuelToken {
 	/* reusable tokens and helper methods */
 
 	static final DuelToken None = new DuelToken(DuelTokenType.NONE);
-	public static final DuelToken End = new DuelToken(DuelTokenType.END);
+	static final DuelToken End = new DuelToken(DuelTokenType.END);
 
 	public static DuelToken Error(String message) {
 		return new DuelToken(DuelTokenType.ERROR, message);
