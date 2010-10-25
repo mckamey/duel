@@ -263,6 +263,24 @@ public class DuelLexerTests {
 	}
 
 	@Test
+	public void elemCasingTest() {
+
+		String input = "</ALLCAPS><PascalCase><xml-style></CONST_STYLE></camelCase>";
+
+		Object[] expected = {
+				DuelToken.ElemEnd("ALLCAPS"),
+				DuelToken.ElemBegin("PascalCase"),
+				DuelToken.ElemBegin("xml-style"),
+				DuelToken.ElemEnd("CONST_STYLE"),
+				DuelToken.ElemEnd("camelCase")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void elemVoidTest() {
 
 		String input = "<div/>";

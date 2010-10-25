@@ -387,8 +387,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 			return false;
 		}
 
-		// always generates lowercase tags
-		String tagName = this.buffer.toString().toLowerCase();
+		String tagName = this.buffer.toString();
 
 		// check if should unsuspend lexer
 		if (this.suspendMode) {
