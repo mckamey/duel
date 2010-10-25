@@ -472,6 +472,40 @@ public class DuelLexerTests {
 		assertArrayEquals(expected, actual);
 	}
 
+	@Test
+	public void codeSimpleTest() {
+
+		String input = "<% code block %>";
+
+		Object[] expected = {
+				DuelToken.Unparsed(new UnparsedBlock("<%", "%>", " code block ")),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void codeAttributeTest() {
+
+		String input = "<a href=\"<%= simple expr %>\">foo</a>";
+
+		Object[] expected = {
+				DuelToken.ElemBegin("a"),
+				DuelToken.AttrName("href"),
+				DuelToken.AttrValue(new UnparsedBlock("<%=", "%>", " simple expr ")),
+				DuelToken.Literal("foo"),
+				DuelToken.ElemEnd("a"),
+				DuelToken.End
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
 	private void dumpList(String label, Object[] tokens) {
 		System.out.println();
 		System.out.print(label+":");

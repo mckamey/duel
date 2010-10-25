@@ -39,14 +39,26 @@ public class DuelLexer implements Iterator<DuelToken> {
 		}
 	}
 
+	/**
+	 * Gets the current line within the input
+	 * @return
+	 */
 	public int getLine() {
 		return this.line;
 	}
 
+	/**
+	 * Gets the current column within the input
+	 * @return
+	 */
 	public int getColumn() {
 		return this.column;
 	}
 
+	/**
+	 * Gets the current index within the input 
+	 * @return
+	 */
 	public int getIndex() {
 		return this.index;
 	}
@@ -98,7 +110,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 					case UNPARSED:
 						switch (this.ch) {
 							case DuelGrammar.OP_ELEM_BEGIN:
-								if (this.tryScanUnparsedBlock(false) || this.tryScanTag()) {
+								if (this.tryScanBlock(false) || this.tryScanTag()) {
 									return this.token;
 								}
 								break;
@@ -326,22 +338,6 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 
 	/**
-
-	 * Tries to scan the next token as an unparsed block
-	 * @return true if block token was found
-	 * @throws IOException
-	 */
-	private boolean tryScanUnparsedBlock(boolean asAttr)
-		throws IOException {
-
-		this.setMark(3);
-
-		// TODO
-		this.resetMark();
-		return false;
-	}
-
-	/**
 	 * Tries to scan the next token as a tag
 	 * @return true if tag token was found
 	 * @throws IOException
@@ -438,7 +434,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 				delim = DuelGrammar.OP_ATTR_DELIM;
 		}
 
-		if (!this.tryScanUnparsedBlock(true)) {
+		if (this.ch != DuelGrammar.OP_ELEM_BEGIN || !this.tryScanBlock(true)) {
 			this.scanAttrLiteral(delim);
 		}
 
@@ -484,6 +480,134 @@ public class DuelLexer implements Iterator<DuelToken> {
 					continue;
 			}
 		}
+	}
+
+	/**
+	 * Tries to scan the next token as an unparsed block
+	 * @return true if block token was found
+	 * @throws IOException
+	 */
+	private boolean tryScanBlock(boolean asAttr)
+		throws IOException {
+
+		// mark current position with capacity to check start delims
+		final int CAPACITY = 16;
+		this.setMark(CAPACITY);
+
+		String value = null;
+		String begin = null;
+		String end = null;
+
+		// '<'
+		switch (this.nextChar()) {
+
+			case '%':
+				switch (this.nextChar()) {
+					case '-':	// "<%--", "--%>"		ASP/PSP/JSP-style code comment
+						begin = "<%--";
+						end = "--%>";
+						value = this.scanBlockValue("--", end);
+						break;
+
+					case '@':	// "<%@",  "%>"			ASP/PSP/JSP directive
+					case '=':	// "<%=",  "%>"			ASP/PSP/JSP/Duel expression
+					case '!':	// "<%!",  "%>"			JSP/JBST declaration
+					case '#':	// "<%#",  "%>"			ASP.NET/Duel databind expression
+					case '$':	// "<%$",  "%>"			ASP.NET/Duel extension
+					case ':':	// "<%:",  "%>"			ASP.NET 4 HTML-encoded expression
+
+						begin = "<%"+(char)this.ch;
+						end = "%>";
+						value = this.scanBlockValue(""+(char)this.ch, end);
+						break;
+
+					default:
+						begin = "<%";
+						end = "%>";
+						value = this.scanBlockValue("", end);
+						break;
+				}
+				break;
+
+			case '!':
+				switch (this.nextChar()) {
+					case '-':	// "<!--", "-->"		XML/HTML/SGML comment
+						begin = "<!--";
+						end = "-->";
+						value = this.scanBlockValue("--", end);
+						break;
+
+					case '[':	// "<![CDATA[", "]]>"	CDATA section
+						value = this.scanBlockValue("[CDATA[", "]]>");
+						if (value != null) {
+							// unwrap CDATA as literal text
+							this.token = asAttr ? DuelToken.AttrValue(value) : DuelToken.Literal(value);
+							return true;
+						}
+						break;
+
+					default:	// "<!", ">"			SGML declaration (e.g. DOCTYPE or server-side include)
+						begin = "<!";
+						end = ">";
+						value = this.scanBlockValue("!", ">");
+						break;
+				}
+				break;
+		}
+
+		if (value == null) {
+			// NOTE: this may throw an exception if block was unterminated
+			this.resetMark();
+			return false;
+		}
+
+		if (this.ch == DuelGrammar.OP_ELEM_END) {
+			this.nextChar();
+		}
+
+		UnparsedBlock block = new UnparsedBlock(begin, end, value);
+		this.token = asAttr ? DuelToken.AttrValue(block) : DuelToken.Unparsed(block);
+		return true;
+	}
+
+	private String scanBlockValue(String begin, String end)
+		throws IOException {
+
+		for (int i=0, length=begin.length(); i<length; i++) {
+			if (this.ch != begin.charAt(i)) {
+				// didn't match begin delim
+				return null;
+			}
+
+			this.nextChar();
+		}
+
+		// reset the buffer, mark start
+		this.buffer.setLength(0);
+
+		for (int i=0, length=end.length(); this.ch != DuelGrammar.EOF; ) {
+			// check each char
+			if (this.ch == end.charAt(i)) {
+				// move to next char
+				i++;
+				if (i >= length) {
+					length--;
+
+					// trim ending delim from buffer
+					this.buffer.setLength(this.buffer.length() - length);
+					return this.buffer.toString();
+				}
+			} else {
+				// reset to start of delim
+				i = 0;
+			}
+
+			this.buffer.append((char)this.ch);
+			this.nextChar();
+		}
+
+		// TODO: determine better exception type
+		throw new IOException("Unterminated block");
 	}
 
 	/**

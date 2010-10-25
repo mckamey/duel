@@ -22,11 +22,4 @@ final class DuelGrammar {
 	public static final char OP_ENTITY_HEX = 'x';
 	public static final char OP_ENTITY_HEX_ALT = 'X';
 	public static final char OP_ENTITY_END = ';';
-
-	public static final char OP_COMMENT = '!';
-	public static final char OP_COMMENT_DELIM = '-';
-	public static final String OP_COMMENT_BEGIN = "--";
-	public static final String OP_COMMENT_END = "--";
-	public static final String OP_CDATA_BEGIN = "[CDATA[";
-	public static final String OP_CDATA_END = "]]";
 }
