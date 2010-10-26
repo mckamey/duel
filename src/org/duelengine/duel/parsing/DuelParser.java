@@ -43,24 +43,19 @@ public class DuelParser {
 			throw new NullPointerException("tokens");
 		}
 
-		DocumentNode docFrag = new DocumentNode();
-
 		this.tokens = tokens;
 		try {
-			while (this.next != null || this.tokens.hasNext()) {
-				if (this.next == null) {
-					this.next = this.tokens.next();
-					if (this.next == null) {
-						continue;
-					}
-				}
+
+			DocumentNode docFrag = new DocumentNode();
+			while (this.hasNext()) {
 				this.parseNext(docFrag);
 			}
+			return docFrag;
+
 		} finally {
 			this.tokens = null;
+			this.next = null;
 		}
-
-		return docFrag;
 	}
 
 	private void parseNext(ContainerNode parent)
@@ -98,20 +93,6 @@ public class DuelParser {
 		}
 	}
 
-	private void parseBlock(ContainerNode parent) {
-		BlockValue block = this.next.getBlock();
-
-		String begin = block.getBegin();
-		if (begin != null) {
-			if (begin.equals(DocTypeNode.BEGIN)) {
-				parent.appendChild(new DocTypeNode(block.getValue()));
-			}
-		}
-		
-		// consume next
-		this.next = null;
-	}
-
 	/**
 	 * Parses the next token into a literal text node
 	 * @param parent
@@ -146,17 +127,9 @@ public class DuelParser {
 
 		// consume next
 		this.next = null;
-
 		String attrName = null;
 
-		while (this.next != null || this.tokens.hasNext()) {
-			if (this.next == null) {
-				this.next = this.tokens.next();
-				if (this.next == null) {
-					continue;
-				}
-			}
-
+		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case ATTR_NAME:
 					attrName = this.next.getValue();
@@ -173,8 +146,8 @@ public class DuelParser {
 						continue;
 					}
 
-					// TODO: process blocks
-					//parent.setAttribute(attrName, next.getBlock());
+					Node block = this.createBlockNode(next.getBlock());
+					elem.setAttribute(attrName, block);
 					attrName = null;
 
 					// consume next
@@ -187,7 +160,8 @@ public class DuelParser {
 						continue;
 					}
 
-					elem.setAttribute(attrName, new LiteralNode(this.next.getValue()));
+					Node literal = new LiteralNode(this.next.getValue());
+					elem.setAttribute(attrName, literal);
 					attrName = null;
 
 					// consume next
@@ -223,5 +197,41 @@ public class DuelParser {
 					break;
 			}
 		}
+	}
+
+	private void parseBlock(ContainerNode parent) {
+		BlockValue block = this.next.getBlock();
+
+		if (block != null) {
+			Node node = this.createBlockNode(block);
+			if (node != null) {
+				parent.appendChild(node);
+			}
+		}
+		
+		// consume next
+		this.next = null;
+	}
+
+	private Node createBlockNode(BlockValue block) {
+		String begin = block.getBegin();
+		if (begin == null) {
+			return null;
+		}
+
+		if (begin.equals(DocTypeNode.BEGIN)) {
+			return new DocTypeNode(block.getValue());
+		}
+
+		return null;
+	}
+
+	private boolean hasNext() {
+		// ensure non-null value
+		while (this.next == null && this.tokens.hasNext()) {
+			this.next = this.tokens.next();
+		}
+
+		return (this.next != null);
 	}
 }
