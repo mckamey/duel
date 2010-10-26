@@ -20,12 +20,82 @@ public class DuelLexerTests {
 	}
 
 	@Test
+	public void entitySimpleTest() {
+
+		String input = "&lt;";
+
+		Object[] expected = {
+				DuelToken.literal("<")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void entityEuroTest() {
+
+		String input = "&euro;";
+
+		Object[] expected = {
+				DuelToken.literal("\u20AC")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void entityOnlyTest() {
 
 		String input = "&vert;&semi;&comma;";
 
 		Object[] expected = {
 				DuelToken.literal("|;,")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void entityLeadingTest() {
+
+		String input = "leading&amp;";
+
+		Object[] expected = {
+				DuelToken.literal("leading&")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void entityTrailingTest() {
+
+		String input = "&amp;trailing";
+
+		Object[] expected = {
+				DuelToken.literal("&trailing")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void entityBTest() {
+
+		String input = "&#66;";
+
+		Object[] expected = {
+				DuelToken.literal("B")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -62,7 +132,63 @@ public class DuelLexerTests {
 	}
 
 	@Test
-	public void entityHexTest() {
+	public void entityHexLowerXTest() {
+
+		String input = "&#x37;";
+
+		Object[] expected = {
+				DuelToken.literal("7")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void entityHexUpperXTest() {
+
+		String input = "&#X38;";
+
+		Object[] expected = {
+				DuelToken.literal("8")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void entityHexUpperCaseTest() {
+
+		String input = "&#xABCD;";
+
+		Object[] expected = {
+				DuelToken.literal("\uABCD")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void entityHexLowerCaseTest() {
+
+		String input = "&#xabcd;";
+
+		Object[] expected = {
+				DuelToken.literal("\uabcd")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void entityHexMixedTest() {
 
 		String input = "This is &#x27;just &#x3C;literal te&#X22;xt &#x26; some entities&#X3e;.";
 
@@ -82,6 +208,20 @@ public class DuelLexerTests {
 
 		Object[] expected = {
 				DuelToken.literal("This is 'just <literal te\"xt & some entities>.")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void entityMalformedTest() {
+
+		String input = "there should &#xnot &Xltb&#gte decoded chars & inside this text";
+
+		Object[] expected = {
+				DuelToken.literal("there should &#xnot &Xltb&#gte decoded chars & inside this text")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -566,6 +706,21 @@ public class DuelLexerTests {
 	}
 
 	@Test
+	public void codeCommentHTMLTest() {
+
+		String input =
+			"<%--\r\n<html>\r\n\t<body style=\"color:lime\">\r\n\t\t<!-- not much to say here -->\r\n\t</body>\r\n</html>\r\n--%>";
+
+		Object[] expected = {
+				DuelToken.block(new BlockValue("<%--", "--%>", "\n<html>\n\t<body style=\"color:lime\">\n\t\t<!-- not much to say here -->\n\t</body>\n</html>\n"))
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void htmlCommentTest() {
 
 		String input = "<span><!-- comment --></span>";
@@ -582,7 +737,7 @@ public class DuelLexerTests {
 	}
 
 	@Test
-	public void html5DocTypeTest() {
+	public void doctypeHTML5Test() {
 
 		String input = "<!doctype html><html />";
 
@@ -598,9 +753,10 @@ public class DuelLexerTests {
 	}
 
 	@Test
-	public void xhtmlDocTypeTest() {
+	public void doctypeXHTMLTest() {
 
-		String input = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" />";
+		String input = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">"+
+			"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" />";
 
 		Object[] expected = {
 				DuelToken.block(new BlockValue("<!", ">", "DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
@@ -610,6 +766,20 @@ public class DuelLexerTests {
 				DuelToken.attrName("xml:lang"),
 				DuelToken.attrValue("en"),
 				DuelToken.elemEnd("html")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	//@Test // Embedded DOCTYPE not supported
+	public void doctypeLocalTest() {
+
+		String input = "<!DOCTYPE doc [\r\n\t<!ATTLIST normId id ID #IMPLIED>\r\n\t<!ATTLIST normNames attr NMTOKENS #IMPLIED>\r\n]>";
+
+		Object[] expected = {
+				DuelToken.block(new BlockValue("<!", ">", "DOCTYPE doc [\r\n\t<!ATTLIST normId id ID #IMPLIED>\r\n\t<!ATTLIST normNames attr NMTOKENS #IMPLIED>\r\n]"))
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();
@@ -661,7 +831,65 @@ public class DuelLexerTests {
 				DuelToken.literal("<strong>Lorem ipsum"),// breaks because tag suspected
 				DuelToken.literal("</strong> dolor sit amet, "),// breaks because tag suspected
 				DuelToken.literal("<i>consectetur"),// breaks because tag suspected
-				DuelToken.literal("</i> adipiscing elit.';\n\t"),// breaks because tag suspected
+				DuelToken.literal("</i> adipiscing elit.';\n\t"),
+				DuelToken.elemEnd("script"),
+				DuelToken.literal("\n"),
+				DuelToken.elemEnd("div")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void scriptUnwrapMarkupTest() {
+
+		String input =
+			"<div class='content'>\r\n"+
+			"\t<script type='text/javascript'><!--\r\n"+
+			"\t\tvar text = '<strong>Lorem ipsum</strong> dolor sit amet, <i>consectetur</i> adipiscing elit.';\r\n"+
+			"\t//--></script>\r\n"+
+			"</div>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("div"),
+				DuelToken.attrName("class"),
+				DuelToken.attrValue("content"),
+				DuelToken.literal("\n\t"),
+				DuelToken.elemBegin("script"),
+				DuelToken.attrName("type"),
+				DuelToken.attrValue("text/javascript"),
+				DuelToken.literal("\n\t\tvar text = '<strong>Lorem ipsum</strong> dolor sit amet, <i>consectetur</i> adipiscing elit.';\n\t//"),
+				DuelToken.elemEnd("script"),
+				DuelToken.literal("\n"),
+				DuelToken.elemEnd("div")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void scriptCDATAMarkupTest() {
+
+		String input =
+			"<div class='content'>\r\n"+
+			"\t<script type='text/javascript'><![CDATA[\r\n"+
+			"\t\tvar text = '<strong>Lorem ipsum</strong> dolor sit amet, <i>consectetur</i> adipiscing elit.';\r\n"+
+			"\t]]></script>\r\n"+
+			"</div>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("div"),
+				DuelToken.attrName("class"),
+				DuelToken.attrValue("content"),
+				DuelToken.literal("\n\t"),
+				DuelToken.elemBegin("script"),
+				DuelToken.attrName("type"),
+				DuelToken.attrValue("text/javascript"),
+				DuelToken.literal("\n\t\tvar text = '<strong>Lorem ipsum</strong> dolor sit amet, <i>consectetur</i> adipiscing elit.';\n\t"),
 				DuelToken.elemEnd("script"),
 				DuelToken.literal("\n"),
 				DuelToken.elemEnd("div")

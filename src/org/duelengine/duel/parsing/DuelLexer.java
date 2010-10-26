@@ -306,7 +306,13 @@ public class DuelLexer implements Iterator<DuelToken> {
 				}
 			}
 
-			int codePoint = Integer.parseInt(entity.toString(), isHex ? 0x10 : 10);
+			int codePoint;
+			try {
+				codePoint = Integer.parseInt(entity.toString(), isHex ? 0x10 : 10);
+			} catch (NumberFormatException ex) {
+				codePoint = -1;
+			}
+
 			if (codePoint > 0) {
 				this.buffer.append(Character.toChars(codePoint));
 				isValid = true;
