@@ -397,7 +397,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 		String tagName = this.buffer.toString();
 
-		// check if should unsuspend lexer
+		// check if should exit suspendMode
 		if (this.suspendMode) {
 			if (isEndTag && this.lastTag.equals(tagName)) {
 				this.suspendMode = false;
@@ -411,8 +411,8 @@ public class DuelLexer implements Iterator<DuelToken> {
 		this.lastTag = tagName;
 		this.token = isEndTag ? DuelToken.elemEnd(this.lastTag) : DuelToken.elemBegin(this.lastTag);
 
-		// tags with unparsed content put lexer into suspended mode
-		this.suspendMode = (lastTag.equals("script")) || (lastTag.equals("style"));
+		// tags with unparsed content enter suspendMode
+		this.suspendMode = !isEndTag && ((lastTag.equals("script")) || (lastTag.equals("style")));
 		return true;
 	}
 

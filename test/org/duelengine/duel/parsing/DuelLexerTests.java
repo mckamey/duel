@@ -640,6 +640,39 @@ public class DuelLexerTests {
 	}
 
 	@Test
+	public void scriptMarkupTest() {
+
+		String input =
+			"<div class='content'>\r\n"+
+			"\t<script type='text/javascript'>\r\n"+
+			"\t\tvar text = '<strong>Lorem ipsum</strong> dolor sit amet, <i>consectetur</i> adipiscing elit.';\r\n"+
+			"\t</script>\r\n"+
+			"</div>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("div"),
+				DuelToken.attrName("class"),
+				DuelToken.attrValue("content"),
+				DuelToken.literal("\n\t"),
+				DuelToken.elemBegin("script"),
+				DuelToken.attrName("type"),
+				DuelToken.attrValue("text/javascript"),
+				DuelToken.literal("\n\t\tvar text = '"),// breaks because tag suspected
+				DuelToken.literal("<strong>Lorem ipsum"),// breaks because tag suspected
+				DuelToken.literal("</strong> dolor sit amet, "),// breaks because tag suspected
+				DuelToken.literal("<i>consectetur"),// breaks because tag suspected
+				DuelToken.literal("</i> adipiscing elit.';\n\t"),// breaks because tag suspected
+				DuelToken.elemEnd("script"),
+				DuelToken.literal("\n"),
+				DuelToken.elemEnd("div")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void styleBlockTest() {
 
 		String input =
