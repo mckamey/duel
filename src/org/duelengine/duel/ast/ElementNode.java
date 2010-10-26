@@ -113,8 +113,8 @@ public class ElementNode extends ContainerNode {
 	}
 
 	@Override
-	public String toString() {
-		StringBuilder buffer = new StringBuilder("<").append(this.tagName);
+	StringBuilder toString(StringBuilder buffer) {
+		buffer.append("<").append(this.tagName);
 
 		for (String name : this.attributes.keySet()) {
 			buffer
@@ -126,12 +126,13 @@ public class ElementNode extends ContainerNode {
 		}
 
 		if (this.hasChildren()) {
-			buffer.append('>').append(super.toString()).append("</").append(this.tagName);
+			buffer.append('>');
+			super.toString(buffer).append("</").append(this.tagName);
 		} else {
 			buffer.append(" /");
 		}
 
-		return buffer.append('>').toString();
+		return buffer.append('>');
 	}
 
 	@Override

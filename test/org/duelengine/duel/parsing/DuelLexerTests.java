@@ -403,6 +403,32 @@ public class DuelLexerTests {
 	}
 
 	@Test
+	public void elemListTest() {
+
+		String input = "<ul class='foo'>\r\t<li>one</li>\r\t<li>two</li>\r</ul>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("ul"),
+				DuelToken.attrName("class"),
+				DuelToken.attrValue("foo"),
+				DuelToken.literal("\n\t"),
+				DuelToken.elemBegin("li"),
+				DuelToken.literal("one"),
+				DuelToken.elemEnd("li"),
+				DuelToken.literal("\n\t"),
+				DuelToken.elemBegin("li"),
+				DuelToken.literal("two"),
+				DuelToken.elemEnd("li"),
+				DuelToken.literal("\n"),
+				DuelToken.elemEnd("ul")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void elemOverlappingTest() {
 
 		String input = "<odd><auto-closed><even>plain text</odd></ignored></even>";

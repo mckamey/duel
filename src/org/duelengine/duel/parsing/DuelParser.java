@@ -14,7 +14,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public ContainerNode parse(DuelToken[] tokens)
+	public DocumentNode parse(DuelToken[] tokens)
 		throws Exception {
 
 		return this.parse(Arrays.asList(tokens).iterator());
@@ -25,7 +25,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public ContainerNode parse(Collection<DuelToken> tokens)
+	public DocumentNode parse(Collection<DuelToken> tokens)
 		throws Exception {
 
 		return this.parse(tokens.iterator());
@@ -36,15 +36,14 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public ContainerNode parse(Iterator<DuelToken> tokens)
+	public DocumentNode parse(Iterator<DuelToken> tokens)
 		throws Exception {
 
 		if (tokens == null) {
 			throw new NullPointerException("tokens");
 		}
 
-		// TODO: build real document class
-		ContainerNode docFrag = new ContainerNode();
+		DocumentNode docFrag = new DocumentNode();
 
 		this.tokens = tokens;
 		try {
@@ -76,10 +75,7 @@ public class DuelParser {
 				break;
 
 			case BLOCK:
-				// TODO: process blocks
-
-				// consume next
-				this.next = null;
+				this.parseBlock(parent);
 				break;
 
 			case ELEM_END:
@@ -100,6 +96,20 @@ public class DuelParser {
 				// TODO: syntax error
 				throw new Exception("Invalid next token: "+this.next);
 		}
+	}
+
+	private void parseBlock(ContainerNode parent) {
+		BlockValue block = this.next.getBlock();
+
+		String begin = block.getBegin();
+		if (begin != null) {
+			if (begin.equals(DocTypeNode.BEGIN)) {
+				parent.appendChild(new DocTypeNode(block.getValue()));
+			}
+		}
+		
+		// consume next
+		this.next = null;
 	}
 
 	/**

@@ -41,17 +41,19 @@ public class ContainerNode extends Node {
 		child.setParent(this);
 	}
 
-	@Override
-	public String toString() {
-		if (this.children.isEmpty()) {
-			return "";
+	StringBuilder toString(StringBuilder buffer) {
+		if (!this.children.isEmpty()) {
+			for (Node child : this.children) {
+				buffer.append(child);
+			}
 		}
 
-		StringBuilder buffer = new StringBuilder();
-		for (Node child : this.children) {
-			buffer.append(child);
-		}		
-		return buffer.toString();
+		return buffer;
+	}
+
+	@Override
+	public String toString() {
+		return this.toString(new StringBuilder()).toString();
 	}
 
 	@Override
@@ -62,7 +64,6 @@ public class ContainerNode extends Node {
 		}
 
 		ContainerNode that = (ContainerNode)arg;
-
 		if (this.children.size() != that.children.size()) {
 			return false;
 		}

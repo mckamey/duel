@@ -14,11 +14,11 @@ public class DuelParserTests {
 				DuelToken.literal("This is just literal text.")
 			};
 
-		ContainerNode expected = new ContainerNode (new Node[] {
+		DocumentNode expected = new DocumentNode(new Node[] {
 				new LiteralNode("This is just literal text.")
 			});
 
-		ContainerNode actual = new DuelParser().parse(input);
+		DocumentNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -32,11 +32,11 @@ public class DuelParserTests {
 				DuelToken.literal("which can all be folded.")
 			};
 
-		ContainerNode expected = new ContainerNode (new Node[] {
+		DocumentNode expected = new DocumentNode(new Node[] {
 				new LiteralNode("This is literal text\nwhich can all be folded.")
 			});
 
-		ContainerNode actual = new DuelParser().parse(input);
+		DocumentNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -48,11 +48,11 @@ public class DuelParserTests {
 				DuelToken.elemBegin("div")
 			};
 
-		ContainerNode expected = new ContainerNode (new Node[] {
+		DocumentNode expected = new DocumentNode(new Node[] {
 				new ElementNode("div")
 			});
 
-		ContainerNode actual = new DuelParser().parse(input);
+		DocumentNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -65,11 +65,11 @@ public class DuelParserTests {
 				DuelToken.elemEnd("div")
 			};
 
-		ContainerNode expected = new ContainerNode (new Node[] {
+		DocumentNode expected = new DocumentNode(new Node[] {
 				new ElementNode("div")
 			});
 
-		ContainerNode actual = new DuelParser().parse(input);
+		DocumentNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -83,13 +83,13 @@ public class DuelParserTests {
 				DuelToken.attrValue("foo")
 			};
 
-		ContainerNode expected = new ContainerNode (new Node[] {
+		DocumentNode expected = new DocumentNode(new Node[] {
 				new ElementNode("div", new AttributeNode[] {
 						new AttributeNode("class", new LiteralNode("foo"))
 					})
 			});
 
-		ContainerNode actual = new DuelParser().parse(input);
+		DocumentNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -100,17 +100,63 @@ public class DuelParserTests {
 		DuelToken[] input = {
 				DuelToken.elemBegin("div"),
 				DuelToken.elemBegin("span"),
+				DuelToken.elemBegin("img"),
 				DuelToken.elemEnd("span"),
 				DuelToken.elemEnd("div")
 			};
 
-		ContainerNode expected = new ContainerNode (new Node[] {
+		DocumentNode expected = new DocumentNode(new Node[] {
 				new ElementNode("div", null, new Node[] {
-						new ElementNode("span")
+						new ElementNode("span", null, new Node[] {
+								new ElementNode("img")
+							})
 					})
 			});
 
-		ContainerNode actual = new DuelParser().parse(input);
+		DocumentNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void elemListTest() throws Exception {
+
+		DuelToken[] input = {
+				DuelToken.elemBegin("ul"),
+				DuelToken.attrName("class"),
+				DuelToken.attrValue("foo"),
+				DuelToken.literal("\n\t"),
+				DuelToken.elemBegin("li"),
+				DuelToken.literal("one"),
+				DuelToken.elemEnd("li"),
+				DuelToken.literal("\n\t"),
+				DuelToken.elemBegin("li"),
+				DuelToken.literal("two"),
+				DuelToken.elemEnd("li"),
+				DuelToken.literal("\n"),
+				DuelToken.elemEnd("ul")
+			};
+
+		DocumentNode expected = new DocumentNode(new Node[] {
+				new ElementNode(
+					"ul",
+					new AttributeNode[] {
+						new AttributeNode("class", new LiteralNode("foo"))
+					},
+					new Node[] {
+						new LiteralNode("\n\t"),
+						new ElementNode("li", null, new Node[] {
+								new LiteralNode("one")
+							}),
+						new LiteralNode("\n\t"),
+						new ElementNode("li", null, new Node[] {
+								new LiteralNode("two")
+							}),
+						new LiteralNode("\n")
+					})
+			});
+
+		DocumentNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -125,13 +171,13 @@ public class DuelParserTests {
 				DuelToken.elemEnd("span")
 			};
 
-		ContainerNode expected = new ContainerNode (new Node[] {
+		DocumentNode expected = new DocumentNode(new Node[] {
 				new ElementNode("div", null, new Node[] {
 						new ElementNode("span")
 					})
 			});
 
-		ContainerNode actual = new DuelParser().parse(input);
+		DocumentNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -149,7 +195,7 @@ public class DuelParserTests {
 				DuelToken.elemEnd("span")
 			};
 
-		ContainerNode expected = new ContainerNode (new Node[] {
+		DocumentNode expected = new DocumentNode(new Node[] {
 				new ElementNode("div", null, new Node[] {
 						new ElementNode("img"),
 						new ElementNode("span", null, new Node[] {
@@ -158,7 +204,48 @@ public class DuelParserTests {
 					})
 			});
 
-		ContainerNode actual = new DuelParser().parse(input);
+		DocumentNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void doctypeTest() throws Exception {
+
+		DuelToken[] input = {
+				DuelToken.block(new BlockValue("<!doctype", ">", " html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
+				DuelToken.literal("\n"),
+				DuelToken.elemBegin("html"),
+				DuelToken.attrName("xmlns"),
+				DuelToken.attrValue("http://www.w3.org/1999/xhtml"),
+				DuelToken.attrName("xml:lang"),
+				DuelToken.attrValue("en"),
+				DuelToken.literal("\n"),
+				DuelToken.elemBegin("body"),
+				DuelToken.literal("Lorem ipsum dolor sit amet"),
+				DuelToken.elemEnd("body"),
+				DuelToken.literal("\n"),
+				DuelToken.elemEnd("html")
+			};
+
+		DocumentNode expected = new DocumentNode(new Node[] {
+				new DocTypeNode(" html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\""),
+				new LiteralNode("\n"),
+				new ElementNode("html",
+					new AttributeNode[] {
+						new AttributeNode("xmlns", new LiteralNode("http://www.w3.org/1999/xhtml")),
+						new AttributeNode("xml:lang", new LiteralNode("en"))
+					},
+					new Node[] {
+						new LiteralNode("\n"),
+						new ElementNode("body", null, new Node[] {
+							new LiteralNode("Lorem ipsum dolor sit amet")
+						}),
+						new LiteralNode("\n")
+					})
+			});
+
+		DocumentNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
