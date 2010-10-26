@@ -582,7 +582,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 			case '!':
 				switch (this.nextChar()) {
-					case '-':	// "<!--", "-->"		XML/HTML/SGML comment
+					case '-':	// "<!--", "-->"		XML/HTML/SGML comment or server-side include
 						begin = "<!--";
 						end = "-->";
 						value = this.tryScanBlockValue("--", end);
@@ -601,10 +601,15 @@ public class DuelLexer implements Iterator<DuelToken> {
 						}
 						break;
 
-					default:	// "<!", ">"			SGML declaration (e.g. DOCTYPE or server-side include)
+					default:	// "<!", ">"			SGML declaration (e.g. DocType)
 						begin = "<!";
 						end = ">";
-						value = this.tryScanBlockValue("", ">");
+						value = this.tryScanBlockValue("", end);
+						if ((value != null) && (value.length() >= 7) &&
+							value.substring(0, 7).equalsIgnoreCase("doctype")) {
+							value = value.substring(7);
+							begin = "<!doctype";
+						}
 						break;
 				}
 				break;
