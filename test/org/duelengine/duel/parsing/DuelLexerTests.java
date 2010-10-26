@@ -587,6 +587,24 @@ public class DuelLexerTests {
 	}
 
 	@Test
+	public void attrNoDelimAltTest() {
+
+		String input = "<div another simpleValue=this_is_the_value></div>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("div"),
+				DuelToken.attrName("another"),
+				DuelToken.attrName("simpleValue"),
+				DuelToken.attrValue("this_is_the_value"),
+				DuelToken.elemEnd("div")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void attrOnlyEntitiesTest() {
 
 		String input = "<div simpleValue='&vert;&semi;&comma;'></div>";
@@ -650,6 +668,26 @@ public class DuelLexerTests {
 				DuelToken.attrName("mixed-delims"),
 				DuelToken.attrValue(" foo "),
 				DuelToken.elemEnd("test-elem")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrMixedTest() {
+
+		String input = "<root no-value whitespace=\" this contains whitespace \" anyQuotedText=\"/\\\uCAFE\uBABE\uAB98\uFCDE\ubcda\uef4A\r\n\t`1~!@#$%^&*()_+-=[]{}|;:',./<>?\"></root>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("root"),
+				DuelToken.attrName("no-value"),
+				DuelToken.attrName("whitespace"),
+				DuelToken.attrValue(" this contains whitespace "),
+				DuelToken.attrName("anyQuotedText"),
+				DuelToken.attrValue("/\\\uCAFE\uBABE\uAB98\uFCDE\ubcda\uef4A\n\t`1~!@#$%^&*()_+-=[]{}|;:',./<>?"),
+				DuelToken.elemEnd("root")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();

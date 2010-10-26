@@ -473,19 +473,22 @@ public class DuelLexer implements Iterator<DuelToken> {
 		// skip whitespace
 		while (CharUtility.isWhiteSpace(this.nextChar()));
 
-		int delim;
+		int delim, altDelim;
 		switch (this.ch) {
 			case DuelGrammar.OP_STRING_DELIM:
 			case DuelGrammar.OP_STRING_DELIM_ALT:
 				delim = this.ch;
+				altDelim = EOF;
 				this.nextChar();
 				break;
 			default:
 				delim = DuelGrammar.OP_ATTR_DELIM;
+				altDelim = DuelGrammar.OP_ELEM_END;
+				break;
 		}
 
 		if (this.ch != DuelGrammar.OP_ELEM_BEGIN || !this.tryScanBlock(true)) {
-			this.scanAttrLiteral(delim);
+			this.scanAttrLiteral(delim, altDelim);
 		}
 
 		if (this.ch == delim) {
@@ -500,7 +503,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	 * @return
 	 * @throws IOException
 	 */
-	private DuelToken scanAttrLiteral(int delim)
+	private DuelToken scanAttrLiteral(int delim, int altDelim)
 		throws IOException {
 
 		// reset the buffer
@@ -508,7 +511,6 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 		while (true) {
 			switch (this.ch) {
-				case DuelGrammar.OP_ELEM_END:
 				case EOF:
 					// flush the buffer
 					return (this.token = DuelToken.attrValue(this.buffer.toString()));
@@ -519,7 +521,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 					continue;
 
 				default:
-					if (this.ch == delim) {
+					if (this.ch == delim || this.ch == altDelim) {
 						// flush the buffer
 						return (this.token = DuelToken.attrValue(this.buffer.toString()));
 					}
