@@ -1,9 +1,11 @@
 package org.duelengine.duel.parsing;
 
 import java.util.*;
-
 import org.duelengine.duel.ast.*;
 
+/**
+ * Processes a token sequence into AST
+ */
 public class DuelParser {
 
 	private DuelToken next;
@@ -58,6 +60,11 @@ public class DuelParser {
 		}
 	}
 
+	/**
+	 * Processes the next node
+	 * @param parent
+	 * @throws Exception
+	 */
 	private void parseNext(ContainerNode parent)
 		throws Exception {
 		switch (this.next.getToken()) {
@@ -67,10 +74,6 @@ public class DuelParser {
 
 			case ELEM_BEGIN:
 				this.parseElem(parent);
-				break;
-
-			case BLOCK:
-				this.parseBlock(parent);
 				break;
 
 			case ELEM_END:
@@ -86,6 +89,28 @@ public class DuelParser {
 				// consume next
 				this.next = null;
 				break;
+
+			case BLOCK:
+				BlockValue block = this.next.getBlock();
+
+				if (block != null) {
+					Node node = this.parseBlock(block);
+					if (node != null) {
+						parent.appendChild(node);
+					}
+				}
+
+				// consume next
+				this.next = null;
+				break;
+
+			case ERROR:
+				// TODO: back with interface
+				if (this.tokens instanceof DuelLexer) {
+					throw ((DuelLexer)this.tokens).getLastError();
+				}
+
+				throw new Exception(this.next.getValue());
 
 			default:
 				// TODO: syntax error
@@ -140,28 +165,20 @@ public class DuelParser {
 					this.next = null;
 					break;
 
-				case ATTR_BLOCK:
+				case ATTR_VALUE:
 					if (attrName == null) {
 						// TODO: syntax error
 						continue;
 					}
 
-					Node block = this.createBlockNode(next.getBlock());
-					elem.setAttribute(attrName, block);
-					attrName = null;
-
-					// consume next
-					this.next = null;
-					break;
-
-				case ATTR_LITERAL:
-					if (attrName == null) {
-						// TODO: syntax error
-						continue;
+					BlockValue block = this.next.getBlock();
+					Node attrVal;
+					if (block != null) {
+						attrVal = this.parseBlock(block);
+					} else {
+						attrVal = new LiteralNode(this.next.getValue());
 					}
-
-					Node literal = new LiteralNode(this.next.getValue());
-					elem.setAttribute(attrName, literal);
+					elem.setAttribute(attrName, attrVal);
 					attrName = null;
 
 					// consume next
@@ -199,21 +216,12 @@ public class DuelParser {
 		}
 	}
 
-	private void parseBlock(ContainerNode parent) {
-		BlockValue block = this.next.getBlock();
-
-		if (block != null) {
-			Node node = this.createBlockNode(block);
-			if (node != null) {
-				parent.appendChild(node);
-			}
-		}
-		
-		// consume next
-		this.next = null;
-	}
-
-	private Node createBlockNode(BlockValue block) {
+	/**
+	 * BlockNode factory
+	 * @param block
+	 * @return
+	 */
+	private BlockNode parseBlock(BlockValue block) {
 		String begin = block.getBegin();
 		if (begin == null) {
 			return null;
@@ -226,6 +234,10 @@ public class DuelParser {
 		return null;
 	}
 
+	/**
+	 * Ensures the next node is ready
+	 * @return
+	 */
 	private boolean hasNext() {
 		// ensure non-null value
 		while (this.next == null && this.tokens.hasNext()) {

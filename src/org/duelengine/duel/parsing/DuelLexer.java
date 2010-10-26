@@ -3,6 +3,9 @@ package org.duelengine.duel.parsing;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Processes source text into a token sequence
+ */
 public class DuelLexer implements Iterator<DuelToken> {
 
 	private static final int EOF = -1;
@@ -145,8 +148,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 						return this.scanLiteral();
 
 					case ELEM_BEGIN:
-					case ATTR_LITERAL:
-					case ATTR_BLOCK:
+					case ATTR_VALUE:
 						// skip whitespace
 						while (CharUtility.isWhiteSpace(this.ch)) {
 							this.nextChar();

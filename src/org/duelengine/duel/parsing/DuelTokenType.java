@@ -23,14 +23,9 @@ public enum DuelTokenType {
 	ATTR_NAME,
 
 	/**
-	 * Attribute value as literal text
+	 * Attribute value
 	 */
-	ATTR_LITERAL,
-
-	/**
-	 * Attribute value as unparsed block
-	 */
-	ATTR_BLOCK,
+	ATTR_VALUE,
 
 	/**
 	 * Unparsed block

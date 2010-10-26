@@ -98,11 +98,11 @@ public class DuelToken {
 	}
 
 	public static DuelToken attrValue(String value) {
-		return new DuelToken(DuelTokenType.ATTR_LITERAL, value);
+		return new DuelToken(DuelTokenType.ATTR_VALUE, value);
 	}
 
 	public static DuelToken attrValue(BlockValue value) {
-		return new DuelToken(DuelTokenType.ATTR_BLOCK, value);
+		return new DuelToken(DuelTokenType.ATTR_VALUE, value);
 	}
 
 	public static DuelToken block(BlockValue value) {
