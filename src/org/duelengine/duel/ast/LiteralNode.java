@@ -20,11 +20,7 @@ public class LiteralNode extends Node {
 
 	@Override
 	public String toString() {
-		StringBuilder buffer = new StringBuilder("LiteralNode");
-		if (this.value != null) {
-			buffer.append(": "+this.value);
-		}
-		return buffer.toString();
+		return new StringBuilder(this.value).toString();
 	}
 
 	@Override
@@ -35,8 +31,7 @@ public class LiteralNode extends Node {
 		}
 
 		LiteralNode that = (LiteralNode)arg;
-		return
-			(this.value == null ? that.value == null : this.value.equals(that.value));
+		return (this.value == null ? that.value == null : this.value.equals(that.value));
 	}
 
 	@Override
