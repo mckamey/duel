@@ -6,7 +6,7 @@ import java.util.*;
 public class DuelLexer implements Iterator<DuelToken> {
 
 	private static final int EOF = -1;
-	private static final String CONFIG_RESOURCE = "org.duelengine.duel.parsing.HTML5";
+	private static final String CONFIG_RESOURCE = "org.duelengine.duel.parsing.HTMLCharRefs";
 	private static ResourceBundle htmlConfig;
 
 	private final LineNumberReader reader;
@@ -357,7 +357,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 		}
 
 		if (htmlConfig == null) {
-			// definitions maintained in HTML5.properties
+			// definitions maintained in HTMLCharRefs.properties
 			htmlConfig = ResourceBundle.getBundle(CONFIG_RESOURCE);
 		}
 

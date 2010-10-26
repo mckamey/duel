@@ -8,23 +8,23 @@ import org.duelengine.duel.ast.*;
 public class DuelParserTests {
 
 	@Test
-	public void literalSingleTest() {
+	public void literalSingleTest() throws Exception {
 
 		DuelToken[] input = {
 				DuelToken.literal("This is just literal text.")
 			};
 
-		Object[] expected = {
+		ContainerNode expected = new ContainerNode (new Node[] {
 				new LiteralNode("This is just literal text.")
-			};
+			});
 
-		Object[] actual = new DuelParser().parse(Arrays.asList(input).iterator()).toArray();
+		ContainerNode actual = new DuelParser().parse(input);
 
-		assertArrayEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void literalFoldingTest() {
+	public void literalFoldingTest() throws Exception {
 
 		DuelToken[] input = {
 				DuelToken.literal("This is literal text"),
@@ -32,50 +32,50 @@ public class DuelParserTests {
 				DuelToken.literal("which can all be folded.")
 			};
 
-		Object[] expected = {
+		ContainerNode expected = new ContainerNode (new Node[] {
 				new LiteralNode("This is literal text\nwhich can all be folded.")
-			};
+			});
 
-		Object[] actual = new DuelParser().parse(Arrays.asList(input).iterator()).toArray();
+		ContainerNode actual = new DuelParser().parse(input);
 
-		assertArrayEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void elemBeginTest() {
+	public void elemBeginTest() throws Exception {
 
 		DuelToken[] input = {
 				DuelToken.elemBegin("div")
 			};
 
-		Object[] expected = {
+		ContainerNode expected = new ContainerNode (new Node[] {
 				new ElementNode("div")
-			};
+			});
 
-		Object[] actual = new DuelParser().parse(Arrays.asList(input).iterator()).toArray();
+		ContainerNode actual = new DuelParser().parse(input);
 
-		assertArrayEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void elemBeginEndTest() {
+	public void elemBeginEndTest() throws Exception {
 
 		DuelToken[] input = {
 				DuelToken.elemBegin("div"),
 				DuelToken.elemEnd("div")
 			};
 
-		Object[] expected = {
+		ContainerNode expected = new ContainerNode (new Node[] {
 				new ElementNode("div")
-			};
+			});
 
-		Object[] actual = new DuelParser().parse(Arrays.asList(input).iterator()).toArray();
+		ContainerNode actual = new DuelParser().parse(input);
 
-		assertArrayEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void elemAttribTest() {
+	public void elemAttribTest() throws Exception {
 
 		DuelToken[] input = {
 				DuelToken.elemBegin("div"),
@@ -83,19 +83,19 @@ public class DuelParserTests {
 				DuelToken.attrValue("foo")
 			};
 
-		Object[] expected = {
+		ContainerNode expected = new ContainerNode (new Node[] {
 				new ElementNode("div", new AttributeNode[] {
 						new AttributeNode("class", new LiteralNode("foo"))
 					})
-			};
+			});
 
-		Object[] actual = new DuelParser().parse(Arrays.asList(input).iterator()).toArray();
+		ContainerNode actual = new DuelParser().parse(input);
 
-		assertArrayEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void elemNestedTest() {
+	public void elemNestedTest() throws Exception {
 
 		DuelToken[] input = {
 				DuelToken.elemBegin("div"),
@@ -104,14 +104,62 @@ public class DuelParserTests {
 				DuelToken.elemEnd("div")
 			};
 
-		Object[] expected = {
+		ContainerNode expected = new ContainerNode (new Node[] {
 				new ElementNode("div", null, new Node[] {
 						new ElementNode("span")
 					})
+			});
+
+		ContainerNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void elemOverlapTest() throws Exception {
+
+		DuelToken[] input = {
+				DuelToken.elemBegin("div"),
+				DuelToken.elemBegin("span"),
+				DuelToken.elemEnd("div"),
+				DuelToken.elemEnd("span")
 			};
 
-		Object[] actual = new DuelParser().parse(Arrays.asList(input).iterator()).toArray();
+		ContainerNode expected = new ContainerNode (new Node[] {
+				new ElementNode("div", null, new Node[] {
+						new ElementNode("span")
+					})
+			});
 
-		assertArrayEquals(expected, actual);
+		ContainerNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void elemAutoBalanceTest() throws Exception {
+
+		DuelToken[] input = {
+				DuelToken.elemBegin("div"),
+				DuelToken.elemBegin("img"),
+				DuelToken.elemBegin("span"),
+				DuelToken.literal("plain text"),
+				DuelToken.elemEnd("ignored"),
+				DuelToken.elemEnd("div"),
+				DuelToken.elemEnd("span")
+			};
+
+		ContainerNode expected = new ContainerNode (new Node[] {
+				new ElementNode("div", null, new Node[] {
+						new ElementNode("img"),
+						new ElementNode("span", null, new Node[] {
+								new LiteralNode("plain text")
+							})
+					})
+			});
+
+		ContainerNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
 	}
 }

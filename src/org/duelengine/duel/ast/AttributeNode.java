@@ -31,8 +31,7 @@ public class AttributeNode {
 
 	@Override
 	public String toString() {
-		return new StringBuilder()
-				.append(this.name)
+		return new StringBuilder(this.name)
 				.append("=\"")
 				.append(this.value)
 				.append('"').toString();

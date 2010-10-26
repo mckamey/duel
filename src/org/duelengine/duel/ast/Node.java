@@ -2,13 +2,13 @@ package org.duelengine.duel.ast;
 
 public abstract class Node {
 
-	private ElementNode parent;
+	private ContainerNode parent;
 
-	public ElementNode getParent() {
+	public ContainerNode getParent() {
 		return this.parent;
 	}
 
-	void setParent(ElementNode parent) {
+	void setParent(ContainerNode parent) {
 		this.parent = parent;
 	}
 }

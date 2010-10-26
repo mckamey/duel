@@ -65,8 +65,10 @@
 			destdir="${bin.dir}"
 			debug="${javac.debug}"
 		/>
-		<!-- copy config into output -->
-		<copy file="${src.dir}/org/duelengine/duel/parsing/HTML5.properties"
+		<!-- copy configs into output -->
+		<copy file="${src.dir}/org/duelengine/duel/parsing/HTMLCharRefs.properties"
+			todir="${bin.dir}/org/duelengine/duel/parsing/"/>
+		<copy file="${src.dir}/org/duelengine/duel/parsing/HTMLTags.properties"
 			todir="${bin.dir}/org/duelengine/duel/parsing/"/>
 	</target>
 

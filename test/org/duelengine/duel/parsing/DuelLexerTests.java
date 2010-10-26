@@ -403,6 +403,26 @@ public class DuelLexerTests {
 	}
 
 	@Test
+	public void elemOverlappingTest() {
+
+		String input = "<odd><auto-closed><even>plain text</odd></ignored></even>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("odd"),
+				DuelToken.elemBegin("auto-closed"),
+				DuelToken.elemBegin("even"),
+				DuelToken.literal("plain text"),
+				DuelToken.elemEnd("odd"),
+				DuelToken.elemEnd("ignored"),
+				DuelToken.elemEnd("even")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void elemExternalWhitespaceTest() {
 
 		String input = "\r\n<div>\n\t\t test \n</div>\r\n";

@@ -2,17 +2,20 @@ package org.duelengine.duel.ast;
 
 import java.util.*;
 
-public class ElementNode extends Node {
+public class ElementNode extends ContainerNode {
+
+	private static final String CONFIG_RESOURCE = "org.duelengine.duel.parsing.HTMLTags";
+	private static Map<String, Boolean> voidTags;
 
 	private String tagName;
+	private boolean isVoid;
 	private final Map<String, Node> attributes = new LinkedHashMap<String, Node>();
-	private final List<Node> children = new ArrayList<Node>();
 
 	public ElementNode() {
 	}
 
 	public ElementNode(String name) {
-		this.tagName = name;
+		this.setTagName(name);
 	}
 
 	public ElementNode(String name, AttributeNode[] attr) {
@@ -28,17 +31,13 @@ public class ElementNode extends Node {
 	}
 
 	public ElementNode(String name, Collection<AttributeNode> attr, Collection<Node> children) {
-		this.tagName = name;
+		super(children);
+
+		this.setTagName(name);
 
 		if (attr != null) {
 			for (AttributeNode a : attr) {
 				this.attributes.put(a.getName(), a.getValue());
-			}
-		}
-
-		if (children != null) {
-			for (Node child : children) {
-				this.appendChild(child);
 			}
 		}
 	}
@@ -47,10 +46,15 @@ public class ElementNode extends Node {
 		return this.tagName;
 	}
 
-	public void setTagName(String value) {
-		this.tagName = value;
+	public void setTagName(String name) {
+		this.tagName = name;
+		this.isVoid = (name == null) ? true : getVoidTags().containsKey(name);
 	}
 
+	public boolean canHaveChildren() {
+		return !this.isVoid;
+	}
+	
 	public void addAttribute(AttributeNode attr) {
 		this.attributes.put(attr.getName(), attr.getValue());
 	}
@@ -67,26 +71,50 @@ public class ElementNode extends Node {
 		this.attributes.clear();
 	}
 
-	public List<Node> getChildren() {
-		return Collections.unmodifiableList(this.children);
+	public boolean isSelf(String tag) {
+		return (this.tagName == null) ? (tag == null) : this.tagName.equals(tag);
 	}
 
-	public Node getFirstChild() {
-		return this.children.isEmpty() ? null : this.children.get(0);
+	public boolean isAncestor(String tag) {
+		ContainerNode parent = this.getParent();
+
+		while (parent != null) {
+			if (parent instanceof ElementNode && ((ElementNode)parent).isSelf(tag)) {
+				return true;
+			}
+			parent = parent.getParent();
+		}
+
+		return false;
 	}
 
-	public Node getLastChild() {
-		return this.children.isEmpty() ? null : this.children.get(this.children.size()-1);
+	public boolean isAncestorOrSelf(String tag) {
+		return this.isSelf(tag) || this.isAncestor(tag);
 	}
 
-	public void appendChild(Node child) {
-		this.children.add(child);
-		child.setParent(this);
+	private static Map<String, Boolean> getVoidTags() {
+
+		if (voidTags != null) {
+			return voidTags;
+		}
+
+		// definitions maintained in HTMLTags.properties
+		ResourceBundle config = ResourceBundle.getBundle(CONFIG_RESOURCE);
+
+		String[] tags = (config != null) && config.containsKey("voidTags") ?
+			config.getString("voidTags").split(",") : new String[0];
+
+		Map<String, Boolean> map = new HashMap<String, Boolean>(tags.length);
+		for (String value : tags) {
+			map.put(value, true);
+		}
+
+		return (voidTags = map);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder buffer = new StringBuilder('<').append(this.tagName);
+		StringBuilder buffer = new StringBuilder("<").append(this.tagName);
 
 		for (String name : this.attributes.keySet()) {
 			buffer
@@ -97,16 +125,13 @@ public class ElementNode extends Node {
 				.append('"');
 		}
 
-		if (this.children.isEmpty()) {
-			return buffer.append(" />").toString();
+		if (this.hasChildren()) {
+			buffer.append('>').append(super.toString()).append("</").append(this.tagName);
+		} else {
+			buffer.append(" /");
 		}
-		buffer.append('>');
 
-		for (Node child : this.children) {
-			buffer.append(child);
-		}		
-		
-		return buffer.append("</").append(this.tagName).append('>').toString();
+		return buffer.append('>').toString();
 	}
 
 	@Override
@@ -134,7 +159,7 @@ public class ElementNode extends Node {
 			}
 		}
 
-		return true;
+		return super.equals(that);
 	}
 
 	@Override
