@@ -247,5 +247,7 @@ public class DuelParserTests {
 		DocumentNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
+
+		assertNotNull(actual.getDocType());
 	}
 }

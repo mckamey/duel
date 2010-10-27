@@ -86,7 +86,7 @@ test("simple orphaned if/else", function() {
 		 	["$if", { "test" : function(model, index, count) { return model.name !== "Example"; } },
 		 	 	["p", "False: Example !== ", function(model, index, count) { return model.name; } ]
 		 	],
-		 	["$else",
+		 	["$if",
 		 	 	["p", "Both: orphaned else always executes" ]
 		 	]
 		]);
@@ -112,17 +112,17 @@ test("simple orphaned if/else", function() {
 	same(actual2, expected2, "");
 });
 
-test("choose", function() {
+test("XOR block", function() {
 
 	var view = duel(
-	 	["$choose",
+	 	["$xor",
 		 	["$if", { "test" : function(model, index, count) { return !model.children || !model.children.length; } },
 		 	 	["p", "Has no items."]
 		 	],
 		 	["$if", { "test" : function(model, index, count) { return model.children && model.children.length === 1; } },
 		 	 	["p", "Has only one item."]
 		 	],
-		 	["$else",
+		 	["$if",
 		 	 	["p", "Has ", function(model, index, count) { return model.children.length; }, " items."]
 		 	]
 	 	]);

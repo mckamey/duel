@@ -543,7 +543,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	 */
 	private boolean tryScanBlock(boolean asAttr)
 		throws IOException {
-		
+
 		// mark current position with capacity to check start delims
 		final int CAPACITY = 16;
 		this.setMark(CAPACITY);
@@ -563,12 +563,12 @@ public class DuelLexer implements Iterator<DuelToken> {
 						value = this.tryScanBlockValue("--", end);
 						break;
 
-					case '@':	// "<%@",  "%>"			ASP/PSP/JSP directive
-					case '=':	// "<%=",  "%>"			ASP/PSP/JSP expression
-					case '!':	// "<%!",  "%>"			JSP/JBST declaration
-					case '#':	// "<%#",  "%>"			ASP.NET databind expression
+					case '@':	// "<%@",  "%>"			ASP/JSP/PSP directive
+					case '=':	// "<%=",  "%>"			ASP/JSP/PSP expression
+					case '!':	// "<%!",  "%>"			JSP declaration
+					case '#':	// "<%#",  "%>"			ASP.NET data-bind expression
 					case '$':	// "<%$",  "%>"			ASP.NET extension
-					case ':':	// "<%:",  "%>"			ASP.NET 4 HTML-encoded expression
+					case ':':	// "<%:",  "%>"			ASP.NET HTML-encoded expression
 						begin = "<%"+(char)this.ch;
 						end = "%>";
 						value = this.tryScanBlockValue(""+(char)this.ch, end);

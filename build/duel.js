@@ -173,7 +173,7 @@
 	 * @constant
 	 * @type {string}
 	 */
-	var CHOOSE = "$choose";
+	var XOR = "$xor";
 
 	/**
 	 * @private
@@ -181,13 +181,6 @@
 	 * @type {string}
 	 */
 	var IF = "$if";
-
-	/**
-	 * @private
-	 * @constant
-	 * @type {string}
-	 */
-	var ELSE = "$else";
 
 	/**
 	 * @private
@@ -358,42 +351,35 @@
 	 * @param {number} count The total number of data items
 	 * @return {Array|Object|string|number}
 	 */
-	function choose(node, model, index, count) {
+	function xor(node, model, index, count) {
 		for (var i=1, length=node.length; i<length; i++) {
-			
+
 			var block = node[i],
-				cmd = block[0],
-				test = block[1] && block[1][TEST];
-	
-			switch (cmd) {
-				case IF:
-					if (isFunction(test)) {
-						test = test(model, index, count);
-					}
-	
-					if (!test) {
-						continue;
-					}
-	
-					// clone and process block
-					if (block.length === 3) {
-						block = block[2];
-					} else {
-						node = [""].concat(node.slice(2));
-					}
-					return bind(block, model, index, count);
-	
-				case ELSE:
-					// clone and process block
-					if (block.length === 2) {
-						block = block[1];
-					} else {
-						node = [""].concat(node.slice(1));
-					}
-					return bind(block, model, index, count);
+				args = block[1],
+				test = args[TEST],
+				top = 1;
+
+			if (getType(block[1]) === OBJ && test) {
+				// execute test if exists
+				if (isFunction(test)) {
+					test = test(model, index, count);
+				}
+
+				if (!test) {
+					continue;
+				}
+				top++;
 			}
+
+			// clone and process block
+			if (block.length === top + 1) {
+				block = block[top];
+			} else {
+				block = [""].concat(block.slice(top));
+			}
+			return bind(block, model, index, count);
 		}
-	
+
 		return null;
 	}
 
@@ -458,12 +444,11 @@
 					case FOR:
 						result = foreach(node, model, index, count);
 						break;
-					case CHOOSE:
-						result = choose(node, model, index, count);
+					case XOR:
+						result = xor(node, model, index, count);
 						break;
 					case IF:
-					case ELSE:
-						result = choose([CHOOSE, node], model, index, count);
+						result = xor([XOR, node], model, index, count);
 						break;
 					case CALL:
 						result = call(node, model, index, count);
