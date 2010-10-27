@@ -7,15 +7,13 @@ public class ElementNode extends ContainerNode {
 	private static final String CONFIG_RESOURCE = "org.duelengine.duel.parsing.HTMLTags";
 	private static Map<String, Boolean> voidTags;
 
-	private String tagName;
-	private boolean isVoid;
+	private final String tagName;
+	private final boolean isVoid;
 	private final Map<String, Node> attributes = new LinkedHashMap<String, Node>();
 
-	public ElementNode() {
-	}
-
 	public ElementNode(String name) {
-		this.setTagName(name);
+		this.tagName = name;
+		this.isVoid = (name == null) ? true : getVoidTags().containsKey(name);
 	}
 
 	public ElementNode(String name, AttributeNode[] attr) {
@@ -33,7 +31,8 @@ public class ElementNode extends ContainerNode {
 	public ElementNode(String name, Collection<AttributeNode> attr, Collection<Node> children) {
 		super(children);
 
-		this.setTagName(name);
+		this.tagName = name;
+		this.isVoid = (name == null) ? true : getVoidTags().containsKey(name);
 
 		if (attr != null) {
 			for (AttributeNode a : attr) {
@@ -46,16 +45,15 @@ public class ElementNode extends ContainerNode {
 		return this.tagName;
 	}
 
-	public void setTagName(String name) {
-		this.tagName = name;
-		this.isVoid = (name == null) ? true : getVoidTags().containsKey(name);
-	}
-
 	public boolean canHaveChildren() {
 		return !this.isVoid;
 	}
 	
-	public void addAttribute(AttributeNode attr) {
+	public void addAttribute(AttributeNode attr)
+		throws NullPointerException {
+		if (attr == null) {
+			throw new NullPointerException("attr");
+		}
 		this.attributes.put(attr.getName(), attr.getValue());
 	}
 
@@ -72,7 +70,7 @@ public class ElementNode extends ContainerNode {
 	}
 
 	public boolean isSelf(String tag) {
-		return (this.tagName == null) ? (tag == null) : this.tagName.equals(tag);
+		return (this.tagName == null) ? (tag == null) : this.tagName.equalsIgnoreCase(tag);
 	}
 
 	public boolean isAncestor(String tag) {

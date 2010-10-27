@@ -250,4 +250,236 @@ public class DuelParserTests {
 
 		assertNotNull(actual.getDocType());
 	}
+
+	@Test
+	public void loopTest() throws Exception {
+
+		DuelToken[] input = {
+				DuelToken.elemBegin("ul"),
+				DuelToken.elemBegin("for"),
+				DuelToken.attrName("each"),
+				DuelToken.attrValue("model.items"),
+				DuelToken.literal("\n\t"),
+				DuelToken.elemBegin("li"),
+				DuelToken.literal("item here"),
+				DuelToken.elemEnd("li"),
+				DuelToken.literal("\n"),
+				DuelToken.elemEnd("for"),
+				DuelToken.elemEnd("ul")
+			};
+
+		DocumentNode expected = new DocumentNode(new Node[] {
+				new ElementNode("ul", null, new Node[] {
+					new FORCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("each", new ExpressionNode("model.items"))
+						},
+						new Node[] {
+							new LiteralNode("\n\t"),
+							new ElementNode("li", null,
+									new Node[] {
+										new LiteralNode("item here")
+									}),
+							new LiteralNode("\n"),
+						})
+				})
+			});
+
+		DocumentNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void conditionalBlockTest() throws Exception {
+
+		DuelToken[] input = {
+				DuelToken.elemBegin("div"),
+				DuelToken.elemBegin("if"),
+				DuelToken.attrName("test"),
+				DuelToken.attrValue("model == 0"),
+				DuelToken.literal("\n\tzero\n"),
+				DuelToken.elemBegin("else"),
+				DuelToken.attrName("if"),
+				DuelToken.attrValue("model == 1"),
+				DuelToken.literal("\n\tone\n"),
+				DuelToken.elemBegin("else"),
+				DuelToken.literal("\n\tmany\n"),
+				DuelToken.elemEnd("if"),
+				DuelToken.elemEnd("div")
+			};
+
+		DocumentNode expected = new DocumentNode(new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new XORCommandNode(null,
+						new Node[] {
+							new IFCommandNode(
+									new AttributeNode[] {
+										new AttributeNode("test", new ExpressionNode("model == 0"))
+									},
+									new Node[] {
+										new LiteralNode("\n\tzero\n")
+									}),
+							new IFCommandNode(
+									new AttributeNode[] {
+										new AttributeNode("test", new ExpressionNode("model == 1"))
+									},
+									new Node[] {
+										new LiteralNode("\n\tone\n")
+									}),
+							new IFCommandNode(
+									null,
+									new Node[] {
+										new LiteralNode("\n\tmany\n")
+									}),
+						})
+				})
+			});
+
+		DocumentNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void conditionalSinglesTest() throws Exception {
+
+		DuelToken[] input = {
+				DuelToken.elemBegin("div"),
+				DuelToken.elemBegin("if"),
+				DuelToken.attrName("test"),
+				DuelToken.attrValue("model == 0"),
+				DuelToken.literal("\n\tzero\n"),
+				DuelToken.elemEnd("if"),
+				DuelToken.elemBegin("if"),
+				DuelToken.attrName("test"),
+				DuelToken.attrValue("model == 1"),
+				DuelToken.literal("\n\tone\n"),
+				DuelToken.elemEnd("if"),
+				DuelToken.elemBegin("if"),
+				DuelToken.literal("\n\tmany\n"),
+				DuelToken.elemEnd("if"),
+				DuelToken.elemEnd("div")
+			};
+
+		DocumentNode expected = new DocumentNode(new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new XORCommandNode(null,
+						new Node[] {
+							new IFCommandNode(
+									new AttributeNode[] {
+										new AttributeNode("test", new ExpressionNode("model == 0"))
+									},
+									new Node[] {
+										new LiteralNode("\n\tzero\n")
+									}),
+						}),
+					new XORCommandNode(null,
+							new Node[] {
+								new IFCommandNode(
+										new AttributeNode[] {
+											new AttributeNode("test", new ExpressionNode("model == 1"))
+										},
+										new Node[] {
+											new LiteralNode("\n\tone\n")
+										}),
+							}),
+					new XORCommandNode(null,
+							new Node[] {
+								new IFCommandNode(
+										null,
+										new Node[] {
+											new LiteralNode("\n\tmany\n")
+										}),
+							})
+				})
+			});
+
+		DocumentNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void conditionalAliasesTest() throws Exception {
+
+		DuelToken[] input = {
+				DuelToken.elemBegin("div"),
+				DuelToken.elemBegin("if"),
+				DuelToken.attrName("if"),
+				DuelToken.attrValue("model == 0"),
+				DuelToken.literal("\n\tzero\n"),
+				DuelToken.elemBegin("else"),
+				DuelToken.attrName("test"),
+				DuelToken.attrValue("model == 1"),
+				DuelToken.literal("\n\tone\n"),
+				DuelToken.elemBegin("else"),
+				DuelToken.literal("\n\tmany\n"),
+				DuelToken.elemEnd("if"),
+				DuelToken.elemEnd("div")
+			};
+
+		DocumentNode expected = new DocumentNode(new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new XORCommandNode(null,
+						new Node[] {
+							new IFCommandNode(
+									new AttributeNode[] {
+										new AttributeNode("test", new ExpressionNode("model == 0"))
+									},
+									new Node[] {
+										new LiteralNode("\n\tzero\n")
+									}),
+							new IFCommandNode(
+									new AttributeNode[] {
+										new AttributeNode("test", new ExpressionNode("model == 1"))
+									},
+									new Node[] {
+										new LiteralNode("\n\tone\n")
+									}),
+							new IFCommandNode(
+									null,
+									new Node[] {
+										new LiteralNode("\n\tmany\n")
+									}),
+						})
+				})
+			});
+
+		DocumentNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void callTest() throws Exception {
+
+		DuelToken[] input = {
+				DuelToken.elemBegin("call"),
+				DuelToken.attrName("view"),
+				DuelToken.attrValue("Foo.Other"),
+				DuelToken.attrName("model"),
+				DuelToken.attrValue("model.detail"),
+				DuelToken.attrName("index"),
+				DuelToken.attrValue("1"),
+				DuelToken.attrName("count"),
+				DuelToken.attrValue("42"),
+				DuelToken.elemEnd("call"),
+			};
+
+		DocumentNode expected = new DocumentNode(new Node[] {
+				new CALLCommandNode(
+					new AttributeNode[] {
+							new AttributeNode("view", new ExpressionNode("Foo.Other")),
+							new AttributeNode("model", new ExpressionNode("model.detail")),
+							new AttributeNode("index", new ExpressionNode("1")),
+							new AttributeNode("count", new ExpressionNode("42"))
+					},
+					null)
+			});
+
+		DocumentNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
 }

@@ -19,6 +19,10 @@ public class DuelParser {
 	public DocumentNode parse(DuelToken[] tokens)
 		throws Exception {
 
+		if (tokens == null) {
+			throw new NullPointerException("tokens");
+		}
+
 		return this.parse(Arrays.asList(tokens).iterator());
 	}
 
@@ -30,11 +34,15 @@ public class DuelParser {
 	public DocumentNode parse(Collection<DuelToken> tokens)
 		throws Exception {
 
+		if (tokens == null) {
+			throw new NullPointerException("tokens");
+		}
+
 		return this.parse(tokens.iterator());
 	}
 
 	/**
-	 * Ctor
+	 * Parses token sequence into AST
 	 * @param tokens
 	 * @return
 	 */
@@ -91,17 +99,7 @@ public class DuelParser {
 				break;
 
 			case BLOCK:
-				BlockValue block = this.next.getBlock();
-
-				if (block != null) {
-					Node node = this.parseBlock(block);
-					if (node != null) {
-						parent.appendChild(node);
-					}
-				}
-
-				// consume next
-				this.next = null;
+				this.parseBlock(parent);
 				break;
 
 			case ERROR:
@@ -147,7 +145,7 @@ public class DuelParser {
 		throws Exception {
 
 		String tagName = this.next.getValue();
-		ElementNode elem = new ElementNode((tagName != null) ? tagName.toLowerCase() : null);
+		ElementNode elem = createElement(tagName);
 		parent.appendChild(elem);
 
 		// consume next
@@ -174,7 +172,7 @@ public class DuelParser {
 					BlockValue block = this.next.getBlock();
 					Node attrVal;
 					if (block != null) {
-						attrVal = this.parseBlock(block);
+						attrVal = this.createBlock(block);
 					} else {
 						attrVal = new LiteralNode(this.next.getValue());
 					}
@@ -217,21 +215,21 @@ public class DuelParser {
 	}
 
 	/**
-	 * BlockNode factory
-	 * @param block
-	 * @return
+	 * Parses the next token into a block node
+	 * @param parent
 	 */
-	private BlockNode parseBlock(BlockValue block) {
-		String begin = block.getBegin();
-		if (begin == null) {
-			return null;
+	private void parseBlock(ContainerNode parent) {
+		BlockValue block = this.next.getBlock();
+
+		if (block != null) {
+			Node node = this.createBlock(block);
+			if (node != null) {
+				parent.appendChild(node);
+			}
 		}
 
-		if (begin.equals(DocTypeNode.BEGIN)) {
-			return new DocTypeNode(block.getValue());
-		}
-
-		return null;
+		// consume next
+		this.next = null;
 	}
 
 	/**
@@ -245,5 +243,73 @@ public class DuelParser {
 		}
 
 		return (this.next != null);
+	}
+
+	/**
+	 * ElementNode factory method
+	 * @param name
+	 * @return
+	 */
+	public static ElementNode createElement(String tagName) {
+
+		if (tagName == null) {
+			return null;
+		}
+
+		if (tagName.equalsIgnoreCase(FORCommandNode.EXT_NAME)) {
+			return new FORCommandNode();
+		}
+
+		if (tagName.equalsIgnoreCase(XORCommandNode.EXT_NAME)) {
+			return new XORCommandNode();
+		}
+
+		if (tagName.equalsIgnoreCase(IFCommandNode.EXT_NAME)) {
+			return new IFCommandNode();
+		}
+
+		if (tagName.equalsIgnoreCase(CALLCommandNode.EXT_NAME)) {
+			return new CALLCommandNode();
+		}
+
+		return new ElementNode(tagName.toLowerCase());
+	}
+
+	/**
+	 * BlockNode factory method
+	 * @param block
+	 * @return
+	 */
+	private BlockNode createBlock(BlockValue block) {
+
+		String begin = block.getBegin();
+		if (begin == null) {
+			return null;
+		}
+
+		String value = block.getValue();
+
+		if (begin.equals(ExpressionNode.BEGIN)) {
+			return new ExpressionNode(value);
+		}
+
+		if (begin.equals(StatementNode.BEGIN)) {
+			return new StatementNode(value);
+		}
+
+		if (begin.equals(DocTypeNode.BEGIN)) {
+			return new DocTypeNode(block.getValue());
+		}
+
+		if (begin.equals(DeclarationNode.BEGIN)) {
+			return new DeclarationNode(value);
+		}
+
+		if (begin.equals(MarkupNode.BEGIN)) {
+			return new MarkupNode(value);
+		}
+
+		// others are dropped
+		return null;
 	}
 }

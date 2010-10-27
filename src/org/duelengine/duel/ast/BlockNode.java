@@ -1,33 +1,31 @@
 package org.duelengine.duel.ast;
 
-public class BlockNode extends Node {
+public abstract class BlockNode extends Node {
 
-	private String begin;
-	private String end;
+	private final String begin;
+	private final String end;
 	private String value;
 
-	public void setBegin(String value) {
-		this.begin = value;
+	protected BlockNode(String begin, String end, String value) {
+		this.begin = begin;
+		this.end = end;
+		this.value = value;
 	}
-
+	
 	public String getBegin() {
 		return this.begin;
-	}
-
-	public void setEnd(String value) {
-		this.end = value;
 	}
 
 	public String getEnd() {
 		return this.end;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
-	}
-
 	public String getValue() {
 		return this.value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	StringBuilder toString(StringBuilder buffer) {

@@ -2,17 +2,17 @@ package org.duelengine.duel.ast;
 
 import java.util.*;
 
-public class ContainerNode extends Node {
+public abstract class ContainerNode extends Node {
 	private final List<Node> children = new ArrayList<Node>();
 
-	public ContainerNode() {
+	protected ContainerNode() {
 	}
 
-	public ContainerNode(Node[] children) {
+	protected ContainerNode(Node[] children) {
 		this((children != null) ? Arrays.asList(children) : null);
 	}
 
-	public ContainerNode(Collection<Node> children) {
+	protected ContainerNode(Collection<Node> children) {
 		if (children != null) {
 			for (Node child : children) {
 				this.appendChild(child);
