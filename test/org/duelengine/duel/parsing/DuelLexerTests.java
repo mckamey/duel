@@ -1,5 +1,7 @@
 package org.duelengine.duel.parsing;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -1122,6 +1124,62 @@ public class DuelLexerTests {
 				DuelToken.attrValue("text/javascript"),
 				DuelToken.literal("function foo() { for(var i=0, length=10; i<length; i++) { alert(i); } }"),
 				DuelToken.elemEnd("script")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void conditionalBlockTest() {
+
+		String input =
+			"<div><if test='model===0'>zero<else if='model===1'>one<else>many</if></div>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("div"),
+				DuelToken.elemBegin("if"),
+				DuelToken.attrName("test"),
+				DuelToken.attrValue("model===0"),
+				DuelToken.literal("zero"),
+				DuelToken.elemBegin("else"),
+				DuelToken.attrName("if"),
+				DuelToken.attrValue("model===1"),
+				DuelToken.literal("one"),
+				DuelToken.elemBegin("else"),
+				DuelToken.literal("many"),
+				DuelToken.elemEnd("if"),
+				DuelToken.elemEnd("div")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void conditionalBlockVoidElseTest() {
+
+		String input =
+			"<div><if test='model===0'>zero<else if='model===1'/>one<else />many</if></div>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("div"),
+				DuelToken.elemBegin("if"),
+				DuelToken.attrName("test"),
+				DuelToken.attrValue("model===0"),
+				DuelToken.literal("zero"),
+				DuelToken.elemBegin("else"),
+				DuelToken.attrName("if"),
+				DuelToken.attrValue("model===1"),
+				DuelToken.elemEnd("else"),
+				DuelToken.literal("one"),
+				DuelToken.elemBegin("else"),
+				DuelToken.elemEnd("else"),
+				DuelToken.literal("many"),
+				DuelToken.elemEnd("if"),
+				DuelToken.elemEnd("div")
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();

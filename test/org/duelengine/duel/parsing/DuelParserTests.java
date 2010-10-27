@@ -342,6 +342,59 @@ public class DuelParserTests {
 	}
 
 	@Test
+	public void conditionalBlockVoidElseTest() throws Exception {
+
+		DuelToken[] input = {
+				DuelToken.elemBegin("div"),
+				DuelToken.elemBegin("if"),
+				DuelToken.attrName("test"),
+				DuelToken.attrValue("model===0"),
+				DuelToken.literal("zero"),
+				DuelToken.elemBegin("else"),
+				DuelToken.attrName("if"),
+				DuelToken.attrValue("model===1"),
+				DuelToken.elemEnd("else"),
+				DuelToken.literal("one"),
+				DuelToken.elemBegin("else"),
+				DuelToken.elemEnd("else"),
+				DuelToken.literal("many"),
+				DuelToken.elemEnd("if"),
+				DuelToken.elemEnd("div")
+			};
+
+		DocumentNode expected = new DocumentNode(new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new XORCommandNode(null,
+						new Node[] {
+							new IFCommandNode(
+									new AttributeNode[] {
+										new AttributeNode("test", new ExpressionNode("model===0"))
+									},
+									new Node[] {
+										new LiteralNode("zero")
+									}),
+							new IFCommandNode(
+									new AttributeNode[] {
+										new AttributeNode("test", new ExpressionNode("model===1"))
+									},
+									new Node[] {
+										new LiteralNode("one")
+									}),
+							new IFCommandNode(
+									null,
+									new Node[] {
+										new LiteralNode("many")
+									}),
+						})
+				})
+			});
+
+		DocumentNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void conditionalSinglesTest() throws Exception {
 
 		DuelToken[] input = {
