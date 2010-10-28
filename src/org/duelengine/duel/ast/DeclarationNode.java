@@ -9,8 +9,8 @@ public class DeclarationNode extends CodeBlockNode {
 		super(BEGIN, END, null);
 	}
 
-	public DeclarationNode(String expression) {
-		super(BEGIN, END, expression);
+	public DeclarationNode(String declaration) {
+		super(BEGIN, END, declaration);
 	}
 
 	@Override

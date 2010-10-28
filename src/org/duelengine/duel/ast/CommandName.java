@@ -8,22 +8,27 @@ public enum CommandName {
 	NONE,
 
 	/**
-	 * Element command produces an iterator block
+	 * Command which produces an iterator block
 	 */
 	FOR,
 
 	/**
-	 * Element command wraps a set of mutually exclusive conditional blocks
+	 * Command which wraps a set of mutually exclusive conditional blocks
 	 */
 	XOR,
 
 	/**
-	 * Element command represents single and default conditional blocks
+	 * Command which represents single and default conditional blocks
 	 */
 	IF,
 
 	/**
-	 * Element command calls another view
+	 * Command which calls another view
 	 */
-	CALL
+	CALL,
+
+	/**
+	 * Command which allows one view to define parts of another
+	 */
+	PART
 }

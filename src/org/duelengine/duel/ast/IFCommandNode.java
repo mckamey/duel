@@ -12,28 +12,28 @@ public class IFCommandNode extends CommandNode {
 	private static final CommandName CMD = CommandName.IF;
 
 	public IFCommandNode() {
-		super(CMD, NAME);
+		super(CMD, NAME, true);
 	}
 
 	public IFCommandNode(AttributeNode[] attr) {
-		super(CMD, NAME, (attr != null) ? Arrays.asList(attr) : null, null);
+		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, null);
 	}
 
 	public IFCommandNode(Collection<AttributeNode> attr) {
-		super(CMD, NAME, attr, null);
+		super(CMD, NAME, true, attr, null);
 	}
 
 	public IFCommandNode(AttributeNode[] attr, Node[] children) {
-		super(CMD, NAME, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
+		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
 	}
 
 	public IFCommandNode(Collection<AttributeNode> attr, Collection<Node> children) {
-		super(CMD, NAME, attr, children);
+		super(CMD, NAME, true, attr, children);
 	}
 
 	@Override
 	public boolean isSelf(String tag) {
-		return EXT_NAME.equalsIgnoreCase(tag);
+		return EXT_NAME.equalsIgnoreCase(tag) || NAME.equalsIgnoreCase(tag);
 	}
 
 	@Override

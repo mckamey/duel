@@ -12,28 +12,28 @@ public class FORCommandNode extends CommandNode {
 	private static final CommandName CMD = CommandName.FOR;
 
 	public FORCommandNode() {
-		super(CMD, NAME);
+		super(CMD, NAME, true);
 	}
 
 	public FORCommandNode(AttributeNode[] attr) {
-		super(CMD, NAME, (attr != null) ? Arrays.asList(attr) : null, null);
+		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, null);
 	}
 
 	public FORCommandNode(Collection<AttributeNode> attr) {
-		super(CMD, NAME, attr, null);
+		super(CMD, NAME, true, attr, null);
 	}
 
 	public FORCommandNode(AttributeNode[] attr, Node[] children) {
-		super(CMD, NAME, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
+		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
 	}
 
 	public FORCommandNode(Collection<AttributeNode> attr, Collection<Node> children) {
-		super(CMD, NAME, attr, children);
+		super(CMD, NAME, true, attr, children);
 	}
 
 	@Override
 	public boolean isSelf(String tag) {
-		return EXT_NAME.equalsIgnoreCase(tag);
+		return EXT_NAME.equalsIgnoreCase(tag) || NAME.equalsIgnoreCase(tag);
 	}
 
 	@Override

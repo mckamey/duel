@@ -272,6 +272,10 @@ public class DuelParser {
 			return new CALLCommandNode();
 		}
 
+		if (tagName.equalsIgnoreCase(PARTCommandNode.EXT_NAME)) {
+			return new PARTCommandNode();
+		}
+
 		return new ElementNode(tagName.toLowerCase());
 	}
 
@@ -297,16 +301,16 @@ public class DuelParser {
 			return new StatementNode(value);
 		}
 
-		if (begin.equals(DocTypeNode.BEGIN)) {
-			return new DocTypeNode(block.getValue());
+		if (begin.equals(MarkupNode.BEGIN)) {
+			return new MarkupNode(value);
 		}
 
 		if (begin.equals(DeclarationNode.BEGIN)) {
 			return new DeclarationNode(value);
 		}
 
-		if (begin.equals(MarkupNode.BEGIN)) {
-			return new MarkupNode(value);
+		if (begin.equalsIgnoreCase(DocTypeNode.BEGIN)) {
+			return new DocTypeNode(block.getValue());
 		}
 
 		// others are dropped

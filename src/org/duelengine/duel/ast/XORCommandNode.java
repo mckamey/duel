@@ -14,23 +14,23 @@ public class XORCommandNode extends CommandNode {
 	private IFCommandNode lastCase;
 
 	public XORCommandNode() {
-		super(CMD, NAME);
+		super(CMD, NAME, true);
 	}
 
 	public XORCommandNode(AttributeNode[] attr) {
-		super(CMD, NAME, (attr != null) ? Arrays.asList(attr) : null, null);
+		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, null);
 	}
 
 	public XORCommandNode(Collection<AttributeNode> attr) {
-		super(CMD, NAME, attr, null);
+		super(CMD, NAME, true, attr, null);
 	}
 
 	public XORCommandNode(AttributeNode[] attr, Node[] children) {
-		super(CMD, NAME, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
+		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
 	}
 
 	public XORCommandNode(Collection<AttributeNode> attr, Collection<Node> children) {
-		super(CMD, NAME, attr, children);
+		super(CMD, NAME, true, attr, children);
 	}
 
 	private IFCommandNode getLastCase() {
@@ -44,7 +44,7 @@ public class XORCommandNode extends CommandNode {
 
 	@Override
 	public boolean isSelf(String tag) {
-		return EXT_NAME.equalsIgnoreCase(tag);
+		return EXT_NAME.equalsIgnoreCase(tag) || NAME.equalsIgnoreCase(tag);
 	}
 
 	@Override
