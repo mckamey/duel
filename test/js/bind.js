@@ -362,3 +362,75 @@ test("call view", function() {
 
 	same(actual, expected, "");
 });
+
+test("call wrapper view", function() {
+
+	var model = {
+	        name: "Outer list",
+	        items: ["One", "Two", "Three"]
+	    };
+
+	var Foo = {
+			itemView: duel(
+					["li",
+					 	["$part", { "name" : "itemLayout" }]
+					]),
+			listView: duel(
+					["div",
+					 	["h2", function(model, index, count) { return model.name; } ],
+						["ul",
+						 	["$for", { "each" : function(model, index, count) { return model.items; } },
+						 		["$call", {
+							 			"view" : function(model, index, count) { return Foo.itemView; },
+							 			"model" :  function(model, index, count) { return model; },
+							 			"index" :  function(model, index, count) { return index; },
+							 			"count" :  function(model, index, count) { return count; }
+						 			},
+						 			["$part", { "name" : "itemLayout" },
+						 			 	"model: ",
+									 	function(model, index, count) { return model; },
+									 	["br"],
+									 	"index: ",
+									 	function(model, index, count) { return index; },
+									 	["br"],
+									 	"count: ",
+									 	function(model, index, count) { return count; }
+								 	]
+						 		]
+						 	]
+						]
+					])
+			};
+
+	var actual = Foo.listView(model).value;
+
+	var expected = 
+		["div",
+		 	["h2", "Outer list" ],
+			["ul",
+				["li",
+					"model: One",
+					["br"],
+					"index: 0",
+					["br"],
+					"count: 3"
+				],
+				["li",
+					"model: Two",
+					["br"],
+					"index: 1",
+					["br"],
+					"count: 3"
+				],
+				["li",
+					"model: Three",
+					["br"],
+					"index: 2",
+					["br"],
+					"count: 3"
+				]
+			]
+		];
+
+	same(actual, expected, "");
+});

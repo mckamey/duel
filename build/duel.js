@@ -194,6 +194,13 @@
 	 * @constant
 	 * @type {string}
 	 */
+	var PART = "$part";
+
+	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
 	var TEST = "test";
 
 	/**
@@ -230,6 +237,13 @@
 	 * @type {string}
 	 */
 	var COUNT = "count";
+
+	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
+	var NAME = "name";
 
 	var bind;
 
@@ -306,9 +320,10 @@
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
+	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array}
 	 */
-	function foreach(node, model, index, count) {
+	function foreach(node, model, index, count, parts) {
 		var each = node[1] && node[1][EACH];
 
 		// execute code block
@@ -326,13 +341,13 @@
 		switch (getType(each)) {
 			case ARY:
 				for (var i=0, length=each.length; i<length; i++) {
-					append(result, bind(node, each[i], i, length));
+					append(result, bind(node, each[i], i, length, parts));
 				}
 				break;
 			case OBJ:
 				for (var key in each) {
 					if (each.hasOwnProperty(key)) {
-						append(result, bind(node, each[key], key, 0));
+						append(result, bind(node, each[key], key, 0, parts));
 					}
 				}
 				break;
@@ -342,16 +357,17 @@
 	}
 	
 	/**
-	 * Binds the node to the first child block which evaluates to true
+	 * Binds the node to the first conditional block that evaluates to true
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
+	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	function xor(node, model, index, count) {
+	function xor(node, model, index, count, parts) {
 		for (var i=1, length=node.length; i<length; i++) {
 
 			var block = node[i],
@@ -377,7 +393,7 @@
 			} else {
 				block = [""].concat(block.slice(top));
 			}
-			return bind(block, model, index, count);
+			return bind(block, model, index, count, parts);
 		}
 
 		return null;
@@ -387,7 +403,7 @@
 	 * Calls into another view
 	 * 
 	 * @private
-	 * @param {Array|Object|string|number|function (*, *, *): (Object|null)} node The template subtree root
+	 * @param {Array|Object|string|number|function(*,*,*):(Object|null)} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
@@ -405,23 +421,58 @@
 			// Closure Compiler type cast
 			i = /** @type {number|string} */ (bind(args[INDEX], model, index, count)),
 			// Closure Compiler type cast
-			c = /** @type {number} */ (bind(args[COUNT], model, index, count));
+			c = /** @type {number} */ (bind(args[COUNT], model, index, count)),
+			p = {};
+
+		// check for view parts
+		for (var j=2, length=node.length; j<length; j++) {
+			var block = node[j];
+			args = block[1];
+			if (args && args[NAME]) {
+				p[args[NAME]] = [""].concat(block.slice(2));
+			}
+		}
 
 		return (v && isFunction(v.getView)) ?
-			bind(v.getView(), m, i, c) : null;
+			bind(v.getView(), m, i, c, p) : null;
+	}
+
+	/**
+	 * Replaces a placeholder with the named part from the calling view
+	 * 
+	 * @private
+	 * @param {Array|Object|string|number|function(*,*,*):(Object|null)} node The template subtree root
+	 * @param {*} model The data item being bound
+	 * @param {number|string} index The index of the current data item
+	 * @param {number} count The total number of data items
+	 * @param {Object=} parts Named replacement partial views
+	 * @return {Array|Object|string|number}
+	 */
+	function part(node, model, index, count, parts) {
+		var args = node[1] || {},
+			block = args[NAME];
+
+		if (!parts || !parts[block]) {
+			block = [""].concat(node.slice(1));
+		} else {
+			block = parts[block];
+		}
+
+		return bind(block, model, index, count);
 	}
 
 	/**
 	 * Binds the node to model
 	 * 
 	 * @private
-	 * @param {Array|Object|string|number|function (*, *, *): (Object|null)} node The template subtree root
+	 * @param {Array|Object|string|number|function(*,*,*):(Object|null)} node The template subtree root
 	 * @param {*} model The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
+	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	bind = function(node, model, index, count) {
+	bind = function(node, model, index, count, parts) {
 		/**
 		 * @type {Array|Object|string|number}
 		 */
@@ -431,7 +482,7 @@
 			case FUN:
 				// execute code block
 				// Closure Compiler type cast
-				result = (/** @type {function (*, *, *): (Object|null)} */ (node))(model, index, count);
+				result = (/** @type {function(*,*,*):(Object|null)} */ (node))(model, index, count);
 				break;
 	
 			case ARY:
@@ -442,23 +493,27 @@
 				var tag = node[0] || "";
 				switch (tag) {
 					case FOR:
-						result = foreach(node, model, index, count);
+						result = foreach(node, model, index, count, parts);
 						break;
 					case XOR:
-						result = xor(node, model, index, count);
+						result = xor(node, model, index, count, parts);
 						break;
 					case IF:
-						result = xor([XOR, node], model, index, count);
+						result = xor([XOR, node], model, index, count, parts);
 						break;
 					case CALL:
+						// parts not needed when calling another view
 						result = call(node, model, index, count);
+						break;
+					case PART:
+						result = part(node, model, index, count, parts);
 						break;
 					default:
 						// element array, first item is name
 						result = [tag];
 	
 						for (var i=1, length=node.length; i<length; i++) {
-							append(result, bind(node[i], model, index, count));
+							append(result, bind(node[i], model, index, count, parts));
 						}
 						break;
 				}
@@ -469,6 +524,7 @@
 				result = {};
 				for (var key in node) {
 					if (node.hasOwnProperty(key)) {
+						// parts not needed when binding attributes
 						result[key] = bind(node[key], model, index, count);
 					}
 				}
