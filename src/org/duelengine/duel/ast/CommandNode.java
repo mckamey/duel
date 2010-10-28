@@ -15,31 +15,28 @@ public abstract class CommandNode extends ElementNode {
 	}
 
 	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, AttributeNode[] attr) {
-		super(name, (attr != null) ? Arrays.asList(attr) : null, null);
-
-		this.command = cmd;
-		this.codeAttrs = codeAttrs;
+		this(cmd, name, codeAttrs, (attr != null) ? Arrays.asList(attr) : null, null);
 	}
 
 	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, Collection<AttributeNode> attr) {
-		super(name, attr, null);
-
-		this.command = cmd;
-		this.codeAttrs = codeAttrs;
+		this(cmd, name, codeAttrs, attr, null);
 	}
 
 	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, AttributeNode[] attr, Node[] children) {
-		super(name, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
-
-		this.command = cmd;
-		this.codeAttrs = codeAttrs;
+		this(cmd, name, codeAttrs, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
 	}
 
 	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, Collection<AttributeNode> attr, Collection<Node> children) {
-		super(name, attr, children);
+		super(name, null, children);
 
 		this.command = cmd;
 		this.codeAttrs = codeAttrs;
+
+		if (attr != null) {
+			for (AttributeNode a : attr) {
+				this.setAttribute(a.getName(), a.getValue());
+			}
+		}
 	}
 
 	public CommandName getCommand() {
