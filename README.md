@@ -2,6 +2,8 @@
 
 DUEL is a [dual-side templating][3] engine using HTML for layout and pure JavaScript as the binding language. Views may be executed directly in the browser (client-side template) or on the server (server-side template).
 
+---
+
 # Syntax
 
 The DUEL grammar is an intentionally small, familiar syntax. Each term is intended to be intuitive to remember and is short without abbreviations. DUEL views are defined as HTML/CSS/JavaScript with a small set of special markup tags to control flow and JavaScript code blocks to bind the view template to model data.
@@ -16,17 +18,17 @@ The *complete* set of DUEL markup is:
 
 Sits at the top of a view to define its metadata. The `name` attribute contains a string literal which defines the name of view type.
 
-### Loop construct `<for each="…">…</for>`
+### Loop construct `<for each="...">...</for>`
 
-Wrapped around content to be repeated once per item. The `each` attribute contains an `object` expression defining the list of items to iterate over.
+Wrapped around content to be repeated once per item. The `each` attribute contains an `Array` expression defining the list of items to iterate over. The `model` value will contain the current item, and the `index` and `count` values (see below) will be updated with the current item index and total count respectively.
 
-### Conditional block `<if test="…">…</if>`
+If the `each` attribute contains an `object` expression, then the loop will iterate over the properties of that object. In this case, `model` will contain the `object` itself, `index` will contain the property name and `count` will not be used.
 
-Wrapped around conditional content. The `test` attribute contains a `boolean` expression indicating if contents should be included in result.
+### Conditional blocks `<if test="...">...<else if="...">...<else>...</if>`
 
-### Alternate conditionals `<else if="…">` or `<else>`
+Wrapped around conditional content. The `test` attribute contains a `boolean` expression indicating if contents should be included in result. Any truthy value will cause the contents of that section to be emitted.
 
-Sits inside an `<if></if>` block without a closing tag (alternatively `<else test="…">` for symmetry with `<if test="…">`). The `if` attributes (alternatively `test` may be used) contains a `boolean` expression indicating if contents should be included in result.
+`<else>` tags sit inside an `<if></if>` block without a closing tag. The `if` attribute (alternatively `<else test="...">` may be used for symmetry with `<if test="...">`) contains a `boolean` expression indicating if contents should be included in result.
 
 ### Single element conditional `<div if="…">…</div>`
 
@@ -90,6 +92,8 @@ is equivalent to:
 
 	<part name="<%= "foo" %>"></part>
 
+---
+
 ## Example
 
 Here is a complete example where the result differs if there is zero, one, or many items.
@@ -145,7 +149,10 @@ Which would output:
 		</ul>
 	</div>
 
+---
+
 ## Licensed under the [MIT license][2]
+Copyright &copy;2006-2010 Stephen M. McKamey.
 
   [1]: http://duelengine.org
   [2]: http://duelengine.org/license.txt
