@@ -190,9 +190,13 @@ public class DuelParser {
 						if (elem.isSelf(tag)) {
 							// consume next
 							this.next = null;
+
+							this.rewriteConditionalAttr(parent, elem);
 							return;
 						}
 						if (elem.isAncestor(tag)) {
+							this.rewriteConditionalAttr(parent, elem);
+
 							// pass next on up
 							return;
 						}
@@ -205,6 +209,8 @@ public class DuelParser {
 
 				default:
 					if (!elem.canHaveChildren()) {
+						this.rewriteConditionalAttr(parent, elem);
+
 						// pass next on up
 						return;
 					}
@@ -230,6 +236,28 @@ public class DuelParser {
 
 		// consume next
 		this.next = null;
+	}
+
+	private void rewriteConditionalAttr(ContainerNode parent, ElementNode elem) {
+		if (elem instanceof CommandNode) {
+			// only process normal HTML elements
+			return;
+		}
+
+		Node attr = elem.removeAttribute("if");
+		if (attr == null) {
+			// nothing to do
+			return;
+		}
+
+		// create a conditional wrapper and
+		// move attr over to the conditional
+		IFCommandNode conditional = new IFCommandNode();
+		conditional.setAttribute("test", attr);
+
+		// wrap element in parent
+		parent.replaceChild(conditional, elem);
+		conditional.appendChild(elem);
 	}
 
 	/**

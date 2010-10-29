@@ -41,6 +41,41 @@ public abstract class ContainerNode extends Node {
 		child.setParent(this);
 	}
 
+	public boolean removeChild(Node oldChild) {
+		if (oldChild == null) {
+			return false;
+		}
+
+		for (int i=0, length=this.children.size(); i<length; i++) {
+			Node child = this.children.get(i);
+			if (child == oldChild) {
+				child.setParent(null);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public boolean replaceChild(Node newChild, Node oldChild) {
+		if (oldChild == null) {
+			this.appendChild(newChild);
+			return true;
+		}
+
+		for (int i=0, length=this.children.size(); i<length; i++) {
+			Node child = this.children.get(i);
+			if (child == oldChild) {
+				this.children.set(i, newChild);
+				newChild.setParent(this);
+				child.setParent(null);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	StringBuilder toString(StringBuilder buffer) {
 		if (!this.children.isEmpty()) {
 			for (Node child : this.children) {

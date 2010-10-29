@@ -507,6 +507,95 @@ public class DuelParserTests {
 	}
 
 	@Test
+	public void conditionalAttrTest() throws Exception {
+
+		DuelToken[] input = {
+			DuelToken.elemBegin("div"),
+			DuelToken.elemBegin("p"),
+			DuelToken.attrName("if"),
+			DuelToken.attrValue("model == 0"),
+			DuelToken.literal("no items found"),
+			DuelToken.elemEnd("p"),
+			DuelToken.elemEnd("div")
+		};
+
+		DocumentNode expected = new DocumentNode(new Node[] {
+			new ElementNode("div", null, new Node[] {
+				new IFCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("test", new ExpressionNode("model == 0"))
+					},
+					new Node[] {
+						new ElementNode("p", null, new Node[] {
+							new LiteralNode("no items found")
+						})
+					}),
+				})
+			});
+
+		DocumentNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void conditionalAttrUnclosedTest() throws Exception {
+
+		DuelToken[] input = {
+			DuelToken.elemBegin("div"),
+			DuelToken.elemBegin("p"),
+			DuelToken.attrName("if"),
+			DuelToken.attrValue("model == 0"),
+			DuelToken.literal("no items found"),
+			DuelToken.elemEnd("div")
+		};
+
+		DocumentNode expected = new DocumentNode(new Node[] {
+			new ElementNode("div", null, new Node[] {
+				new IFCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("test", new ExpressionNode("model == 0"))
+					},
+					new Node[] {
+						new ElementNode("p", null, new Node[] {
+							new LiteralNode("no items found")
+						})
+					}),
+				})
+			});
+
+		DocumentNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void conditionalAttrVoidTagTest() throws Exception {
+
+		DuelToken[] input = {
+			DuelToken.elemBegin("hr"),
+			DuelToken.attrName("if"),
+			DuelToken.attrValue("model.showHR"),
+			DuelToken.literal("always shown")
+		};
+
+		DocumentNode expected = new DocumentNode(new Node[] {
+			new IFCommandNode(
+				new AttributeNode[] {
+					new AttributeNode("test", new ExpressionNode("model.showHR"))
+				},
+				new Node[] {
+					new ElementNode("hr")
+				}),
+			new LiteralNode("always shown")
+		});
+
+		DocumentNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void callTest() throws Exception {
 
 		DuelToken[] input = {

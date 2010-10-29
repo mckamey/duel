@@ -58,11 +58,24 @@ public class ElementNode extends ContainerNode {
 	}
 
 	public Node getAttribute(String name) {
+		if (!this.attributes.containsKey(name)) {
+			return null;
+		}
 		return this.attributes.get(name);
 	}
 
 	public void setAttribute(String name, Node value) {
 		this.attributes.put(name, value);
+	}
+
+	public Node removeAttribute(String name) {
+		if (!this.attributes.containsKey(name)) {
+			return null;
+		}
+
+		Node attr = this.attributes.get(name);;
+		this.attributes.remove(name);
+		return attr;
 	}
 
 	public void clearAttributes() {
@@ -150,8 +163,8 @@ public class ElementNode extends ContainerNode {
 				return false;
 			}
 
-			Node thisValue = this.attributes.get(name);
-			Node thatValue = that.attributes.get(name);
+			Node thisValue = this.getAttribute(name);
+			Node thatValue = that.getAttribute(name);
 
 			if (thisValue == null ? thatValue != null : !thisValue.equals(thatValue)) {
 				return false;
