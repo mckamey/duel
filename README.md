@@ -2,33 +2,93 @@
 
 DUEL is a [dual-side templating][3] engine using HTML for layout and pure JavaScript as the binding language. Views may be executed directly in the browser (client-side template) or on the server (server-side template).
 
-## Syntax
+# Syntax
 
-The DUEL grammar is an intentionally small and in familiar syntax. Each term is intended to be intuitive to remember and is short without abbreviations. DUEL views are defined as HTML/CSS/JavaScript with a select set of special markup tags to control flow and JavaScript code blocks to bind the view template to model data.
+The DUEL grammar is an intentionally small, familiar syntax. Each term is intended to be intuitive to remember and is short without abbreviations. DUEL views are defined as HTML/CSS/JavaScript with a small set of special markup tags to control flow and JavaScript code blocks to bind the view template to model data.
+
+The goal is to deliberately keep the syntax minimal. It should be easy to remember and nothing should need to be looked up during usage.
+
+## Markup
 
 The *complete* set of DUEL markup is:
 
-- `<%@ view name="…" %>` is the declaration at the top of a view to define its metadata. The `name` attribute contains a string literal which defines the name of view type.
-- `<for each="…">…</for>` is wrapped around content to be repeated once per item. The `each` attribute contains an `object` expression defining the list of items to iterate over.
-- `<if test="…">…</if>` is wrapped around conditional content. The `test` attribute contains a `boolean` expression indicating if contents should be included in result.
-- `<else if="…">` or `<else>` sits inside an `<if></if>` block without a closing tag (alternatively `<else test="…">` for symmetry with `<if test="…">`). The `if` attributes (alternatively `test` may be used) contains a `boolean` expression indicating if contents should be included in result.
-- `<div if="…">…</div>` may be applied to any HTML tag to make it conditionally render. The `if` attribute contains a `boolean` expression indicating if contents should be included in result.
-- `<call view="…" model="…" index="…" count="…"></call>` calls another template specifying the data to bind. The `view` attribute is the name of the view to bind, the `model` attribute defines the data to bind, and optionally `index` and `count` attributes may be specified to indicate which item of a list is being bound (item `index` of `count` items).
-- `<part name="…">…</part>` sits inside a view as a placeholder for replacement content, or within a `<call></call>` block to define the replacement content. The `name` attribute is a `string` expression specifying the name of the part to replace.
+### View declaration `<%@ view name="…" %>`
 
-Code blocks contain only pure JavaScript, so there isn't a new language to learn. There are three types of code blocks available:
+Sits at the top of a view to define its metadata. The `name` attribute contains a string literal which defines the name of view type.
 
-- If any value is returned from a **statement block** `<% … %>` it will be emitted as part of the output.
-- The result of an **expression block** `<%= … %>` will be emitted as part of the output, interpretted as plain text (equivalent to `<% return (…); %>`).
-- The result of an **markup expression block** `<%# … %>` will be emitted as part of the output, interpreted as HTML (rare; used only when data itself contains markup).
+### Loop construct `<for each="…">…</for>`
 
-The keywords available inside the JavaScript code blocks are:
+Wrapped around content to be repeated once per item. The `each` attribute contains an `object` expression defining the list of items to iterate over.
 
-- `model` represents the model data being bound to the view template
-- `index` used within loops to indicate which item is being bound
+### Conditional block `<if test="…">…</if>`
+
+Wrapped around conditional content. The `test` attribute contains a `boolean` expression indicating if contents should be included in result.
+
+### Alternate conditionals `<else if="…">` or `<else>`
+
+Sits inside an `<if></if>` block without a closing tag (alternatively `<else test="…">` for symmetry with `<if test="…">`). The `if` attributes (alternatively `test` may be used) contains a `boolean` expression indicating if contents should be included in result.
+
+### Single element conditional `<div if="…">…</div>`
+
+May be applied to any HTML tag to make it conditionally render. The `if` attribute contains a `boolean` expression indicating if contents should be included in result.
+
+### Embed other views `<call view="…" model="…" index="…" count="…" />`
+
+Calls another template specifying the data to bind. The `view` attribute is the name of the view to bind, the `model` attribute defines the data to bind, and optionally `index` and `count` attributes may be specified to indicate which item of a list is being bound (item `index` of `count` items).
+
+### Partial views `<part name="…">…</part>`
+
+Sits inside a view as a placeholder for replacement content, or within a `<call></call>` block to define the replacement content. The `name` attribute is a `string` expression specifying the name of the part to replace.
+
+## Code Blocks
+
+Code blocks contain 100% pure JavaScript, so there isn't a new language to learn. There are three types of code blocks available:
+
+### Statement Blocks `<% … %>`
+
+When code within a statement block is executed, if any value is returned it will be emitted as part of the output.
+
+### Expression Blocks `<%= … %>`
+
+When code within an expression block is executed, the result of will be emitted as part of the output, interpretted as plain text. Expression blocks are equivalent to `<% return (…); %>`.
+
+### Markup Expression Block `<%# … %>`
+
+When code within a markup expression block is executed, the result will be emitted as part of the output, interpreted as HTML. NOTE: these blocks are rarely used (only when data itself contains markup).
+
+## Data Values
+
+The data values available inside the JavaScript code blocks are:
+
+- `model` contains the model data being bound to the view template
+- `index` used within loops to indicate the index of the current item being bound
 - `count` used within loops to indicate total number of items being bound
 
-The goal is to deliberately keep the syntax minimal. It should be easy to remember and nothing should need to be looked up during usage.
+== Markup attributes ==
+
+The attributes in each of the markup elements are implicitly code blocks. This means you can add or leave off the code block syntax based on preference:
+
+	<if test="index % 2 === 0">
+		<%= index %> is even.
+	<else>
+		<%= index %> is odd.
+	</if>
+
+is equivalent to:
+
+	<if test="<%= index % 2 === 0 %>">
+		<%= index %> is even.
+	<else>
+		<%= index %> is odd.
+	</if>
+
+The only exception to this shorthand is the `name` attribute of `<part>`: since it is always a string,
+
+	<part name="foo"></part>
+
+is equivalent to:
+
+	<part name="<%= "foo" %>"></part>
 
 ## Example
 
@@ -60,11 +120,15 @@ Here is a complete example where the result differs if there is zero, one, or ma
 		</if>
 	</div>
 
-To invoke this view from JavaScript, call it like a function:
+To invoke this view from JavaScript, just call it as a function:
 
 	var model = { title: "Hello world!", items: [ { name: "One", detail: 101 },  { name: "two", detail: 2.718 } ] };
-	var markup = foo.bar(model).toString(); // get a string as output
-	var elem = foo.bar(model).toDOM(); // get DOM objects as output
+
+	var markup = foo.bar(model).toString(); // either get a string as output
+	document.getElementById("baz").innerHTML = markup;
+
+	var result = foo.bar(model).toDOM(); // or get DOM objects as output
+	document.getElementById("baz").appendChild(result);
 
 Which would output:
 
