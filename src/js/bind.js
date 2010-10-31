@@ -94,11 +94,6 @@
 	 * @param {Array|Object|string|number} child The child node
 	 */
 	function append(parent, child) {
-		if (getType(parent) !== ARY) {
-			// invalid
-			return;
-		}
-
 		switch (getType(child)) {
 			case ARY:
 				if (child[0] === "") {
@@ -128,7 +123,7 @@
 					parent.splice(1, 0, child);
 				}
 				break;
-	
+
 			case VAL:
 				var last = parent.length - 1;
 				if (last > 0 && getType(parent[last]) === VAL) {
@@ -152,6 +147,36 @@
 	}
 
 	/**
+	 * Binds the child nodes ignoring parent element and attributes
+	 * 
+	 * @private
+	 * @param {Array} node The template subtree root
+	 * @param {*} model The data item being bound
+	 * @param {number|string} index The index of the current data item
+	 * @param {number} count The total number of data items
+	 * @param {Object=} parts Named replacement partial views
+	 * @return {Array|Object|string|number}
+	 */
+	function bindContent(node, model, index, count, parts) {
+		// second item might be attributes object
+		var hasAttr = (getType(node[1]) === OBJ);
+
+		if (node.length === (hasAttr ? 3 : 2)) {
+			// unwrap single nodes
+			return bind(node[node.length-1], model, index, count, parts);
+		}
+
+		// element array, make a doc frag
+		var result = [""];
+
+		for (var i=hasAttr ? 2 : 1, length=node.length; i<length; i++) {
+			append(result, bind(node[i], model, index, count, parts));
+		}
+
+		return result;
+	}
+
+	/**
 	 * Binds the node once for each item in model
 	 * 
 	 * @private
@@ -169,29 +194,25 @@
 		if (isFunction(each)) {
 			each = each(model, index, count);
 		}
-	
-		if (node.length === 3) {
-			node = node[2];
-		} else {
-			node = [""].concat(node.slice(2));
-		}
-	
+
 		var result = [""];
 		switch (getType(each)) {
 			case ARY:
 				for (var i=0, length=each.length; i<length; i++) {
-					append(result, bind(node, each[i], i, length, parts));
+					// Closure Compiler type cast
+					append(result, bindContent(/** @type {Array} */(node), each[i], i, length, parts));
 				}
 				break;
 			case OBJ:
 				for (var key in each) {
 					if (each.hasOwnProperty(key)) {
-						append(result, bind(node, each[key], key, 0, parts));
+						// Closure Compiler type cast
+						append(result, bindContent(/** @type {Array} */(node), each[key], key, 0, parts));
 					}
 				}
 				break;
 		}
-	
+
 		return result;
 	}
 	
@@ -211,8 +232,7 @@
 
 			var block = node[i],
 				args = block[1],
-				test = args[TEST],
-				top = 1;
+				test = args[TEST];
 
 			if (getType(block[1]) === OBJ && test) {
 				// execute test if exists
@@ -223,16 +243,10 @@
 				if (!test) {
 					continue;
 				}
-				top++;
 			}
 
-			// clone and process block
-			if (block.length === top + 1) {
-				block = block[top];
-			} else {
-				block = [""].concat(block.slice(top));
-			}
-			return bind(block, model, index, count, parts);
+			// process block contents
+			return bindContent(block, model, index, count, parts);
 		}
 
 		return null;
@@ -266,9 +280,10 @@
 		// check for view parts
 		for (var j=2, length=node.length; j<length; j++) {
 			var block = node[j];
-			args = block[1];
+				args = block[1] || {};
+
 			if (args && args[NAME]) {
-				p[args[NAME]] = [""].concat(block.slice(2));
+				p[args[NAME]] = block;
 			}
 		}
 
@@ -277,7 +292,7 @@
 	}
 
 	/**
-	 * Replaces a placeholder with the named part from the calling view
+	 * Replaces a part place holder with the named part from the calling view
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number|function(*,*,*):(Object|null)} node The template subtree root
@@ -292,12 +307,12 @@
 			block = args[NAME];
 
 		if (!parts || !parts[block]) {
-			block = [""].concat(node.slice(1));
+			block = node;
 		} else {
 			block = parts[block];
 		}
 
-		return bind(block, model, index, count);
+		return bindContent(block, model, index, count);
 	}
 
 	/**
@@ -323,7 +338,7 @@
 				// Closure Compiler type cast
 				result = (/** @type {function(*,*,*):(Object|null)} */ (node))(model, index, count);
 				break;
-	
+
 			case ARY:
 				// inspect element name for template commands
 				/**
