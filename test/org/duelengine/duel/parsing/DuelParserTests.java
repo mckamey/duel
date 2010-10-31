@@ -1,5 +1,7 @@
 package org.duelengine.duel.parsing;
 
+import java.util.Iterator;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.duelengine.duel.ast.*;
@@ -18,9 +20,12 @@ public class DuelParserTests {
 				new LiteralNode("This is just literal text.")
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -37,9 +42,12 @@ public class DuelParserTests {
 			new LiteralNode("This is literal text\nwhich can all be folded.")
 		});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -54,9 +62,12 @@ public class DuelParserTests {
 			new ElementNode("div")
 		});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -72,9 +83,12 @@ public class DuelParserTests {
 			new ElementNode("div")
 		});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -93,9 +107,12 @@ public class DuelParserTests {
 			})
 		});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -118,9 +135,12 @@ public class DuelParserTests {
 			})
 		});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -162,9 +182,12 @@ public class DuelParserTests {
 				})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -184,9 +207,12 @@ public class DuelParserTests {
 				})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -213,9 +239,12 @@ public class DuelParserTests {
 				})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -255,9 +284,12 @@ public class DuelParserTests {
 				})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -296,9 +328,12 @@ public class DuelParserTests {
 				})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -348,9 +383,12 @@ public class DuelParserTests {
 				})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -402,9 +440,12 @@ public class DuelParserTests {
 				})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -462,9 +503,12 @@ public class DuelParserTests {
 				})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -514,9 +558,12 @@ public class DuelParserTests {
 				})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -547,9 +594,12 @@ public class DuelParserTests {
 				})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -579,9 +629,12 @@ public class DuelParserTests {
 				})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -606,9 +659,12 @@ public class DuelParserTests {
 			new LiteralNode("always shown")
 		});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -639,9 +695,12 @@ public class DuelParserTests {
 				null)
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -697,9 +756,12 @@ public class DuelParserTests {
 					})
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -772,13 +834,16 @@ public class DuelParserTests {
 					})
 				});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
-	public void viewMetaDataUnclosedTest() throws Exception {
+	public void viewMetadataUnclosedTest() throws Exception {
 
 		DuelToken[] input = {
 			DuelToken.elemBegin("view"),
@@ -796,13 +861,16 @@ public class DuelParserTests {
 				new ElementNode("div")
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
-	public void viewMetaDataCloseTagTest() throws Exception {
+	public void viewMetadataCloseTagTest() throws Exception {
 
 		DuelToken[] input = {
 			DuelToken.elemBegin("view"),
@@ -821,8 +889,56 @@ public class DuelParserTests {
 				new ElementNode("div")
 			});
 
-		ViewRootNode actual = new DuelParser().parse(input);
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
 
-		assertEquals(expected, actual);
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
+	}
+
+	@Test
+	public void muliviewMetadataTest() throws Exception {
+
+		DuelToken[] input = {
+				DuelToken.elemBegin("view"),
+				DuelToken.attrName("name"),
+				DuelToken.attrValue("foo.myView"),
+				DuelToken.elemBegin("div"),
+				DuelToken.elemEnd("div"),
+				DuelToken.elemEnd("view"),
+				DuelToken.literal("\n\n"),
+				DuelToken.elemBegin("view"),
+				DuelToken.attrName("name"),
+				DuelToken.attrValue("foo.myOtherView"),
+				DuelToken.elemBegin("p"),
+				DuelToken.elemEnd("p"),
+				DuelToken.elemEnd("view")
+		};
+
+		ViewRootNode expected1 = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo.myView"))
+			},
+			new Node[] {
+				new ElementNode("div")
+			});
+
+		ViewRootNode expected2 = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo.myOtherView"))
+			},
+			new Node[] {
+				new ElementNode("p")
+			});
+
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
+
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected1, iterator.next());
+		assertTrue(iterator.hasNext());
+		assertEquals(expected2, iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 }

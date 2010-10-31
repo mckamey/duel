@@ -16,7 +16,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public ViewRootNode parse(DuelToken[] tokens)
+	public List<ViewRootNode> parse(DuelToken[] tokens)
 		throws Exception {
 
 		return this.parse(tokens != null ? Arrays.asList(tokens).iterator() : null);
@@ -27,7 +27,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public ViewRootNode parse(Iterable<DuelToken> tokens)
+	public List<ViewRootNode> parse(Iterable<DuelToken> tokens)
 		throws Exception {
 
 		return this.parse(tokens != null ? tokens.iterator() : null);
@@ -38,7 +38,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public ViewRootNode parse(Iterator<DuelToken> tokens)
+	public List<ViewRootNode> parse(Iterator<DuelToken> tokens)
 		throws Exception {
 
 		if (tokens == null) {
@@ -60,11 +60,10 @@ public class DuelParser {
 					continue;
 				}
 
-				// TODO: unless whitespace is syntax error
+				// TODO: syntax error unless is literal whitespace 
 			}
 
-			// TODO: return all views
-			return (views.size() > 0) ? views.get(0) : null;
+			return views;
 			
 		} finally {
 			this.tokens = null;
