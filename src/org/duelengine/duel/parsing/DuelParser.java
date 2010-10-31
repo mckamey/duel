@@ -19,11 +19,7 @@ public class DuelParser {
 	public ViewRootNode parse(DuelToken[] tokens)
 		throws Exception {
 
-		if (tokens == null) {
-			throw new NullPointerException("tokens");
-		}
-
-		return this.parse(Arrays.asList(tokens).iterator());
+		return this.parse(tokens != null ? Arrays.asList(tokens).iterator() : null);
 	}
 
 	/**
@@ -31,14 +27,10 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public ViewRootNode parse(Collection<DuelToken> tokens)
+	public ViewRootNode parse(Iterable<DuelToken> tokens)
 		throws Exception {
 
-		if (tokens == null) {
-			throw new NullPointerException("tokens");
-		}
-
-		return this.parse(tokens.iterator());
+		return this.parse(tokens != null ? tokens.iterator() : null);
 	}
 
 	/**

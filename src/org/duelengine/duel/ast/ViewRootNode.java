@@ -16,7 +16,7 @@ public class ViewRootNode extends CommandNode {
 		super(CMD, NAME, false, (attr != null) ? Arrays.asList(attr) : null, null);
 	}
 
-	public ViewRootNode(Collection<AttributeNode> attr) {
+	public ViewRootNode(Iterable<AttributeNode> attr) {
 		super(CMD, NAME, false, attr, null);
 	}
 
@@ -24,7 +24,7 @@ public class ViewRootNode extends CommandNode {
 		super(CMD, NAME, false, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
 	}
 
-	public ViewRootNode(Collection<AttributeNode> attr, Collection<Node> children) {
+	public ViewRootNode(Iterable<AttributeNode> attr, Iterable<Node> children) {
 		super(CMD, NAME, false, attr, children);
 	}
 

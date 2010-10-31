@@ -19,7 +19,7 @@ public class FORCommandNode extends CommandNode {
 		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, null);
 	}
 
-	public FORCommandNode(Collection<AttributeNode> attr) {
+	public FORCommandNode(Iterable<AttributeNode> attr) {
 		super(CMD, NAME, true, attr, null);
 	}
 
@@ -27,7 +27,7 @@ public class FORCommandNode extends CommandNode {
 		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
 	}
 
-	public FORCommandNode(Collection<AttributeNode> attr, Collection<Node> children) {
+	public FORCommandNode(Iterable<AttributeNode> attr, Iterable<Node> children) {
 		super(CMD, NAME, true, attr, children);
 	}
 

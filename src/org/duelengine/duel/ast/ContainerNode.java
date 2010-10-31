@@ -12,7 +12,7 @@ public class ContainerNode extends Node {
 		this((children != null) ? Arrays.asList(children) : null);
 	}
 
-	protected ContainerNode(Collection<Node> children) {
+	protected ContainerNode(Iterable<Node> children) {
 		if (children != null) {
 			for (Node child : children) {
 				this.appendChild(child);

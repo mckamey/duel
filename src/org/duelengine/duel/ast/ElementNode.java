@@ -20,7 +20,7 @@ public class ElementNode extends ContainerNode {
 		this(name, (attr != null) ? Arrays.asList(attr) : null, null);
 	}
 
-	public ElementNode(String name, Collection<AttributeNode> attr) {
+	public ElementNode(String name, Iterable<AttributeNode> attr) {
 		this(name, attr, null);
 	}
 
@@ -28,7 +28,7 @@ public class ElementNode extends ContainerNode {
 		this(name, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
 	}
 
-	public ElementNode(String name, Collection<AttributeNode> attr, Collection<Node> children) {
+	public ElementNode(String name, Iterable<AttributeNode> attr, Iterable<Node> children) {
 		super(children);
 
 		this.tagName = name;

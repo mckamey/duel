@@ -16,7 +16,7 @@ public class CALLCommandNode extends CommandNode {
 		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, null);
 	}
 
-	public CALLCommandNode(Collection<AttributeNode> attr) {
+	public CALLCommandNode(Iterable<AttributeNode> attr) {
 		super(CMD, NAME, true, attr, null);
 	}
 
@@ -24,7 +24,7 @@ public class CALLCommandNode extends CommandNode {
 		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
 	}
 
-	public CALLCommandNode(Collection<AttributeNode> attr, Collection<Node> children) {
+	public CALLCommandNode(Iterable<AttributeNode> attr, Iterable<Node> children) {
 		super(CMD, NAME, true, attr, children);
 	}
 

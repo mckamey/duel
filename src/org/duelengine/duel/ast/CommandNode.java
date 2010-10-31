@@ -18,7 +18,7 @@ public abstract class CommandNode extends ElementNode {
 		this(cmd, name, codeAttrs, (attr != null) ? Arrays.asList(attr) : null, null);
 	}
 
-	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, Collection<AttributeNode> attr) {
+	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, Iterable<AttributeNode> attr) {
 		this(cmd, name, codeAttrs, attr, null);
 	}
 
@@ -26,7 +26,7 @@ public abstract class CommandNode extends ElementNode {
 		this(cmd, name, codeAttrs, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
 	}
 
-	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, Collection<AttributeNode> attr, Collection<Node> children) {
+	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, Iterable<AttributeNode> attr, Iterable<Node> children) {
 		super(name, null, children);
 
 		this.command = cmd;
