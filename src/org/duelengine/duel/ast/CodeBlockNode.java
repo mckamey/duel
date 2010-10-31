@@ -6,5 +6,5 @@ public abstract class CodeBlockNode extends BlockNode {
 		super(begin, end, value);
 	}
 
-	protected abstract String getCode();
+	public abstract String getClientCode();
 }

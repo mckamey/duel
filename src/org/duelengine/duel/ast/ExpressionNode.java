@@ -12,7 +12,7 @@ public class ExpressionNode extends CodeBlockNode {
 	}
 
 	@Override
-	public String getCode() {
+	public String getClientCode() {
 		StringBuilder buffer = new StringBuilder(INTRO);
 		String value = this.getValue();
 		if (value != null) {

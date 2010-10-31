@@ -70,6 +70,8 @@
 			todir="${bin.dir}/org/duelengine/duel/parsing/"/>
 		<copy file="${src.dir}/org/duelengine/duel/ast/HTMLTags.properties"
 			todir="${bin.dir}/org/duelengine/duel/ast/"/>
+		<copy file="${src.dir}/org/duelengine/duel/codegen/JSVocab.properties"
+			todir="${bin.dir}/org/duelengine/duel/codegen/"/>
 	</target>
 
 	<target name="jar" depends="compile.src" description="Package as a jar">

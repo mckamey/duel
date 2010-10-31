@@ -48,7 +48,15 @@ public class ElementNode extends ContainerNode {
 	public boolean canHaveChildren() {
 		return !this.isVoid;
 	}
-	
+
+	public boolean hasAttributes() {
+		return !this.attributes.isEmpty();
+	}
+
+	public Iterable<String> getAttributeNames() {
+		return this.attributes.keySet();
+	}
+
 	public void addAttribute(AttributeNode attr)
 		throws NullPointerException {
 		if (attr == null) {

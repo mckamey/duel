@@ -24,6 +24,10 @@ public class ContainerNode extends Node {
 		return !this.children.isEmpty();
 	}
 
+	public int childCount() {
+		return this.children.size();
+	}
+
 	public List<Node> getChildren() {
 		return Collections.unmodifiableList(this.children);
 	}
