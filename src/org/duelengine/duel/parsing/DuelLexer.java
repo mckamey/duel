@@ -90,16 +90,24 @@ public class DuelLexer implements Iterator<DuelToken> {
 	public void clearLastError() {
 		this.lastError = null;
 
-		if (this.token.getToken().equals(DuelTokenType.ERROR)) {
+		if (this.ensureToken().getToken().equals(DuelTokenType.ERROR)) {
 			this.token = DuelToken.start;
 		}
 	}
 
 	/**
-	 * Determines if any more tokens exist
+	 * Determines if any more tokens are available
 	 */
 	public boolean hasNext() {
-		return !this.ensureToken().equals(DuelToken.end);
+
+		switch (this.ensureToken().getToken()) {
+			case END:
+			case ERROR:
+				// NOTE: cannot pass error until cleared
+				return false;
+			default:
+				return true;
+		}
 	}
 
 	/**
@@ -786,12 +794,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 		ArrayList<DuelToken> list = new ArrayList<DuelToken>();
 		while (this.hasNext()) {
-			DuelToken token = this.next();
-			list.add(token);
-
-			if (token.getToken().equals(DuelTokenType.ERROR)) {
-				break;
-			}
+			list.add(this.next());
 		}
 		return list;
 	}
