@@ -1,7 +1,5 @@
 package org.duelengine.duel.ast;
 
-import org.duelengine.duel.parsing.DuelToken;
-
 public class LiteralNode extends Node {
 
 	private String value;

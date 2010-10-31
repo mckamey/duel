@@ -10,14 +10,15 @@ public class DuelParserTests {
 	public void literalSingleTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.literal("This is just literal text.")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
-			new LiteralNode("This is just literal text.")
-		});
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
+				new LiteralNode("This is just literal text.")
+			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -26,16 +27,17 @@ public class DuelParserTests {
 	public void literalFoldingTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.literal("This is literal text"),
 			DuelToken.literal("\n"),
 			DuelToken.literal("which can all be folded.")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new LiteralNode("This is literal text\nwhich can all be folded.")
 		});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -44,14 +46,15 @@ public class DuelParserTests {
 	public void elemBeginTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("div")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode("div")
 		});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -60,15 +63,16 @@ public class DuelParserTests {
 	public void elemBeginEndTest() throws Exception {
 
 		DuelToken[] input = {
+				DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemEnd("div")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode("div")
 		});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -77,18 +81,19 @@ public class DuelParserTests {
 	public void elemAttribTest() throws Exception {
 
 		DuelToken[] input = {
+				DuelToken.elemBegin("view"),
 				DuelToken.elemBegin("div"),
 				DuelToken.attrName("class"),
 				DuelToken.attrValue("foo")
 			};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode("div", new AttributeNode[] {
 				new AttributeNode("class", new LiteralNode("foo"))
 			})
 		});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -97,6 +102,7 @@ public class DuelParserTests {
 	public void elemNestedTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("span"),
 			DuelToken.elemBegin("img"),
@@ -104,7 +110,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode("div", null, new Node[] {
 				new ElementNode("span", null, new Node[] {
 						new ElementNode("img")
@@ -112,7 +118,7 @@ public class DuelParserTests {
 			})
 		});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -121,6 +127,7 @@ public class DuelParserTests {
 	public void elemListTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("ul"),
 			DuelToken.attrName("class"),
 			DuelToken.attrValue("foo"),
@@ -136,7 +143,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("ul")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode(
 				"ul",
 				new AttributeNode[] {
@@ -155,7 +162,7 @@ public class DuelParserTests {
 				})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -164,19 +171,20 @@ public class DuelParserTests {
 	public void elemOverlapTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("span"),
 			DuelToken.elemEnd("div"),
 			DuelToken.elemEnd("span")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode("div", null, new Node[] {
 					new ElementNode("span")
 				})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -185,6 +193,7 @@ public class DuelParserTests {
 	public void elemAutoBalanceTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("img"),
 			DuelToken.elemBegin("span"),
@@ -194,7 +203,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("span")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode("div", null,
 				new Node[] {
 					new ElementNode("img"),
@@ -204,7 +213,7 @@ public class DuelParserTests {
 				})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -213,6 +222,7 @@ public class DuelParserTests {
 	public void doctypeTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.block(new BlockValue("<!doctype", ">", " html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
 			DuelToken.literal("\n"),
 			DuelToken.elemBegin("html"),
@@ -228,7 +238,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("html")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new DocTypeNode(" html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\""),
 			new LiteralNode("\n"),
 			new ElementNode("html",
@@ -245,17 +255,16 @@ public class DuelParserTests {
 				})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
-
-		assertNotNull(actual.getDocType());
 	}
 
 	@Test
 	public void loopTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("ul"),
 			DuelToken.elemBegin("for"),
 			DuelToken.attrName("each"),
@@ -269,7 +278,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("ul")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode("ul", null, new Node[] {
 				new FORCommandNode(
 					new AttributeNode[] {
@@ -287,7 +296,7 @@ public class DuelParserTests {
 				})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -296,22 +305,23 @@ public class DuelParserTests {
 	public void conditionalBlockTest() throws Exception {
 
 		DuelToken[] input = {
-				DuelToken.elemBegin("div"),
-				DuelToken.elemBegin("if"),
-				DuelToken.attrName("test"),
-				DuelToken.attrValue("model == 0"),
-				DuelToken.literal("\n\tzero\n"),
-				DuelToken.elemBegin("else"),
-				DuelToken.attrName("if"),
-				DuelToken.attrValue("model == 1"),
-				DuelToken.literal("\n\tone\n"),
-				DuelToken.elemBegin("else"),
-				DuelToken.literal("\n\tmany\n"),
-				DuelToken.elemEnd("if"),
-				DuelToken.elemEnd("div")
-			};
+			DuelToken.elemBegin("view"),
+			DuelToken.elemBegin("div"),
+			DuelToken.elemBegin("if"),
+			DuelToken.attrName("test"),
+			DuelToken.attrValue("model == 0"),
+			DuelToken.literal("\n\tzero\n"),
+			DuelToken.elemBegin("else"),
+			DuelToken.attrName("if"),
+			DuelToken.attrValue("model == 1"),
+			DuelToken.literal("\n\tone\n"),
+			DuelToken.elemBegin("else"),
+			DuelToken.literal("\n\tmany\n"),
+			DuelToken.elemEnd("if"),
+			DuelToken.elemEnd("div")
+		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 				new ElementNode("div", null, new Node[] {
 					new XORCommandNode(null,
 						new Node[] {
@@ -338,7 +348,7 @@ public class DuelParserTests {
 				})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -347,6 +357,7 @@ public class DuelParserTests {
 	public void conditionalBlockVoidElseTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("if"),
 			DuelToken.attrName("test"),
@@ -364,7 +375,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode("div", null, new Node[] {
 				new XORCommandNode(null,
 					new Node[] {
@@ -391,7 +402,7 @@ public class DuelParserTests {
 				})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -400,6 +411,7 @@ public class DuelParserTests {
 	public void conditionalSinglesTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("if"),
 			DuelToken.attrName("test"),
@@ -417,7 +429,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode("div", null, new Node[] {
 				new XORCommandNode(null,
 					new Node[] {
@@ -450,7 +462,7 @@ public class DuelParserTests {
 				})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -459,22 +471,23 @@ public class DuelParserTests {
 	public void conditionalAliasesTest() throws Exception {
 
 		DuelToken[] input = {
-				DuelToken.elemBegin("div"),
-				DuelToken.elemBegin("if"),
-				DuelToken.attrName("if"),
-				DuelToken.attrValue("model == 0"),
-				DuelToken.literal("\n\tzero\n"),
-				DuelToken.elemBegin("else"),
-				DuelToken.attrName("test"),
-				DuelToken.attrValue("model == 1"),
-				DuelToken.literal("\n\tone\n"),
-				DuelToken.elemBegin("else"),
-				DuelToken.literal("\n\tmany\n"),
-				DuelToken.elemEnd("if"),
-				DuelToken.elemEnd("div")
-			};
+			DuelToken.elemBegin("view"),
+			DuelToken.elemBegin("div"),
+			DuelToken.elemBegin("if"),
+			DuelToken.attrName("if"),
+			DuelToken.attrValue("model == 0"),
+			DuelToken.literal("\n\tzero\n"),
+			DuelToken.elemBegin("else"),
+			DuelToken.attrName("test"),
+			DuelToken.attrValue("model == 1"),
+			DuelToken.literal("\n\tone\n"),
+			DuelToken.elemBegin("else"),
+			DuelToken.literal("\n\tmany\n"),
+			DuelToken.elemEnd("if"),
+			DuelToken.elemEnd("div")
+		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 				new ElementNode("div", null, new Node[] {
 					new XORCommandNode(null,
 						new Node[] {
@@ -501,7 +514,7 @@ public class DuelParserTests {
 				})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -510,6 +523,7 @@ public class DuelParserTests {
 	public void conditionalAttrTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("p"),
 			DuelToken.attrName("if"),
@@ -519,7 +533,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode("div", null, new Node[] {
 				new IFCommandNode(
 					new AttributeNode[] {
@@ -533,7 +547,7 @@ public class DuelParserTests {
 				})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -542,6 +556,7 @@ public class DuelParserTests {
 	public void conditionalAttrUnclosedTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("p"),
 			DuelToken.attrName("if"),
@@ -550,7 +565,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new ElementNode("div", null, new Node[] {
 				new IFCommandNode(
 					new AttributeNode[] {
@@ -564,7 +579,7 @@ public class DuelParserTests {
 				})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -573,13 +588,14 @@ public class DuelParserTests {
 	public void conditionalAttrVoidTagTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("hr"),
 			DuelToken.attrName("if"),
 			DuelToken.attrValue("model.showHR"),
 			DuelToken.literal("always shown")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new IFCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("test", new ExpressionNode("model.showHR"))
@@ -590,7 +606,7 @@ public class DuelParserTests {
 			new LiteralNode("always shown")
 		});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -599,6 +615,7 @@ public class DuelParserTests {
 	public void callTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("call"),
 			DuelToken.attrName("view"),
 			DuelToken.attrValue("Foo.Other"),
@@ -611,7 +628,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("call"),
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new CALLCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("view", new ExpressionNode("Foo.Other")),
@@ -622,7 +639,7 @@ public class DuelParserTests {
 				null)
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -631,6 +648,7 @@ public class DuelParserTests {
 	public void callPartTest() throws Exception {
 
 		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("call"),
 			DuelToken.attrName("view"),
 			DuelToken.attrValue("Foo.Other"),
@@ -653,7 +671,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("call")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new CALLCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("view", new ExpressionNode("Foo.Other")),
@@ -679,7 +697,7 @@ public class DuelParserTests {
 					})
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -688,7 +706,9 @@ public class DuelParserTests {
 	public void viewPartTest() throws Exception {
 
 		DuelToken[] input = {
-			DuelToken.block(new BlockValue("<%@", "%>", " view=\"Foo.Other\"")),
+			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("Foo.Other"),
 			DuelToken.elemBegin("div"),
 			DuelToken.attrName("class"),
 			DuelToken.attrValue("foo"),
@@ -713,43 +733,95 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		};
 
-		DocumentNode expected = new DocumentNode(new Node[] {
-			new DeclarationNode(" view=\"Foo.Other\""),
-			new ElementNode("div",
-				new AttributeNode[] {
-					new AttributeNode("class", new LiteralNode("foo"))
-				},
-				new Node[] {
-					new ElementNode("h3",
-						new AttributeNode[] {
-							new AttributeNode("class", new LiteralNode("head"))
-						},
-						new Node[] {
-						new PARTCommandNode(
+		ViewRootNode expected = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("Foo.Other"))
+			},
+			new Node[] {
+				new ElementNode("div",
+					new AttributeNode[] {
+						new AttributeNode("class", new LiteralNode("foo"))
+					},
+					new Node[] {
+						new ElementNode("h3",
 							new AttributeNode[] {
-									new AttributeNode("name", new LiteralNode("title-area"))
+								new AttributeNode("class", new LiteralNode("head"))
 							},
 							new Node[] {
-								new LiteralNode("Placeholder title.")
-							}),
-						}),
-					new ElementNode("p",
-						new AttributeNode[] {
-							new AttributeNode("class", new LiteralNode("body"))
-						},
-						new Node[] {
 							new PARTCommandNode(
 								new AttributeNode[] {
-									new AttributeNode("name", new LiteralNode("content-area"))
+										new AttributeNode("name", new LiteralNode("title-area"))
 								},
 								new Node[] {
-									new LiteralNode("Placeholder content.")
+									new LiteralNode("Placeholder title.")
+								}),
 							}),
-						})
-				})
+						new ElementNode("p",
+							new AttributeNode[] {
+								new AttributeNode("class", new LiteralNode("body"))
+							},
+							new Node[] {
+								new PARTCommandNode(
+									new AttributeNode[] {
+										new AttributeNode("name", new LiteralNode("content-area"))
+									},
+									new Node[] {
+										new LiteralNode("Placeholder content.")
+								}),
+							})
+					})
+				});
+
+		ViewRootNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void viewMetaDataUnclosedTest() throws Exception {
+
+		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("Foo.Other"),
+			DuelToken.elemBegin("div"),
+			DuelToken.elemEnd("div")
+		};
+
+		ViewRootNode expected = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("Foo.Other"))
+			},
+			new Node[] {
+				new ElementNode("div")
 			});
 
-		DocumentNode actual = new DuelParser().parse(input);
+		ViewRootNode actual = new DuelParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void viewMetaDataCloseTagTest() throws Exception {
+
+		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo.myView"),
+			DuelToken.elemBegin("div"),
+			DuelToken.elemEnd("div"),
+			DuelToken.elemEnd("view")
+		};
+
+		ViewRootNode expected = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo.myView"))
+			},
+			new Node[] {
+				new ElementNode("div")
+			});
+
+		ViewRootNode actual = new DuelParser().parse(input);
 
 		assertEquals(expected, actual);
 	}

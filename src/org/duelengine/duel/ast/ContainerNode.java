@@ -2,10 +2,10 @@ package org.duelengine.duel.ast;
 
 import java.util.*;
 
-public abstract class ContainerNode extends Node {
+public class ContainerNode extends Node {
 	private final List<Node> children = new ArrayList<Node>();
 
-	protected ContainerNode() {
+	public ContainerNode() {
 	}
 
 	protected ContainerNode(Node[] children) {

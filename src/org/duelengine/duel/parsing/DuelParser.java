@@ -16,7 +16,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public DocumentNode parse(DuelToken[] tokens)
+	public ViewRootNode parse(DuelToken[] tokens)
 		throws Exception {
 
 		if (tokens == null) {
@@ -31,7 +31,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public DocumentNode parse(Collection<DuelToken> tokens)
+	public ViewRootNode parse(Collection<DuelToken> tokens)
 		throws Exception {
 
 		if (tokens == null) {
@@ -46,7 +46,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public DocumentNode parse(Iterator<DuelToken> tokens)
+	public ViewRootNode parse(Iterator<DuelToken> tokens)
 		throws Exception {
 
 		if (tokens == null) {
@@ -56,12 +56,24 @@ public class DuelParser {
 		this.tokens = tokens;
 		try {
 
-			DocumentNode docFrag = new DocumentNode();
+			ContainerNode document = new ContainerNode();
 			while (this.hasNext()) {
-				this.parseNext(docFrag);
+				this.parseNext(document);
 			}
-			return docFrag;
 
+			List<ViewRootNode> views = new ArrayList<ViewRootNode>(1);
+			for (Node node : document.getChildren()) {
+				if (node instanceof ViewRootNode) {
+					views.add((ViewRootNode)node);
+					continue;
+				}
+
+				// TODO: unless whitespace is syntax error
+			}
+
+			// TODO: return all views
+			return (views.size() > 0) ? views.get(0) : null;
+			
 		} finally {
 			this.tokens = null;
 			this.next = null;
@@ -304,6 +316,10 @@ public class DuelParser {
 			return new PARTCommandNode();
 		}
 
+		if (tagName.equalsIgnoreCase(ViewRootNode.EXT_NAME)) {
+			return new ViewRootNode();
+		}
+
 		return new ElementNode(tagName.toLowerCase());
 	}
 
@@ -312,7 +328,7 @@ public class DuelParser {
 	 * @param block
 	 * @return
 	 */
-	private BlockNode createBlock(BlockValue block) {
+	private Node createBlock(BlockValue block) {
 
 		String begin = block.getBegin();
 		if (begin == null) {
@@ -331,10 +347,6 @@ public class DuelParser {
 
 		if (begin.equals(MarkupNode.BEGIN)) {
 			return new MarkupNode(value);
-		}
-
-		if (begin.equals(DeclarationNode.BEGIN)) {
-			return new DeclarationNode(value);
 		}
 
 		if (begin.equalsIgnoreCase(DocTypeNode.BEGIN)) {
