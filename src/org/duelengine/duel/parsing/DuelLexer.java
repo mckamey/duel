@@ -355,7 +355,6 @@ public class DuelLexer implements Iterator<DuelToken> {
 	}
 
 	/**
-
 	 * Decodes HTML5 character reference names
 	 * @param name
 	 * @return

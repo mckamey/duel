@@ -68,8 +68,8 @@
 		<!-- copy configs into output -->
 		<copy file="${src.dir}/org/duelengine/duel/parsing/HTMLCharRefs.properties"
 			todir="${bin.dir}/org/duelengine/duel/parsing/"/>
-		<copy file="${src.dir}/org/duelengine/duel/parsing/HTMLTags.properties"
-			todir="${bin.dir}/org/duelengine/duel/parsing/"/>
+		<copy file="${src.dir}/org/duelengine/duel/ast/HTMLTags.properties"
+			todir="${bin.dir}/org/duelengine/duel/ast/"/>
 	</target>
 
 	<target name="jar" depends="compile.src" description="Package as a jar">

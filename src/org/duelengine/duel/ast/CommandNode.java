@@ -62,6 +62,6 @@ public abstract class CommandNode extends ElementNode {
 			value = new ExpressionNode(((LiteralNode)value).getValue());
 		}
 
-		super.setAttribute(name, value);
+		super.setAttribute(name != null ? name.toLowerCase() : null, value);
 	}
 }

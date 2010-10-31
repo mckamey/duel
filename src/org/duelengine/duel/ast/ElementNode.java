@@ -4,7 +4,7 @@ import java.util.*;
 
 public class ElementNode extends ContainerNode {
 
-	private static final String CONFIG_RESOURCE = "org.duelengine.duel.parsing.HTMLTags";
+	private static final String CONFIG_RESOURCE = "org.duelengine.duel.ast.HTMLTags";
 	private static Map<String, Boolean> voidTags;
 
 	private final String tagName;
@@ -13,7 +13,7 @@ public class ElementNode extends ContainerNode {
 
 	public ElementNode(String name) {
 		this.tagName = name;
-		this.isVoid = (name == null) ? true : getVoidTags().containsKey(name);
+		this.isVoid = (name == null) || getVoidTags().containsKey(name);
 	}
 
 	public ElementNode(String name, AttributeNode[] attr) {

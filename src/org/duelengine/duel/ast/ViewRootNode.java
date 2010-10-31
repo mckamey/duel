@@ -7,6 +7,7 @@ public class ViewRootNode extends CommandNode {
 	public static final String EXT_NAME = "view";
 	private static final String NAME = "$view";
 	private static final CommandName CMD = CommandName.VIEW;
+	private static final String NAME_ATTR = "name";
 
 	public ViewRootNode() {
 		super(CMD, NAME, false);
@@ -28,6 +29,19 @@ public class ViewRootNode extends CommandNode {
 		super(CMD, NAME, false, attr, children);
 	}
 
+	public String getName() {
+		Node node = this.getAttribute(NAME_ATTR);
+		if (node instanceof LiteralNode) {
+			return ((LiteralNode)node).getValue();
+		}
+
+		return null;
+	}
+
+	public void setName(String value) {
+		this.setAttribute(NAME_ATTR, new LiteralNode(value));
+	}
+	
 	@Override
 	public boolean isSelf(String tag) {
 		return EXT_NAME.equalsIgnoreCase(tag) || NAME.equalsIgnoreCase(tag);
@@ -46,7 +60,7 @@ public class ViewRootNode extends CommandNode {
 
 	@Override
 	public void setAttribute(String name, Node value) {
-		if (name == null || !name.equalsIgnoreCase("name")) {
+		if (name == null || !name.equalsIgnoreCase(NAME_ATTR)) {
 			// TODO: Syntax error
 			return;
 		}
