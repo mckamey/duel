@@ -6,26 +6,25 @@ import org.duelengine.duel.ast.*;
 
 public class ClientGen {
 
-	private static final String GLOBALS =
-		"/*global duel */\n";
-
-	private static final String NS_ROOT =
-		"\nvar %1$s;";
-
-	private static final String NS_CHECK =
-		"\nif (typeof %1$s === \"undefined\") {\n\t%1$s = {};\n}";
-
-	private static final String VAR =
-		"\nvar ";
-
-	private static final String VIEW_BEGIN =
-		"%1$s = duel(";
-
-	private static final String VIEW_END =
-		");";
-
-	private boolean encodeLessThan;
 	private int depth;
+	private String indent = "\t";
+	private String newline = "\n";
+
+	public String getIndent() {
+		return this.indent;
+	}
+
+	public void setIndent(String indent) {
+		this.indent = indent;
+	}
+
+	public String getNewline() {
+		return this.newline;
+	}
+
+	public void setNewline(String newline) {
+		this.newline = newline;
+	}
 
 	/**
 	 * Generates client-side code for the given view
@@ -87,7 +86,8 @@ public class ClientGen {
 	private void writeNamespaces(PrintWriter writer, Iterable<ViewRootNode> views)
 		throws IOException {
 
-		writer.append(GLOBALS);
+		writer.append("/*global duel */");
+		this.writeln(writer);
 		
 		List<String> namespaces = JSUtility.cloneBrowserObjects();
 
@@ -119,10 +119,18 @@ public class ClientGen {
 				namespaces.add(ns);
 
 				if (i == 0) {
-					writer.format(NS_ROOT, ns);
+					this.writeln(writer);
+					writer.format("var %1$s;", ns);
 				}
 
-				writer.format(NS_CHECK, ns);
+				this.writeln(writer);
+				writer.format("if (typeof %1$s === \"undefined\") {", ns);
+				this.depth++;
+				this.writeln(writer);
+				writer.format("%1$s = {};", ns);
+				this.depth--;
+				this.writeln(writer);
+				writer.write('}');
 				nsEmitted = true;
 			}
 
@@ -134,12 +142,13 @@ public class ClientGen {
 
 	private void writeView(PrintWriter writer, ViewRootNode view) {
 		String viewName = view.getName();
+		this.writeln(writer);
+
 		if (viewName.indexOf('.') < 0) {
-			writer.write(VAR);
-		} else {
-			writer.write('\n');
+			writer.write("var ");
 		}
-		writer.format(VIEW_BEGIN, viewName);
+		writer.write(viewName);
+		writer.write(" = duel(");
 
 		if (view.childCount() == 1) {
 			Node child = view.getFirstChild();
@@ -156,7 +165,7 @@ public class ClientGen {
 			this.writeElement(writer, "", view);
 		}
 
-		writer.write(VIEW_END);
+		writer.write(");");
 	}
 
 	private void writeNode(PrintWriter writer, Node node) {
@@ -235,6 +244,9 @@ public class ClientGen {
 	}
 
 	private void writeString(PrintWriter writer, String value) {
+		// improves compatibility within script blocks
+		boolean encodeLessThan = false;
+		
 		if (value == null) {
 			writer.write("null");
 			return;
@@ -252,7 +264,7 @@ public class ClientGen {
 				ch >= '\u007F' ||
 				ch == '\"' ||
 				ch == '\\' ||
-				(this.encodeLessThan && ch == '<')) { // improves compatibility within script blocks
+				(encodeLessThan && ch == '<')) {
 
 				if (i > start) {
 					writer.write(value, start, i-start);
@@ -296,10 +308,10 @@ public class ClientGen {
 	}
 
 	private void writeln(PrintWriter writer) {
-		writer.write('\n');
+		writer.write(this.newline);
 
 		for (int i=this.depth; i>0; i--) {
-			writer.write('\t');
+			writer.write(this.indent);
 		}
 	}
 }
