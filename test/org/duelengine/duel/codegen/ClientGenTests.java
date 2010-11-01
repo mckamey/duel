@@ -65,6 +65,49 @@ public class ClientGenTests {
 		assertEquals(expected, actual);
 	}
 
+	@Test
+	public void conditionalBlockTest() throws Exception {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new XORCommandNode(null,
+						new Node[] {
+							new IFCommandNode(
+									new AttributeNode[] {
+										new AttributeNode("test", new ExpressionNode("model === 0"))
+									},
+									new Node[] {
+										new LiteralNode("zero")
+									}),
+							new IFCommandNode(
+									new AttributeNode[] {
+										new AttributeNode("test", new ExpressionNode("model === 1"))
+									},
+									new Node[] {
+										new LiteralNode("one")
+									}),
+							new IFCommandNode(
+									null,
+									new Node[] {
+										new LiteralNode("many")
+									}),
+						})
+				})
+			});
+
+		String expected = "/*global duel */\n\nvar foo = duel([\"div\",[\"$xor\",[\"$if\",{\"test\":function(model, index, count) { return (model === 0); }},\"zero\"],[\"$if\",{\"test\":function(model, index, count) { return (model === 1); }},\"one\"],[\"$if\",\"many\"]]]);";
+
+		StringWriter writer = new StringWriter();
+		new ClientGen().write(writer, new ViewRootNode[] { input });
+		String actual = ScrubActual(writer);
+System.out.print(actual);
+		assertEquals(expected, actual);
+	}
+
 	private String ScrubActual(StringWriter writer) {
 		return writer.toString().replaceAll("\r\n", "\n");
 	}

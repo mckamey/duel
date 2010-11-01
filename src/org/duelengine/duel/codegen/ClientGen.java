@@ -175,12 +175,13 @@ public class ClientGen {
 		this.writeString(writer, tagName);
 
 		if (node.hasAttributes()) {
-			writer.write(",");
+			writer.write(",{");
 			for (String attr : node.getAttributeNames()) {
 				this.writeString(writer, attr);
 				writer.write(":");
 				this.writeNode(writer, node.getAttribute(attr));
 			}
+			writer.write("}");
 		}
 		
 		for (Node child : node.getChildren()) {
