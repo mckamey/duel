@@ -1,13 +1,13 @@
 package org.duelengine.duel.ast;
 
-public class MarkupNode extends CodeBlockNode {
+public class MarkupExpressionNode extends CodeBlockNode {
 
 	public static final String BEGIN = "<%#";
 	public static final String END = "%>";
 	private static final String INTRO = "function(model, index, count) { return duel.raw(";
 	private static final String OUTRO = "); }";
 
-	public MarkupNode(String expression) {
+	public MarkupExpressionNode(String expression) {
 		super(BEGIN, END, expression);
 	}
 

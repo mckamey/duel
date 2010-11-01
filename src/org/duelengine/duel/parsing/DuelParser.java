@@ -336,8 +336,8 @@ public class DuelParser {
 			return new StatementNode(value);
 		}
 
-		if (begin.equals(MarkupNode.BEGIN)) {
-			return new MarkupNode(value);
+		if (begin.equals(MarkupExpressionNode.BEGIN)) {
+			return new MarkupExpressionNode(value);
 		}
 
 		if (begin.equalsIgnoreCase(DocTypeNode.BEGIN)) {

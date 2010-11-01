@@ -50,6 +50,72 @@ public class ClientGenTests {
 	}
 
 	@Test
+	public void expressionTest() throws Exception {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new Node[] {
+				new ExpressionNode("count;")
+			});
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel(function(model, index, count) { return (count); });\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientGen().write(writer, new ViewRootNode[] { input });
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void markupExpressionTest() throws Exception {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new Node[] {
+				new MarkupExpressionNode("model")
+			});
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel(function(model, index, count) { return duel.raw(model); });\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientGen().write(writer, new ViewRootNode[] { input });
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void statementTest() throws Exception {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new Node[] {
+				new StatementNode("bar();")
+			});
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel(function(model, index, count) { bar(); });\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientGen().write(writer, new ViewRootNode[] { input });
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void conditionalBlockTest() throws Exception {
 
 		ViewRootNode input = new ViewRootNode(
@@ -99,28 +165,6 @@ public class ClientGenTests {
 			"\t\t\t]\n"+
 			"\t\t]\n"+
 			"\t]);\n";
-
-		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void codeBlockTest() throws Exception {
-
-		ViewRootNode input = new ViewRootNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
-			},
-			new Node[] {
-				new StatementNode("bar();")
-			});
-
-		String expected =
-			"/*global duel */\n\n"+
-			"var foo = duel(function(model, index, count) { bar(); });\n";
 
 		StringWriter writer = new StringWriter();
 		new ClientGen().write(writer, new ViewRootNode[] { input });
