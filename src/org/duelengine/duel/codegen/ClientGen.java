@@ -25,6 +25,7 @@ public class ClientGen {
 		");";
 
 	private boolean encodeLessThan;
+	private int depth;
 
 	/**
 	 * Generates client-side code for the given view
@@ -78,6 +79,7 @@ public class ClientGen {
 		this.writeNamespaces(pwriter, views);
 
 		for (ViewRootNode view : views) {
+			this.depth = 0;
 			this.writeView(pwriter, view);
 		}
 	}
@@ -125,7 +127,7 @@ public class ClientGen {
 			}
 
 			if (nsEmitted) {
-				writer.println();
+				this.writeln(writer);
 			}
 		}
 	}
@@ -140,9 +142,17 @@ public class ClientGen {
 		writer.format(VIEW_BEGIN, viewName);
 
 		if (view.childCount() == 1) {
-			this.writeNode(writer, view.getFirstChild());
+			Node child = view.getFirstChild();
+			if (child instanceof ElementNode &&
+				((ElementNode)child).hasChildren()) {
+				this.depth++;
+				this.writeln(writer);
+			}
+
+			// just emit the single child
+			this.writeNode(writer, child);
 		} else {
-			// emit as a document fragment
+			// wrap in a document fragment
 			this.writeElement(writer, "", view);
 		}
 
@@ -170,26 +180,58 @@ public class ClientGen {
 	}
 
 	private void writeElement(PrintWriter writer, String tagName, ElementNode node) {
-		writer.write("[");
+		writer.write('[');
+		this.depth++;
 
 		this.writeString(writer, tagName);
 
 		if (node.hasAttributes()) {
-			writer.write(",{");
-			for (String attr : node.getAttributeNames()) {
+			Set<String> attrs = node.getAttributeNames();
+			boolean singleAttr = (attrs.size() == 1);
+
+			writer.write(", {");
+			this.depth++;
+
+			boolean needsDelim = false;
+			for (String attr : attrs) {
+				// property delimiter
+				if (needsDelim) {
+					writer.write(',');
+				} else {
+					needsDelim = true;
+				}
+
+				if (singleAttr) {
+					writer.write(' ');
+				} else {
+					this.writeln(writer);
+				}
+
 				this.writeString(writer, attr);
-				writer.write(":");
+				writer.write(" : ");
 				this.writeNode(writer, node.getAttribute(attr));
 			}
-			writer.write("}");
+
+			this.depth--;
+			if (singleAttr) {
+				writer.write(' ');
+			} else {
+				this.writeln(writer);
+			}
+			writer.write('}');
 		}
-		
+
 		for (Node child : node.getChildren()) {
-			writer.write(",");
+			writer.write(',');
+			this.writeln(writer);
 			this.writeNode(writer, child);
 		}
-		
-		writer.write("]");
+
+		this.depth--;
+		if (node.hasChildren()) {
+			this.writeln(writer);
+		}
+		writer.write(']');
 	}
 
 	private void writeString(PrintWriter writer, String value) {
@@ -251,5 +293,13 @@ public class ClientGen {
 		}
 
 		writer.write("\"");
+	}
+
+	private void writeln(PrintWriter writer) {
+		writer.write('\n');
+
+		for (int i=this.depth; i>0; i--) {
+			writer.write('\t');
+		}
 	}
 }

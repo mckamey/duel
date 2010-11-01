@@ -53,7 +53,7 @@ public class ElementNode extends ContainerNode {
 		return !this.attributes.isEmpty();
 	}
 
-	public Iterable<String> getAttributeNames() {
+	public Set<String> getAttributeNames() {
 		return this.attributes.keySet();
 	}
 
