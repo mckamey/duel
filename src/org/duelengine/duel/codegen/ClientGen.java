@@ -6,6 +6,7 @@ import org.duelengine.duel.ast.*;
 
 public class ClientGen {
 
+	private List<String> namespaces;
 	private int depth;
 	private String indent = "\t";
 	private String newline = "\n";
@@ -75,75 +76,77 @@ public class ClientGen {
 		}
 
 		PrintWriter pwriter = (writer instanceof PrintWriter) ? (PrintWriter)writer : new PrintWriter(writer);
-		this.writeNamespaces(pwriter, views);
 
-		for (ViewRootNode view : views) {
-			this.depth = 0;
-			this.writeView(pwriter, view);
+		pwriter.append("/*global duel */");
+		this.writeln(pwriter);
+
+		this.namespaces = JSUtility.cloneBrowserObjects();
+		try {
+			for (ViewRootNode view : views) {
+				if (view == null) {
+					continue;
+				}
+				this.writeNamespaces(pwriter, view);
+				this.writeView(pwriter, view);
+			}
+
+		} finally {
+			this.namespaces = null;
 		}
 	}
 
-	private void writeNamespaces(PrintWriter writer, Iterable<ViewRootNode> views)
-		throws IOException {
+	private void writeNamespaces(PrintWriter writer, ViewRootNode view) {
 
-		writer.append("/*global duel */");
-		this.writeln(writer);
-		
-		List<String> namespaces = JSUtility.cloneBrowserObjects();
+		String ident = view.getName();
+		if (!JSUtility.isValidIdentifier(ident, true)) {
+			// TODO: syntax error
+			throw new IllegalArgumentException("Invalid view name: "+ident);
+		}
 
-		for (ViewRootNode view : views) {
-			if (view == null) {
+		boolean nsEmitted = false;
+		StringBuilder buffer = new StringBuilder(ident.length());
+		String[] parts = ident.split("\\.");
+		for (int i=0, length=parts.length-1; i<length; i++) {
+			if (i > 0) {
+				buffer.append('.');
+			}
+			buffer.append(parts[i]);
+
+			String ns = buffer.toString();
+			if (this.namespaces.contains(ns)) {
 				continue;
 			}
+			this.namespaces.add(ns);
 
-			String ident = view.getName();
-			if (!JSUtility.isValidIdentifier(ident, true)) {
-				// TODO: syntax error
-				throw new IllegalArgumentException("Invalid view name: "+ident);
+			if (i == 0) {
+				this.writeln(writer);
+				writer.format("var %1$s;", ns);
 			}
 
-			boolean nsEmitted = false;
-			
-			StringBuilder buffer = new StringBuilder(ident.length());
-			String[] parts = ident.split("\\.");
-			for (int i=0, length=parts.length-1; i<length; i++) {
-				if (i > 0) {
-					buffer.append('.');
-				}
-				buffer.append(parts[i]);
+			this.writeln(writer);
+			writer.format("if (typeof %1$s === \"undefined\") {", ns);
+			this.depth++;
+			this.writeln(writer);
+			writer.format("%1$s = {};", ns);
+			this.depth--;
+			this.writeln(writer);
+			writer.write('}');
 
-				String ns = buffer.toString();
-				if (namespaces.contains(ns)) {
-					continue;
-				}
-				namespaces.add(ns);
-
-				if (i == 0) {
-					this.writeln(writer);
-					writer.format("var %1$s;", ns);
-				}
-
-				this.writeln(writer);
-				writer.format("if (typeof %1$s === \"undefined\") {", ns);
-				this.depth++;
-				this.writeln(writer);
-				writer.format("%1$s = {};", ns);
-				this.depth--;
-				this.writeln(writer);
-				writer.write('}');
+			if (!nsEmitted) {
 				nsEmitted = true;
 			}
+		}
 
-			if (nsEmitted) {
-				this.writeln(writer);
-			}
+		if (nsEmitted) {
+			this.writeln(writer);
 		}
 	}
 
 	private void writeView(PrintWriter writer, ViewRootNode view) {
-		String viewName = view.getName();
+		this.depth = 0;
 		this.writeln(writer);
 
+		String viewName = view.getName();
 		if (viewName.indexOf('.') < 0) {
 			writer.write("var ");
 		}
@@ -166,6 +169,8 @@ public class ClientGen {
 		}
 
 		writer.write(");");
+		this.depth = 0;
+		this.writeln(writer);
 	}
 
 	private void writeNode(PrintWriter writer, Node node) {

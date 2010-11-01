@@ -4,8 +4,8 @@ public class StatementNode extends CodeBlockNode {
 
 	public static final String BEGIN = "<%";
 	public static final String END = "%>";
-	private static final String INTRO = "function(model, index, count) {\n";
-	private static final String OUTRO = "\n}";
+	private static final String INTRO = "function(model, index, count) { ";
+	private static final String OUTRO = " }";
 
 	public StatementNode(String expression) {
 		super(BEGIN, END, expression);

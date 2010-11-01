@@ -8,34 +8,6 @@ import org.duelengine.duel.ast.*;
 public class ClientGenTests {
 
 	@Test
-	public void namespaceTest() throws Exception {
-		ViewRootNode input = new ViewRootNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
-			},
-			new Node[] {
-				new ElementNode("div")
-			});
-
-		String expected =
-			"/*global duel */\n\n"+
-			"var foo;\n"+
-			"if (typeof foo === \"undefined\") {\n"+
-			"\tfoo = {};\n"+
-			"}\n"+
-			"if (typeof foo.bar === \"undefined\") {\n"+
-			"\tfoo.bar = {};\n"+
-			"}\n\n"+
-			"foo.bar.Blah = duel([\"div\"]);";
-
-		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	public void stringSimpleTest() throws Exception {
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -47,7 +19,7 @@ public class ClientGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel(\"A JSON payload should be an object or array, not a string.\");";
+			"var foo = duel(\"A JSON payload should be an object or array, not a string.\");\n";
 
 		StringWriter writer = new StringWriter();
 		new ClientGen().write(writer, new ViewRootNode[] { input });
@@ -68,7 +40,7 @@ public class ClientGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel(\"\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\\\"\");";
+			"var foo = duel(\"\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\\\"\");\n";
 
 		StringWriter writer = new StringWriter();
 		new ClientGen().write(writer, new ViewRootNode[] { input });
@@ -126,7 +98,7 @@ public class ClientGenTests {
 			"\t\t\t\t\"many\"\n"+
 			"\t\t\t]\n"+
 			"\t\t]\n"+
-			"\t]);";
+			"\t]);\n";
 
 		StringWriter writer = new StringWriter();
 		new ClientGen().write(writer, new ViewRootNode[] { input });
@@ -136,7 +108,29 @@ public class ClientGenTests {
 	}
 
 	@Test
-	public void nestedElementsTest() throws Exception {
+	public void codeBlockTest() throws Exception {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new Node[] {
+				new StatementNode("bar();")
+			});
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel(function(model, index, count) { bar(); });\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientGen().write(writer, new ViewRootNode[] { input });
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void attributesTest() throws Exception {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -190,10 +184,196 @@ public class ClientGenTests {
 			"\t\t\t\t\"three\"\n"+
 			"\t\t\t]\n"+
 			"\t\t]\n"+
-			"\t]);";
+			"\t]);\n";
 
 		StringWriter writer = new StringWriter();
 		new ClientGen().write(writer, new ViewRootNode[] { input });
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void multiViewTest() throws Exception {
+		ViewRootNode[] input = new ViewRootNode[] { 
+			new ViewRootNode(
+				new AttributeNode[] {
+					new AttributeNode("name", new LiteralNode("foo"))
+				},
+				new Node[] {
+					new LiteralNode("First View")
+				}),
+			new ViewRootNode(
+					new AttributeNode[] {
+						new AttributeNode("name", new LiteralNode("bar"))
+					},
+					new Node[] {
+						new LiteralNode("Second View")
+					})
+		};
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel(\"First View\");\n\n"+
+			"var bar = duel(\"Second View\");\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientGen().write(writer, input);
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void namespaceTest() throws Exception {
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			},
+			new Node[] {
+				new ElementNode("div")
+			});
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo;\n"+
+			"if (typeof foo === \"undefined\") {\n"+
+			"\tfoo = {};\n"+
+			"}\n"+
+			"if (typeof foo.bar === \"undefined\") {\n"+
+			"\tfoo.bar = {};\n"+
+			"}\n\n"+
+			"foo.bar.Blah = duel([\"div\"]);\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientGen().write(writer, new ViewRootNode[] { input });
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void namespaceRepeatedTest() throws Exception {
+		ViewRootNode[] input = new ViewRootNode[] { 
+			new ViewRootNode(
+				new AttributeNode[] {
+					new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+				},
+				new Node[] {
+					new LiteralNode("First View")
+				}),
+			new ViewRootNode(
+					new AttributeNode[] {
+						new AttributeNode("name", new LiteralNode("foo.bar.Yada"))
+					},
+					new Node[] {
+						new LiteralNode("Second View")
+					})
+		};
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo;\n"+
+			"if (typeof foo === \"undefined\") {\n"+
+			"\tfoo = {};\n"+
+			"}\n"+
+			"if (typeof foo.bar === \"undefined\") {\n"+
+			"\tfoo.bar = {};\n"+
+			"}\n\n"+
+			"foo.bar.Blah = duel(\"First View\");\n\n"+
+			"foo.bar.Yada = duel(\"Second View\");\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientGen().write(writer, input);
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void namespacesOverlappingTest() throws Exception {
+		ViewRootNode[] input = new ViewRootNode[] { 
+			new ViewRootNode(
+				new AttributeNode[] {
+					new AttributeNode("name", new LiteralNode("foo.bar.one.Blah"))
+				},
+				new Node[] {
+					new LiteralNode("First View")
+				}),
+			new ViewRootNode(
+					new AttributeNode[] {
+						new AttributeNode("name", new LiteralNode("foo.bar.two.Yada"))
+					},
+					new Node[] {
+						new LiteralNode("Second View")
+					})
+		};
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo;\n"+
+			"if (typeof foo === \"undefined\") {\n"+
+			"\tfoo = {};\n"+
+			"}\n"+
+			"if (typeof foo.bar === \"undefined\") {\n"+
+			"\tfoo.bar = {};\n"+
+			"}\n"+
+			"if (typeof foo.bar.one === \"undefined\") {\n"+
+			"\tfoo.bar.one = {};\n"+
+			"}\n\n"+
+			"foo.bar.one.Blah = duel(\"First View\");\n\n"+
+			"if (typeof foo.bar.two === \"undefined\") {\n"+
+			"\tfoo.bar.two = {};\n"+
+			"}\n\n"+
+			"foo.bar.two.Yada = duel(\"Second View\");\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientGen().write(writer, input);
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void namespacesDistinctTest() throws Exception {
+		ViewRootNode[] input = new ViewRootNode[] { 
+			new ViewRootNode(
+				new AttributeNode[] {
+					new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+				},
+				new Node[] {
+					new LiteralNode("First View")
+				}),
+			new ViewRootNode(
+					new AttributeNode[] {
+						new AttributeNode("name", new LiteralNode("com.example.Yada"))
+					},
+					new Node[] {
+						new LiteralNode("Second View")
+					})
+		};
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo;\n"+
+			"if (typeof foo === \"undefined\") {\n"+
+			"\tfoo = {};\n"+
+			"}\n"+
+			"if (typeof foo.bar === \"undefined\") {\n"+
+			"\tfoo.bar = {};\n"+
+			"}\n\n"+
+			"foo.bar.Blah = duel(\"First View\");\n\n"+
+			"var com;\n"+
+			"if (typeof com === \"undefined\") {\n"+
+			"\tcom = {};\n"+
+			"}\n"+
+			"if (typeof com.example === \"undefined\") {\n"+
+			"\tcom.example = {};\n"+
+			"}\n\n"+
+			"com.example.Yada = duel(\"Second View\");\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientGen().write(writer, input);
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
