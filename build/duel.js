@@ -346,7 +346,7 @@
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {Object=} parts Named replacement partial views
-	 * @return {Array}
+	 * @return {Array|Object|string|number}
 	 */
 	function foreach(node, model, index, count, parts) {
 		var each = node[1] && node[1][EACH];
@@ -359,18 +359,25 @@
 		var result = [""];
 		switch (getType(each)) {
 			case ARY:
+				// iterate over the items
 				for (var i=0, length=each.length; i<length; i++) {
 					// Closure Compiler type cast
 					append(result, bindContent(/** @type {Array} */(node), each[i], i, length, parts));
 				}
 				break;
 			case OBJ:
+				// iterate over the properties
 				for (var key in each) {
 					if (each.hasOwnProperty(key)) {
 						// Closure Compiler type cast
 						append(result, bindContent(/** @type {Array} */(node), each[key], key, 0, parts));
 					}
 				}
+				break;
+			default:
+				// just bind the single value
+				// Closure Compiler type cast
+				result = bindContent(/** @type {Array} */(node), each, 0, 1, parts);
 				break;
 		}
 

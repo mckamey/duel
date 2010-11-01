@@ -267,6 +267,52 @@ test("foreach object", function() {
 	same(actual, expected, "");
 });
 
+test("foreach other", function() {
+
+	var model = {
+	        title: "This is the title",
+	        items: "One"
+	    };
+
+	var view = duel(
+		["div", { "class" : "list", "style" : "color:blue" },
+			["h2",
+			 	function(model, index, count) { return model.title; }
+			],
+			["ul",
+			 	["$for", { "each" : function(model, index, count) { return model.items; } },
+					["li", { "class" : "item" },
+						["b",
+						 	function(model, index, count) { return model; }
+						],
+						": ",
+						["i",
+						 	function(model, index, count) { return index + 1; },
+							" of ",
+							function(model, index, count) { return count; }
+						]
+					]
+			 	]
+			]
+		]);
+
+	var actual = view(model).value;
+
+	var expected =
+		["div", { "class" : "list", "style" : "color:blue" },
+			["h2", "This is the title"],
+			["ul",
+				["li", { "class" : "item" },
+					["b", "One"],
+					": ",
+					["i", "1 of 1"]
+				]
+			]
+		];
+
+	same(actual, expected, "");
+});
+
 test("markup data", function() {
 
 	var model = {
