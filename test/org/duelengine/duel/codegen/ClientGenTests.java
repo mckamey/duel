@@ -57,7 +57,7 @@ public class ClientGenTests {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
 			new Node[] {
-				new ExpressionNode("count;")
+				new ExpressionNode("count")
 			});
 
 		String expected =
