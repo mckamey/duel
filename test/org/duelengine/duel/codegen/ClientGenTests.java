@@ -50,7 +50,7 @@ public class ClientGenTests {
 	}
 
 	@Test
-	public void expressionTest() throws Exception {
+	public void expressionCountTest() throws Exception {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -72,7 +72,7 @@ public class ClientGenTests {
 	}
 
 	@Test
-	public void markupExpressionTest() throws Exception {
+	public void markupExpressionModelTest() throws Exception {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -84,7 +84,7 @@ public class ClientGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel(function(model, index, count) { return duel.raw(model); });\n";
+			"var foo = duel(function(model) { return duel.raw(model); });\n";
 
 		StringWriter writer = new StringWriter();
 		new ClientGen().write(writer, new ViewRootNode[] { input });
@@ -94,7 +94,7 @@ public class ClientGenTests {
 	}
 
 	@Test
-	public void statementTest() throws Exception {
+	public void statementNoneTest() throws Exception {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -106,7 +106,29 @@ public class ClientGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel(function(model, index, count) { bar(); });\n";
+			"var foo = duel(function() { bar(); });\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientGen().write(writer, new ViewRootNode[] { input });
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void statementIndexTest() throws Exception {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new Node[] {
+				new StatementNode("bar(index);")
+			});
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel(function(model, index) { bar(index); });\n";
 
 		StringWriter writer = new StringWriter();
 		new ClientGen().write(writer, new ViewRootNode[] { input });
@@ -154,10 +176,10 @@ public class ClientGenTests {
 			"var foo = duel(\n"+
 			"\t[\"div\",\n"+
 			"\t\t[\"$xor\",\n"+
-			"\t\t\t[\"$if\", { \"test\" : function(model, index, count) { return (model === 0); } },\n"+
+			"\t\t\t[\"$if\", { \"test\" : function(model) { return (model === 0); } },\n"+
 			"\t\t\t\t\"zero\"\n"+
 			"\t\t\t],\n"+
-			"\t\t\t[\"$if\", { \"test\" : function(model, index, count) { return (model === 1); } },\n"+
+			"\t\t\t[\"$if\", { \"test\" : function(model) { return (model === 1); } },\n"+
 			"\t\t\t\t\"one\"\n"+
 			"\t\t\t],\n"+
 			"\t\t\t[\"$if\",\n"+
