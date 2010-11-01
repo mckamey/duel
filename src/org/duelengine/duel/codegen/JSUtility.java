@@ -20,7 +20,7 @@ final class JSUtility {
 
 		return new ArrayList<String>(browserObjects);
 	}
-	
+
 	public static boolean isValidIdentifier(String ident, boolean nested) {
 		if (ident == null || ident.length() == 0) {
 			return false;

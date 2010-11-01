@@ -10,16 +10,21 @@ public class ClientGen {
 		"/*global duel */\n";
 
 	private static final String NS_ROOT =
-		"\n/* namespace */\nvar %1$s;";
+		"\nvar %1$s;";
 
 	private static final String NS_CHECK =
 		"\nif (typeof %1$s === \"undefined\") {\n\t%1$s = {};\n}";
 
+	private static final String VAR =
+		"\nvar ";
+
 	private static final String VIEW_BEGIN =
-		"\n%1$s = duel(";
+		"%1$s = duel(";
 
 	private static final String VIEW_END =
 		");";
+
+	private boolean encodeLessThan;
 
 	/**
 	 * Generates client-side code for the given view
@@ -90,17 +95,13 @@ public class ClientGen {
 			}
 
 			String ident = view.getName();
-
-			if (ident == null) {
-				// TODO: populate from filename?
-				continue;
-			}
-
 			if (!JSUtility.isValidIdentifier(ident, true)) {
 				// TODO: syntax error
 				throw new IllegalArgumentException("Invalid view name: "+ident);
 			}
 
+			boolean nsEmitted = false;
+			
 			StringBuilder buffer = new StringBuilder(ident.length());
 			String[] parts = ident.split("\\.");
 			for (int i=0, length=parts.length-1; i<length; i++) {
@@ -120,15 +121,22 @@ public class ClientGen {
 				}
 
 				writer.format(NS_CHECK, ns);
+				nsEmitted = true;
 			}
 
-			writer.println();
+			if (nsEmitted) {
+				writer.println();
+			}
 		}
 	}
 
 	private void writeView(PrintWriter writer, ViewRootNode view) {
 		String viewName = view.getName();
-
+		if (viewName.indexOf('.') < 0) {
+			writer.write(VAR);
+		} else {
+			writer.write('\n');
+		}
 		writer.format(VIEW_BEGIN, viewName);
 
 		if (view.childCount() == 1) {
@@ -189,9 +197,58 @@ public class ClientGen {
 			return;
 		}
 
-		writer.write("\"");
-		// TODO: encode the value
-		writer.write(value);
+		int start = 0,
+			length = value.length();
+
+		writer.write('\"');
+
+		for (int i=start; i<length; i++) {
+			char ch = value.charAt(i);
+
+			if (ch <= '\u001F' ||
+				ch >= '\u007F' ||
+				ch == '\"' ||
+				ch == '\\' ||
+				(this.encodeLessThan && ch == '<')) { // improves compatibility within script blocks
+
+				if (i > start) {
+					writer.write(value, start, i-start);
+				}
+				start = i+1;
+
+				switch (ch) {
+					case '\"':
+					case '\\':
+						writer.write('\\');
+						writer.write(ch);
+						continue;
+					case '\b':
+						writer.write("\\b");
+						continue;
+					case '\f':
+						writer.write("\\f");
+						continue;
+					case '\n':
+						writer.write("\\n");
+						continue;
+					case '\r':
+						writer.write("\\r");
+						continue;
+					case '\t':
+						writer.write("\\t");
+						continue;
+					default:
+						writer.write("\\u");
+						writer.format("%04X", value.codePointAt(i));
+						continue;
+				}
+			}
+		}
+	
+		if (length > start) {
+			writer.write(value, start, length-start);
+		}
+
 		writer.write("\"");
 	}
 }
