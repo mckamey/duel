@@ -2,6 +2,7 @@ package org.duelengine.duel.codegen;
 
 import java.io.*;
 import java.util.*;
+
 import org.duelengine.duel.ast.*;
 
 public class ServerCodeGen implements CodeGenerator {
@@ -26,18 +27,61 @@ public class ServerCodeGen implements CodeGenerator {
 		return ".java";
 	}
 
+	/**
+	 * Generates server-side code for the given view
+	 * @param writer
+	 * @param view
+	 * @throws Exception
+	 */
 	@Override
 	public void write(Writer writer, ViewRootNode view) {
-		// TODO Auto-generated method stub
+		if (view == null) {
+			throw new NullPointerException("view");
+		}
+
+		List<ViewRootNode> views = new ArrayList<ViewRootNode>();
+		views.add(view);
+
+		this.write(writer, views);
 	}
 
+	/**
+	 * Generates server-side code for the given views
+	 * @param writer
+	 * @param views
+	 * @throws Exception
+	 */
 	@Override
 	public void write(Writer writer, ViewRootNode[] views) {
-		// TODO Auto-generated method stub
+		this.write(writer, views != null ? Arrays.asList(views) : null);
 	}
 
+	/**
+	 * Generates server-side code for the given views
+	 * @param writer
+	 * @param views
+	 * @throws Exception
+	 */
 	@Override
 	public void write(Writer writer, Iterable<ViewRootNode> views) {
-		// TODO Auto-generated method stub
+		if (writer == null) {
+			throw new NullPointerException("writer");
+		}
+		if (views == null) {
+			throw new NullPointerException("views");
+		}
+
+		PrintWriter pw = (writer instanceof PrintWriter) ? (PrintWriter)writer : new PrintWriter(writer);
+		for (ViewRootNode view : views) {
+			if (view == null) {
+				continue;
+			}
+
+			this.writeView(pw, view);
+		}
+	}
+
+	private void writeView(PrintWriter writer, ViewRootNode view) {
+		
 	}
 }
