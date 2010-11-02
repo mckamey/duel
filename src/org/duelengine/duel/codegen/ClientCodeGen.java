@@ -19,33 +19,8 @@ public class ClientCodeGen implements CodeGenerator {
 	}
 
 	@Override
-	public CodeGenSettings getSettings() {
-		return this.settings;
-	}
-
-	@Override
 	public String getFileExtension() {
 		return ".js";
-	}
-
-	/**
-	 * Generates client-side code for the given view
-	 * @param writer
-	 * @param view
-	 * @throws IOException
-	 */
-	@Override
-	public void write(Writer writer, ViewRootNode view)
-		throws IOException {
-
-		if (view == null) {
-			throw new NullPointerException("view");
-		}
-
-		List<ViewRootNode> views = new ArrayList<ViewRootNode>();
-		views.add(view);
-
-		this.write(writer, views);
 	}
 
 	/**

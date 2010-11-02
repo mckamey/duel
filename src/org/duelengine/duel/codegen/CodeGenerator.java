@@ -6,11 +6,7 @@ import org.duelengine.duel.ast.*;
 
 public interface CodeGenerator {
 
-	public CodeGenSettings getSettings();
-
 	public String getFileExtension();
-
-	public void write(Writer writer, ViewRootNode view) throws IOException;
 
 	public void write(Writer writer, ViewRootNode[] views) throws IOException;
 

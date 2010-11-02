@@ -2,7 +2,6 @@ package org.duelengine.duel.codegen;
 
 import java.io.*;
 import java.util.*;
-
 import org.duelengine.duel.ast.*;
 
 public class ServerCodeGen implements CodeGenerator {
@@ -20,11 +19,6 @@ public class ServerCodeGen implements CodeGenerator {
 		this.buffer = new StringWriter();
 		this.formatter = new HTMLFormatter(this.buffer, this.settings.getEncodeNonASCII());
 	}
-	
-	@Override
-	public CodeGenSettings getSettings() {
-		return this.settings;
-	}
 
 	@Override
 	public String getFileExtension() {
@@ -32,31 +26,15 @@ public class ServerCodeGen implements CodeGenerator {
 	}
 
 	/**
-	 * Generates server-side code for the given view
-	 * @param writer
-	 * @param view
-	 * @throws Exception
-	 */
-	@Override
-	public void write(Writer writer, ViewRootNode view) {
-		if (view == null) {
-			throw new NullPointerException("view");
-		}
-
-		List<ViewRootNode> views = new ArrayList<ViewRootNode>();
-		views.add(view);
-
-		this.write(writer, views);
-	}
-
-	/**
 	 * Generates server-side code for the given views
 	 * @param writer
 	 * @param views
-	 * @throws Exception
+	 * @throws IOException 
 	 */
 	@Override
-	public void write(Writer writer, ViewRootNode[] views) {
+	public void write(Writer writer, ViewRootNode[] views)
+		throws IOException {
+
 		this.write(writer, views != null ? Arrays.asList(views) : null);
 	}
 
@@ -64,10 +42,12 @@ public class ServerCodeGen implements CodeGenerator {
 	 * Generates server-side code for the given views
 	 * @param writer
 	 * @param views
-	 * @throws Exception
+	 * @throws IOException
 	 */
 	@Override
-	public void write(Writer writer, Iterable<ViewRootNode> views) {
+	public void write(Writer writer, Iterable<ViewRootNode> views)
+		throws IOException {
+
 		if (writer == null) {
 			throw new NullPointerException("writer");
 		}
@@ -75,21 +55,24 @@ public class ServerCodeGen implements CodeGenerator {
 			throw new NullPointerException("views");
 		}
 
-		PrintWriter pw = (writer instanceof PrintWriter) ? (PrintWriter)writer : new PrintWriter(writer);
 		for (ViewRootNode view : views) {
 			if (view == null) {
 				continue;
 			}
 
-			this.writeView(pw, view);
+			this.writeView(writer, view);
 		}
 	}
 
-	private void writeView(PrintWriter writer, ViewRootNode view) {
+	private void writeView(Writer writer, ViewRootNode view)
+		throws IOException {
+
 		// TODO.
 	}
 
-	private void writeString(PrintWriter writer, String value) {
+	private void writeString(Writer writer, String value)
+		throws IOException {
+
 		if (value == null) {
 			writer.write("null");
 			return;
@@ -151,6 +134,10 @@ public class ServerCodeGen implements CodeGenerator {
 		writer.write('\"');
 	}
 
+	/**
+	 * Resets the buffer returning the accumulated value
+	 * @return
+	 */
 	private String FlushBuffer() {
 		StringBuffer sb = this.buffer.getBuffer();
 
