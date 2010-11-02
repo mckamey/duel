@@ -4,27 +4,28 @@ import java.io.*;
 import java.util.*;
 import org.duelengine.duel.ast.*;
 
-public class ClientGen {
+public class ClientCodeGen implements CodeGenerator {
 
 	private List<String> namespaces;
 	private int depth;
-	private String indent = "\t";
-	private String newline = "\n";
+	private final CodeGenSettings settings;
 
-	public String getIndent() {
-		return this.indent;
+	public ClientCodeGen() {
+		this(null);
 	}
 
-	public void setIndent(String indent) {
-		this.indent = indent;
+	public ClientCodeGen(CodeGenSettings settings) {
+		this.settings = (settings != null) ? settings : new CodeGenSettings();
 	}
 
-	public String getNewline() {
-		return this.newline;
+	@Override
+	public CodeGenSettings getSettings() {
+		return this.settings;
 	}
 
-	public void setNewline(String newline) {
-		this.newline = newline;
+	@Override
+	public String getFileExtension() {
+		return ".js";
 	}
 
 	/**
@@ -33,9 +34,8 @@ public class ClientGen {
 	 * @param view
 	 * @throws Exception
 	 */
-	public void write(Writer writer, ViewRootNode view)
-		throws Exception {
-
+	@Override
+	public void write(Writer writer, ViewRootNode view) {
 		if (view == null) {
 			throw new NullPointerException("view");
 		}
@@ -52,9 +52,8 @@ public class ClientGen {
 	 * @param views
 	 * @throws Exception
 	 */
-	public void write(Writer writer, ViewRootNode[] views)
-		throws Exception {
-
+	@Override
+	public void write(Writer writer, ViewRootNode[] views) {
 		this.write(writer, views != null ? Arrays.asList(views) : null);
 	}
 
@@ -64,35 +63,29 @@ public class ClientGen {
 	 * @param views
 	 * @throws Exception
 	 */
-	public void write(Writer writer, Iterable<ViewRootNode> views)
-		throws Exception {
-
+	@Override
+	public void write(Writer writer, Iterable<ViewRootNode> views) {
 		if (writer == null) {
 			throw new NullPointerException("writer");
 		}
-
 		if (views == null) {
 			throw new NullPointerException("views");
 		}
 
-		PrintWriter pwriter = (writer instanceof PrintWriter) ? (PrintWriter)writer : new PrintWriter(writer);
+		PrintWriter pw = (writer instanceof PrintWriter) ? (PrintWriter)writer : new PrintWriter(writer);
 
-		pwriter.append("/*global duel */");
-		this.writeln(pwriter);
+		pw.append("/*global duel */");
+		this.writeln(pw);
 
 		this.namespaces = JSUtility.cloneBrowserObjects();
-		try {
-			for (ViewRootNode view : views) {
-				if (view == null) {
-					continue;
-				}
-				this.writeNamespaces(pwriter, view);
-				this.writeView(pwriter, view);
+		for (ViewRootNode view : views) {
+			if (view == null) {
+				continue;
 			}
-
-		} finally {
-			this.namespaces = null;
+			this.writeNamespaces(pw, view);
+			this.writeView(pw, view);
 		}
+		this.namespaces = null;
 	}
 
 	private void writeNamespaces(PrintWriter writer, ViewRootNode view) {
@@ -313,10 +306,10 @@ public class ClientGen {
 	}
 
 	private void writeln(PrintWriter writer) {
-		writer.write(this.newline);
+		writer.write(this.settings.getNewline());
 
 		for (int i=this.depth; i>0; i--) {
-			writer.write(this.indent);
+			writer.write(this.settings.getIndent());
 		}
 	}
 }

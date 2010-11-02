@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.duelengine.duel.ast.*;
 
-public class ClientGenTests {
+public class ClientCodeGenTests {
 
 	@Test
 	public void stringSimpleTest() throws Exception {
@@ -22,7 +22,7 @@ public class ClientGenTests {
 			"var foo = duel(\"A JSON payload should be an object or array, not a string.\");\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, new ViewRootNode[] { input });
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
 		String actual = writer.toString();
 		
 		assertEquals(expected, actual);
@@ -43,7 +43,7 @@ public class ClientGenTests {
 			"var foo = duel(\"\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\\\"\");\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, new ViewRootNode[] { input });
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
 		String actual = writer.toString();
 		
 		assertEquals(expected, actual);
@@ -65,7 +65,7 @@ public class ClientGenTests {
 			"var foo = duel(function(model, index, count) { return (count); });\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, new ViewRootNode[] { input });
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
@@ -87,7 +87,7 @@ public class ClientGenTests {
 			"var foo = duel(function(model) { return duel.raw(model); });\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, new ViewRootNode[] { input });
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
@@ -109,7 +109,7 @@ public class ClientGenTests {
 			"var foo = duel(function() { bar(); });\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, new ViewRootNode[] { input });
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
@@ -131,7 +131,7 @@ public class ClientGenTests {
 			"var foo = duel(function(model, index) { bar(index); });\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, new ViewRootNode[] { input });
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
@@ -189,7 +189,7 @@ public class ClientGenTests {
 			"\t]);\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, new ViewRootNode[] { input });
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
@@ -253,7 +253,7 @@ public class ClientGenTests {
 			"\t]);\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, new ViewRootNode[] { input });
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
@@ -284,7 +284,7 @@ public class ClientGenTests {
 			"var bar = duel(\"Second View\");\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, input);
+		new ClientCodeGen().write(writer, input);
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
@@ -312,7 +312,7 @@ public class ClientGenTests {
 			"foo.bar.Blah = duel([\"div\"]);\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, new ViewRootNode[] { input });
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
@@ -350,7 +350,7 @@ public class ClientGenTests {
 			"foo.bar.Yada = duel(\"Second View\");\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, input);
+		new ClientCodeGen().write(writer, input);
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
@@ -394,7 +394,7 @@ public class ClientGenTests {
 			"foo.bar.two.Yada = duel(\"Second View\");\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, input);
+		new ClientCodeGen().write(writer, input);
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
@@ -439,7 +439,7 @@ public class ClientGenTests {
 			"com.example.Yada = duel(\"Second View\");\n";
 
 		StringWriter writer = new StringWriter();
-		new ClientGen().write(writer, input);
+		new ClientCodeGen().write(writer, input);
 		String actual = writer.toString();
 
 		assertEquals(expected, actual);
