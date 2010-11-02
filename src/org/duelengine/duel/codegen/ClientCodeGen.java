@@ -32,10 +32,12 @@ public class ClientCodeGen implements CodeGenerator {
 	 * Generates client-side code for the given view
 	 * @param writer
 	 * @param view
-	 * @throws Exception
+	 * @throws IOException
 	 */
 	@Override
-	public void write(Writer writer, ViewRootNode view) {
+	public void write(Writer writer, ViewRootNode view)
+		throws IOException {
+
 		if (view == null) {
 			throw new NullPointerException("view");
 		}
@@ -50,10 +52,11 @@ public class ClientCodeGen implements CodeGenerator {
 	 * Generates client-side code for the given views
 	 * @param writer
 	 * @param views
-	 * @throws Exception
+	 * @throws IOException
 	 */
 	@Override
-	public void write(Writer writer, ViewRootNode[] views) {
+	public void write(Writer writer, ViewRootNode[] views)
+		throws IOException {
 		this.write(writer, views != null ? Arrays.asList(views) : null);
 	}
 
@@ -61,10 +64,12 @@ public class ClientCodeGen implements CodeGenerator {
 	 * Generates client-side code for the given views
 	 * @param writer
 	 * @param views
-	 * @throws Exception
+	 * @throws IOException 
 	 */
 	@Override
-	public void write(Writer writer, Iterable<ViewRootNode> views) {
+	public void write(Writer writer, Iterable<ViewRootNode> views)
+		throws IOException {
+
 		if (writer == null) {
 			throw new NullPointerException("writer");
 		}
@@ -72,23 +77,22 @@ public class ClientCodeGen implements CodeGenerator {
 			throw new NullPointerException("views");
 		}
 
-		PrintWriter pw = (writer instanceof PrintWriter) ? (PrintWriter)writer : new PrintWriter(writer);
-
-		pw.append("/*global duel */");
-		this.writeln(pw);
+		writer.write("/*global duel */");
+		this.writeln(writer);
 
 		this.namespaces = JSUtility.cloneBrowserObjects();
 		for (ViewRootNode view : views) {
 			if (view == null) {
 				continue;
 			}
-			this.writeNamespaces(pw, view);
-			this.writeView(pw, view);
+			this.writeNamespaces(writer, view);
+			this.writeView(writer, view);
 		}
 		this.namespaces = null;
 	}
 
-	private void writeNamespaces(PrintWriter writer, ViewRootNode view) {
+	private void writeNamespaces(Writer writer, ViewRootNode view)
+		throws IOException {
 
 		String ident = view.getName();
 		if (!JSUtility.isValidIdentifier(ident, true)) {
@@ -113,14 +117,19 @@ public class ClientCodeGen implements CodeGenerator {
 
 			if (i == 0) {
 				this.writeln(writer);
-				writer.format("var %1$s;", ns);
+				writer.write("var ");
+				writer.write(ns);
+				writer.write(';');
 			}
 
 			this.writeln(writer);
-			writer.format("if (typeof %1$s === \"undefined\") {", ns);
+			writer.write("if (typeof ");
+			writer.write(ns);
+			writer.write(" === \"undefined\") {");
 			this.depth++;
 			this.writeln(writer);
-			writer.format("%1$s = {};", ns);
+			writer.write(ns);
+			writer.write(" = {};");
 			this.depth--;
 			this.writeln(writer);
 			writer.write('}');
@@ -135,7 +144,9 @@ public class ClientCodeGen implements CodeGenerator {
 		}
 	}
 
-	private void writeView(PrintWriter writer, ViewRootNode view) {
+	private void writeView(Writer writer, ViewRootNode view)
+		throws IOException {
+
 		this.depth = 0;
 		this.writeln(writer);
 
@@ -166,7 +177,9 @@ public class ClientCodeGen implements CodeGenerator {
 		this.writeln(writer);
 	}
 
-	private void writeNode(PrintWriter writer, Node node) {
+	private void writeNode(Writer writer, Node node)
+		throws IOException {
+
 		if (node instanceof LiteralNode) {
 			this.writeString(writer, ((LiteralNode)node).getValue());
 			return;
@@ -182,11 +195,15 @@ public class ClientCodeGen implements CodeGenerator {
 		}
 	}
 
-	private void writeCodeBlock(PrintWriter writer, CodeBlockNode node) {
+	private void writeCodeBlock(Writer writer, CodeBlockNode node)
+		throws IOException {
+
 		writer.write(node.getClientCode());
 	}
 
-	private void writeElement(PrintWriter writer, String tagName, ElementNode node) {
+	private void writeElement(Writer writer, String tagName, ElementNode node)
+		throws IOException {
+
 		writer.write('[');
 		this.depth++;
 
@@ -241,10 +258,9 @@ public class ClientCodeGen implements CodeGenerator {
 		writer.write(']');
 	}
 
-	private void writeString(PrintWriter writer, String value) {
-		// improves compatibility within script blocks
-		boolean encodeLessThan = false;
-		
+	private void writeString(Writer writer, String value)
+		throws IOException {
+
 		if (value == null) {
 			writer.write("null");
 			return;
@@ -256,56 +272,59 @@ public class ClientCodeGen implements CodeGenerator {
 		writer.write('\"');
 
 		for (int i=start; i<length; i++) {
+			String escape;
+
 			char ch = value.charAt(i);
+			switch (ch) {
+				case '\"':
+					escape = "\\\"";
+					break;
+				case '\\':
+					escape = "\\\\";
+					break;
+				case '\n':
+					escape = "\\n";
+					break;
+				case '\r':
+					escape = "\\r";
+					break;
+				case '\t':
+					escape = "\\t";
+					break;
+				case '\f':
+					escape = "\\f";
+					break;
+				case '\b':
+					escape = "\\b";
+					break;
+				default:
+					if (ch >= ' ' && ch < '\u007F') {
+						// no need to escape ASCII chars
+						continue;
+					}
 
-			if (ch <= '\u001F' ||
-				ch >= '\u007F' ||
-				ch == '\"' ||
-				ch == '\\' ||
-				(encodeLessThan && ch == '<')) {
-
-				if (i > start) {
-					writer.write(value, start, i-start);
-				}
-				start = i+1;
-
-				switch (ch) {
-					case '\"':
-					case '\\':
-						writer.write('\\');
-						writer.write(ch);
-						continue;
-					case '\b':
-						writer.write("\\b");
-						continue;
-					case '\f':
-						writer.write("\\f");
-						continue;
-					case '\n':
-						writer.write("\\n");
-						continue;
-					case '\r':
-						writer.write("\\r");
-						continue;
-					case '\t':
-						writer.write("\\t");
-						continue;
-					default:
-						writer.write("\\u");
-						writer.format("%04X", value.codePointAt(i));
-						continue;
-				}
+					escape = String.format("\\u%04X", value.codePointAt(i));
+					break;
 			}
+
+			if (i > start) {
+				writer.write(value, start, i-start);
+			}
+			start = i+1;
+
+			writer.write(escape);
 		}
-	
+
 		if (length > start) {
 			writer.write(value, start, length-start);
 		}
 
-		writer.write("\"");
+		writer.write('\"');
 	}
 
-	private void writeln(PrintWriter writer) {
+	private void writeln(Writer writer)
+		throws IOException {
+
 		writer.write(this.settings.getNewline());
 
 		for (int i=this.depth; i>0; i--) {

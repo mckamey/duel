@@ -8,6 +8,8 @@ import org.duelengine.duel.ast.*;
 public class ServerCodeGen implements CodeGenerator {
 
 	private final CodeGenSettings settings;
+	private final HTMLFormatter formatter;
+	private final StringWriter buffer;
 
 	public ServerCodeGen() {
 		this(null);
@@ -15,8 +17,10 @@ public class ServerCodeGen implements CodeGenerator {
 
 	public ServerCodeGen(CodeGenSettings settings) {
 		this.settings = (settings != null) ? settings : new CodeGenSettings();
+		this.buffer = new StringWriter();
+		this.formatter = new HTMLFormatter(this.buffer, this.settings.getEncodeNonASCII());
 	}
-
+	
 	@Override
 	public CodeGenSettings getSettings() {
 		return this.settings;
@@ -82,6 +86,80 @@ public class ServerCodeGen implements CodeGenerator {
 	}
 
 	private void writeView(PrintWriter writer, ViewRootNode view) {
-		
+		// TODO.
+	}
+
+	private void writeString(PrintWriter writer, String value) {
+		if (value == null) {
+			writer.write("null");
+			return;
+		}
+
+		int start = 0,
+			length = value.length();
+
+		writer.write('\"');
+
+		for (int i=start; i<length; i++) {
+			String escape;
+
+			char ch = value.charAt(i);
+			switch (ch) {
+				case '\"':
+					escape = "\\\"";
+					break;
+				case '\\':
+					escape = "\\\\";
+					break;
+				case '\n':
+					escape = "\\n";
+					break;
+				case '\r':
+					escape = "\\r";
+					break;
+				case '\t':
+					escape = "\\t";
+					break;
+				case '\f':
+					escape = "\\f";
+					break;
+				case '\b':
+					escape = "\\b";
+					break;
+				default:
+					if (ch >= ' ' && ch < '\u007F') {
+						// no need to escape ASCII chars
+						continue;
+					}
+
+					escape = String.format("\\u%04X", value.codePointAt(i));
+					break;
+			}
+
+			if (i > start) {
+				writer.write(value, start, i-start);
+			}
+			start = i+1;
+
+			writer.write(escape);
+		}
+
+		if (length > start) {
+			writer.write(value, start, length-start);
+		}
+
+		writer.write('\"');
+	}
+
+	private String FlushBuffer() {
+		StringBuffer sb = this.buffer.getBuffer();
+
+		// get the accumulated value
+		String value = sb.toString();
+
+		// clear the buffer
+		sb.setLength(0);
+
+		return value;
 	}
 }

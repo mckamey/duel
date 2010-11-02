@@ -344,6 +344,14 @@ public class DuelParser {
 			return new DocTypeNode(block.getValue());
 		}
 
+		if (begin.equalsIgnoreCase(CommentNode.BEGIN)) {
+			return new CommentNode(block.getValue());
+		}
+
+		if (begin.equalsIgnoreCase(CodeCommentNode.BEGIN)) {
+			return new CodeCommentNode(block.getValue());
+		}
+
 		// others are dropped
 		return null;
 	}
