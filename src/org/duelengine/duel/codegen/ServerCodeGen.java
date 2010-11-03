@@ -3,12 +3,11 @@ package org.duelengine.duel.codegen;
 import java.io.*;
 import java.util.*;
 import org.duelengine.duel.ast.*;
+import org.duelengine.duel.codedom.*;
 
 public class ServerCodeGen implements CodeGenerator {
 
 	private final CodeGenSettings settings;
-	private final HTMLFormatter formatter;
-	private final StringWriter buffer;
 
 	public ServerCodeGen() {
 		this(null);
@@ -16,8 +15,6 @@ public class ServerCodeGen implements CodeGenerator {
 
 	public ServerCodeGen(CodeGenSettings settings) {
 		this.settings = (settings != null) ? settings : new CodeGenSettings();
-		this.buffer = new StringWriter();
-		this.formatter = new HTMLFormatter(this.buffer, this.settings.getEncodeNonASCII());
 	}
 
 	@Override
@@ -56,18 +53,16 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 
 		for (ViewRootNode view : views) {
-			if (view == null) {
-				continue;
+			if (view != null) {
+				this.writeView(writer, view);
 			}
-
-			this.writeView(writer, view);
 		}
 	}
 
 	private void writeView(Writer writer, ViewRootNode view)
 		throws IOException {
 
-		// TODO.
+		CodeType viewType = new ServerCodeBuilder(this.settings).build(view);
 	}
 
 	private void writeString(Writer writer, String value)
@@ -132,21 +127,5 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 
 		writer.write('\"');
-	}
-
-	/**
-	 * Resets the buffer returning the accumulated value
-	 * @return
-	 */
-	private String FlushBuffer() {
-		StringBuffer sb = this.buffer.getBuffer();
-
-		// get the accumulated value
-		String value = sb.toString();
-
-		// clear the buffer
-		sb.setLength(0);
-
-		return value;
 	}
 }

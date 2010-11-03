@@ -40,7 +40,7 @@ public class HTMLFormatter {
 		this.writer.write(">");
 	}
 
-	public void writeOpenTagBegin(String tagName)
+	public void writeOpenElementBeginTag(String tagName)
 		throws IOException {
 
 		this.writer.write('<');
@@ -57,13 +57,19 @@ public class HTMLFormatter {
 		this.writer.write('"');
 	}
 
-	public void writeOpenTagEnd(String tagName)
+	public void writeCloseElementBeginTag()
 		throws IOException {
 
 		this.writer.write('>');
 	}
 
-	public void writeCloseTag(String tagName)
+	public void writeCloseElementVoidTag()
+		throws IOException {
+
+		this.writer.write(" />");
+	}
+
+	public void writeElementEndTag(String tagName)
 		throws IOException {
 
 		this.writer.write("</");
