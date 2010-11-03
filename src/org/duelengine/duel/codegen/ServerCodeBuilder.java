@@ -102,15 +102,18 @@ public class ServerCodeBuilder {
 				codeAttribs.put(attrName, (CodeBlockNode)attrVal);
 				continue;
 			}
+
 			this.formatter.writeAttribute(attrName, ((LiteralNode)attrVal).getValue());
 		}
-		
+
 		if (element.canHaveChildren()) {
+			this.formatter.writeCloseElementBeginTag();
+
 			for (Node child : element.getChildren()) {
 				this.buildNode(child);
 			}
 
-			this.formatter.writeCloseElementBeginTag();
+			this.formatter.writeElementEndTag(tagName);
 		} else {
 			this.formatter.writeCloseElementVoidTag();
 		}

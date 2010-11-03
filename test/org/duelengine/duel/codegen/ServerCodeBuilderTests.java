@@ -31,7 +31,7 @@ public class ServerCodeBuilderTests {
 		assertEquals(expected, actual);
 	}
 
-	//@Test
+	@Test
 	public void stringEscapeTest() throws Exception {
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -41,7 +41,14 @@ public class ServerCodeBuilderTests {
 				new LiteralNode("\\\b\f\n\r\t\u0123\u4567\u89AB\uCDEF\uabcd\uef4A\"")
 			});
 
-		CodeType expected = null;
+		CodeType expected = new CodeType(
+			null,
+			"foo",
+			new CodeMethod[] {
+				new CodeMethod(new CodeStatement[] {
+					new CodeEmitLiteralStatement("\\&#x0008;&#x000C;\n\r\t&#x0123;&#x4567;&#x89AB;&#xCDEF;&#xABCD;&#xEF4A;\"")
+				})
+			});
 
 		CodeType actual = new ServerCodeBuilder().build(input);
 		
@@ -161,7 +168,7 @@ public class ServerCodeBuilderTests {
 		assertEquals(expected, actual);
 	}
 
-	//@Test
+	@Test
 	public void attributesTest() throws Exception {
 
 		ViewRootNode input = new ViewRootNode(
@@ -177,7 +184,7 @@ public class ServerCodeBuilderTests {
 					new Node[] {
 					new ElementNode("ul",
 						new AttributeNode[] {
-							new AttributeNode("class", new LiteralNode("foo"))
+							new AttributeNode("class", new LiteralNode("bar"))
 						},
 						new Node[] {
 							new ElementNode("li",
@@ -199,7 +206,14 @@ public class ServerCodeBuilderTests {
 				})
 			});
 
-		CodeType expected = null;
+		CodeType expected = new CodeType(
+				null,
+				"foo",
+				new CodeMethod[] {
+					new CodeMethod(new CodeStatement[] {
+						new CodeEmitLiteralStatement("<div class=\"foo\" style=\"color:red\"><ul class=\"bar\"><li>one</li><li>two</li><li>three</li></ul></div>")
+					})
+				});
 
 		CodeType actual = new ServerCodeBuilder().build(input);
 
