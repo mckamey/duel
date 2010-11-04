@@ -4,7 +4,7 @@ package org.duelengine.duel.codedom;
  * Represents a method call
  */
 @SuppressWarnings("rawtypes")
-public class CodeVariableDeclarationStatement extends CodeExpression {
+public class CodeVariableDeclarationStatement extends CodeStatement {
 
 	private Class type = Object.class;
 	private String name;

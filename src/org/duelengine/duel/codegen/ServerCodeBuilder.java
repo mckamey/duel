@@ -199,13 +199,13 @@ public class ServerCodeBuilder {
 		CodeStatementCollection scope = this.scopeStack.peek();
 		
 		// the var contains a new unique ident
-		CodeVariableDeclarationStatement localVar = CodeDomFactory.nextID(scope);
+		CodeVariableDeclarationStatement localVar = CodeDOMUtility.nextID(scope);
 		scope.add(localVar);
 
 		String id = localVar.getName();
 
 		// emit the value of the var
-		CodeStatement emitVar = CodeDomFactory.emitVarValue(id);
+		CodeStatement emitVar = CodeDOMUtility.emitVarValue(id);
 		scope.add(emitVar);
 
 		return id;
@@ -228,7 +228,7 @@ public class ServerCodeBuilder {
 			return;
 		}
 
-		this.scopeStack.peek().add(CodeDomFactory.emitLiteralValue(value));
+		this.scopeStack.peek().add(CodeDOMUtility.emitLiteralValue(value));
 
 		// clear the buffer
 		sb.setLength(0);
