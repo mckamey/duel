@@ -47,14 +47,30 @@ public class HTMLFormatter {
 		this.writer.write(tagName);
 	}
 
-	public void writeAttribute(String name, String value)
+	public void writeOpenAttribute(String name)
 		throws IOException {
 
 		this.writer.write(' ');
 		this.writer.write(name);
 		this.writer.write("=\"");
-		this.writeLiteral(value, true);
+	}
+
+	public void writeCloseAttribute()
+		throws IOException {
+
 		this.writer.write('"');
+	}
+
+	public void writeAttribute(String name, String value)
+		throws IOException {
+
+		this.writer.write(' ');
+		this.writer.write(name);
+		if (value != null) {
+			this.writer.write("=\"");
+			this.writeLiteral(value, true);
+			this.writer.write('"');
+		}
 	}
 
 	public void writeCloseElementBeginTag()

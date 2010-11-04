@@ -1,16 +1,16 @@
 package org.duelengine.duel.codedom;
 
 /**
- * Emits a string into the output
+ * A simplified primitive expression which can only hold a String literal
  */
-public class CodeEmitLiteralStatement extends CodeStatement {
+public class CodePrimitiveExpression extends CodeExpression {
 
 	private String value;
 
-	public CodeEmitLiteralStatement() {
+	public CodePrimitiveExpression() {
 	}
 
-	public CodeEmitLiteralStatement(String value) {
+	public CodePrimitiveExpression(String value) {
 		this.value = value;
 	}
 
@@ -24,12 +24,12 @@ public class CodeEmitLiteralStatement extends CodeStatement {
 
 	@Override
 	public boolean equals(Object arg) {
-		if (!(arg instanceof CodeEmitLiteralStatement)) {
+		if (!(arg instanceof CodePrimitiveExpression)) {
 			// includes null
 			return false;
 		}
 
-		CodeEmitLiteralStatement that = (CodeEmitLiteralStatement)arg;
+		CodePrimitiveExpression that = (CodePrimitiveExpression)arg;
 		return (this.value == null ? that.value == null : this.value.equals(that.value));
 	}
 

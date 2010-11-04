@@ -1,5 +1,7 @@
 package org.duelengine.duel.codegen;
 
+import java.io.Writer;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.duelengine.duel.ast.*;
@@ -17,16 +19,29 @@ public class ServerCodeBuilderTests {
 				new LiteralNode("A JSON payload should be an object or array, not a string.")
 			});
 
-		CodeType expected = new CodeType(
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(new CodeStatement[] {
-					new CodeEmitLiteralStatement("A JSON payload should be an object or array, not a string.")
-				})
+				new CodeMethod(Void.class, "t_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Integer.class, "index"),
+						new CodeParameterDeclarationExpression(Integer.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement( 
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")
+								}))
+					})
 			});
 
-		CodeType actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -41,17 +56,30 @@ public class ServerCodeBuilderTests {
 				new LiteralNode("\\\b\f\n\r\t\u0123\u4567\u89AB\uCDEF\uabcd\uef4A\"")
 			});
 
-		CodeType expected = new CodeType(
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(new CodeStatement[] {
-					new CodeEmitLiteralStatement("\\&#x0008;&#x000C;\n\r\t&#x0123;&#x4567;&#x89AB;&#xCDEF;&#xABCD;&#xEF4A;\"")
-				})
+				new CodeMethod(Void.class, "t_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Integer.class, "index"),
+						new CodeParameterDeclarationExpression(Integer.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement( 
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("\\&#x0008;&#x000C;\n\r\t&#x0123;&#x4567;&#x89AB;&#xCDEF;&#xABCD;&#xEF4A;\"")
+								}))
+					})
 			});
 
-		CodeType actual = new ServerCodeBuilder().build(input);
-		
+		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
+
 		assertEquals(expected, actual);
 	}
 
@@ -66,9 +94,9 @@ public class ServerCodeBuilderTests {
 				new ExpressionNode("count")
 			});
 
-		CodeType expected = null;
+		CodeTypeDeclaration expected = null;
 
-		CodeType actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -84,9 +112,9 @@ public class ServerCodeBuilderTests {
 				new MarkupExpressionNode("model")
 			});
 
-		CodeType expected = null;
+		CodeTypeDeclaration expected = null;
 
-		CodeType actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -102,9 +130,9 @@ public class ServerCodeBuilderTests {
 				new StatementNode("bar();")
 			});
 
-		CodeType expected = null;
+		CodeTypeDeclaration expected = null;
 
-		CodeType actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -120,19 +148,19 @@ public class ServerCodeBuilderTests {
 				new StatementNode("bar(index);")
 			});
 
-		CodeType expected = null;
+		CodeTypeDeclaration expected = null;
 
-		CodeType actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
 
-	//@Test
+	@Test
 	public void conditionalBlockTest() throws Exception {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+				new AttributeNode("name", new LiteralNode("example.foo"))
 			},
 			new Node[] {
 				new ElementNode("div", null, new Node[] {
@@ -161,9 +189,29 @@ public class ServerCodeBuilderTests {
 				})
 			});
 
-		CodeType expected = null;
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			"example",
+			"foo",
+			new CodeMethod[] {
+				new CodeMethod(Void.class, "t_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Integer.class, "index"),
+						new CodeParameterDeclarationExpression(Integer.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement( 
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("<div></div>")
+								}))
+					})
+			});
 
-		CodeType actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -206,21 +254,34 @@ public class ServerCodeBuilderTests {
 				})
 			});
 
-		CodeType expected = new CodeType(
-				null,
-				"foo",
-				new CodeMethod[] {
-					new CodeMethod(new CodeStatement[] {
-						new CodeEmitLiteralStatement("<div class=\"foo\" style=\"color:red\"><ul class=\"bar\"><li>one</li><li>two</li><li>three</li></ul></div>")
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			null,
+			"foo",
+			new CodeMethod[] {
+				new CodeMethod(Void.class, "t_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Integer.class, "index"),
+						new CodeParameterDeclarationExpression(Integer.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement( 
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("<div class=\"foo\" style=\"color:red\"><ul class=\"bar\"><li>one</li><li>two</li><li>three</li></ul></div>")
+								}))
 					})
-				});
+			});
 
-		CodeType actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
 
-	//@Test
+	@Test
 	public void namespaceTest() throws Exception {
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -230,9 +291,29 @@ public class ServerCodeBuilderTests {
 				new ElementNode("div")
 			});
 
-		CodeType expected = null;
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			"foo.bar",
+			"Blah",
+			new CodeMethod[] {
+				new CodeMethod(Void.class, "t_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Integer.class, "index"),
+						new CodeParameterDeclarationExpression(Integer.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement( 
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("<div></div>")
+								}))
+					})
+			});
 
-		CodeType actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}

@@ -13,11 +13,17 @@
 		<property name="reports.dir" value="${build.dir}/test" />
 		<property name="docs.dir" value="${build.dir}/docs" />
 
-		<!-- set the classpath for the project including /bin and /lib -->
-		<path id="classpath.path">
+		<!-- set the classpaths for src/test including /bin and /lib -->
+		<path id="src.classpath.path">
+			<fileset dir="${lib.dir}">
+				<include name="rhino/js_trunk.jar" />
+			</fileset>
+		</path>
+		<path id="test.classpath.path">
 			<pathelement location="${bin.dir}" />
 			<fileset dir="${lib.dir}">
-				<include name="**/*.jar" />
+				<include name="rhino/js_trunk.jar" />
+				<include name="junit/junit-4.8.2.jar" />
 			</fileset>
 		</path>
 	</target>
@@ -63,8 +69,11 @@
 		<javac
 			srcdir="${src.dir}"
 			destdir="${bin.dir}"
-			debug="${javac.debug}"
+			classpathref="src.classpath.path"
+			debug="true"
 		/>
+		<!-- debug="${javac.debug}" -->
+
 		<!-- copy configs into output -->
 		<copy file="${src.dir}/org/duelengine/duel/parsing/HTMLCharRefs.properties"
 			todir="${bin.dir}/org/duelengine/duel/parsing/"/>
@@ -87,9 +96,10 @@
 		<javac
 			srcdir="${test.dir}"
 			destdir="${bin.dir}"
-			classpathref="classpath.path"
-			debug="${javac.debug}"
+			classpathref="test.classpath.path"
+			debug="true"
 		/>
+		<!-- debug="${javac.debug}" -->
 	</target>
 
 	<target name="test" depends="compile.src,compile.test" description="Run Java unit tests">
@@ -133,7 +143,7 @@
 			<sourcepath>
 				<pathelement location="${src.dir}" />
 			</sourcepath>
-			<classpath refid="classpath.path" />
+			<classpath refid="src.classpath.path" />
 			<link href="http://java.sun.com/javase/6/docs/api/" />
 			<bottom><![CDATA[
 				<div id="footer">

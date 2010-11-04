@@ -1,32 +1,36 @@
 package org.duelengine.duel.codedom;
 
+import java.io.Writer;
 import java.util.*;
 
 /**
- * Represents a block of statements and provides
+ * Represents a block of statements, providing
  * core parameters (writer, model, index, count)
  */
+@SuppressWarnings("rawtypes")
 public class CodeMethod extends CodeObject {
 
 	private Class returnType = Void.class;
 	private String methodName;
-	private final List<CodeStatement> statements = new ArrayList<CodeStatement>();
+	private final List<CodeParameterDeclarationExpression> parameters = new ArrayList<CodeParameterDeclarationExpression>();
+	private final CodeStatementCollection statements = new CodeStatementCollection();
 
 	public CodeMethod() {
 	}
 
-	public CodeMethod(CodeStatement[] statements) {
-		this(Arrays.asList(statements));
-	}
-
-	public CodeMethod(Iterable<CodeStatement> statements) {
+	public CodeMethod(Class returnType, String methodName, CodeParameterDeclarationExpression[] parameters, CodeStatement[] statements) {
+		if (returnType != null) {
+			this.returnType = returnType;
+		}
+		this.methodName = methodName;
+		if (parameters != null) {
+			this.parameters.addAll(Arrays.asList(parameters));
+		}
 		if (statements != null) {
-			for (CodeStatement statement : statements) {
-				this.addStatement(statement);
-			}
+			this.statements.addAll(Arrays.asList(statements));
 		}
 	}
-	
+
 	public Class getReturnType() {
 		return returnType;
 	}
@@ -43,12 +47,16 @@ public class CodeMethod extends CodeObject {
 		this.methodName = value;
 	}
 
-	public Iterable<CodeStatement> getStatements() {
-		return this.statements;
+	public List<CodeParameterDeclarationExpression> getParameters() {
+		return this.parameters;
 	}
 
-	public void addStatement(CodeStatement statement) {
-		this.statements.add(statement);
+	public void addParameter(Class type, String name) {
+		this.parameters.add(new CodeParameterDeclarationExpression(type, name));
+	}
+
+	public CodeStatementCollection getStatements() {
+		return this.statements;
 	}
 
 	@Override
@@ -67,36 +75,32 @@ public class CodeMethod extends CodeObject {
 			return false;
 		}
 
-		if ((this.statements == null || that.statements == null) && (this.statements != that.statements)) {
-			return false;
-		}
-
-		int length = this.statements.size();
-		if (length != that.statements.size()) {
+		int length = this.parameters.size();
+		if (length != that.parameters.size()) {
 			return false;
 		}
 
 		for (int i=0; i<length; i++) {
-			CodeStatement thisStatement = this.statements.get(i);
-			CodeStatement thatStatement = that.statements.get(i);
-			if (thisStatement == null ? thatStatement != null : !thisStatement.equals(thatStatement)) {
+			CodeParameterDeclarationExpression thisParam = this.parameters.get(i);
+			CodeParameterDeclarationExpression thatParam = that.parameters.get(i);
+			if (thisParam == null ? thatParam != null : !thisParam.equals(thatParam)) {
 				return false;
 			}
 		}
 
-		return true;
+		return this.statements.equals(that.statements);
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = (this.returnType == null) ? 0 : this.returnType.hashCode();
+		int hash = this.parameters.hashCode() * HASH_PRIME + this.statements.hashCode();
+		if (this.returnType != null) {
+			hash = hash * HASH_PRIME + this.returnType.hashCode();
+		}
 		if (this.methodName != null) {
 			hash = hash * HASH_PRIME + this.methodName.hashCode();
-		}
-		if (this.statements != null) {
-			hash = hash * HASH_PRIME + this.statements.hashCode();
 		}
 		return hash;
 	}

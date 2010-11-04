@@ -2,21 +2,24 @@ package org.duelengine.duel.codedom;
 
 import java.util.*;
 
-public class CodeType extends CodeObject {
+/**
+ * A simplified class definition which assumes defining a View
+ */
+public class CodeTypeDeclaration extends CodeObject implements UniqueNameGenerator {
 
 	private int nextID;
 	private String typeName;
 	private String namespace;
 	private final List<CodeMethod> methods = new ArrayList<CodeMethod>();
 
-	public CodeType() {
+	public CodeTypeDeclaration() {
 	}
 
-	public CodeType(String namespace, String typeName, CodeMethod[] methods) {
+	public CodeTypeDeclaration(String namespace, String typeName, CodeMethod[] methods) {
 		this(namespace, typeName, Arrays.asList(methods));
 	}
 
-	public CodeType(String namespace, String typeName, Iterable<CodeMethod> methods) {
+	public CodeTypeDeclaration(String namespace, String typeName, Iterable<CodeMethod> methods) {
 		this.namespace = namespace;
 		this.typeName = typeName;
 
@@ -43,6 +46,12 @@ public class CodeType extends CodeObject {
 		return this.namespace;
 	}
 
+	@Override
+	public String nextID() {
+		// generate a unique name
+		return "t_"+(++this.nextID);
+	}
+
 	/**
 	 * The output methods. The first one is the entry point.
 	 * @return
@@ -52,28 +61,22 @@ public class CodeType extends CodeObject {
 	}
 
 	public void addMethod(CodeMethod method) {
-		// assign a unique method name
-		method.setMethodName("t_"+this.nextID++);
 		this.methods.add(method);
 	}
 
 	@Override
 	public boolean equals(Object arg) {
-		if (!(arg instanceof CodeType)) {
+		if (!(arg instanceof CodeTypeDeclaration)) {
 			// includes null
 			return false;
 		}
 
-		CodeType that = (CodeType)arg;
+		CodeTypeDeclaration that = (CodeTypeDeclaration)arg;
 		if (this.namespace == null ? that.namespace != null : !this.namespace.equals(that.namespace)) {
 			return false;
 		}
 
 		if (this.typeName == null ? that.typeName != null : !this.typeName.equals(that.typeName)) {
-			return false;
-		}
-
-		if ((this.methods == null || that.methods == null) && (this.methods != that.methods)) {
 			return false;
 		}
 

@@ -3,6 +3,7 @@
         <classpathentry kind="src" path="src"/>
         <classpathentry kind="src" path="test"/>
         <classpathentry kind="lib" path="lib/junit/junit-4.8.2.jar"/>
+        <classpathentry kind="lib" path="lib/rhino/js_trunk.jar"/>
         <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
         <classpathentry kind="output" path="bin"/>
 </classpath>
