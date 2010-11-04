@@ -33,7 +33,7 @@ public class ServerCodeBuilder {
 		viewType.setTypeName(fullName.substring(lastDot+1));
 
 		CodeMethod method = new CodeMethod();
-		method.setMethodName(viewType.nextID());
+		method.setName(viewType.nextID());
 		method.addParameter(Writer.class, "writer");
 		method.addParameter(Object.class, "model");
 		method.addParameter(Integer.class, "index");

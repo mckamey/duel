@@ -2,21 +2,21 @@ package org.duelengine.duel.codedom;
 
 public class CodeExpressionStatement extends CodeStatement {
 
-	private CodeExpression expr;
+	private CodeExpression expression;
 
 	public CodeExpressionStatement() {
 	}
 
-	public CodeExpressionStatement(CodeExpression expr) {
-		this.expr = expr;
+	public CodeExpressionStatement(CodeExpression expression) {
+		this.expression = expression;
 	}
 
 	public CodeExpression getExpression() {
-		return expr;
+		return expression;
 	}
 
 	public void setIdent(CodeExpression value) {
-		this.expr = value;
+		this.expression = value;
 	}
 
 	@Override
@@ -27,11 +27,11 @@ public class CodeExpressionStatement extends CodeStatement {
 		}
 
 		CodeExpressionStatement that = (CodeExpressionStatement)arg;
-		return (this.expr == null ? that.expr == null : this.expr.equals(that.expr));
+		return (this.expression == null ? that.expression == null : this.expression.equals(that.expression));
 	}
 
 	@Override
 	public int hashCode() {
-		return (this.expr == null) ? 0 : this.expr.hashCode();
+		return (this.expression == null) ? 0 : this.expression.hashCode();
 	}
 }

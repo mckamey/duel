@@ -112,12 +112,7 @@
 				</fileset>
 			</batchtest>
 			<formatter type="xml" />
-			<classpath>
-				<pathelement location="${bin.dir}" />
-				<fileset dir="${lib.dir}">
-					<include name="**/*.jar" />
-				</fileset>
-			</classpath>
+			<classpath refid="test.classpath.path" />
 		</junit>
 	</target>
 

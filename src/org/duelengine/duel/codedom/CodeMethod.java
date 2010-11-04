@@ -8,10 +8,9 @@ import java.util.*;
  * core parameters (writer, model, index, count)
  */
 @SuppressWarnings("rawtypes")
-public class CodeMethod extends CodeObject {
+public class CodeMethod extends CodeMember {
 
 	private Class returnType = Void.class;
-	private String methodName;
 	private final List<CodeParameterDeclarationExpression> parameters = new ArrayList<CodeParameterDeclarationExpression>();
 	private final CodeStatementCollection statements = new CodeStatementCollection();
 
@@ -19,10 +18,10 @@ public class CodeMethod extends CodeObject {
 	}
 
 	public CodeMethod(Class returnType, String methodName, CodeParameterDeclarationExpression[] parameters, CodeStatement[] statements) {
+		super(methodName);
 		if (returnType != null) {
 			this.returnType = returnType;
 		}
-		this.methodName = methodName;
 		if (parameters != null) {
 			this.parameters.addAll(Arrays.asList(parameters));
 		}
@@ -37,14 +36,6 @@ public class CodeMethod extends CodeObject {
 
 	public void setReturnType(Class returnType) {
 		this.returnType = returnType;
-	}
-
-	public String getMethodName() {
-		return this.methodName;
-	}
-
-	public void setMethodName(String value) {
-		this.methodName = value;
 	}
 
 	public List<CodeParameterDeclarationExpression> getParameters() {
@@ -71,7 +62,7 @@ public class CodeMethod extends CodeObject {
 			return false;
 		}
 
-		if (this.methodName == null ? that.methodName != null : !this.methodName.equals(that.methodName)) {
+		if (!this.statements.equals(that.statements)) {
 			return false;
 		}
 
@@ -88,20 +79,18 @@ public class CodeMethod extends CodeObject {
 			}
 		}
 
-		return this.statements.equals(that.statements);
+		return super.equals(that);
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = this.parameters.hashCode() * HASH_PRIME + this.statements.hashCode();
+		int hash = ((super.hashCode() * HASH_PRIME) + this.parameters.hashCode()) * HASH_PRIME + this.statements.hashCode();
 		if (this.returnType != null) {
 			hash = hash * HASH_PRIME + this.returnType.hashCode();
 		}
-		if (this.methodName != null) {
-			hash = hash * HASH_PRIME + this.methodName.hashCode();
-		}
+
 		return hash;
 	}
 }

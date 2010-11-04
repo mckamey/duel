@@ -45,6 +45,14 @@ public class CodeStatementCollection implements Iterable<CodeStatement>, UniqueN
 		this.statements.add(statement);
 	}
 
+	public CodeStatement getLastStatement() {
+		if (this.statements.isEmpty()) {
+			return null;
+		}
+
+		return this.statements.get(this.statements.size()-1);
+	}
+
 	@Override
 	public String nextID() {
 		// generate a unique var name

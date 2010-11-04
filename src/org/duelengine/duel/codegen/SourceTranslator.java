@@ -1,25 +1,36 @@
 package org.duelengine.duel.codegen;
 
+import java.io.*;
+import java.util.*;
 import org.duelengine.duel.codedom.*;
 import org.mozilla.javascript.ast.*;
-import org.mozilla.javascript.Token;
-import org.mozilla.javascript.ErrorReporter;
-import org.mozilla.javascript.Context;
 import org.mozilla.javascript.CompilerEnvirons;
-import org.mozilla.javascript.Parser;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Node;
+import org.mozilla.javascript.Parser;
+import org.mozilla.javascript.Token;
 
 /**
  * Translates JavaScript source code into CodeDOM
  */
 public class SourceTranslator {
 
+	private final UniqueNameGenerator nameGen;
+
+	public SourceTranslator(UniqueNameGenerator nameGen) {
+		if (nameGen == null) {
+			throw new NullPointerException("nameGen");
+		}
+		this.nameGen = nameGen;
+	}
+	
 	/**
 	 * @param jsSource JavaScript source code
 	 * @return Equivalent translated Java source code
 	 */
-	public CodeObject translate(String jsSource) {
+	public List<CodeMember> translate(String jsSource) {
 
 		String jsFilename = "anonymous.js";
 		ErrorReporter errorReporter = null;
@@ -76,30 +87,63 @@ public class SourceTranslator {
 	}
 
 	private CodeObject visitVarRef(Name node) {
-		if (!node.isLocalName()) {
-			throw new IllegalArgumentException("Global references not supported");
-		}
-
 		String ident = node.getIdentifier();
 
-		if ("model".equals(ident) || "index".equals(ident) || "count".equals(ident)) {
-			return new CodeVariableReferenceExpression(ident);
+		if (!node.isLocalName()) {
+			if ("model".equals(ident) || "index".equals(ident) || "count".equals(ident)) {
+				return new CodeVariableReferenceExpression(ident);
+			}
+
+			throw new IllegalArgumentException("Global references not supported");
 		}
 
 		// TODO: context may have added additional local vars
 		throw new IllegalArgumentException("Unknown local references not supported");
 	}
 
-	private CodeObject visitFunction(FunctionNode node) throws IllegalArgumentException {
-		if (node.depth() != 1) {
+	private CodeMethod visitFunction(FunctionNode node) throws IllegalArgumentException {
+		CodeMethod method = new CodeMethod();
+
+		if (node.depth() == 1) {
+			method.setName(this.nameGen.nextID());
+
+			method.addParameter(Writer.class, "writer");
+			method.addParameter(Object.class, "model");
+			method.addParameter(Integer.class, "index");
+			method.addParameter(Integer.class, "count");
+
+		} else {
+			// TODO: extract parameter names / types
 			throw new IllegalArgumentException("Nested functions not yet supported.");
 		}
 
-		// inline method body
-		return this.visit(node.getBody());
+		CodeObject body = this.visit(node.getBody());
+		if (body instanceof CodeStatementBlock) {
+			method.getStatements().addAll((CodeStatementBlock)body);
+
+		} else if (body instanceof CodeStatement) {
+			method.getStatements().add((CodeStatement)body);
+
+		} else if (body instanceof CodeExpression) {
+			method.getStatements().add((CodeExpression)body);
+
+		} else if (body != null) {
+			throw new IllegalArgumentException("Unexpected function body: "+body.getClass());
+		}
+
+		for (CodeStatement statement : method.getStatements()) {
+			if (statement instanceof CodeMethodReturnStatement &&
+				((CodeMethodReturnStatement)statement).getExpression() != null) {
+				// TODO: refine return type
+				method.setReturnType(Object.class);
+				break;
+			}
+		}
+		
+		return method;
 	}
 
-	private CodeStatement visitReturn(ReturnStatement node) {
+	private CodeMethodReturnStatement visitReturn(ReturnStatement node) {
 		CodeObject value = this.visit(node.getReturnValue());
 
 		// TODO: evaluate situations where not inlining methods
@@ -109,26 +153,33 @@ public class SourceTranslator {
 		}
 
 		if (value instanceof CodeExpression) {
-			return CodeDomFactory.emitExpression((CodeExpression)value);
+			return new CodeMethodReturnStatement((CodeExpression)value);
 		}
 
 		if (value instanceof CodeExpressionStatement) {
-			return CodeDomFactory.emitExpression(((CodeExpressionStatement)value).getExpression());
+			return new CodeMethodReturnStatement(((CodeExpressionStatement)value).getExpression());
 		}
 
 		throw new IllegalArgumentException("Unexpected return value: "+value.getClass());
 	}
 
-	private CodeObject visitBlock(Block block) {
+	private CodeStatementBlock visitBlock(Block block) {
 		CodeStatementBlock statements = new CodeStatementBlock();
         for (Node node : block) {
             CodeObject value = this.visit((AstNode)node);
-            if (value instanceof CodeStatement) {
+
+            if (value == null) {
+            	continue;
+
+            } else if (value instanceof CodeStatement) {
             	statements.add((CodeStatement)value);
+
             } else if (value instanceof CodeExpression) {
             	statements.add((CodeExpression)value);
+
             } else if (value instanceof CodeStatementBlock) {
             	statements.addAll((CodeStatementBlock)value);
+
             } else {
         		throw new IllegalArgumentException("Unexpected statement value: "+value.getClass());
             }
@@ -136,10 +187,21 @@ public class SourceTranslator {
         return statements;
 	}
 
-	private CodeObject visit(AstRoot root) {
+	private List<CodeMember> visit(AstRoot root) {
+		List<CodeMember> members = new ArrayList<CodeMember>();
         for (Node node : root) {
-            this.visit((AstNode)node);
+            CodeObject member = this.visit((AstNode)node);
+
+            if (member == null) {
+            	continue;
+
+            } else if (member instanceof CodeMember) {
+            	members.add((CodeMember)member);
+
+            } else {
+        		throw new IllegalArgumentException("Unexpected member: "+member.getClass());
+            }
         }
-        return null;
+        return members;
 	}
 }
