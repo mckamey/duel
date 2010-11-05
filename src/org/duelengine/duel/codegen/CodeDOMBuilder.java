@@ -32,7 +32,7 @@ public class CodeDOMBuilder {
 				this.viewType.setNamespace(fullName.substring(0, lastDot));
 			}
 			this.viewType.setTypeName(fullName.substring(lastDot+1));
-	
+
 			CodeMethod method = new CodeMethod();
 			method.setName(this.viewType.nextID());
 			method.addParameter(Writer.class, "writer");
@@ -41,13 +41,13 @@ public class CodeDOMBuilder {
 			method.addParameter(Integer.class, "count");
 			this.viewType.add(method);
 			this.scopeStack.add(method.getStatements());
-	
+
 			for (Node node : viewNode.getChildren()) {
 				this.buildNode(node);
 			}
-	
+
 			this.flushBuffer();
-	
+
 			return this.viewType;
 
 		} finally {
@@ -63,7 +63,6 @@ public class CodeDOMBuilder {
 		}
 
 		if (node instanceof CommandNode) {
-
 			CommandNode command = (CommandNode)node;
 			switch (command.getCommand()) {
 				case XOR:

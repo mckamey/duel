@@ -1,8 +1,6 @@
 package org.duelengine.duel.codegen;
 
-import java.io.IOException;
-import java.io.Writer;
-
+import java.io.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.duelengine.duel.ast.*;
@@ -307,6 +305,108 @@ public class CodeDOMBuilderTests {
 		// flag the conditions as having had parens
 		((CodeConditionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(1)).getCondition().setHasParens(true);
 		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void conditionalSinglesTest() throws IOException {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("example.foo2"))
+			},
+			new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new IFCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("test", new StatementNode("return model == 0;"))
+						},
+						new Node[] {
+							new LiteralNode("zero")
+						}),
+					new IFCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("test", new StatementNode("return model == 1;"))
+						},
+						new Node[] {
+							new LiteralNode("one")
+						}),
+					new IFCommandNode(
+						null,
+						new Node[] {
+							new LiteralNode("many")
+						}),
+				})
+			});
+
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			"example",
+			"foo2",
+			new CodeMethod[] {
+				new CodeMethod(Void.class, "t_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Integer.class, "index"),
+						new CodeParameterDeclarationExpression(Integer.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("<div>")
+								})),
+						new CodeConditionStatement(
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.VALUE_EQUALITY,
+								new CodeVariableReferenceExpression("model"),
+								new CodePrimitiveExpression(0.0)),
+							new CodeStatement[] {
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("writer"),
+										"write",
+										new CodeExpression[] {
+											new CodePrimitiveExpression("zero")
+										}))
+							},
+							null),
+						new CodeConditionStatement(
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.VALUE_EQUALITY,
+								new CodeVariableReferenceExpression("model"),
+								new CodePrimitiveExpression(1.0)),
+							new CodeStatement[] {
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("writer"),
+										"write",
+										new CodeExpression[] {
+											new CodePrimitiveExpression("one")
+										}))
+							},
+							null),
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("many")
+								})),
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("</div>")
+								}))
+					})
+			});
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
