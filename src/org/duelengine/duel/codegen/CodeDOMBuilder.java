@@ -5,7 +5,7 @@ import java.util.*;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 
-public class ServerCodeBuilder {
+public class CodeDOMBuilder {
 
 	private final CodeGenSettings settings;
 	private final HTMLFormatter formatter;
@@ -13,11 +13,11 @@ public class ServerCodeBuilder {
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
 	private CodeTypeDeclaration viewType;
 
-	public ServerCodeBuilder() {
+	public CodeDOMBuilder() {
 		this(null);
 	}
 
-	public ServerCodeBuilder(CodeGenSettings settings) {
+	public CodeDOMBuilder(CodeGenSettings settings) {
 		this.settings = (settings != null) ? settings : new CodeGenSettings();
 		this.buffer = new StringWriter();
 		this.formatter = new HTMLFormatter(this.buffer, this.settings.getEncodeNonASCII());

@@ -101,12 +101,12 @@ public class ClientCodeGenTests {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
 			new Node[] {
-				new StatementNode("bar();")
+				new StatementNode("return Math.PI;")
 			});
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel(function() { bar(); });\n";
+			"var foo = duel(function() { return Math.PI; });\n";
 
 		StringWriter writer = new StringWriter();
 		new ClientCodeGen().write(writer, new ViewRootNode[] { input });

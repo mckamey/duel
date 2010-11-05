@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 
-public class ServerCodeBuilderTests {
+public class CodeDOMBuilderTests {
 
 	@Test
 	public void stringSimpleTest() throws IOException {
@@ -42,7 +42,7 @@ public class ServerCodeBuilderTests {
 					})
 			});
 
-		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -79,7 +79,7 @@ public class ServerCodeBuilderTests {
 					})
 			});
 
-		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -94,7 +94,6 @@ public class ServerCodeBuilderTests {
 			new Node[] {
 				new ExpressionNode("count")
 			});
-
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
 			null,
@@ -121,7 +120,7 @@ public class ServerCodeBuilderTests {
 		// flag the expression as having had parens
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(0).setHasParens(true);
 
-		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -139,12 +138,12 @@ public class ServerCodeBuilderTests {
 
 		CodeTypeDeclaration expected = null;
 
-		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
 
-	//@Test
+	@Test
 	public void statementNoneTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
@@ -152,12 +151,35 @@ public class ServerCodeBuilderTests {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
 			new Node[] {
-				new StatementNode("bar();")
+				new StatementNode("return Math.PI;")
 			});
 
-		CodeTypeDeclaration expected = null;
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			null,
+			"foo",
+			new CodeMethod[] {
+				new CodeMethod(Void.class, "t_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Integer.class, "index"),
+						new CodeParameterDeclarationExpression(Integer.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePropertyReferenceExpression(
+										new CodeVariableReferenceExpression("Math"),
+										new CodePrimitiveExpression("PI"))
+									
+								}))
+					})
+			});
 
-		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -175,7 +197,7 @@ public class ServerCodeBuilderTests {
 
 		CodeTypeDeclaration expected = null;
 
-		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -286,7 +308,7 @@ public class ServerCodeBuilderTests {
 		((CodeConditionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(1)).getCondition().setHasParens(true);
 		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
 
-		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -351,7 +373,7 @@ public class ServerCodeBuilderTests {
 					})
 			});
 
-		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
@@ -388,7 +410,7 @@ public class ServerCodeBuilderTests {
 					})
 			});
 
-		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}

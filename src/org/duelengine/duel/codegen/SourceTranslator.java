@@ -45,8 +45,8 @@ public class SourceTranslator {
 		AstRoot root = null;
 		try {
 			root = parser.parse(jsSource, jsFilename, 1);
-		} catch (EvaluatorException ex) {
-			ex.printStackTrace();
+//		} catch (EvaluatorException ex) {
+//			ex.printStackTrace();
 		} finally {
 			Context.exit();
 		}
@@ -55,13 +55,7 @@ public class SourceTranslator {
 			return null;
 		}
 
-		try {
-			return this.visit(root);
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
+		return this.visit(root);
 	}
 
 	private CodeExpression visitExpression(AstNode node) {
@@ -274,7 +268,7 @@ public class SourceTranslator {
 		String ident = node.getIdentifier();
 
 		if (!node.isLocalName()) {
-			if ("model".equals(ident) || "index".equals(ident) || "count".equals(ident)) {
+			if ("model".equals(ident) || "index".equals(ident) || "count".equals(ident) || "Math".equals(ident)) {
 				return new CodeVariableReferenceExpression(ident);
 			}
 
