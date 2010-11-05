@@ -3,11 +3,10 @@ package org.duelengine.duel.codedom;
 /**
  * Represents a method call
  */
-@SuppressWarnings("rawtypes")
 public class CodeParameterDeclarationExpression extends CodeExpression {
 
 	private String name;
-	private Class type = Object.class;
+	private Class<?> type = Object.class;
 
 	public CodeParameterDeclarationExpression() {
 	}
@@ -17,11 +16,11 @@ public class CodeParameterDeclarationExpression extends CodeExpression {
 		this.name = name;
 	}
 
-	public Class getType() {
+	public Class<?> getType() {
 		return this.type;
 	}
 
-	public void setType(Class value) {
+	public void setType(Class<?> value) {
 		this.type = (value == null) ? Object.class : value;
 	}
 
@@ -31,6 +30,11 @@ public class CodeParameterDeclarationExpression extends CodeExpression {
 
 	public void setName(String value) {
 		this.name = value;
+	}
+
+	@Override
+	public Class<?> getResultType() {
+		return this.type;
 	}
 
 	@Override

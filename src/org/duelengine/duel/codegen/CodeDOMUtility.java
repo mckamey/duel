@@ -9,7 +9,7 @@ final class CodeDOMUtility {
 	// static class
 	private CodeDOMUtility() {}
 
-	public static CodeVariableDeclarationStatement nextID(UniqueNameGenerator varGen) {
+	public static CodeVariableDeclarationStatement nextID(IdentifierScope varGen) {
 		return new CodeVariableDeclarationStatement(
 			String.class,
 			varGen.nextID(),

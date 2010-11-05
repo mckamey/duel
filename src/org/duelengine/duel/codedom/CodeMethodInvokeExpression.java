@@ -43,6 +43,11 @@ public class CodeMethodInvokeExpression extends CodeExpression {
 	}
 
 	@Override
+	public Class<?> getResultType() {
+		return Object.class;
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeMethodInvokeExpression)) {
 			// includes null

@@ -40,6 +40,47 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 	}
 
 	@Override
+	public Class<?> getResultType() {
+		switch (this.operator) {
+			case ADD:
+			case SUBTRACT:
+			case MULTIPLY:
+			case DIVIDE:
+			case MODULUS:
+			case SHIFT_LEFT:
+			case SHIFT_RIGHT:
+			case BITWISE_AND:
+			case BITWISE_OR:
+			case BITWISE_XOR:
+				return Number.class;
+
+			case BOOLEAN_AND:
+			case BOOLEAN_OR:
+			case GREATER_THAN:
+			case GREATER_THAN_OR_EQUAL:
+			case LESS_THAN:
+			case LESS_THAN_OR_EQUAL:
+			case IDENTITY_EQUALITY:
+			case IDENTITY_INEQUALITY:
+			case VALUE_EQUALITY:
+			case VALUE_INEQUALITY:
+				return Boolean.class;
+
+			case ASSIGN:
+				if (this.left != null && !this.left.getResultType().equals(Object.class)) {
+					return this.left.getResultType();
+
+				} else if (this.right != null) {
+					return this.right.getResultType();
+				} 
+
+				return Object.class;
+			default:
+				return Object.class;
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeBinaryOperatorExpression)) {
 			// includes null

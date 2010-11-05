@@ -17,15 +17,15 @@ import org.mozilla.javascript.Token;
  */
 public class SourceTranslator {
 
-	private final UniqueNameGenerator nameGen;
+	private final IdentifierScope scope;
 
-	public SourceTranslator(UniqueNameGenerator nameGen) {
-		if (nameGen == null) {
-			throw new NullPointerException("nameGen");
+	public SourceTranslator(IdentifierScope scope) {
+		if (scope == null) {
+			throw new NullPointerException("scope");
 		}
-		this.nameGen = nameGen;
+		this.scope = scope;
 	}
-	
+
 	/**
 	 * @param jsSource JavaScript source code
 	 * @return Equivalent translated Java source code
@@ -69,7 +69,8 @@ public class SourceTranslator {
 			return null;
 		}
 
-		switch (node.getType()) {
+		int tokenType = node.getType();
+		switch (tokenType) {
 			case Token.FUNCTION:
 				return this.visitFunction((FunctionNode)node);
 			case Token.BLOCK:
@@ -78,14 +79,73 @@ public class SourceTranslator {
 				return this.visitReturn((ReturnStatement)node);
 			case Token.NAME:
 				return this.visitVarRef((Name)node);
+			case Token.LP:
+				return this.visit(((ParenthesizedExpression)node).getExpression());
+			case Token.STRING:
+				return new CodePrimitiveExpression(((StringLiteral)node).getValue());
+			case Token.NUMBER:
+				return new CodePrimitiveExpression(((NumberLiteral)node).getNumber());
+			case Token.FALSE:
+				return CodePrimitiveExpression.FALSE;
+			case Token.TRUE:
+				return CodePrimitiveExpression.TRUE;
+			case Token.NULL:
+				return CodePrimitiveExpression.NULL;
 			case Token.THIS:
 				// TODO: evaluate if will allow custom extensions
 				throw new IllegalArgumentException("'this' not supported");
 			default:
-				throw new IllegalArgumentException("Not yet supported: "+Token.name(node.getType()));
+				CodeBinaryOperatorType operator = this.mapBinaryOperator(tokenType);
+				if (operator != CodeBinaryOperatorType.NONE) {
+					return this.visitBinaryOp((InfixExpression)node, operator);
+				}
+
+				throw new IllegalArgumentException("Token not yet supported ("+node.getClass()+"):\n"+(node.debugPrint()));
 		}
 	}
 
+	private CodeObject visitBinaryOp(InfixExpression node, CodeBinaryOperatorType operator) {
+
+		CodeObject left = this.visit(node.getLeft());
+
+		if (left instanceof CodeExpressionStatement) {
+			left = ((CodeExpressionStatement)left).getExpression();
+		} else if (left != null && !(left instanceof CodeExpression)) {
+			throw new IllegalArgumentException("Unexpected binary expression: "+left.getClass());
+		}
+
+		CodeObject right = this.visit(node.getRight());
+
+		if (right instanceof CodeExpressionStatement) {
+			right = ((CodeExpressionStatement)right).getExpression();
+		} else if (right != null && !(right instanceof CodeExpression)) {
+			throw new IllegalArgumentException("Unexpected binary expression: "+right.getClass());
+		}
+
+		return new CodeBinaryOperatorExpression(operator, (CodeExpression)left, (CodeExpression)right);
+	}
+
+	private CodeBinaryOperatorType mapBinaryOperator(int tokenType) {
+		switch (tokenType) {
+			case Token.ADD:
+				return CodeBinaryOperatorType.ADD;
+			case Token.GT:
+				return CodeBinaryOperatorType.GREATER_THAN;
+			case Token.GE:
+				return CodeBinaryOperatorType.GREATER_THAN_OR_EQUAL;
+			case Token.LT:
+				return CodeBinaryOperatorType.LESS_THAN;
+			case Token.LE:
+				return CodeBinaryOperatorType.LESS_THAN_OR_EQUAL;
+			case Token.SHEQ:
+				return CodeBinaryOperatorType.IDENTITY_EQUALITY;
+			case Token.SHNE:
+				return CodeBinaryOperatorType.IDENTITY_INEQUALITY;
+			default:
+				return CodeBinaryOperatorType.NONE;
+		}
+	}
+	
 	private CodeObject visitVarRef(Name node) {
 		String ident = node.getIdentifier();
 
@@ -105,7 +165,7 @@ public class SourceTranslator {
 		CodeMethod method = new CodeMethod();
 
 		if (node.depth() == 1) {
-			method.setName(this.nameGen.nextID());
+			method.setName(this.scope.nextID());
 
 			method.addParameter(Writer.class, "writer");
 			method.addParameter(Object.class, "model");

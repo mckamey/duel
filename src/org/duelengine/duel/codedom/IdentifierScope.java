@@ -1,6 +1,6 @@
 package org.duelengine.duel.codedom;
 
-public interface UniqueNameGenerator {
+public interface IdentifierScope {
 
 	public String nextID();
 }

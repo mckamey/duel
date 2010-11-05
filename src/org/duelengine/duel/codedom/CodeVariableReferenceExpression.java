@@ -20,6 +20,15 @@ public class CodeVariableReferenceExpression extends CodeExpression {
 	}
 
 	@Override
+	public Class<?> getResultType() {
+		if (this.ident != null && (this.ident.equals("index") || this.ident.equals("count"))) {
+			return Integer.class;
+		}
+
+		return Object.class;
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeVariableReferenceExpression)) {
 			// includes null

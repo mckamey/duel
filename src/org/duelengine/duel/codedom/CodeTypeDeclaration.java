@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * A simplified class definition which assumes defining a View
  */
-public class CodeTypeDeclaration extends CodeObject implements UniqueNameGenerator {
+public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 
 	private int nextID;
 	private String typeName;

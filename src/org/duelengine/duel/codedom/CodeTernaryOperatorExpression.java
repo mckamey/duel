@@ -43,6 +43,18 @@ public class CodeTernaryOperatorExpression extends CodeExpression {
 	}
 
 	@Override
+	public Class<?> getResultType() {
+		if (this.trueExpression != null && !this.trueExpression.getResultType().equals(Object.class)) {
+			return this.trueExpression.getResultType();
+
+		} else if (this.falseExpression != null) {
+			return this.falseExpression.getResultType();
+		} 
+
+		return Object.class;
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeTernaryOperatorExpression)) {
 			// includes null

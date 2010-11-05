@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class SourceTranslatorTests {
 
 	@Test
-	public void stringSimpleTest() throws Exception {
+	public void translateVarRefTest() {
 		String input = "function(model) { return model; }";
 
 		CodeMethod expected =
@@ -24,6 +24,62 @@ public class SourceTranslatorTests {
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("model"))
+				});
+
+		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateBinaryOpStringsTest() {
+		String input = "function(model) { return model === \"Lorem ipsum\"; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				Object.class,
+				"t_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(Writer.class, "writer"),
+					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Integer.class, "index"),
+					new CodeParameterDeclarationExpression(Integer.class, "count")
+				},
+				new CodeStatement[] {
+					new CodeMethodReturnStatement(
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.IDENTITY_EQUALITY,
+							new CodeVariableReferenceExpression("model"),
+							new CodePrimitiveExpression("Lorem ipsum")))
+				});
+
+		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateParensBinaryOpNumbersTest() {
+		String input = "function(model, index, count) { return (count >= 1); }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				Object.class,
+				"t_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(Writer.class, "writer"),
+					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Integer.class, "index"),
+					new CodeParameterDeclarationExpression(Integer.class, "count")
+				},
+				new CodeStatement[] {
+					new CodeMethodReturnStatement(
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.GREATER_THAN_OR_EQUAL,
+							new CodeVariableReferenceExpression("count"),
+							new CodePrimitiveExpression(1.0)))
 				});
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);

@@ -30,6 +30,26 @@ public class CodeUnaryOperatorExpression extends CodeExpression {
 	}
 
 	@Override
+	public Class<?> getResultType() {
+		switch (this.operator) {
+			case POSITIVE:
+			case NEGATION:
+			case PRE_INCREMENT:
+			case PRE_DECREMENT:
+			case POST_INCREMENT:
+			case POST_DECREMENT:
+			case BITWISE_NEGATION:
+				return Number.class;
+
+			case LOGICAL_NEGATION:
+				return Boolean.class;
+
+			default:
+				return Object.class;
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeUnaryOperatorExpression)) {
 			// includes null

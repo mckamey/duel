@@ -7,17 +7,16 @@ import java.util.*;
  * Represents a block of statements, providing
  * core parameters (writer, model, index, count)
  */
-@SuppressWarnings("rawtypes")
 public class CodeMethod extends CodeMember {
 
-	private Class returnType = Void.class;
+	private Class<?> returnType = Void.class;
 	private final List<CodeParameterDeclarationExpression> parameters = new ArrayList<CodeParameterDeclarationExpression>();
 	private final CodeStatementCollection statements = new CodeStatementCollection();
 
 	public CodeMethod() {
 	}
 
-	public CodeMethod(Class returnType, String methodName, CodeParameterDeclarationExpression[] parameters, CodeStatement[] statements) {
+	public CodeMethod(Class<?> returnType, String methodName, CodeParameterDeclarationExpression[] parameters, CodeStatement[] statements) {
 		super(methodName);
 		if (returnType != null) {
 			this.returnType = returnType;
@@ -30,11 +29,11 @@ public class CodeMethod extends CodeMember {
 		}
 	}
 
-	public Class getReturnType() {
+	public Class<?> getReturnType() {
 		return returnType;
 	}
 
-	public void setReturnType(Class returnType) {
+	public void setReturnType(Class<?> returnType) {
 		this.returnType = returnType;
 	}
 
@@ -42,7 +41,7 @@ public class CodeMethod extends CodeMember {
 		return this.parameters;
 	}
 
-	public void addParameter(Class type, String name) {
+	public void addParameter(Class<?> type, String name) {
 		this.parameters.add(new CodeParameterDeclarationExpression(type, name));
 	}
 

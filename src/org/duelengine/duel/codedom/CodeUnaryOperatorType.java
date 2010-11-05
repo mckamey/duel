@@ -2,6 +2,8 @@ package org.duelengine.duel.codedom;
 
 public enum CodeUnaryOperatorType {
 
+	NONE,
+
 	/**
 	 * Positive numeric "+x"
 	 */

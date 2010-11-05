@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * Represents a statement block
  */
-public class CodeStatementCollection implements Iterable<CodeStatement>, UniqueNameGenerator {
+public class CodeStatementCollection implements Iterable<CodeStatement>, IdentifierScope {
 
 	private int nextID;
 	private final List<CodeStatement> statements = new ArrayList<CodeStatement>();

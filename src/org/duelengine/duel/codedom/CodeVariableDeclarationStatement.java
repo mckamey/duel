@@ -3,27 +3,26 @@ package org.duelengine.duel.codedom;
 /**
  * Represents a method call
  */
-@SuppressWarnings("rawtypes")
 public class CodeVariableDeclarationStatement extends CodeStatement {
 
-	private Class type = Object.class;
+	private Class<?> type = Object.class;
 	private String name;
 	private CodeExpression initExpression;
 
 	public CodeVariableDeclarationStatement() {
 	}
 
-	public CodeVariableDeclarationStatement(Class type, String name, CodeExpression initExpression) {
+	public CodeVariableDeclarationStatement(Class<?> type, String name, CodeExpression initExpression) {
 		this.type = type;
 		this.name = name;
 		this.initExpression = initExpression;
 	}
 
-	public Class getType() {
+	public Class<?> getType() {
 		return this.type;
 	}
 
-	public void setType(Class value) {
+	public void setType(Class<?> value) {
 		this.type = (value == null) ? Object.class : value;
 	}
 

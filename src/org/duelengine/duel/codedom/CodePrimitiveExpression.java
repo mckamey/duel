@@ -5,21 +5,30 @@ package org.duelengine.duel.codedom;
  */
 public class CodePrimitiveExpression extends CodeExpression {
 
-	private String value;
+	public static final CodePrimitiveExpression NULL = new CodePrimitiveExpression(null);
+	public static final CodePrimitiveExpression FALSE = new CodePrimitiveExpression(false);
+	public static final CodePrimitiveExpression TRUE = new CodePrimitiveExpression(true);
+	
+	private Object value;
 
 	public CodePrimitiveExpression() {
 	}
 
-	public CodePrimitiveExpression(String value) {
+	public CodePrimitiveExpression(Object value) {
 		this.value = value;
 	}
 
-	public String getValue() {
-		return value;
+	public Object getValue() {
+		return this.value;
 	}
 
-	public void setValue(String value) {
+	public void setValue(Object value) {
 		this.value = value;
+	}
+
+	@Override
+	public Class<?> getResultType() {
+		return (this.value == null) ? Object.class : this.value.getClass();
 	}
 
 	@Override
