@@ -50,14 +50,14 @@ public class CodeParameterDeclarationExpression extends CodeExpression {
 			return false;
 		}
 
-		return this.type.equals(that.type);
+		return this.type.equals(that.type) && super.equals(arg);
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = this.type.hashCode();
+		int hash = super.hashCode() * HASH_PRIME + this.type.hashCode();
 		if (this.name != null) {
 			hash = hash * HASH_PRIME + this.name.hashCode();
 		}

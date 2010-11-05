@@ -39,11 +39,21 @@ public class CodePrimitiveExpression extends CodeExpression {
 		}
 
 		CodePrimitiveExpression that = (CodePrimitiveExpression)arg;
-		return (this.value == null ? that.value == null : this.value.equals(that.value));
+		if (this.value == null ? that.value != null : !this.value.equals(that.value)) {
+			return false;
+		}
+		
+		return super.equals(arg);
 	}
 
 	@Override
 	public int hashCode() {
-		return (this.value == null) ? 0 : this.value.hashCode();
+		final int HASH_PRIME = 1000003;
+
+		int hash = super.hashCode();
+		if (this.value != null) {
+			hash = hash * HASH_PRIME + this.value.hashCode();
+		}
+		return hash;
 	}
 }

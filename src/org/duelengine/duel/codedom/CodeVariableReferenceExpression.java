@@ -36,11 +36,20 @@ public class CodeVariableReferenceExpression extends CodeExpression {
 		}
 
 		CodeVariableReferenceExpression that = (CodeVariableReferenceExpression)arg;
-		return (this.ident == null ? that.ident == null : this.ident.equals(that.ident));
+		if (this.ident == null ? that.ident != null : !this.ident.equals(that.ident)){
+			return false;
+		}
+		return super.equals(arg);
 	}
 
 	@Override
 	public int hashCode() {
-		return (this.ident == null) ? 0 : this.ident.hashCode();
+		final int HASH_PRIME = 1000003;
+
+		int hash = super.hashCode();
+		if (this.ident != null) {
+			hash = hash * HASH_PRIME + this.ident.hashCode();
+		}
+		return hash;
 	}
 }

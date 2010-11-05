@@ -110,6 +110,9 @@ public class SourceTranslatorTests {
 							new CodePrimitiveExpression(1.0)))
 				});
 
+		// need to signal that a parens was absorbed
+		((CodeMethodReturnStatement)expected.getStatements().getLastStatement()).getExpression().setHasParens(true);
+
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
@@ -248,6 +251,9 @@ public class SourceTranslatorTests {
 							CodeUnaryOperatorType.NEGATION,
 							new CodePrimitiveExpression(42.0)))
 				});
+
+		// need to signal that a parens was absorbed
+		((CodeUnaryOperatorExpression)((CodeMethodReturnStatement)expected.getStatements().getLastStatement()).getExpression()).getExpression().setHasParens(true);
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
 		assertNotNull(actual);

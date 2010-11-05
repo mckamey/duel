@@ -48,11 +48,20 @@ public class CodePropertyReferenceExpression extends CodeExpression {
 		if (this.target == null ? that.target != null : !this.target.equals(that.target)) {
 			return false;
 		}
-		return true;
+		return super.equals(arg);
 	}
 
 	@Override
 	public int hashCode() {
-		return (this.propertyName == null) ? 0 : this.propertyName.hashCode();
+		final int HASH_PRIME = 1000003;
+
+		int hash = super.hashCode();
+		if (this.propertyName != null) {
+			hash = hash * HASH_PRIME + this.propertyName.hashCode();
+		}
+		if (this.target != null) {
+			hash = hash * HASH_PRIME + this.target.hashCode();
+		}
+		return hash;
 	}
 }

@@ -113,14 +113,14 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 			return false;
 		}
 
-		return true;
+		return super.equals(arg);
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = this.operator.hashCode();
+		int hash = super.hashCode()* HASH_PRIME + this.operator.hashCode();
 		if (this.left != null) {
 			hash = hash * HASH_PRIME + this.left.hashCode();
 		}

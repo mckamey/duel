@@ -75,14 +75,17 @@ public class CodeTernaryOperatorExpression extends CodeExpression {
 			return false;
 		}
 
-		return true;
+		return super.equals(arg);
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = 0;
+		int hash = super.hashCode();
+		if (this.testExpression != null) {
+			hash = hash * HASH_PRIME + this.testExpression.hashCode();
+		}
 		if (this.trueExpression != null) {
 			hash = hash * HASH_PRIME + this.trueExpression.hashCode();
 		}

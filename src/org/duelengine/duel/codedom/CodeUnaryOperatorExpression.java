@@ -65,14 +65,14 @@ public class CodeUnaryOperatorExpression extends CodeExpression {
 			return false;
 		}
 
-		return true;
+		return super.equals(arg);
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = this.operator.hashCode();
+		int hash = super.hashCode() * HASH_PRIME + this.operator.hashCode();
 		if (this.expression != null) {
 			hash = hash * HASH_PRIME + this.expression.hashCode();
 		}

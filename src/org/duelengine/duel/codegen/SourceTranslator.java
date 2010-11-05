@@ -97,7 +97,11 @@ public class SourceTranslator {
 			case Token.NAME:
 				return this.visitVarRef((Name)node);
 			case Token.LP:
-				return this.visit(((ParenthesizedExpression)node).getExpression());
+				CodeExpression expr = this.visitExpression(((ParenthesizedExpression)node).getExpression());
+				if (expr != null) {
+					expr.setHasParens(true);
+				}
+				return expr;
 			case Token.STRING:
 				return new CodePrimitiveExpression(((StringLiteral)node).getValue());
 			case Token.NUMBER:
