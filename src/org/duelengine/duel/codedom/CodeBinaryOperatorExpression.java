@@ -43,15 +43,27 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 	public Class<?> getResultType() {
 		switch (this.operator) {
 			case ADD:
+			case ADD_ASSIGN:
 			case SUBTRACT:
+			case SUBTRACT_ASSIGN:
 			case MULTIPLY:
+			case MULTIPLY_ASSIGN:
 			case DIVIDE:
+			case DIVIDE_ASSIGN:
 			case MODULUS:
+			case MODULUS_ASSIGN:
 			case SHIFT_LEFT:
+			case SHIFT_LEFT_ASSIGN:
 			case SHIFT_RIGHT:
+			case SHIFT_RIGHT_ASSIGN:
+			case USHIFT_RIGHT:
+			case USHIFT_RIGHT_ASSIGN:
 			case BITWISE_AND:
+			case BITWISE_AND_ASSIGN:
 			case BITWISE_OR:
+			case BITWISE_OR_ASSIGN:
 			case BITWISE_XOR:
+			case BITWISE_XOR_ASSIGN:
 				return Number.class;
 
 			case BOOLEAN_AND:
@@ -75,6 +87,7 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 				} 
 
 				return Object.class;
+
 			default:
 				return Object.class;
 		}

@@ -152,22 +152,73 @@ public class SourceTranslator {
 
 	private CodeBinaryOperatorType mapBinaryOperator(int tokenType) {
 		switch (tokenType) {
+			case Token.ASSIGN:
+				return CodeBinaryOperatorType.ASSIGN;
 			case Token.ADD:
 				return CodeBinaryOperatorType.ADD;
-			case Token.GT:
-				return CodeBinaryOperatorType.GREATER_THAN;
-			case Token.GE:
-				return CodeBinaryOperatorType.GREATER_THAN_OR_EQUAL;
+			case Token.ASSIGN_ADD:
+				return CodeBinaryOperatorType.ADD_ASSIGN;
+			case Token.SUB:
+				return CodeBinaryOperatorType.SUBTRACT;
+			case Token.ASSIGN_SUB:
+				return CodeBinaryOperatorType.SUBTRACT_ASSIGN;
+			case Token.MUL:
+				return CodeBinaryOperatorType.MULTIPLY;
+			case Token.ASSIGN_MUL:
+				return CodeBinaryOperatorType.MULTIPLY_ASSIGN;
+			case Token.DIV:
+				return CodeBinaryOperatorType.DIVIDE;
+			case Token.ASSIGN_DIV:
+				return CodeBinaryOperatorType.DIVIDE_ASSIGN;
+			case Token.MOD:
+				return CodeBinaryOperatorType.MODULUS;
+			case Token.ASSIGN_MOD:
+				return CodeBinaryOperatorType.MODULUS_ASSIGN;
+			case Token.BITOR:
+				return CodeBinaryOperatorType.BITWISE_OR;
+			case Token.ASSIGN_BITOR:
+				return CodeBinaryOperatorType.BITWISE_OR_ASSIGN;
+			case Token.BITAND:
+				return CodeBinaryOperatorType.BITWISE_AND;
+			case Token.ASSIGN_BITAND:
+				return CodeBinaryOperatorType.BITWISE_AND_ASSIGN;
+			case Token.BITXOR:
+				return CodeBinaryOperatorType.BITWISE_XOR;
+			case Token.ASSIGN_BITXOR:
+				return CodeBinaryOperatorType.BITWISE_XOR_ASSIGN;
+			case Token.LSH:
+				return CodeBinaryOperatorType.SHIFT_LEFT;
+			case Token.ASSIGN_LSH:
+				return CodeBinaryOperatorType.SHIFT_LEFT_ASSIGN;
+			case Token.RSH:
+				return CodeBinaryOperatorType.SHIFT_RIGHT;
+			case Token.ASSIGN_RSH:
+				return CodeBinaryOperatorType.SHIFT_RIGHT_ASSIGN;
+			case Token.URSH:
+				return CodeBinaryOperatorType.USHIFT_RIGHT;
+			case Token.ASSIGN_URSH:
+				return CodeBinaryOperatorType.USHIFT_RIGHT_ASSIGN;
+			case Token.OR:
+				return CodeBinaryOperatorType.BOOLEAN_OR;
+			case Token.AND:
+				return CodeBinaryOperatorType.BOOLEAN_AND;
 			case Token.LT:
 				return CodeBinaryOperatorType.LESS_THAN;
 			case Token.LE:
 				return CodeBinaryOperatorType.LESS_THAN_OR_EQUAL;
+			case Token.GT:
+				return CodeBinaryOperatorType.GREATER_THAN;
+			case Token.GE:
+				return CodeBinaryOperatorType.GREATER_THAN_OR_EQUAL;
+			case Token.EQ:
+				return CodeBinaryOperatorType.VALUE_EQUALITY;
+			case Token.NE:
+				return CodeBinaryOperatorType.VALUE_INEQUALITY;
 			case Token.SHEQ:
 				return CodeBinaryOperatorType.IDENTITY_EQUALITY;
 			case Token.SHNE:
 				return CodeBinaryOperatorType.IDENTITY_INEQUALITY;
 			default:
-				// TODO;.
 				return CodeBinaryOperatorType.NONE;
 		}
 	}
@@ -277,7 +328,7 @@ public class SourceTranslator {
 
 		return new CodeMethodReturnStatement(value);
 	}
-	
+
 	private CodeObject visitFunctionCall(FunctionCall node) {
 		List<AstNode> argNodes = node.getArguments();
 		CodeExpression[] args = new CodeExpression[argNodes.size()];
