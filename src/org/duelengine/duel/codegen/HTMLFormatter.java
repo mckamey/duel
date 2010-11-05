@@ -193,8 +193,14 @@ public class HTMLFormatter {
 		}
 
 		if (length > start) {
-			// emit any trailing unescaped chunk
-			this.writer.write(value, start, length-start);
+			if (start == 0) {
+				// nothing escaped can write entire string directly
+				this.writer.write(value);
+
+			} else {
+				// emit any trailing unescaped chunk
+				this.writer.write(value, start, length-start);
+			}
 		}
 	}
 }

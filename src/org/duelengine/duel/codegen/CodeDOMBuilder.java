@@ -292,13 +292,22 @@ public class CodeDOMBuilder {
 	 * @param block
 	 */
 	private void buildCodeBlock(CodeBlockNode block) {
+		boolean htmlEncode = true;
+		if (block instanceof MarkupExpressionNode) {
+			htmlEncode = false;
+			block = new ExpressionNode(block.getValue());
+		}
+
 		String script = block.getClientCode();
 		CodeExpression codeExpr = this.translateExpression(script);
 		if (codeExpr == null) {
 			return;
 		}
 
-		CodeStatement writeStatement = CodeDOMUtility.emitExpression(codeExpr);
+		CodeStatement writeStatement =
+			htmlEncode ?
+			CodeDOMUtility.emitExpressionSafe(codeExpr) :
+			CodeDOMUtility.emitExpression(codeExpr);
 
 		this.flushBuffer();
 		CodeStatementCollection scope = this.scopeStack.peek();

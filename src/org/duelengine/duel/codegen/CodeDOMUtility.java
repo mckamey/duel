@@ -29,6 +29,18 @@ final class CodeDOMUtility {
 		return emitExpression(new CodeVariableReferenceExpression(varName));
 	}
 
+	public static CodeStatement emitExpressionSafe(CodeExpression expression) {
+		// this.htmlEncode(writer, expression);
+		return new CodeExpressionStatement(
+			new CodeMethodInvokeExpression(
+				new CodeThisReferenceExpression(),
+				"htmlEncode",
+				new CodeExpression[] {
+					new CodeVariableReferenceExpression("writer"),
+					expression
+				}));
+	}
+
 	public static CodeStatement emitExpression(CodeExpression expression) {
 		// writer.write(expression);
 		return new CodeExpressionStatement( 

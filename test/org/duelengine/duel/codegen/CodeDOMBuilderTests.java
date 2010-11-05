@@ -107,23 +107,24 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeThisReferenceExpression(),
+								"htmlEncode",
 								new CodeExpression[] {
+									new CodeVariableReferenceExpression("writer"),
 									new CodeVariableReferenceExpression("count")
 								}))
 					})
 			});
 
 		// flag the expression as having had parens
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(0).setHasParens(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
 		assertEquals(expected, actual);
 	}
 
-	//@Test
+	@Test
 	public void markupExpressionModelTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
@@ -134,7 +135,31 @@ public class CodeDOMBuilderTests {
 				new MarkupExpressionNode("model")
 			});
 
-		CodeTypeDeclaration expected = null;
+
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			null,
+			"foo",
+			new CodeMethod[] {
+				new CodeMethod(Void.class, "t_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Integer.class, "index"),
+						new CodeParameterDeclarationExpression(Integer.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodeVariableReferenceExpression("model")
+								}))
+					})
+			});
+
+		// flag the expression as having had parens
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(0).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
@@ -166,9 +191,10 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeThisReferenceExpression(),
+								"htmlEncode",
 								new CodeExpression[] {
+									new CodeVariableReferenceExpression("writer"),
 									new CodePropertyReferenceExpression(
 										new CodeVariableReferenceExpression("Math"),
 										new CodePrimitiveExpression("PI"))
@@ -176,24 +202,6 @@ public class CodeDOMBuilderTests {
 								}))
 					})
 			});
-
-		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
-
-		assertEquals(expected, actual);
-	}
-
-	//@Test
-	public void statementIndexTest() throws IOException {
-
-		ViewRootNode input = new ViewRootNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
-			},
-			new Node[] {
-				new StatementNode("bar(index);")
-			});
-
-		CodeTypeDeclaration expected = null;
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
