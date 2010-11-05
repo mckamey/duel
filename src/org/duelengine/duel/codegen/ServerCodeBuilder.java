@@ -168,24 +168,7 @@ public class ServerCodeBuilder {
 		CodeConditionStatement condition = new CodeConditionStatement();
 		scope.add(condition);
 
-		List<CodeMember> members = new SourceTranslator(this.viewType).translate(test);
-		if (members.size() == 1 && members.get(0) instanceof CodeMethod) {
-			condition.setCondition(CodeDOMUtility.inlineMethod((CodeMethod)members.get(0)));
-		}
-
-		if (condition.getCondition() == null && (members.size() > 0)) {
-			this.viewType.addAll(members);
-			condition.setCondition(
-				new CodeMethodInvokeExpression(
-					new CodeThisReferenceExpression(),
-					members.get(0).getName(),
-					new CodeExpression[] {
-						new CodeVariableReferenceExpression("writer"),
-						new CodeVariableReferenceExpression("model"),
-						new CodeVariableReferenceExpression("index"),
-						new CodeVariableReferenceExpression("count")
-					}));
-		}
+		condition.setCondition(this.translateExpression(test));
 
 		if (node.hasChildren()) {
 			this.scopeStack.push(condition.getTrueStatements());
@@ -197,6 +180,35 @@ public class ServerCodeBuilder {
 		}
 		
 		return condition.getFalseStatements();
+	}
+
+	private CodeExpression translateExpression(String script) {
+
+		// convert from JavaScript source to CodeDOM
+		List<CodeMember> members = new SourceTranslator(this.viewType).translate(script);
+
+		CodeExpression expression = null;
+		if (members.size() == 1 && members.get(0) instanceof CodeMethod) {
+			// first attempt to extract single expression (inlines the return)
+			expression = CodeDOMUtility.inlineMethod((CodeMethod)members.get(0));
+		}
+
+		if (expression == null && (members.size() > 0)) {
+			// add all CodeDOM members to viewType
+			this.viewType.addAll(members);
+
+			// have the expression be a method invocation
+			expression = new CodeMethodInvokeExpression(
+				new CodeThisReferenceExpression(),
+					members.get(0).getName(),
+					new CodeExpression[] {
+						new CodeVariableReferenceExpression("writer"),
+						new CodeVariableReferenceExpression("model"),
+						new CodeVariableReferenceExpression("index"),
+						new CodeVariableReferenceExpression("count")
+					});
+		}
+		return expression;
 	}
 
 	private void buildElement(ElementNode element)
@@ -276,7 +288,22 @@ public class ServerCodeBuilder {
 		return id;
 	}
 
+	/**
+	 * emits the values of code blocks
+	 * @param block
+	 */
 	private void buildCodeBlock(CodeBlockNode block) {
+		String script = block.getClientCode();
+		CodeExpression codeExpr = this.translateExpression(script);
+		if (codeExpr == null) {
+			return;
+		}
+
+		CodeStatement writeStatement = CodeDOMUtility.emitExpression(codeExpr);
+
+		this.flushBuffer();
+		CodeStatementCollection scope = this.scopeStack.peek();
+		scope.add(writeStatement);
 	}
 
 	/**
@@ -286,14 +313,13 @@ public class ServerCodeBuilder {
 	private void flushBuffer() {
 		StringBuffer sb = this.buffer.getBuffer();
 
-		// get the accumulated value
-		String value = sb.toString();
-
-		if (value == null || value.length() == 0) {
+		if (sb.length() < 1) {
 			return;
 		}
-
-		this.scopeStack.peek().add(CodeDOMUtility.emitLiteralValue(value));
+		
+		// get the accumulated value
+		CodeStatement emitLit = CodeDOMUtility.emitLiteralValue(sb.toString());
+		this.scopeStack.peek().add(emitLit);
 
 		// clear the buffer
 		sb.setLength(0);

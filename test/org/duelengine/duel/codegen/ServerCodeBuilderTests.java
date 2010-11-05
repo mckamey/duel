@@ -1,5 +1,6 @@
 package org.duelengine.duel.codegen;
 
+import java.io.IOException;
 import java.io.Writer;
 
 import org.junit.Test;
@@ -10,7 +11,7 @@ import org.duelengine.duel.codedom.*;
 public class ServerCodeBuilderTests {
 
 	@Test
-	public void stringSimpleTest() throws Exception {
+	public void stringSimpleTest() throws IOException {
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
@@ -31,7 +32,7 @@ public class ServerCodeBuilderTests {
 						new CodeParameterDeclarationExpression(Integer.class, "count")
 					},
 					new CodeStatement[] {
-						new CodeExpressionStatement( 
+						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression("writer"),
 								"write",
@@ -47,7 +48,7 @@ public class ServerCodeBuilderTests {
 	}
 
 	@Test
-	public void stringEscapeTest() throws Exception {
+	public void stringEscapeTest() throws IOException {
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
@@ -68,7 +69,7 @@ public class ServerCodeBuilderTests {
 						new CodeParameterDeclarationExpression(Integer.class, "count")
 					},
 					new CodeStatement[] {
-						new CodeExpressionStatement( 
+						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression("writer"),
 								"write",
@@ -83,8 +84,8 @@ public class ServerCodeBuilderTests {
 		assertEquals(expected, actual);
 	}
 
-	//@Test
-	public void expressionCountTest() throws Exception {
+	@Test
+	public void expressionCountTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -94,7 +95,31 @@ public class ServerCodeBuilderTests {
 				new ExpressionNode("count")
 			});
 
-		CodeTypeDeclaration expected = null;
+
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			null,
+			"foo",
+			new CodeMethod[] {
+				new CodeMethod(Void.class, "t_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Integer.class, "index"),
+						new CodeParameterDeclarationExpression(Integer.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodeVariableReferenceExpression("count")
+								}))
+					})
+			});
+
+		// flag the expression as having had parens
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(0).setHasParens(true);
 
 		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
 
@@ -102,7 +127,7 @@ public class ServerCodeBuilderTests {
 	}
 
 	//@Test
-	public void markupExpressionModelTest() throws Exception {
+	public void markupExpressionModelTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -120,7 +145,7 @@ public class ServerCodeBuilderTests {
 	}
 
 	//@Test
-	public void statementNoneTest() throws Exception {
+	public void statementNoneTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -138,7 +163,7 @@ public class ServerCodeBuilderTests {
 	}
 
 	//@Test
-	public void statementIndexTest() throws Exception {
+	public void statementIndexTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -156,7 +181,7 @@ public class ServerCodeBuilderTests {
 	}
 
 	@Test
-	public void conditionalBlockTest() throws Exception {
+	public void conditionalBlockTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -201,7 +226,7 @@ public class ServerCodeBuilderTests {
 						new CodeParameterDeclarationExpression(Integer.class, "count")
 					},
 					new CodeStatement[] {
-						new CodeExpressionStatement( 
+						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression("writer"),
 								"write",
@@ -214,7 +239,7 @@ public class ServerCodeBuilderTests {
 								new CodeVariableReferenceExpression("model"),
 								new CodePrimitiveExpression(0.0)),
 							new CodeStatement[] {
-								new CodeExpressionStatement( 
+								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
 										new CodeVariableReferenceExpression("writer"),
 										"write",
@@ -229,7 +254,7 @@ public class ServerCodeBuilderTests {
 										new CodeVariableReferenceExpression("model"),
 										new CodePrimitiveExpression(1.0)),
 									new CodeStatement[] {
-										new CodeExpressionStatement( 
+										new CodeExpressionStatement(
 											new CodeMethodInvokeExpression(
 												new CodeVariableReferenceExpression("writer"),
 												"write",
@@ -238,7 +263,7 @@ public class ServerCodeBuilderTests {
 												}))
 									},
 									new CodeStatement[] {
-										new CodeExpressionStatement( 
+										new CodeExpressionStatement(
 											new CodeMethodInvokeExpression(
 												new CodeVariableReferenceExpression("writer"),
 												"write",
@@ -247,7 +272,7 @@ public class ServerCodeBuilderTests {
 												}))
 									})
 							}),
-						new CodeExpressionStatement( 
+						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression("writer"),
 								"write",
@@ -267,7 +292,7 @@ public class ServerCodeBuilderTests {
 	}
 
 	@Test
-	public void attributesTest() throws Exception {
+	public void attributesTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -316,7 +341,7 @@ public class ServerCodeBuilderTests {
 						new CodeParameterDeclarationExpression(Integer.class, "count")
 					},
 					new CodeStatement[] {
-						new CodeExpressionStatement( 
+						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression("writer"),
 								"write",
@@ -332,7 +357,7 @@ public class ServerCodeBuilderTests {
 	}
 
 	@Test
-	public void namespaceTest() throws Exception {
+	public void namespaceTest() throws IOException {
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
@@ -353,7 +378,7 @@ public class ServerCodeBuilderTests {
 						new CodeParameterDeclarationExpression(Integer.class, "count")
 					},
 					new CodeStatement[] {
-						new CodeExpressionStatement( 
+						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression("writer"),
 								"write",
