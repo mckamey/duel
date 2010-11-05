@@ -75,6 +75,10 @@ public class SourceTranslator {
 				return this.visitFunction((FunctionNode)node);
 			case Token.BLOCK:
 				return this.visitBlock((Block)node);
+			case Token.GETPROP:
+				return this.visitProperty((PropertyGet)node);
+			case Token.GETELEM:
+				return this.visitProperty((ElementGet)node);
 			case Token.RETURN:
 				return this.visitReturn((ReturnStatement)node);
 			case Token.NAME:
@@ -102,6 +106,37 @@ public class SourceTranslator {
 
 				throw new IllegalArgumentException("Token not yet supported ("+node.getClass()+"):\n"+(node.debugPrint()));
 		}
+	}
+
+	private CodeObject visitProperty(ElementGet node) {
+		CodeObject target = this.visit(node.getTarget());
+		if (target instanceof CodeExpressionStatement) {
+			target = ((CodeExpressionStatement)target).getExpression();
+		} else if (target != null && !(target instanceof CodeExpression)) {
+			throw new IllegalArgumentException("Unexpected property target: "+target.getClass());
+		}
+
+		CodeObject property = this.visit(node.getElement());
+		if (property instanceof CodeExpressionStatement) {
+			property = ((CodeExpressionStatement)property).getExpression();
+		} else if (property != null && !(property instanceof CodeExpression)) {
+			throw new IllegalArgumentException("Unexpected property expression: "+property.getClass());
+		} 
+		
+		return new CodePropertyReferenceExpression((CodeExpression)target, (CodeExpression)property);
+	}
+
+	private CodeObject visitProperty(PropertyGet node) {
+		CodeObject target = this.visit(node.getTarget());
+		if (target instanceof CodeExpressionStatement) {
+			target = ((CodeExpressionStatement)target).getExpression();
+		} else if (target != null && !(target instanceof CodeExpression)) {
+			throw new IllegalArgumentException("Unexpected property target: "+target.getClass());
+		} 
+
+		CodeExpression property = new CodePrimitiveExpression(node.getProperty().getIdentifier());
+
+		return new CodePropertyReferenceExpression((CodeExpression)target, property);
 	}
 
 	private CodeObject visitBinaryOp(InfixExpression node, CodeBinaryOperatorType operator) {

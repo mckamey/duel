@@ -12,7 +12,7 @@ public class CodeVariableReferenceExpression extends CodeExpression {
 	}
 
 	public String getIdent() {
-		return ident;
+		return this.ident;
 	}
 
 	public void setIdent(String value) {
