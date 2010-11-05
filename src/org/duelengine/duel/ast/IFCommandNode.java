@@ -10,6 +10,7 @@ public class IFCommandNode extends CommandNode {
 	public static final String EXT_NAME = "else";
 	private static final String NAME = "$if";
 	private static final CommandName CMD = CommandName.IF;
+	private static final String TEST = "test";
 
 	public IFCommandNode() {
 		super(CMD, NAME, true);
@@ -31,6 +32,10 @@ public class IFCommandNode extends CommandNode {
 		super(CMD, NAME, true, attr, children);
 	}
 
+	public Node getTest() {
+		return this.getAttribute(TEST);
+	}
+	
 	@Override
 	public boolean isSelf(String tag) {
 		return EXT_NAME.equalsIgnoreCase(tag) || NAME.equalsIgnoreCase(tag);
@@ -50,13 +55,13 @@ public class IFCommandNode extends CommandNode {
 	@Override
 	public void setAttribute(String name, Node value) {
 		if (name == null ||
-			(!name.equalsIgnoreCase("test") &&
+			(!name.equalsIgnoreCase(TEST) &&
 			!name.equalsIgnoreCase("if"))) {
 			// TODO: Syntax error
 			return;
 		}
 
 		// normalize the attribute to test
-		super.setAttribute("test", value);
+		super.setAttribute(TEST, value);
 	}
 }

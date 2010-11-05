@@ -10,7 +10,7 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 	private int nextID;
 	private String typeName;
 	private String namespace;
-	private final List<CodeMethod> methods = new ArrayList<CodeMethod>();
+	private final List<CodeMember> members = new ArrayList<CodeMember>();
 
 	public CodeTypeDeclaration() {
 	}
@@ -25,7 +25,7 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 
 		if (methods != null) {
 			for (CodeMethod method : methods) {
-				this.addMethod(method);
+				this.add(method);
 			}
 		}
 	}
@@ -46,22 +46,26 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 		return this.namespace;
 	}
 
+	/**
+	 * Contains the output methods. The first one is the entry point.
+	 * @return
+	 */
+	public List<CodeMember> getMembers() {
+		return this.members;
+	}
+
+	public void add(CodeMember member) {
+		this.members.add(member);
+	}
+
+	public void addAll(Collection<? extends CodeMember> members) {
+		this.members.addAll(members);
+	}
+
 	@Override
 	public String nextID() {
 		// generate a unique name
 		return "t_"+(++this.nextID);
-	}
-
-	/**
-	 * The output methods. The first one is the entry point.
-	 * @return
-	 */
-	public Iterable<CodeMethod> getMethods() {
-		return this.methods;
-	}
-
-	public void addMethod(CodeMethod method) {
-		this.methods.add(method);
 	}
 
 	@Override
@@ -80,14 +84,14 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 			return false;
 		}
 
-		int length = this.methods.size();
-		if (length != that.methods.size()) {
+		int length = this.members.size();
+		if (length != that.members.size()) {
 			return false;
 		}
 
 		for (int i=0; i<length; i++) {
-			CodeMethod thisMethod = this.methods.get(i);
-			CodeMethod thatMethod = that.methods.get(i);
+			CodeMember thisMethod = this.members.get(i);
+			CodeMember thatMethod = that.members.get(i);
 			if (thisMethod == null ? thatMethod != null : !thisMethod.equals(thatMethod)) {
 				return false;
 			}
@@ -104,8 +108,8 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 		if (this.typeName != null) {
 			hash = hash * HASH_PRIME + this.typeName.hashCode();
 		}
-		if (this.methods != null) {
-			hash = hash * HASH_PRIME + this.methods.hashCode();
+		if (this.members != null) {
+			hash = hash * HASH_PRIME + this.members.hashCode();
 		}
 		return hash;
 	}

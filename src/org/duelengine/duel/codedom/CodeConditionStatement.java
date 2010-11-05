@@ -56,7 +56,7 @@ public class CodeConditionStatement extends CodeStatement {
 		if (!this.falseStatements.equals(that.falseStatements)) {
 			return false;
 		}
-		return super.equals(that);
+		return true;
 	}
 
 	@Override

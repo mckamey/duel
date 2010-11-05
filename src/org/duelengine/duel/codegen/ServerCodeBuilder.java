@@ -11,6 +11,7 @@ public class ServerCodeBuilder {
 	private final HTMLFormatter formatter;
 	private final StringWriter buffer;
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
+	private CodeTypeDeclaration viewType;
 
 	public ServerCodeBuilder() {
 		this(null);
@@ -23,31 +24,35 @@ public class ServerCodeBuilder {
 	}
 
 	public CodeTypeDeclaration build(ViewRootNode viewNode) throws IOException {
-		CodeTypeDeclaration viewType = new CodeTypeDeclaration();
+		this.viewType = new CodeTypeDeclaration();
+		try {
+			String fullName = viewNode.getName();
+			int lastDot = fullName.lastIndexOf('.');
+			if (lastDot > 0) {
+				this.viewType.setNamespace(fullName.substring(0, lastDot));
+			}
+			this.viewType.setTypeName(fullName.substring(lastDot+1));
+	
+			CodeMethod method = new CodeMethod();
+			method.setName(this.viewType.nextID());
+			method.addParameter(Writer.class, "writer");
+			method.addParameter(Object.class, "model");
+			method.addParameter(Integer.class, "index");
+			method.addParameter(Integer.class, "count");
+			this.viewType.add(method);
+			this.scopeStack.add(method.getStatements());
+	
+			for (Node node : viewNode.getChildren()) {
+				this.buildNode(node);
+			}
+	
+			this.flushBuffer();
+	
+			return this.viewType;
 
-		String fullName = viewNode.getName();
-		int lastDot = fullName.lastIndexOf('.');
-		if (lastDot > 0) {
-			viewType.setNamespace(fullName.substring(0, lastDot));
+		} finally {
+			this.viewType = null;
 		}
-		viewType.setTypeName(fullName.substring(lastDot+1));
-
-		CodeMethod method = new CodeMethod();
-		method.setName(viewType.nextID());
-		method.addParameter(Writer.class, "writer");
-		method.addParameter(Object.class, "model");
-		method.addParameter(Integer.class, "index");
-		method.addParameter(Integer.class, "count");
-		viewType.addMethod(method);
-		this.scopeStack.add(method.getStatements());
-
-		for (Node node : viewNode.getChildren()) {
-			this.buildNode(node);
-		}
-
-		this.flushBuffer();
-
-		return viewType;
 	}
 
 	private void buildNode(Node node) throws IOException {
@@ -58,7 +63,6 @@ public class ServerCodeBuilder {
 		}
 
 		if (node instanceof CommandNode) {
-			this.flushBuffer();
 
 			CommandNode command = (CommandNode)node;
 			switch (command.getCommand()) {
@@ -66,7 +70,7 @@ public class ServerCodeBuilder {
 					this.buildConditional((XORCommandNode)node);
 					return;
 				case IF:
-					this.buildConditional((IFCommandNode)node, false);
+					this.buildConditional((IFCommandNode)node, this.scopeStack.peek());
 					return;
 				case FOR:
 					this.buildLoop((FORCommandNode)node);
@@ -114,24 +118,85 @@ public class ServerCodeBuilder {
 	}
 
 	private void buildLoop(FORCommandNode node) {
+		this.flushBuffer();
 		CodeStatementCollection scope = this.scopeStack.peek();
 
 		CodeIterationStatement loop = new CodeIterationStatement();
 		scope.add(loop);
 	}
 
-	private void buildConditional(XORCommandNode node) {
-		boolean asElse = false;
+	private void buildConditional(XORCommandNode node)
+		throws IOException {
+
+		CodeStatementCollection scope = this.scopeStack.peek();
+
 		for (Node conditional : node.getChildren()) {
 			if (conditional instanceof IFCommandNode) {
-				this.buildConditional((IFCommandNode)conditional, asElse);
-				asElse = true;
+				scope = this.buildConditional((IFCommandNode)conditional, scope);
 			}
 		}
 	}
 
-	private void buildConditional(IFCommandNode node, boolean asElse) {
+	private CodeStatementCollection buildConditional(IFCommandNode node, CodeStatementCollection scope)
+		throws IOException {
+
+		this.flushBuffer();
+
+		String test = null;
+		Node testNode = node.getTest();
+		if (testNode instanceof CodeBlockNode) {
+			test = ((CodeBlockNode)testNode).getClientCode();
+		} else if (testNode instanceof LiteralNode) {
+			test = ((LiteralNode)testNode).getValue();
+		} else if (testNode != null) {
+			throw new IllegalArgumentException("Unexpected conditional test attribute: "+testNode.getClass());
+		}
+
+		if (test == null || test.length() == 0) {
+			// no condition block needed
+			if (node.hasChildren()) {
+				this.scopeStack.push(scope);
+				for (Node child : node.getChildren()) {
+					this.buildNode(child);
+				}
+				this.flushBuffer();
+				this.scopeStack.pop();
+			}
+			return scope;
+		}
+
+		CodeConditionStatement condition = new CodeConditionStatement();
+		scope.add(condition);
+
+		List<CodeMember> members = new SourceTranslator(this.viewType).translate(test);
+		if (members.size() == 1 && members.get(0) instanceof CodeMethod) {
+			condition.setCondition(CodeDOMUtility.inlineMethod((CodeMethod)members.get(0)));
+		}
+
+		if (condition.getCondition() == null && (members.size() > 0)) {
+			this.viewType.addAll(members);
+			condition.setCondition(
+				new CodeMethodInvokeExpression(
+					new CodeThisReferenceExpression(),
+					members.get(0).getName(),
+					new CodeExpression[] {
+						new CodeVariableReferenceExpression("writer"),
+						new CodeVariableReferenceExpression("model"),
+						new CodeVariableReferenceExpression("index"),
+						new CodeVariableReferenceExpression("count")
+					}));
+		}
+
+		if (node.hasChildren()) {
+			this.scopeStack.push(condition.getTrueStatements());
+			for (Node child : node.getChildren()) {
+				this.buildNode(child);
+			}
+			this.flushBuffer();
+			this.scopeStack.pop();
+		}
 		
+		return condition.getFalseStatements();
 	}
 
 	private void buildElement(ElementNode element)

@@ -25,7 +25,7 @@ public class CodeStatementCollection implements Iterable<CodeStatement>, Identif
 		}
 	}
 
-	public Iterable<CodeStatement> getStatements() {
+	public List<CodeStatement> getStatements() {
 		return this.statements;
 	}
 

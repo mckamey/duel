@@ -206,10 +206,60 @@ public class ServerCodeBuilderTests {
 								new CodeVariableReferenceExpression("writer"),
 								"write",
 								new CodeExpression[] {
-									new CodePrimitiveExpression("<div></div>")
+									new CodePrimitiveExpression("<div>")
+								})),
+						new CodeConditionStatement(
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.IDENTITY_EQUALITY,
+								new CodeVariableReferenceExpression("model"),
+								new CodePrimitiveExpression(0.0)),
+							new CodeStatement[] {
+								new CodeExpressionStatement( 
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("writer"),
+										"write",
+										new CodeExpression[] {
+											new CodePrimitiveExpression("zero")
+										}))
+							},
+							new CodeStatement[] {
+								new CodeConditionStatement(
+									new CodeBinaryOperatorExpression(
+										CodeBinaryOperatorType.IDENTITY_EQUALITY,
+										new CodeVariableReferenceExpression("model"),
+										new CodePrimitiveExpression(1.0)),
+									new CodeStatement[] {
+										new CodeExpressionStatement( 
+											new CodeMethodInvokeExpression(
+												new CodeVariableReferenceExpression("writer"),
+												"write",
+												new CodeExpression[] {
+													new CodePrimitiveExpression("one")
+												}))
+									},
+									new CodeStatement[] {
+										new CodeExpressionStatement( 
+											new CodeMethodInvokeExpression(
+												new CodeVariableReferenceExpression("writer"),
+												"write",
+												new CodeExpression[] {
+													new CodePrimitiveExpression("many")
+												}))
+									})
+							}),
+						new CodeExpressionStatement( 
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("</div>")
 								}))
 					})
 			});
+
+		// flag the conditions as having had parens
+		((CodeConditionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(1)).getCondition().setHasParens(true);
+		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
 
 		CodeTypeDeclaration actual = new ServerCodeBuilder().build(input);
 
