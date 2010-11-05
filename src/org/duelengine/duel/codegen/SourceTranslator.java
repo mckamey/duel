@@ -108,6 +108,8 @@ public class SourceTranslator {
 				return CodePrimitiveExpression.TRUE;
 			case Token.NULL:
 				return CodePrimitiveExpression.NULL;
+			case Token.CALL:
+				return this.visitFunctionCall((FunctionCall)node);
 			case Token.HOOK:
 				return this.visitTernary((ConditionalExpression)node);
 			case Token.THIS:
@@ -126,7 +128,7 @@ public class SourceTranslator {
 				throw new IllegalArgumentException("Token not yet supported ("+node.getClass()+"):\n"+(node.debugPrint()));
 		}
 	}
-	
+
 	private CodeObject visitProperty(ElementGet node) {
 		CodeExpression target = this.visitExpression(node.getTarget());
 		CodeExpression property = this.visitExpression(node.getElement());
@@ -274,6 +276,16 @@ public class SourceTranslator {
 		CodeExpression value = this.visitExpression(node.getReturnValue());
 
 		return new CodeMethodReturnStatement(value);
+	}
+	
+	private CodeObject visitFunctionCall(FunctionCall node) {
+		List<AstNode> argNodes = node.getArguments();
+		CodeExpression[] args = new CodeExpression[argNodes.size()];
+		for (int i=0, length=args.length; i<length; i++) {
+			args[i] = this.visitExpression(argNodes.get(i));
+		}
+
+		return new CodeMethodInvokeExpression(this.visitExpression(node.getTarget()), null, args);
 	}
 
 	private CodeStatementBlock visitBlock(Block block) {

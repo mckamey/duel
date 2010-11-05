@@ -61,6 +61,34 @@ public class SourceTranslatorTests {
 	}
 
 	@Test
+	public void translateConcatStringsTest() {
+		String input = "function(model) { return \"Lorem ipsum\" + model; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				Object.class,
+				"t_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(Writer.class, "writer"),
+					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Integer.class, "index"),
+					new CodeParameterDeclarationExpression(Integer.class, "count")
+				},
+				new CodeStatement[] {
+					new CodeMethodReturnStatement(
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.ADD,
+							new CodePrimitiveExpression("Lorem ipsum"),
+							new CodeVariableReferenceExpression("model")))
+				});
+
+		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
 	public void translateParensBinaryOpNumbersTest() {
 		String input = "function(model, index, count) { return (count >= 1); }";
 
@@ -107,6 +135,37 @@ public class SourceTranslatorTests {
 						new CodePropertyReferenceExpression(
 							new CodeVariableReferenceExpression("model"),
 							new CodePrimitiveExpression("foo")))
+				});
+
+		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateObjectMethodCallTest() {
+		String input = "function(model) { return model.substr(5, 2); }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				Object.class,
+				"t_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(Writer.class, "writer"),
+					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Integer.class, "index"),
+					new CodeParameterDeclarationExpression(Integer.class, "count")
+				},
+				new CodeStatement[] {
+					new CodeMethodReturnStatement(
+						new CodeMethodInvokeExpression(
+							new CodePropertyReferenceExpression(
+								new CodeVariableReferenceExpression("model"),
+								new CodePrimitiveExpression("substr")), null, new CodeExpression[] {
+									new CodePrimitiveExpression(5.0),
+									new CodePrimitiveExpression(2.0)
+								}))
 				});
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
