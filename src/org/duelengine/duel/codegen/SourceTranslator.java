@@ -64,6 +64,19 @@ public class SourceTranslator {
 		}
 	}
 
+	private CodeExpression visitExpression(AstNode node) {
+		CodeObject value = this.visit(node);
+
+		if (value instanceof CodeExpressionStatement) {
+			value = ((CodeExpressionStatement)value).getExpression();
+
+		} else if (value != null && !(value instanceof CodeExpression)) {
+			throw new IllegalArgumentException("Expected an expression: "+value.getClass());
+		}
+
+		return (CodeExpression)value;
+	}
+
 	private CodeObject visit(AstNode node) throws IllegalArgumentException {
 		if (node == null) {
 			return null;
@@ -95,69 +108,44 @@ public class SourceTranslator {
 				return CodePrimitiveExpression.TRUE;
 			case Token.NULL:
 				return CodePrimitiveExpression.NULL;
+			case Token.HOOK:
+				return this.visitTernary((ConditionalExpression)node);
 			case Token.THIS:
 				// TODO: evaluate if will allow custom extensions
 				throw new IllegalArgumentException("'this' not supported");
 			default:
-				CodeBinaryOperatorType operator = this.mapBinaryOperator(tokenType);
-				if (operator != CodeBinaryOperatorType.NONE) {
-					return this.visitBinaryOp((InfixExpression)node, operator);
+				CodeBinaryOperatorType binary = this.mapBinaryOperator(tokenType);
+				if (binary != CodeBinaryOperatorType.NONE) {
+					return this.visitBinaryOp((InfixExpression)node, binary);
+				}
+				CodeUnaryOperatorType unary = this.mapUnaryOperator(tokenType);
+				if (unary != CodeUnaryOperatorType.NONE) {
+					return this.visitUnaryOp((UnaryExpression)node, unary);
 				}
 
 				throw new IllegalArgumentException("Token not yet supported ("+node.getClass()+"):\n"+(node.debugPrint()));
 		}
 	}
-
+	
 	private CodeObject visitProperty(ElementGet node) {
-		CodeObject target = this.visit(node.getTarget());
-		if (target instanceof CodeExpressionStatement) {
-			target = ((CodeExpressionStatement)target).getExpression();
-		} else if (target != null && !(target instanceof CodeExpression)) {
-			throw new IllegalArgumentException("Unexpected property target: "+target.getClass());
-		}
-
-		CodeObject property = this.visit(node.getElement());
-		if (property instanceof CodeExpressionStatement) {
-			property = ((CodeExpressionStatement)property).getExpression();
-		} else if (property != null && !(property instanceof CodeExpression)) {
-			throw new IllegalArgumentException("Unexpected property expression: "+property.getClass());
-		} 
+		CodeExpression target = this.visitExpression(node.getTarget());
+		CodeExpression property = this.visitExpression(node.getElement());
 		
-		return new CodePropertyReferenceExpression((CodeExpression)target, (CodeExpression)property);
+		return new CodePropertyReferenceExpression(target, property);
 	}
 
 	private CodeObject visitProperty(PropertyGet node) {
-		CodeObject target = this.visit(node.getTarget());
-		if (target instanceof CodeExpressionStatement) {
-			target = ((CodeExpressionStatement)target).getExpression();
-		} else if (target != null && !(target instanceof CodeExpression)) {
-			throw new IllegalArgumentException("Unexpected property target: "+target.getClass());
-		} 
-
+		CodeExpression target = this.visitExpression(node.getTarget());
 		CodeExpression property = new CodePrimitiveExpression(node.getProperty().getIdentifier());
 
 		return new CodePropertyReferenceExpression((CodeExpression)target, property);
 	}
 
-	private CodeObject visitBinaryOp(InfixExpression node, CodeBinaryOperatorType operator) {
+	private CodeExpression visitBinaryOp(InfixExpression node, CodeBinaryOperatorType operator) {
+		CodeExpression left = this.visitExpression(node.getLeft());
+		CodeExpression right = this.visitExpression(node.getRight());
 
-		CodeObject left = this.visit(node.getLeft());
-
-		if (left instanceof CodeExpressionStatement) {
-			left = ((CodeExpressionStatement)left).getExpression();
-		} else if (left != null && !(left instanceof CodeExpression)) {
-			throw new IllegalArgumentException("Unexpected binary expression: "+left.getClass());
-		}
-
-		CodeObject right = this.visit(node.getRight());
-
-		if (right instanceof CodeExpressionStatement) {
-			right = ((CodeExpressionStatement)right).getExpression();
-		} else if (right != null && !(right instanceof CodeExpression)) {
-			throw new IllegalArgumentException("Unexpected binary expression: "+right.getClass());
-		}
-
-		return new CodeBinaryOperatorExpression(operator, (CodeExpression)left, (CodeExpression)right);
+		return new CodeBinaryOperatorExpression(operator, left, right);
 	}
 
 	private CodeBinaryOperatorType mapBinaryOperator(int tokenType) {
@@ -177,10 +165,54 @@ public class SourceTranslator {
 			case Token.SHNE:
 				return CodeBinaryOperatorType.IDENTITY_INEQUALITY;
 			default:
+				// TODO;.
 				return CodeBinaryOperatorType.NONE;
 		}
 	}
-	
+
+	private CodeExpression visitUnaryOp(UnaryExpression node, CodeUnaryOperatorType operator) {
+
+		if (node.isPostfix()) {
+			switch (operator) {
+				case PRE_DECREMENT:
+					operator = CodeUnaryOperatorType.POST_DECREMENT;
+					break;
+				case PRE_INCREMENT:
+					operator = CodeUnaryOperatorType.POST_INCREMENT;
+					break;
+			}
+		}
+
+		CodeExpression operand = this.visitExpression(node.getOperand());
+
+		return new CodeUnaryOperatorExpression(operator, (CodeExpression)operand);
+	}
+
+	private CodeUnaryOperatorType mapUnaryOperator(int tokenType) {
+		switch (tokenType) {
+			case Token.NEG:
+				return CodeUnaryOperatorType.NEGATION;
+			case Token.POS:
+				return CodeUnaryOperatorType.POSITIVE;
+			case Token.BITNOT:
+				return CodeUnaryOperatorType.BITWISE_NEGATION;
+			case Token.INC:
+				return CodeUnaryOperatorType.PRE_INCREMENT;
+			case Token.DEC:
+				return CodeUnaryOperatorType.PRE_DECREMENT;
+			default:
+				return CodeUnaryOperatorType.NONE;
+		}
+	}
+
+	private CodeObject visitTernary(ConditionalExpression node) {
+		CodeExpression testExpr = this.visitExpression(node.getTestExpression());
+		CodeExpression trueExpr = this.visitExpression(node.getTrueExpression());
+		CodeExpression falseExpr = this.visitExpression(node.getFalseExpression());
+
+		return new CodeTernaryOperatorExpression(testExpr, trueExpr, falseExpr);
+	}
+
 	private CodeObject visitVarRef(Name node) {
 		String ident = node.getIdentifier();
 
@@ -239,23 +271,9 @@ public class SourceTranslator {
 	}
 
 	private CodeMethodReturnStatement visitReturn(ReturnStatement node) {
-		CodeObject value = this.visit(node.getReturnValue());
+		CodeExpression value = this.visitExpression(node.getReturnValue());
 
-		// TODO: evaluate situations where not inlining methods
-
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof CodeExpression) {
-			return new CodeMethodReturnStatement((CodeExpression)value);
-		}
-
-		if (value instanceof CodeExpressionStatement) {
-			return new CodeMethodReturnStatement(((CodeExpressionStatement)value).getExpression());
-		}
-
-		throw new IllegalArgumentException("Unexpected return value: "+value.getClass());
+		return new CodeMethodReturnStatement(value);
 	}
 
 	private CodeStatementBlock visitBlock(Block block) {
