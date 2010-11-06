@@ -2,6 +2,7 @@ package org.duelengine.duel.codegen;
 
 import java.io.*;
 import java.util.*;
+
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 
@@ -33,26 +34,41 @@ public class CodeDOMBuilder {
 			}
 			this.viewType.setTypeName(fullName.substring(lastDot+1));
 
-			CodeMethod method = new CodeMethod();
-			method.setName(this.viewType.nextID());
-			method.addParameter(Writer.class, "writer");
-			method.addParameter(Object.class, "model");
-			method.addParameter(Integer.class, "index");
-			method.addParameter(Integer.class, "count");
-			this.viewType.add(method);
-			this.scopeStack.add(method.getStatements());
+			CodeMethod method = this.buildBindMethod(viewNode.getChildren());
 
-			for (Node node : viewNode.getChildren()) {
-				this.buildNode(node);
-			}
-
-			this.flushBuffer();
+			// TODO: hook up entry point
 
 			return this.viewType;
 
 		} finally {
 			this.viewType = null;
 		}
+	}
+
+	private CodeMethod buildBindMethod(List<Node> content) throws IOException {
+
+		CodeMethod method = new CodeMethod(
+			Void.class,
+			this.viewType.nextID(),
+			new CodeParameterDeclarationExpression[] {
+				new CodeParameterDeclarationExpression(Writer.class, "writer"),
+				new CodeParameterDeclarationExpression(Object.class, "model"),
+				new CodeParameterDeclarationExpression(int.class, "index"),
+				new CodeParameterDeclarationExpression(int.class, "count")
+			},
+			null);
+
+		this.viewType.add(method);
+
+		this.flushBuffer();
+		this.scopeStack.push(method.getStatements());
+		for (Node node : content) {
+			this.buildNode(node);
+		}
+		this.flushBuffer();
+		this.scopeStack.pop();
+
+		return method;
 	}
 
 	private void buildNode(Node node) throws IOException {
@@ -72,7 +88,7 @@ public class CodeDOMBuilder {
 					this.buildConditional((IFCommandNode)node, this.scopeStack.peek());
 					return;
 				case FOR:
-					this.buildLoop((FORCommandNode)node);
+					this.buildIteration((FORCommandNode)node);
 					return;
 				case CALL:
 				case PART:
@@ -116,12 +132,90 @@ public class CodeDOMBuilder {
 		}
 	}
 
-	private void buildLoop(FORCommandNode node) {
-		this.flushBuffer();
+	private void buildIteration(FORCommandNode node) throws IOException {
+		if (!node.hasChildren()) {
+			// no content to emit so can skip entire loop
+			return;
+		}
+
+		// parent scope
 		CodeStatementCollection scope = this.scopeStack.peek();
 
-		CodeIterationStatement loop = new CodeIterationStatement();
-		scope.add(loop);
+		// build a helper method to hold the inner content
+		CodeMethod innerBind = this.buildBindMethod(node.getChildren());
+
+		// the collection to iterate over
+		CodeVariableDeclarationStatement collectionDecl =
+			new CodeVariableDeclarationStatement(
+				Collection.class,
+				scope.nextID(),
+				new CodeMethodInvokeExpression(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"asIterable",
+						new CodeExpression[] {
+							new CodeVariableReferenceExpression("model")
+						}),
+					"iterator",
+					null));
+		scope.add(collectionDecl);
+
+		// the current index
+		CodeVariableDeclarationStatement indexDecl =
+			new CodeVariableDeclarationStatement(
+				int.class,
+				scope.nextID(),
+				new CodePrimitiveExpression(0));
+		scope.add(indexDecl);
+
+		// the item count
+		CodeVariableDeclarationStatement countDecl =
+			new CodeVariableDeclarationStatement(
+				int.class,
+				scope.nextID(),
+				new CodeMethodInvokeExpression(
+					new CodeVariableReferenceExpression(collectionDecl.getName()),
+					"size",
+					null));
+		scope.add(countDecl);
+
+		// the iterator (embedded in for init)
+		CodeVariableDeclarationStatement iteratorDecl =
+			new CodeVariableDeclarationStatement(
+				Iterator.class,
+				scope.nextID(),
+				new CodeMethodInvokeExpression(
+					new CodeVariableReferenceExpression(collectionDecl.getName()),
+					"iterator",
+					null));
+
+		// the for loop block
+		scope.add(
+			new CodeIterationStatement(
+				iteratorDecl,// initStatement
+				new CodeMethodInvokeExpression(
+					new CodeVariableReferenceExpression(iteratorDecl.getName()),
+					"hasNext",
+					null),// testExpression
+				new CodeExpressionStatement(
+					new CodeUnaryOperatorExpression(
+						CodeUnaryOperatorType.POST_INCREMENT,
+						new CodeVariableReferenceExpression(indexDecl.getName()))),// incrementStatement
+				new CodeStatement[] {
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeThisReferenceExpression(),
+							innerBind.getName(),
+							new CodeExpression[] {
+								new CodeVariableReferenceExpression("writer"),
+								new CodeMethodInvokeExpression(
+									new CodeVariableReferenceExpression(iteratorDecl.getName()),
+									"next",
+									null),
+								new CodeVariableReferenceExpression(indexDecl.getName()),
+								new CodeVariableReferenceExpression(countDecl.getName())
+							}))
+				}));
 	}
 
 	private void buildConditional(XORCommandNode node)

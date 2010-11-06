@@ -30,6 +30,15 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeStatement emitExpressionSafe(CodeExpression expression) {
+		Class<?> exprType = expression.getResultType();
+		if (exprType.equals(Boolean.class) ||
+			Number.class.isAssignableFrom(exprType) ||
+			(exprType.isPrimitive() && !exprType.equals(char.class))) {
+
+			// can optimize based on static analysis
+			return emitExpression(expression);
+		}
+			
 		// this.htmlEncode(writer, expression);
 		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(

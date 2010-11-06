@@ -2,6 +2,7 @@ package org.duelengine.duel.runtime;
 
 import java.io.*;
 import java.util.*;
+
 import org.duelengine.duel.codegen.HTMLFormatter;
 
 /**
@@ -56,21 +57,30 @@ public abstract class AbstractView {
 	}
 
 	/**
-	 * Adapts any Object to Iterable
+	 * Adapts any Object to Iterable with size()
 	 * @param model
 	 * @return
 	 */
-	protected Iterable<?> asIterable(Object model) {
+	protected Collection<?> asIterable(Object model) {
 
-		if (model instanceof Iterable<?>) {
-			return (Iterable<?>)model;
+		if (model instanceof Collection<?>) {
+			return (Collection<?>)model;
 		}
 
 		if (model instanceof Object[]) {
 			return new ArrayIterable((Object[])model);
 		}
 
-		// null is okay
+		if (model instanceof Iterable<?>) {
+			// unfortunate but we need the size
+			List<Object> list = new LinkedList<Object>();
+			for (Object item : (Iterable<?>)model) {
+				list.add(item);
+			}
+			return list;
+		}
+
+		// null is allowed
 		return new SingleIterable(model);
 	}
 

@@ -17,8 +17,8 @@ public class CodeDOMUtilityTests {
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
-					new CodeParameterDeclarationExpression(Integer.class, "index"),
-					new CodeParameterDeclarationExpression(Integer.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("model"))
@@ -39,8 +39,8 @@ public class CodeDOMUtilityTests {
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
-					new CodeParameterDeclarationExpression(Integer.class, "index"),
-					new CodeParameterDeclarationExpression(Integer.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(new CodePrimitiveExpression("hello world."))
@@ -61,8 +61,8 @@ public class CodeDOMUtilityTests {
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
-					new CodeParameterDeclarationExpression(Integer.class, "index"),
-					new CodeParameterDeclarationExpression(Integer.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count")
 				},
 				new CodeStatement[] {
 					new CodeVariableDeclarationStatement(

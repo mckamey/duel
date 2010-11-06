@@ -196,6 +196,43 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
+	public void iterationTest() throws Exception {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new FORCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("each", new ExpressionNode("model.items"))
+						},
+						new Node[] {
+							new LiteralNode("item "),
+							new ExpressionNode("index")
+						})
+				})
+			});
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel(\n"+
+			"\t[\"div\",\n"+
+			"\t\t[\"$for\", { \"each\" : function(model) { return (model.items); } },\n"+
+			"\t\t\t\"item \",\n"+
+			"\t\t\tfunction(model, index) { return (index); }\n"+
+			"\t\t]\n"+
+			"\t]);\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void attributesTest() throws Exception {
 
 		ViewRootNode input = new ViewRootNode(

@@ -22,7 +22,7 @@ public class CodeVariableReferenceExpression extends CodeExpression {
 	@Override
 	public Class<?> getResultType() {
 		if (this.ident != null && (this.ident.equals("index") || this.ident.equals("count"))) {
-			return Integer.class;
+			return int.class;
 		}
 
 		return Object.class;

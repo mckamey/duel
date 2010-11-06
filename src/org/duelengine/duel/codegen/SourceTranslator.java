@@ -287,8 +287,8 @@ public class SourceTranslator {
 
 			method.addParameter(Writer.class, "writer");
 			method.addParameter(Object.class, "model");
-			method.addParameter(Integer.class, "index");
-			method.addParameter(Integer.class, "count");
+			method.addParameter(int.class, "index");
+			method.addParameter(int.class, "count");
 
 		} else {
 			// TODO: extract parameter names / types

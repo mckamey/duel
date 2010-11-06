@@ -1,6 +1,8 @@
 package org.duelengine.duel.codegen;
 
 import java.io.*;
+import java.util.*;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.duelengine.duel.ast.*;
@@ -26,8 +28,8 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
-						new CodeParameterDeclarationExpression(Integer.class, "index"),
-						new CodeParameterDeclarationExpression(Integer.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -63,8 +65,8 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
-						new CodeParameterDeclarationExpression(Integer.class, "index"),
-						new CodeParameterDeclarationExpression(Integer.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -101,8 +103,49 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
-						new CodeParameterDeclarationExpression(Integer.class, "index"),
-						new CodeParameterDeclarationExpression(Integer.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodeVariableReferenceExpression("count")
+								}))
+					})
+			});
+
+		// flag the expression as having had parens
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(0).setHasParens(true);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void expressionModelTest() throws IOException {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new Node[] {
+				new ExpressionNode("model")
+			});
+
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			null,
+			"foo",
+			new CodeMethod[] {
+				new CodeMethod(Void.class, "t_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -111,7 +154,7 @@ public class CodeDOMBuilderTests {
 								"htmlEncode",
 								new CodeExpression[] {
 									new CodeVariableReferenceExpression("writer"),
-									new CodeVariableReferenceExpression("count")
+									new CodeVariableReferenceExpression("model")
 								}))
 					})
 			});
@@ -144,8 +187,8 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
-						new CodeParameterDeclarationExpression(Integer.class, "index"),
-						new CodeParameterDeclarationExpression(Integer.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -185,8 +228,8 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
-						new CodeParameterDeclarationExpression(Integer.class, "index"),
-						new CodeParameterDeclarationExpression(Integer.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -250,8 +293,8 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
-						new CodeParameterDeclarationExpression(Integer.class, "index"),
-						new CodeParameterDeclarationExpression(Integer.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -358,8 +401,8 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
-						new CodeParameterDeclarationExpression(Integer.class, "index"),
-						new CodeParameterDeclarationExpression(Integer.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -422,6 +465,136 @@ public class CodeDOMBuilderTests {
 	}
 
 	@Test
+	public void iterationTest() throws IOException {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("example"))
+			},
+			new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new FORCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("each", new ExpressionNode("model.items"))
+						},
+						new Node[] {
+							new LiteralNode("item "),
+							new ExpressionNode("index")
+						})
+				})
+			});
+
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			null,
+			"example",
+			new CodeMethod[] {
+				new CodeMethod(Void.class, "t_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("<div>")
+								})),
+						new CodeVariableDeclarationStatement(
+							Collection.class,
+							"t_1",// collection
+							new CodeMethodInvokeExpression(
+								new CodeThisReferenceExpression(),
+								"asIterable",
+								new CodeExpression[] {
+									new CodeVariableReferenceExpression("model")
+								})),
+						new CodeVariableDeclarationStatement(
+							int.class,
+							"t_2",// index
+							new CodePrimitiveExpression(0)),
+						new CodeVariableDeclarationStatement(
+							int.class,
+							"t_3",// count
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("t_1"),
+								"size",
+								null)),
+						new CodeIterationStatement(
+							new CodeVariableDeclarationStatement(
+								Iterator.class,
+								"t_4",
+								new CodeMethodInvokeExpression(
+									new CodeVariableReferenceExpression("t_1"),
+									"iterator",
+									null)),// initStatement
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("t_4"),
+								"hasNext",
+								null),// testExpression
+							new CodeExpressionStatement(
+								new CodeUnaryOperatorExpression(
+									CodeUnaryOperatorType.POST_INCREMENT,
+									new CodeVariableReferenceExpression("t_2"))),// incrementStatement
+							new CodeStatement[] {
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeThisReferenceExpression(),
+										"t_2",
+										new CodeExpression[] {
+											new CodeVariableReferenceExpression("writer"),
+											new CodeMethodInvokeExpression(
+												new CodeVariableReferenceExpression("t_4"),
+												"next",
+												null),
+											new CodeVariableReferenceExpression("t_2"),
+											new CodeVariableReferenceExpression("t_3")
+										}))
+							}),
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("</div>")
+								}))
+					}),
+					new CodeMethod(Void.class, "t_2",
+							new CodeParameterDeclarationExpression[] {
+								new CodeParameterDeclarationExpression(Writer.class, "writer"),
+								new CodeParameterDeclarationExpression(Object.class, "model"),
+								new CodeParameterDeclarationExpression(int.class, "index"),
+								new CodeParameterDeclarationExpression(int.class, "count")
+							},
+							new CodeStatement[] {
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("writer"),
+										"write",
+										new CodeExpression[] {
+											new CodePrimitiveExpression("item ")
+										})),
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("writer"),
+										"write",
+										new CodeExpression[] {
+											new CodeVariableReferenceExpression("index")
+										}))
+					})
+			});
+
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().getStatements().get(1)).getExpression()).getArguments().get(0).setHasParens(true);
+		
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void attributesTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
@@ -467,8 +640,8 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
-						new CodeParameterDeclarationExpression(Integer.class, "index"),
-						new CodeParameterDeclarationExpression(Integer.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -504,8 +677,8 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
-						new CodeParameterDeclarationExpression(Integer.class, "index"),
-						new CodeParameterDeclarationExpression(Integer.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(

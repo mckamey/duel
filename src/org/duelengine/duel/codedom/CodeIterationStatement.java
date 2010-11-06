@@ -8,17 +8,17 @@ import java.util.Arrays;
 public class CodeIterationStatement extends CodeStatement {
 
 	private CodeStatement initStatement;
-	private CodeStatement testStatement;
-	private CodeStatement incStatement;
+	private CodeExpression testExpression;
+	private CodeStatement incrementStatement;
 	private final CodeStatementCollection statements = new CodeStatementCollection();
 
 	public CodeIterationStatement() {
 	}
 
-	public CodeIterationStatement(CodeStatement initStatement, CodeStatement testStatement, CodeStatement incStatement, CodeStatement[] statements) {
+	public CodeIterationStatement(CodeStatement initStatement, CodeExpression testExpression, CodeStatement incrementStatement, CodeStatement[] statements) {
 		this.initStatement = initStatement;
-		this.testStatement = testStatement;
-		this.incStatement = incStatement;
+		this.testExpression = testExpression;
+		this.incrementStatement = incrementStatement;
 		if (statements != null) {
 			this.statements.addAll(Arrays.asList(statements));
 		}
@@ -32,20 +32,20 @@ public class CodeIterationStatement extends CodeStatement {
 		this.initStatement = value;
 	}
 
-	public CodeStatement getTestStatement() {
-		return this.testStatement;
+	public CodeExpression getTestStatement() {
+		return this.testExpression;
 	}
 
-	public void setTestStatement(CodeStatement value) {
-		this.testStatement = value;
+	public void setTestStatement(CodeExpression value) {
+		this.testExpression = value;
 	}
 
-	public CodeStatement getIncStatement() {
-		return this.incStatement;
+	public CodeStatement getIncrementStatement() {
+		return this.incrementStatement;
 	}
 
-	public void setIncStatement(CodeStatement value) {
-		this.incStatement = value;
+	public void setIncrementStatement(CodeStatement value) {
+		this.incrementStatement = value;
 	}
 
 	public CodeStatementCollection getStatements() {
@@ -63,16 +63,16 @@ public class CodeIterationStatement extends CodeStatement {
 		if (this.initStatement == null ? that.initStatement != null : !this.initStatement.equals(that.initStatement)) {
 			return false;
 		}
-		if (this.testStatement == null ? that.testStatement != null : !this.testStatement.equals(that.testStatement)) {
+		if (this.testExpression == null ? that.testExpression != null : !this.testExpression.equals(that.testExpression)) {
 			return false;
 		}
-		if (this.incStatement == null ? that.incStatement != null : !this.incStatement.equals(that.incStatement)) {
+		if (this.incrementStatement == null ? that.incrementStatement != null : !this.incrementStatement.equals(that.incrementStatement)) {
 			return false;
 		}
 		if (!this.statements.equals(that.statements)) {
 			return false;
 		}
-		return super.equals(that);
+		return true;
 	}
 
 	@Override
@@ -83,11 +83,11 @@ public class CodeIterationStatement extends CodeStatement {
 		if (this.initStatement != null) {
 			hash = hash * HASH_PRIME + this.initStatement.hashCode();
 		}
-		if (this.testStatement != null) {
-			hash = hash * HASH_PRIME + this.testStatement.hashCode();
+		if (this.testExpression != null) {
+			hash = hash * HASH_PRIME + this.testExpression.hashCode();
 		}
-		if (this.incStatement != null) {
-			hash = hash * HASH_PRIME + this.incStatement.hashCode();
+		if (this.incrementStatement != null) {
+			hash = hash * HASH_PRIME + this.incrementStatement.hashCode();
 		}
 		return hash;
 	}
