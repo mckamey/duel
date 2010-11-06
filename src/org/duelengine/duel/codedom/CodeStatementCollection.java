@@ -3,7 +3,7 @@ package org.duelengine.duel.codedom;
 import java.util.*;
 
 /**
- * Represents a statement block
+ * Represents a sequence of statements
  */
 public class CodeStatementCollection implements Iterable<CodeStatement>, IdentifierScope {
 
@@ -58,9 +58,9 @@ public class CodeStatementCollection implements Iterable<CodeStatement>, Identif
 	}
 
 	@Override
-	public String nextID() {
+	public String nextID(String prefix) {
 		// generate a unique var name
-		return "t_"+(++this.nextID);
+		return prefix+(++this.nextID);
 	}
 
 	@Override

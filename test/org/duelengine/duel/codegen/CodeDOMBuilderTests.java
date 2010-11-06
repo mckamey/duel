@@ -24,7 +24,7 @@ public class CodeDOMBuilderTests {
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "t_1",
+				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -61,7 +61,7 @@ public class CodeDOMBuilderTests {
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "t_1",
+				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -99,7 +99,7 @@ public class CodeDOMBuilderTests {
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "t_1",
+				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -140,7 +140,7 @@ public class CodeDOMBuilderTests {
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "t_1",
+				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -183,7 +183,7 @@ public class CodeDOMBuilderTests {
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "t_1",
+				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -224,7 +224,7 @@ public class CodeDOMBuilderTests {
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "t_1",
+				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -289,7 +289,7 @@ public class CodeDOMBuilderTests {
 			"example",
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "t_1",
+				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -397,7 +397,7 @@ public class CodeDOMBuilderTests {
 			"example",
 			"foo2",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "t_1",
+				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -488,7 +488,7 @@ public class CodeDOMBuilderTests {
 			null,
 			"example",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "t_1",
+				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -505,7 +505,7 @@ public class CodeDOMBuilderTests {
 								})),
 						new CodeVariableDeclarationStatement(
 							Collection.class,
-							"t_1",// collection
+							"items_1",// collection
 							new CodeMethodInvokeExpression(
 								new CodeThisReferenceExpression(),
 								"asIterable",
@@ -514,44 +514,44 @@ public class CodeDOMBuilderTests {
 								})),
 						new CodeVariableDeclarationStatement(
 							int.class,
-							"t_2",// index
+							"index_2",// index
 							new CodePrimitiveExpression(0)),
 						new CodeVariableDeclarationStatement(
 							int.class,
-							"t_3",// count
+							"count_3",// count
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("t_1"),
+								new CodeVariableReferenceExpression("items_1"),
 								"size",
 								null)),
 						new CodeIterationStatement(
 							new CodeVariableDeclarationStatement(
 								Iterator.class,
-								"t_4",
+								"iterator_4",
 								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression("t_1"),
+									new CodeVariableReferenceExpression("items_1"),
 									"iterator",
 									null)),// initStatement
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("t_4"),
+								new CodeVariableReferenceExpression("iterator_4"),
 								"hasNext",
 								null),// testExpression
 							new CodeExpressionStatement(
 								new CodeUnaryOperatorExpression(
 									CodeUnaryOperatorType.POST_INCREMENT,
-									new CodeVariableReferenceExpression("t_2"))),// incrementStatement
+									new CodeVariableReferenceExpression("index_2"))),// incrementStatement
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
 										new CodeThisReferenceExpression(),
-										"t_2",
+										"bind_2",
 										new CodeExpression[] {
 											new CodeVariableReferenceExpression("writer"),
 											new CodeMethodInvokeExpression(
-												new CodeVariableReferenceExpression("t_4"),
+												new CodeVariableReferenceExpression("iterator_4"),
 												"next",
 												null),
-											new CodeVariableReferenceExpression("t_2"),
-											new CodeVariableReferenceExpression("t_3")
+											new CodeVariableReferenceExpression("index_2"),
+											new CodeVariableReferenceExpression("count_3")
 										}))
 							}),
 						new CodeExpressionStatement(
@@ -562,7 +562,7 @@ public class CodeDOMBuilderTests {
 									new CodePrimitiveExpression("</div>")
 								}))
 					}),
-					new CodeMethod(Void.class, "t_2",
+					new CodeMethod(Void.class, "bind_2",
 							new CodeParameterDeclarationExpression[] {
 								new CodeParameterDeclarationExpression(Writer.class, "writer"),
 								new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -636,7 +636,7 @@ public class CodeDOMBuilderTests {
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "t_1",
+				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -673,7 +673,7 @@ public class CodeDOMBuilderTests {
 			"foo.bar",
 			"Blah",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "t_1",
+				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Writer.class, "writer"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),

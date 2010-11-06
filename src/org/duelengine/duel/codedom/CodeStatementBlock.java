@@ -3,7 +3,7 @@ package org.duelengine.duel.codedom;
 import java.util.*;
 
 /**
- * Represents a block of statements
+ * Only used internally to pass around a sequence of statements as a CodeObject
  */
 public class CodeStatementBlock extends CodeObject implements Iterable<CodeStatement> {
 

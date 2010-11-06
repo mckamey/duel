@@ -15,7 +15,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -39,7 +39,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -67,7 +67,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -95,7 +95,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -126,7 +126,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -153,7 +153,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -184,7 +184,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -211,7 +211,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -238,7 +238,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -268,7 +268,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -295,7 +295,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -322,7 +322,7 @@ public class SourceTranslatorTests {
 		CodeMethod expected =
 			new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),

@@ -13,7 +13,7 @@ public class CodeDOMUtilityTests {
 
 		CodeMethod input = new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -35,7 +35,7 @@ public class CodeDOMUtilityTests {
 
 		CodeMethod input = new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -57,7 +57,7 @@ public class CodeDOMUtilityTests {
 
 		CodeMethod input = new CodeMethod(
 				Object.class,
-				"t_1",
+				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Writer.class, "writer"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -69,9 +69,9 @@ public class CodeDOMUtilityTests {
 						Object.class,
 						"foo",
 						new CodeBinaryOperatorExpression(
-								CodeBinaryOperatorType.LESS_THAN_OR_EQUAL,
-								new CodeVariableReferenceExpression("index"),
-								new CodeVariableReferenceExpression("count"))),
+							CodeBinaryOperatorType.LESS_THAN_OR_EQUAL,
+							new CodeVariableReferenceExpression("index"),
+							new CodeVariableReferenceExpression("count"))),
 					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("foo"))
 				});
 

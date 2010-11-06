@@ -63,9 +63,9 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 	}
 
 	@Override
-	public String nextID() {
-		// generate a unique name
-		return "t_"+(++this.nextID);
+	public String nextID(String prefix) {
+		// generate a unique var name
+		return prefix+(++this.nextID);
 	}
 
 	@Override

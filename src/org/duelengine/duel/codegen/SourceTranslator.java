@@ -283,7 +283,7 @@ public class SourceTranslator {
 		CodeMethod method = new CodeMethod();
 
 		if (node.depth() == 1) {
-			method.setName(this.scope.nextID());
+			method.setName(this.scope.nextID("code_"));
 
 			method.addParameter(Writer.class, "writer");
 			method.addParameter(Object.class, "model");
