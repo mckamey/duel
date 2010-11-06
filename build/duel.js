@@ -215,6 +215,13 @@
 	 * @constant
 	 * @type {string}
 	 */
+	var IN = "in";
+
+	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
 	var VIEW = "view";
 
 	/**
@@ -338,7 +345,7 @@
 	}
 
 	/**
-	 * Binds the node once for each item in model
+	 * Binds the content once for each item in model
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number|function(*,number,number):*} node The template subtree root
@@ -348,42 +355,49 @@
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	function foreach(node, model, index, count, parts) {
-		var each = node[1] && node[1][EACH];
+	function loop(node, model, index, count, parts) {
+		var args = node[1] || {},
+			obj = args[IN],
+			each = args[EACH],
+			result = [""];
+
+		// first rule out for-in loop
+		if (typeof obj !== "undefined") {
+			if (isFunction(obj)) {
+				obj = obj(model, index, count);
+			}
+			if (getType(obj) == OBJ) {
+				// iterate over the properties
+				for (var key in obj) {
+					if (obj.hasOwnProperty(key)) {
+						// Closure Compiler type cast
+						append(result, bindContent(/** @type {Array} */(node), obj[key], key, 0, parts));
+					}
+				}
+			}
+			return result;
+		}
 
 		// execute code block
 		if (isFunction(each)) {
 			each = each(model, index, count);
 		}
 
-		var result = [""];
-		switch (getType(each)) {
-			case ARY:
-				// iterate over the items
-				for (var i=0, length=each.length; i<length; i++) {
-					// Closure Compiler type cast
-					append(result, bindContent(/** @type {Array} */(node), each[i], i, length, parts));
-				}
-				break;
-			case OBJ:
-				// iterate over the properties
-				for (var key in each) {
-					if (each.hasOwnProperty(key)) {
-						// Closure Compiler type cast
-						append(result, bindContent(/** @type {Array} */(node), each[key], key, 0, parts));
-					}
-				}
-				break;
-			default:
-				// just bind the single value
+		if (getType(each) === ARY) {
+			// iterate over the items
+			for (var i=0, length=each.length; i<length; i++) {
 				// Closure Compiler type cast
-				result = bindContent(/** @type {Array} */(node), each, 0, 1, parts);
-				break;
+				append(result, bindContent(/** @type {Array} */(node), each[i], i, length, parts));
+			}
+		} else {
+			// just bind the single value
+			// Closure Compiler type cast
+			result = bindContent(/** @type {Array} */(node), each, 0, 1, parts);
 		}
 
 		return result;
 	}
-	
+
 	/**
 	 * Binds the node to the first conditional block that evaluates to true
 	 * 
@@ -515,7 +529,7 @@
 				var tag = node[0] || "";
 				switch (tag) {
 					case FOR:
-						result = foreach(node, model, index, count, parts);
+						result = loop(node, model, index, count, parts);
 						break;
 					case XOR:
 						result = xor(node, model, index, count, parts);

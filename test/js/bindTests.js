@@ -146,7 +146,7 @@ test("XOR block", function() {
 	same(actual3, expected3, "");
 });
 
-test("foreach array", function() {
+test("for-each array", function() {
 
 	var model = {
 	        title: "This is the title",
@@ -218,7 +218,7 @@ test("foreach array", function() {
 	same(actual, expected, "");
 });
 
-test("foreach object", function() {
+test("for-in object", function() {
 	var model = {
 	        name: "List of items",
 	        total: 5,
@@ -235,7 +235,7 @@ test("foreach object", function() {
 		["",
 		 	"model => ",
 		 	["dl",
-				["$for", { "each" : function(model, index, count) { return model; } },
+				["$for", { "in" : function(model, index, count) { return model; } },
 				 	["dt",
 					 	function(model, index, count) { return index; },
 					 	" : "],
@@ -267,7 +267,7 @@ test("foreach object", function() {
 	same(actual, expected, "");
 });
 
-test("foreach other", function() {
+test("for-each primitive", function() {
 
 	var model = {
 	        title: "This is the title",
