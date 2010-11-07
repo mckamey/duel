@@ -218,57 +218,6 @@ test("for-each array", function() {
 	same(actual, expected, "");
 });
 
-test("for-in object", function() {
-	var model = {
-	        name: "List of items",
-	        total: 5,
-	        items: [
-	            "One",
-	            "Two",
-	            "Three",
-	            "Four",
-	            "Five"
-	        ]
-	    };
-
-	var view = duel(
-		["",
-		 	"model => ",
-		 	["dl",
-				["$for", { "in" : function(model, index, count) { return model; } },
-				 	["dt",
-					 	function(model, index, count) { return index; },
-					 	". ",
-					 	function(model, index, count) { return model.key; },
-					 	" : "],
-					["dd",
-					 	"(",
-					 	function(model, index, count) { return (model.value instanceof Array) ? "array" : typeof model.value; },
-					 	") ",
-					 	function(model, index, count) { return "" + model.value; }
-				 	]
-			 	]
-		 	]
-	 	]);
-
-	var actual = view(model).value;
-
-	var expected =
-		["",
-		 	"model => ",
-		 	["dl",
-		 	 	["dt", "0. name : "],
-		 	 	["dd", "(string) List of items"],
-		 	 	["dt", "1. total : "],
-		 	 	["dd", "(number) 5"],
-		 	 	["dt", "2. items : "],
-				["dd", "(array) One,Two,Three,Four,Five"]
-		 	]
-	 	];
-
-	same(actual, expected, "");
-});
-
 test("for-each primitive", function() {
 
 	var model = {
@@ -311,6 +260,112 @@ test("for-each primitive", function() {
 				]
 			]
 		];
+
+	same(actual, expected, "");
+});
+
+test("for-in object", function() {
+	var model = {
+	        name: "List of items",
+	        total: 5,
+	        items: [
+	            "One",
+	            "Two",
+	            "Three",
+	            "Four",
+	            "Five"
+	        ]
+	    };
+
+	var view = duel(
+		["",
+		 	"model => ",
+		 	["dl",
+				["$for", { "in" : function(model, index, count) { return model; } },
+				 	["dt",
+					 	function(model, index, count) { return index; },
+					 	" of ",
+					 	function(model, index, count) { return count; },
+					 	" - ",
+					 	function(model, index, count) { return model.key; },
+					 	" : "],
+					["dd",
+					 	"(",
+					 	function(model, index, count) { return (model.value instanceof Array) ? "array" : typeof model.value; },
+					 	") ",
+					 	function(model, index, count) { return "" + model.value; }
+				 	]
+			 	]
+		 	]
+	 	]);
+
+	var actual = view(model).value;
+
+	var expected =
+		["",
+		 	"model => ",
+		 	["dl",
+		 	 	["dt", "0 of 3 - name : "],
+		 	 	["dd", "(string) List of items"],
+		 	 	["dt", "1 of 3 - total : "],
+		 	 	["dd", "(number) 5"],
+		 	 	["dt", "2 of 3 - items : "],
+				["dd", "(array) One,Two,Three,Four,Five"]
+		 	]
+	 	];
+
+	same(actual, expected, "");
+});
+
+test("for-count", function() {
+	var model = {
+	        name: "List of items",
+	        total: 5,
+	        items: [
+	            "One",
+	            "Two",
+	            "Three",
+	            "Four",
+	            "Five"
+	        ]
+	    };
+
+	var view = duel(
+		["",
+		 	"list => ",
+		 	["dl",
+				["$for", {
+						"count" : function(model, index, count) { return 4; },
+						"mode" : function(model, index, count) { return markup.name; }
+					},
+				 	["dt",
+					 	function(model, index, count) { return index; },
+					 	" of ",
+					 	function(model, index, count) { return count; },
+					 	": "],
+					["dd",
+					 	function(model, index, count) { return "" + model; }
+				 	]
+			 	]
+		 	]
+	 	]);
+
+	var actual = view(model).value;
+
+	var expected =
+		["",
+		 	"list => ",
+		 	["dl",
+		 	 	["dt", "0 of 4: "],
+		 	 	["dd", "List of items"],
+		 	 	["dt", "1 of 4: "],
+		 	 	["dd", "List of items"],
+		 	 	["dt", "2 of 4: "],
+		 	 	["dd", "List of items"],
+		 	 	["dt", "3 of 4: "],
+				["dd", "List of items"]
+		 	]
+	 	];
 
 	same(actual, expected, "");
 });

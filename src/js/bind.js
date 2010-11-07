@@ -197,30 +197,32 @@
 	function loop(node, model, index, count, parts) {
 		var args = node[1] || {},
 			obj = args[IN],
-			each = args[EACH],
+			each,
 			result = [""];
 
 		// first rule out for-in loop
 		if (typeof obj !== "undefined") {
 			if (isFunction(obj)) {
+				// execute code block
 				obj = obj(model, index, count);
 			}
 			if (getType(obj) === OBJ) {
 				// iterate over the properties
-				var j = 0;
+				each = [];
 				for (var key in obj) {
 					if (obj.hasOwnProperty(key)) {
-						// Closure Compiler type cast
-						append(result, bindContent(/** @type {Array} */(node), { key:key, value:obj[key] }, j++, 0, parts));
+						each.push({ key: key, value: obj[key] });
 					}
 				}
+			} else {
+				each = obj;
 			}
-			return result;
-		}
-
-		// execute code block
-		if (isFunction(each)) {
-			each = each(model, index, count);
+		} else {
+			each = args[EACH];
+			if (isFunction(each)) {
+				// execute code block
+				each = each(model, index, count);
+			}
 		}
 
 		if (getType(each) === ARY) {
