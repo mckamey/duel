@@ -238,12 +238,14 @@ test("for-in object", function() {
 				["$for", { "in" : function(model, index, count) { return model; } },
 				 	["dt",
 					 	function(model, index, count) { return index; },
+					 	". ",
+					 	function(model, index, count) { return model.key; },
 					 	" : "],
 					["dd",
 					 	"(",
-					 	function(model, index, count) { return (model instanceof Array) ? "array" : typeof model; },
+					 	function(model, index, count) { return (model.value instanceof Array) ? "array" : typeof model.value; },
 					 	") ",
-					 	function(model, index, count) { return "" + model; }
+					 	function(model, index, count) { return "" + model.value; }
 				 	]
 			 	]
 		 	]
@@ -255,11 +257,11 @@ test("for-in object", function() {
 		["",
 		 	"model => ",
 		 	["dl",
-		 	 	["dt", "name : "],
+		 	 	["dt", "0. name : "],
 		 	 	["dd", "(string) List of items"],
-		 	 	["dt", "total : "],
+		 	 	["dt", "1. total : "],
 		 	 	["dd", "(number) 5"],
-		 	 	["dt", "items : "],
+		 	 	["dt", "2. items : "],
 				["dd", "(array) One,Two,Three,Four,Five"]
 		 	]
 	 	];

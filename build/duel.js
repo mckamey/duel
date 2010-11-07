@@ -366,12 +366,13 @@
 			if (isFunction(obj)) {
 				obj = obj(model, index, count);
 			}
-			if (getType(obj) == OBJ) {
+			if (getType(obj) === OBJ) {
 				// iterate over the properties
+				var j = 0;
 				for (var key in obj) {
 					if (obj.hasOwnProperty(key)) {
 						// Closure Compiler type cast
-						append(result, bindContent(/** @type {Array} */(node), obj[key], key, 0, parts));
+						append(result, bindContent(/** @type {Array} */(node), { key:key, value:obj[key] }, j++, 0, parts));
 					}
 				}
 			}
