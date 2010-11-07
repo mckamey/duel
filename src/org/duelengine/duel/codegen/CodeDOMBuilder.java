@@ -6,6 +6,9 @@ import java.util.*;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 
+/**
+ * Translates markup AST to CodeDOM tree
+ */
 public class CodeDOMBuilder {
 
 	private final CodeGenSettings settings;
