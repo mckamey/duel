@@ -7,6 +7,7 @@ import java.util.*;
  */
 public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 
+	private Map<String, String> identMap;
 	private int nextID;
 	private String typeName;
 	private String namespace;
@@ -63,7 +64,21 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 	}
 
 	@Override
-	public String nextID(String prefix) {
+	public String uniqueIdent(String ident) {
+		if (this.identMap == null) {
+			this.identMap = new HashMap<String, String>();
+		}
+		else if (this.identMap.containsKey(ident)) {
+			return this.identMap.get(ident);
+		}
+
+		String unique = this.nextIdent(ident);
+		this.identMap.put(ident, unique);
+		return unique;
+	}
+
+	@Override
+	public String nextIdent(String prefix) {
 		// generate a unique var name
 		return prefix+(++this.nextID);
 	}

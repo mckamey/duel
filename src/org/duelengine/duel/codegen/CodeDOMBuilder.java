@@ -49,7 +49,7 @@ public class CodeDOMBuilder {
 
 		CodeMethod method = new CodeMethod(
 			Void.class,
-			this.viewType.nextID("bind_"),
+			this.viewType.nextIdent("bind_"),
 			new CodeParameterDeclarationExpression[] {
 				new CodeParameterDeclarationExpression(Writer.class, "writer"),
 				new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -148,7 +148,7 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement collectionDecl =
 			new CodeVariableDeclarationStatement(
 				Collection.class,
-				scope.nextID("items_"),
+				scope.nextIdent("items_"),
 				new CodeMethodInvokeExpression(
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
@@ -164,7 +164,7 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement indexDecl =
 			new CodeVariableDeclarationStatement(
 				int.class,
-				scope.nextID("index_"),
+				scope.nextIdent("index_"),
 				new CodePrimitiveExpression(0));
 		scope.add(indexDecl);
 
@@ -172,7 +172,7 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement countDecl =
 			new CodeVariableDeclarationStatement(
 				int.class,
-				scope.nextID("count_"),
+				scope.nextIdent("count_"),
 				new CodeMethodInvokeExpression(
 					new CodeVariableReferenceExpression(collectionDecl.getName()),
 					"size",
@@ -183,7 +183,7 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement iteratorDecl =
 			new CodeVariableDeclarationStatement(
 				Iterator.class,
-				scope.nextID("iterator_"),
+				scope.nextIdent("iterator_"),
 				new CodeMethodInvokeExpression(
 					new CodeVariableReferenceExpression(collectionDecl.getName()),
 					"iterator",

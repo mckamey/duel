@@ -2,6 +2,8 @@ package org.duelengine.duel.codegen;
 
 import java.io.*;
 import java.util.*;
+
+import org.duelengine.duel.ast.CodeBlockNode;
 import org.duelengine.duel.codedom.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -335,6 +337,57 @@ public class SourceTranslatorTests {
 							new CodeVariableReferenceExpression("model"),
 							new CodePrimitiveExpression(1.0),
 							new CodePrimitiveExpression(2.0)))
+				});
+
+		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateForLoopTest() {
+		String input = "function(model) { for (var i=0, length=model.length; i<length; i++) { model[i].toString(); } }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				Void.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(Writer.class, "writer"),
+					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count")
+				},
+				new CodeStatement[] {
+					new CodeIterationStatement(
+						new CodeVariableCompoundDeclarationStatement(new CodeVariableDeclarationStatement[] {
+							new CodeVariableDeclarationStatement(null, "i2",
+								new CodePrimitiveExpression(0.0)),
+							new CodeVariableDeclarationStatement(null, "length4",
+								new CodePropertyReferenceExpression(
+									new CodeVariableReferenceExpression("model"),
+									new CodePrimitiveExpression("length4"))),
+						}),
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.LESS_THAN,
+							new CodeVariableReferenceExpression("i2"),
+							new CodeVariableReferenceExpression("length4")),
+						new CodeExpressionStatement(
+							new CodeUnaryOperatorExpression(
+								CodeUnaryOperatorType.POST_INCREMENT,
+								new CodeVariableReferenceExpression("i2"))),
+						new CodeStatement[] {
+							new CodeExpressionStatement(
+								new CodeMethodInvokeExpression(
+									new CodePropertyReferenceExpression(
+										new CodePropertyReferenceExpression(
+											new CodeVariableReferenceExpression("model"),
+											new CodeVariableReferenceExpression("i2")),
+										new CodePrimitiveExpression("toString")),
+									null,
+									null))
+						})
 				});
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);

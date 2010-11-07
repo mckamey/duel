@@ -7,7 +7,8 @@ final class JSUtility {
 	private static final String CONFIG_RESOURCE = "org.duelengine.duel.codegen.JSVocab";
 	private static Map<String, Boolean> reserved;
 	private static Map<String, Boolean> globals;
-	private static List<String> browserObjects;
+	private static Map<String, Boolean> properties;
+	private static Map<String, Boolean> browser;
 	private static boolean inited;
 
 	// static class
@@ -18,7 +19,7 @@ final class JSUtility {
 			initLookups();
 		}
 
-		return new ArrayList<String>(browserObjects);
+		return new ArrayList<String>(browser.keySet());
 	}
 
 	public static boolean isValidIdentifier(String ident, boolean nested) {
@@ -70,6 +71,30 @@ final class JSUtility {
 		return true;		
 	}
 
+	public static boolean isGlobalIdent(String ident) {
+		if (ident == null || ident.length() == 0) {
+			return false;
+		}
+
+		if (!inited) {
+			initLookups();
+		}
+
+		return globals.containsKey(ident) || browser.containsKey(ident);
+	}
+
+	public static boolean isObjectProperty(String ident) {
+		if (ident == null || ident.length() == 0) {
+			return false;
+		}
+
+		if (!inited) {
+			initLookups();
+		}
+
+		return properties.containsKey(ident);
+	}
+	
 	private static void initLookups() {
 
 		String[] tags;
@@ -94,7 +119,7 @@ final class JSUtility {
 		}
 		reserved = map;
 
-		// globals objects
+		// global objects
 		tags = (config != null) && config.containsKey("globals") ?
 				config.getString("globals").split(",") : new String[0];
 		map = new HashMap<String, Boolean>(tags.length);
@@ -103,9 +128,22 @@ final class JSUtility {
 		}
 		globals = map;
 
+		// object properties
+		tags = (config != null) && config.containsKey("properties") ?
+				config.getString("properties").split(",") : new String[0];
+		map = new HashMap<String, Boolean>(tags.length);
+		for (String value : tags) {
+			map.put(value, true);
+		}
+		properties = map;
+
 		// browser objects
 		tags = (config != null) && config.containsKey("browser") ?
 				config.getString("browser").split(",") : new String[0];
-		browserObjects = Arrays.asList(tags);
+		map = new HashMap<String, Boolean>(tags.length);
+		for (String value : tags) {
+			map.put(value, true);
+		}
+		browser = map;
 	}
 }

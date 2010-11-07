@@ -239,7 +239,7 @@ public class CodeDOMBuilderTests {
 								new CodeExpression[] {
 									new CodeVariableReferenceExpression("writer"),
 									new CodePropertyReferenceExpression(
-										new CodeVariableReferenceExpression("Math"),
+										new ScriptVariableReferenceExpression("Math"),
 										new CodePrimitiveExpression("PI"))
 									
 								}))

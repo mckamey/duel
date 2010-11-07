@@ -2,5 +2,7 @@ package org.duelengine.duel.codedom;
 
 public interface IdentifierScope {
 
-	public String nextID(String prefix);
+	public String uniqueIdent(String ident);
+	
+	public String nextIdent(String prefix);
 }

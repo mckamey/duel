@@ -12,7 +12,7 @@ final class CodeDOMUtility {
 	public static CodeVariableDeclarationStatement nextID(IdentifierScope varGen) {
 		return new CodeVariableDeclarationStatement(
 			String.class,
-			varGen.nextID("id_"),
+			varGen.nextIdent("id_"),
 			new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
 				"nextID",

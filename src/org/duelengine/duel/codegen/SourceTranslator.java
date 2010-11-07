@@ -55,20 +55,34 @@ public class SourceTranslator {
 			return null;
 		}
 
-		return this.visit(root);
+		return this.visitRoot(root);
 	}
 
 	private CodeExpression visitExpression(AstNode node) {
 		CodeObject value = this.visit(node);
 
 		if (value instanceof CodeExpressionStatement) {
-			value = ((CodeExpressionStatement)value).getExpression();
+			return ((CodeExpressionStatement)value).getExpression();
 
 		} else if (value != null && !(value instanceof CodeExpression)) {
 			throw new IllegalArgumentException("Expected an expression: "+value.getClass());
 		}
 
 		return (CodeExpression)value;
+	}
+
+	private CodeStatement visitStatement(AstNode node) {
+		CodeObject value = this.visit(node);
+
+		if (value instanceof CodeExpression) {
+			
+			return new CodeExpressionStatement((CodeExpression)value);
+
+		} else if (value != null && !(value instanceof CodeStatement)) {
+			throw new IllegalArgumentException("Expected a statement: "+value.getClass());
+		}
+
+		return (CodeStatement)value;
 	}
 
 	private CodeObject visit(AstNode node) throws IllegalArgumentException {
@@ -81,7 +95,14 @@ public class SourceTranslator {
 			case Token.FUNCTION:
 				return this.visitFunction((FunctionNode)node);
 			case Token.BLOCK:
-				return this.visitBlock((Block)node);
+				if (node instanceof Block) {
+					return this.visitBlock((Block)node);
+				}
+				if (node instanceof Scope) {
+					return this.visitScope((Scope)node);
+				}
+
+				throw new IllegalArgumentException("Unexpected block token ("+node.getClass()+"):\n"+(node.debugPrint()));
 			case Token.GETPROP:
 				return this.visitProperty((PropertyGet)node);
 			case Token.GETELEM:
@@ -106,13 +127,24 @@ public class SourceTranslator {
 				return CodePrimitiveExpression.TRUE;
 			case Token.NULL:
 				return CodePrimitiveExpression.NULL;
+			case Token.FOR:
+				return this.visitForLoop((ForLoop)node);
+			case Token.VAR:
+				return this.visitVarDecl((VariableDeclaration)node);
 			case Token.CALL:
 				return this.visitFunctionCall((FunctionCall)node);
 			case Token.HOOK:
 				return this.visitTernary((ConditionalExpression)node);
+			case Token.EXPR_VOID:
+				ExpressionStatement voidExpr = (ExpressionStatement)node;
+				if (voidExpr.hasSideEffects()) {
+					// TODO: determine if this is valid
+				}
+				// unwrap expression node
+				return this.visit(voidExpr.getExpression());
 			case Token.THIS:
 				// TODO: evaluate if will allow custom extensions
-				throw new IllegalArgumentException("'this' not supported");
+				throw new IllegalArgumentException("'this' not supported while binding");
 			default:
 				CodeBinaryOperatorType binary = this.mapBinaryOperator(tokenType);
 				if (binary != CodeBinaryOperatorType.NONE) {
@@ -264,26 +296,62 @@ public class SourceTranslator {
 		return new CodeTernaryOperatorExpression(testExpr, trueExpr, falseExpr);
 	}
 
+	private CodeObject visitVarDecl(VariableDeclaration node) {
+		CodeVariableCompoundDeclarationStatement vars = new CodeVariableCompoundDeclarationStatement();
+
+		for (VariableInitializer init : node.getVariables()) {
+			CodeObject target = this.visit(init.getTarget());
+			if (!(target instanceof CodeVariableReferenceExpression)) {
+				throw new IllegalArgumentException("Unexpected VAR type ("+target.getClass()+")");
+			}
+
+			String ident = this.scope.uniqueIdent(((CodeVariableReferenceExpression)target).getIdent());
+			CodeVariableDeclarationStatement decl = new CodeVariableDeclarationStatement(
+				Object.class, ident, this.visitExpression(init.getInitializer()));
+
+			vars.addVar(decl);
+		}
+
+		return vars;
+	}
+
 	private CodeObject visitVarRef(Name node) {
 		String ident = node.getIdentifier();
 
-		if (!node.isLocalName()) {
-			if ("model".equals(ident) || "index".equals(ident) || "count".equals(ident) || "Math".equals(ident)) {
-				return new CodeVariableReferenceExpression(ident);
-			}
-
-			throw new IllegalArgumentException("Global references not supported");
+		if (JSUtility.isGlobalIdent(ident)) {
+			return new ScriptVariableReferenceExpression(ident);
 		}
 
-		// TODO: context may have added additional local vars
-		throw new IllegalArgumentException("Unknown local references not supported");
+		if (!"model".equals(ident) && !"index".equals(ident) && !"count".equals(ident)) {
+			// map to the unique server-side identifier
+			ident = this.scope.uniqueIdent(ident);
+		}
+
+		return new CodeVariableReferenceExpression(ident);
+	}
+
+	private CodeObject visitForLoop(ForLoop node) {
+		CodeIterationStatement loop = new CodeIterationStatement(
+				this.visitStatement(node.getInitializer()),
+				this.visitExpression(node.getCondition()),
+				this.visitStatement(node.getIncrement()),
+				null);
+
+		CodeObject body = this.visit(node.getBody());
+		if (body instanceof CodeStatementBlock) {
+			loop.getStatements().addAll((CodeStatementBlock)body);
+		} else {
+			throw new IllegalArgumentException("Expected statement block ("+body.getClass()+")");
+		}
+
+		return loop;
 	}
 
 	private CodeMethod visitFunction(FunctionNode node) throws IllegalArgumentException {
 		CodeMethod method = new CodeMethod();
 
 		if (node.depth() == 1) {
-			method.setName(this.scope.nextID("code_"));
+			method.setName(this.scope.nextIdent("code_"));
 
 			method.addParameter(Writer.class, "writer");
 			method.addParameter(Object.class, "model");
@@ -337,6 +405,30 @@ public class SourceTranslator {
 		return new CodeMethodInvokeExpression(this.visitExpression(node.getTarget()), null, args);
 	}
 
+	private CodeObject visitScope(Scope scope) {
+		CodeStatementBlock statements = new CodeStatementBlock();
+        for (Node node : scope) {
+            CodeObject value = this.visit((AstNode)node);
+
+            if (value == null) {
+            	continue;
+
+            } else if (value instanceof CodeStatement) {
+            	statements.add((CodeStatement)value);
+
+            } else if (value instanceof CodeExpression) {
+            	statements.add((CodeExpression)value);
+
+            } else if (value instanceof CodeStatementBlock) {
+            	statements.addAll((CodeStatementBlock)value);
+
+            } else {
+        		throw new IllegalArgumentException("Unexpected statement value: "+value.getClass());
+            }
+        }
+        return statements;
+	}
+
 	private CodeStatementBlock visitBlock(Block block) {
 		CodeStatementBlock statements = new CodeStatementBlock();
         for (Node node : block) {
@@ -361,7 +453,7 @@ public class SourceTranslator {
         return statements;
 	}
 
-	private List<CodeMember> visit(AstRoot root) {
+	private List<CodeMember> visitRoot(AstRoot root) {
 		List<CodeMember> members = new ArrayList<CodeMember>();
         for (Node node : root) {
             CodeObject member = this.visit((AstNode)node);

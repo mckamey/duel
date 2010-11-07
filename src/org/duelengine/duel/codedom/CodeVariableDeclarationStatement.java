@@ -13,7 +13,9 @@ public class CodeVariableDeclarationStatement extends CodeStatement {
 	}
 
 	public CodeVariableDeclarationStatement(Class<?> type, String name, CodeExpression initExpression) {
-		this.type = type;
+		if (type != null) {
+			this.type = type;
+		}
 		this.name = name;
 		this.initExpression = initExpression;
 	}
