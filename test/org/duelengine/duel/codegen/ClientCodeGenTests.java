@@ -196,7 +196,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void iterationTest() throws Exception {
+	public void loopArrayTest() throws Exception {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -220,6 +220,81 @@ public class ClientCodeGenTests {
 			"var foo = duel(\n"+
 			"\t[\"div\",\n"+
 			"\t\t[\"$for\", { \"each\" : function(model) { return (model.items); } },\n"+
+			"\t\t\t\"item \",\n"+
+			"\t\t\tfunction(model, index) { return (index); }\n"+
+			"\t\t]\n"+
+			"\t]);\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void loopPropertiesTest() throws Exception {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new FORCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("in", new ExpressionNode("model"))
+						},
+						new Node[] {
+							new LiteralNode("property "),
+							new ExpressionNode("index")
+						})
+				})
+			});
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel(\n"+
+			"\t[\"div\",\n"+
+			"\t\t[\"$for\", { \"in\" : function(model) { return (model); } },\n"+
+			"\t\t\t\"property \",\n"+
+			"\t\t\tfunction(model, index) { return (index); }\n"+
+			"\t\t]\n"+
+			"\t]);\n";
+
+		StringWriter writer = new StringWriter();
+		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
+		String actual = writer.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void loopCountTest() throws Exception {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new FORCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("count", new ExpressionNode("4")),
+							new AttributeNode("model", new ExpressionNode("model"))
+						},
+						new Node[] {
+							new LiteralNode("item "),
+							new ExpressionNode("index")
+						})
+				})
+			});
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel(\n"+
+			"\t[\"div\",\n"+
+			"\t\t[\"$for\", {\n\t\t\t\t\"count\" : function() { return (4); },\n\t\t\t\t\"model\" : function(model) { return (model); }\n\t\t\t},\n"+
 			"\t\t\t\"item \",\n"+
 			"\t\t\tfunction(model, index) { return (index); }\n"+
 			"\t\t]\n"+
