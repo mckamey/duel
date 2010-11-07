@@ -293,7 +293,7 @@ public class DuelParserTests {
 	}
 
 	@Test
-	public void loopTest() throws Exception {
+	public void loopArrayTest() throws Exception {
 
 		DuelToken[] input = {
 			DuelToken.elemBegin("view"),
@@ -315,6 +315,97 @@ public class DuelParserTests {
 				new FORCommandNode(
 					new AttributeNode[] {
 						new AttributeNode("each", new ExpressionNode("model.items"))
+					},
+					new Node[] {
+						new LiteralNode("\n\t"),
+						new ElementNode("li",
+							null,
+							new Node[] {
+								new LiteralNode("item here")
+							}),
+						new LiteralNode("\n"),
+					})
+				})
+			});
+
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
+
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
+	}
+
+	@Test
+	public void loopPropertiesTest() throws Exception {
+
+		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
+			DuelToken.elemBegin("ul"),
+			DuelToken.elemBegin("for"),
+			DuelToken.attrName("in"),
+			DuelToken.attrValue("model"),
+			DuelToken.literal("\n\t"),
+			DuelToken.elemBegin("li"),
+			DuelToken.literal("key-value here"),
+			DuelToken.elemEnd("li"),
+			DuelToken.literal("\n"),
+			DuelToken.elemEnd("for"),
+			DuelToken.elemEnd("ul")
+		};
+
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
+			new ElementNode("ul", null, new Node[] {
+				new FORCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("in", new ExpressionNode("model"))
+					},
+					new Node[] {
+						new LiteralNode("\n\t"),
+						new ElementNode("li",
+							null,
+							new Node[] {
+								new LiteralNode("key-value here")
+							}),
+						new LiteralNode("\n"),
+					})
+				})
+			});
+
+		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
+
+		Iterator<ViewRootNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
+	}
+
+	@Test
+	public void loopCountTest() throws Exception {
+
+		DuelToken[] input = {
+			DuelToken.elemBegin("view"),
+			DuelToken.elemBegin("ul"),
+			DuelToken.elemBegin("for"),
+			DuelToken.attrName("count"),
+			DuelToken.attrValue("4"),
+			DuelToken.attrName("model"),
+			DuelToken.attrValue("model.name"),
+			DuelToken.literal("\n\t"),
+			DuelToken.elemBegin("li"),
+			DuelToken.literal("item here"),
+			DuelToken.elemEnd("li"),
+			DuelToken.literal("\n"),
+			DuelToken.elemEnd("for"),
+			DuelToken.elemEnd("ul")
+		};
+
+		ViewRootNode expected = new ViewRootNode(null, new Node[] {
+			new ElementNode("ul", null, new Node[] {
+				new FORCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("count", new ExpressionNode("4")),
+						new AttributeNode("model", new ExpressionNode("model.name"))
 					},
 					new Node[] {
 						new LiteralNode("\n\t"),

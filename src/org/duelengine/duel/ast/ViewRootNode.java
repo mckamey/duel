@@ -55,11 +55,18 @@ public class ViewRootNode extends CommandNode {
 
 	@Override
 	public void setAttribute(String name, Node value) {
-		if (name == null || !name.equalsIgnoreCase("name") || !(value instanceof LiteralNode)) {
-			// TODO: Syntax error
-			return;
+		if (name == null || name.length() == 0) {
+			throw new NullPointerException("name");
+		}
+		if (!name.equalsIgnoreCase("name")) {
+			// Syntax error
+			throw new IllegalArgumentException("Attribute invalid on VIEW declaration: "+name);
+		}
+		if (value != null && !(value instanceof LiteralNode)) {
+			// Syntax error
+			throw new IllegalArgumentException("VIEW name must be a string literal: "+value.getClass());
 		}
 
-		this.name = ((LiteralNode)value).getValue();
+		this.name = (value == null ? null : ((LiteralNode)value).getValue());
 	}
 }

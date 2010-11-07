@@ -49,9 +49,15 @@ public class FORCommandNode extends CommandNode {
 
 	@Override
 	public void setAttribute(String name, Node value) {
-		if (name == null || !name.equalsIgnoreCase("each")) {
-			// TODO: Syntax error
-			return;
+		if (name == null || name.length() == 0) {
+			throw new NullPointerException("name");
+		}
+		if (!name.equalsIgnoreCase("each") &&
+			!name.equalsIgnoreCase("in") &&
+			!name.equalsIgnoreCase("count") &&
+			!name.equalsIgnoreCase("model")) {
+			// Syntax error
+			throw new IllegalArgumentException("Attribute invalid on FOR command: "+name);
 		}
 
 		super.setAttribute(name, value);

@@ -54,11 +54,13 @@ public class IFCommandNode extends CommandNode {
 
 	@Override
 	public void setAttribute(String name, Node value) {
-		if (name == null ||
-			(!name.equalsIgnoreCase(TEST) &&
-			!name.equalsIgnoreCase("if"))) {
-			// TODO: Syntax error
-			return;
+		if (name == null || name.length() == 0) {
+			throw new NullPointerException("name");
+		}
+		if (!name.equalsIgnoreCase(TEST) &&
+			!name.equalsIgnoreCase("if")) {
+			// Syntax error
+			throw new IllegalArgumentException("Attribute invalid on IF/ELSE command: "+name);
 		}
 
 		// normalize the attribute to test

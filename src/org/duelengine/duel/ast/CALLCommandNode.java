@@ -46,13 +46,15 @@ public class CALLCommandNode extends CommandNode {
 
 	@Override
 	public void setAttribute(String name, Node value) {
-		if (name == null ||
-			(!name.equalsIgnoreCase("view") &&
+		if (name == null || name.length() == 0) {
+			throw new NullPointerException("name");
+		}
+		if (!name.equalsIgnoreCase("view") &&
 			!name.equalsIgnoreCase("model") &&
 			!name.equalsIgnoreCase("index") &&
-			!name.equalsIgnoreCase("count"))) {
-			// TODO: Syntax error
-			return;
+			!name.equalsIgnoreCase("count")) {
+			// Syntax error
+			throw new IllegalArgumentException("Attribute invalid on CALL command: "+name);
 		}
 
 		super.setAttribute(name, value);
