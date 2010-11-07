@@ -357,45 +357,72 @@
 	 */
 	function loop(node, model, index, count, parts) {
 		var args = node[1] || {},
-			obj = args[IN],
-			each,
-			result = [""];
+			result = [""],
+			items;
+
+		if (args.hasOwnProperty(COUNT)) {
+			var m,
+				c = args[COUNT];
+
+			if (isFunction(c)) {
+				// execute code block
+				c = c(model, index, count);
+			}
+
+			if (args.hasOwnProperty(MODEL)) {
+				m = args[MODEL];
+				if (isFunction(m)) {
+					// execute code block
+					m = m(model, index, count);
+				}
+			} else {
+				m = model;
+			}
+
+			// iterate over the items
+			for (var j=0; j<c; j++) {
+				// Closure Compiler type cast
+				append(result, bindContent(/** @type {Array} */(node), m, j, c, parts));
+			}
+			return result;
+		}
 
 		// first rule out for-in loop
-		if (typeof obj !== "undefined") {
+		if (args.hasOwnProperty(IN)) {
+			var obj = args[IN];
 			if (isFunction(obj)) {
 				// execute code block
 				obj = obj(model, index, count);
 			}
 			if (getType(obj) === OBJ) {
 				// iterate over the properties
-				each = [];
+				items = [];
 				for (var key in obj) {
 					if (obj.hasOwnProperty(key)) {
-						each.push({ key: key, value: obj[key] });
+						items.push({ key: key, value: obj[key] });
 					}
 				}
 			} else {
-				each = obj;
+				items = obj;
 			}
 		} else {
-			each = args[EACH];
-			if (isFunction(each)) {
+			items = args[EACH];
+			if (isFunction(items)) {
 				// execute code block
-				each = each(model, index, count);
+				items = items(model, index, count);
 			}
 		}
 
-		if (getType(each) === ARY) {
+		if (getType(items) === ARY) {
 			// iterate over the items
-			for (var i=0, length=each.length; i<length; i++) {
+			for (var i=0, length=items.length; i<length; i++) {
 				// Closure Compiler type cast
-				append(result, bindContent(/** @type {Array} */(node), each[i], i, length, parts));
+				append(result, bindContent(/** @type {Array} */(node), items[i], i, length, parts));
 			}
 		} else {
 			// just bind the single value
 			// Closure Compiler type cast
-			result = bindContent(/** @type {Array} */(node), each, 0, 1, parts);
+			result = bindContent(/** @type {Array} */(node), items, 0, 1, parts);
 		}
 
 		return result;

@@ -336,7 +336,7 @@ test("for-count", function() {
 		 	["dl",
 				["$for", {
 						"count" : function(model, index, count) { return 4; },
-						"mode" : function(model, index, count) { return markup.name; }
+						"model" : function(model, index, count) { return model.name; }
 					},
 				 	["dt",
 					 	function(model, index, count) { return index; },
