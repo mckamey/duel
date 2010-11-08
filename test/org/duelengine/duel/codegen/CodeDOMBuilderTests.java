@@ -26,7 +26,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -34,8 +34,8 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")
 								}))
@@ -63,7 +63,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -71,8 +71,8 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("\\&#x0008;&#x000C;\n\r\t&#x0123;&#x4567;&#x89AB;&#xCDEF;&#xABCD;&#xEF4A;\"")
 								}))
@@ -101,7 +101,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -109,8 +109,8 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodeVariableReferenceExpression("count")
 								}))
@@ -142,7 +142,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -153,7 +153,7 @@ public class CodeDOMBuilderTests {
 								new CodeThisReferenceExpression(),
 								"htmlEncode",
 								new CodeExpression[] {
-									new CodeVariableReferenceExpression("writer"),
+									new CodeVariableReferenceExpression("output"),
 									new CodeVariableReferenceExpression("model")
 								}))
 					})
@@ -185,7 +185,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -193,8 +193,8 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodeVariableReferenceExpression("model")
 								}))
@@ -226,7 +226,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -237,7 +237,7 @@ public class CodeDOMBuilderTests {
 								new CodeThisReferenceExpression(),
 								"htmlEncode",
 								new CodeExpression[] {
-									new CodeVariableReferenceExpression("writer"),
+									new CodeVariableReferenceExpression("output"),
 									new CodePropertyReferenceExpression(
 										new ScriptVariableReferenceExpression("Math"),
 										new CodePrimitiveExpression("PI"))
@@ -291,7 +291,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -299,8 +299,8 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("<div>")
 								})),
@@ -312,8 +312,8 @@ public class CodeDOMBuilderTests {
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("writer"),
-										"write",
+										new CodeVariableReferenceExpression("output"),
+										"append",
 										new CodeExpression[] {
 											new CodePrimitiveExpression("zero")
 										}))
@@ -327,8 +327,8 @@ public class CodeDOMBuilderTests {
 									new CodeStatement[] {
 										new CodeExpressionStatement(
 											new CodeMethodInvokeExpression(
-												new CodeVariableReferenceExpression("writer"),
-												"write",
+												new CodeVariableReferenceExpression("output"),
+												"append",
 												new CodeExpression[] {
 													new CodePrimitiveExpression("one")
 												}))
@@ -336,8 +336,8 @@ public class CodeDOMBuilderTests {
 									new CodeStatement[] {
 										new CodeExpressionStatement(
 											new CodeMethodInvokeExpression(
-												new CodeVariableReferenceExpression("writer"),
-												"write",
+												new CodeVariableReferenceExpression("output"),
+												"append",
 												new CodeExpression[] {
 													new CodePrimitiveExpression("many")
 												}))
@@ -345,8 +345,8 @@ public class CodeDOMBuilderTests {
 							}),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("</div>")
 								}))
@@ -399,7 +399,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -407,8 +407,8 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("<div>")
 								})),
@@ -420,8 +420,8 @@ public class CodeDOMBuilderTests {
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("writer"),
-										"write",
+										new CodeVariableReferenceExpression("output"),
+										"append",
 										new CodeExpression[] {
 											new CodePrimitiveExpression("zero")
 										}))
@@ -435,8 +435,8 @@ public class CodeDOMBuilderTests {
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("writer"),
-										"write",
+										new CodeVariableReferenceExpression("output"),
+										"append",
 										new CodeExpression[] {
 											new CodePrimitiveExpression("one")
 										}))
@@ -444,15 +444,15 @@ public class CodeDOMBuilderTests {
 							null),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("many")
 								})),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("</div>")
 								}))
@@ -490,7 +490,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -498,8 +498,8 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("<div>")
 								})),
@@ -547,7 +547,7 @@ public class CodeDOMBuilderTests {
 										new CodeThisReferenceExpression(),
 										"bind_2",
 										new CodeExpression[] {
-											new CodeVariableReferenceExpression("writer"),
+											new CodeVariableReferenceExpression("output"),
 											new CodeMethodInvokeExpression(
 												new CodeVariableReferenceExpression("iterator_4"),
 												"next",
@@ -558,15 +558,15 @@ public class CodeDOMBuilderTests {
 							}),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("</div>")
 								}))
 					}),
 					new CodeMethod(Void.class, "bind_2",
 							new CodeParameterDeclarationExpression[] {
-								new CodeParameterDeclarationExpression(Writer.class, "writer"),
+								new CodeParameterDeclarationExpression(Appendable.class, "output"),
 								new CodeParameterDeclarationExpression(Object.class, "model"),
 								new CodeParameterDeclarationExpression(int.class, "index"),
 								new CodeParameterDeclarationExpression(int.class, "count")
@@ -574,15 +574,15 @@ public class CodeDOMBuilderTests {
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("writer"),
-										"write",
+										new CodeVariableReferenceExpression("output"),
+										"append",
 										new CodeExpression[] {
 											new CodePrimitiveExpression("item ")
 										})),
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("writer"),
-										"write",
+										new CodeVariableReferenceExpression("output"),
+										"append",
 										new CodeExpression[] {
 											new CodeVariableReferenceExpression("index")
 										}))
@@ -623,7 +623,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -631,8 +631,8 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("<div>")
 								})),
@@ -680,7 +680,7 @@ public class CodeDOMBuilderTests {
 										new CodeThisReferenceExpression(),
 										"bind_2",
 										new CodeExpression[] {
-											new CodeVariableReferenceExpression("writer"),
+											new CodeVariableReferenceExpression("output"),
 											new CodeMethodInvokeExpression(
 												new CodeVariableReferenceExpression("iterator_4"),
 												"next",
@@ -691,15 +691,15 @@ public class CodeDOMBuilderTests {
 							}),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("</div>")
 								}))
 					}),
 					new CodeMethod(Void.class, "bind_2",
 							new CodeParameterDeclarationExpression[] {
-								new CodeParameterDeclarationExpression(Writer.class, "writer"),
+								new CodeParameterDeclarationExpression(Appendable.class, "output"),
 								new CodeParameterDeclarationExpression(Object.class, "model"),
 								new CodeParameterDeclarationExpression(int.class, "index"),
 								new CodeParameterDeclarationExpression(int.class, "count")
@@ -707,15 +707,15 @@ public class CodeDOMBuilderTests {
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("writer"),
-										"write",
+										new CodeVariableReferenceExpression("output"),
+										"append",
 										new CodeExpression[] {
 											new CodePrimitiveExpression("item ")
 										})),
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("writer"),
-										"write",
+										new CodeVariableReferenceExpression("output"),
+										"append",
 										new CodeExpression[] {
 											new CodeVariableReferenceExpression("index")
 										}))
@@ -757,7 +757,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -765,8 +765,8 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("<div>")
 								})),
@@ -802,7 +802,7 @@ public class CodeDOMBuilderTests {
 										new CodeThisReferenceExpression(),
 										"bind_2",
 										new CodeExpression[] {
-											new CodeVariableReferenceExpression("writer"),
+											new CodeVariableReferenceExpression("output"),
 											new CodeVariableReferenceExpression("model_1"),
 											new CodeVariableReferenceExpression("index_2"),
 											new CodeVariableReferenceExpression("count_3")
@@ -810,15 +810,15 @@ public class CodeDOMBuilderTests {
 							}),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("</div>")
 								}))
 					}),
 					new CodeMethod(Void.class, "bind_2",
 							new CodeParameterDeclarationExpression[] {
-								new CodeParameterDeclarationExpression(Writer.class, "writer"),
+								new CodeParameterDeclarationExpression(Appendable.class, "output"),
 								new CodeParameterDeclarationExpression(Object.class, "model"),
 								new CodeParameterDeclarationExpression(int.class, "index"),
 								new CodeParameterDeclarationExpression(int.class, "count")
@@ -826,15 +826,15 @@ public class CodeDOMBuilderTests {
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("writer"),
-										"write",
+										new CodeVariableReferenceExpression("output"),
+										"append",
 										new CodeExpression[] {
 											new CodePrimitiveExpression("item ")
 										})),
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("writer"),
-										"write",
+										new CodeVariableReferenceExpression("output"),
+										"append",
 										new CodeExpression[] {
 											new CodeVariableReferenceExpression("index")
 										}))
@@ -893,7 +893,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -901,8 +901,8 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("<div class=\"foo\" style=\"color:red\"><ul class=\"bar\"><li>one</li><li>two</li><li>three</li></ul></div>")
 								}))
@@ -930,7 +930,7 @@ public class CodeDOMBuilderTests {
 			new CodeMethod[] {
 				new CodeMethod(Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
@@ -938,8 +938,8 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("writer"),
-								"write",
+								new CodeVariableReferenceExpression("output"),
+								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("<div></div>")
 								}))

@@ -15,7 +15,7 @@ public class CodeDOMUtilityTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Writer.class, "writer"),
+					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
@@ -37,7 +37,7 @@ public class CodeDOMUtilityTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Writer.class, "writer"),
+					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
@@ -59,7 +59,7 @@ public class CodeDOMUtilityTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Writer.class, "writer"),
+					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "model"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")

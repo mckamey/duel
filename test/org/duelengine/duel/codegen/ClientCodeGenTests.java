@@ -21,9 +21,9 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = duel(\"A JSON payload should be an object or array, not a string.\");\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 		
 		assertEquals(expected, actual);
 	}
@@ -42,9 +42,9 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = duel(\"\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\\\"\");\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 		
 		assertEquals(expected, actual);
 	}
@@ -64,9 +64,9 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = duel(function(model, index, count) { return (count); });\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -86,9 +86,9 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = duel(function(model) { return duel.raw(model); });\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -108,9 +108,9 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = duel(function() { return Math.PI; });\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -130,9 +130,9 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = duel(function(model, index) { bar(index); });\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -188,9 +188,9 @@ public class ClientCodeGenTests {
 			"\t\t]\n"+
 			"\t]);\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -225,9 +225,9 @@ public class ClientCodeGenTests {
 			"\t\t]\n"+
 			"\t]);\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -262,9 +262,9 @@ public class ClientCodeGenTests {
 			"\t\t]\n"+
 			"\t]);\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -300,9 +300,9 @@ public class ClientCodeGenTests {
 			"\t\t]\n"+
 			"\t]);\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -364,9 +364,9 @@ public class ClientCodeGenTests {
 			"\t\t]\n"+
 			"\t]);\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -395,9 +395,9 @@ public class ClientCodeGenTests {
 			"var foo = duel(\"First View\");\n\n"+
 			"var bar = duel(\"Second View\");\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, input);
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -423,9 +423,9 @@ public class ClientCodeGenTests {
 			"}\n\n"+
 			"foo.bar.Blah = duel([\"div\"]);\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -461,9 +461,9 @@ public class ClientCodeGenTests {
 			"foo.bar.Blah = duel(\"First View\");\n\n"+
 			"foo.bar.Yada = duel(\"Second View\");\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, input);
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -505,9 +505,9 @@ public class ClientCodeGenTests {
 			"}\n\n"+
 			"foo.bar.two.Yada = duel(\"Second View\");\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, input);
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -550,9 +550,9 @@ public class ClientCodeGenTests {
 			"}\n\n"+
 			"com.example.Yada = duel(\"Second View\");\n";
 
-		StringWriter writer = new StringWriter();
-		new ClientCodeGen().write(writer, input);
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}

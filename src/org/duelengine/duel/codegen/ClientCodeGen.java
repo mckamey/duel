@@ -25,48 +25,48 @@ public class ClientCodeGen implements CodeGenerator {
 
 	/**
 	 * Generates client-side code for the given views
-	 * @param writer
+	 * @param output
 	 * @param views
 	 * @throws IOException
 	 */
 	@Override
-	public void write(Writer writer, ViewRootNode[] views)
+	public void write(Appendable output, ViewRootNode[] views)
 		throws IOException {
-		this.write(writer, views != null ? Arrays.asList(views) : null);
+		this.write(output, views != null ? Arrays.asList(views) : null);
 	}
 
 	/**
 	 * Generates client-side code for the given views
-	 * @param writer
+	 * @param output
 	 * @param views
 	 * @throws IOException 
 	 */
 	@Override
-	public void write(Writer writer, Iterable<ViewRootNode> views)
+	public void write(Appendable output, Iterable<ViewRootNode> views)
 		throws IOException {
 
-		if (writer == null) {
-			throw new NullPointerException("writer");
+		if (output == null) {
+			throw new NullPointerException("output");
 		}
 		if (views == null) {
 			throw new NullPointerException("views");
 		}
 
-		writer.write("/*global duel */");
-		this.writeln(writer);
+		output.append("/*global duel */");
+		this.writeln(output);
 
 		this.namespaces = JSUtility.cloneBrowserObjects();
 		for (ViewRootNode view : views) {
 			if (view == null) {
 				continue;
 			}
-			this.writeNamespaces(writer, view);
-			this.writeView(writer, view);
+			this.writeNamespaces(output, view);
+			this.writeView(output, view);
 		}
 		this.namespaces = null;
 	}
 
-	private void writeNamespaces(Writer writer, ViewRootNode view)
+	private void writeNamespaces(Appendable output, ViewRootNode view)
 		throws IOException {
 
 		String ident = view.getName();
@@ -91,23 +91,23 @@ public class ClientCodeGen implements CodeGenerator {
 			this.namespaces.add(ns);
 
 			if (i == 0) {
-				this.writeln(writer);
-				writer.write("var ");
-				writer.write(ns);
-				writer.write(';');
+				this.writeln(output);
+				output.append("var ");
+				output.append(ns);
+				output.append(';');
 			}
 
-			this.writeln(writer);
-			writer.write("if (typeof ");
-			writer.write(ns);
-			writer.write(" === \"undefined\") {");
+			this.writeln(output);
+			output.append("if (typeof ");
+			output.append(ns);
+			output.append(" === \"undefined\") {");
 			this.depth++;
-			this.writeln(writer);
-			writer.write(ns);
-			writer.write(" = {};");
+			this.writeln(output);
+			output.append(ns);
+			output.append(" = {};");
 			this.depth--;
-			this.writeln(writer);
-			writer.write('}');
+			this.writeln(output);
+			output.append('}');
 
 			if (!nsEmitted) {
 				nsEmitted = true;
@@ -115,136 +115,136 @@ public class ClientCodeGen implements CodeGenerator {
 		}
 
 		if (nsEmitted) {
-			this.writeln(writer);
+			this.writeln(output);
 		}
 	}
 
-	private void writeView(Writer writer, ViewRootNode view)
+	private void writeView(Appendable output, ViewRootNode view)
 		throws IOException {
 
 		this.depth = 0;
-		this.writeln(writer);
+		this.writeln(output);
 
 		String viewName = view.getName();
 		if (viewName.indexOf('.') < 0) {
-			writer.write("var ");
+			output.append("var ");
 		}
-		writer.write(viewName);
-		writer.write(" = duel(");
+		output.append(viewName);
+		output.append(" = duel(");
 
 		if (view.childCount() == 1) {
 			Node child = view.getFirstChild();
 			if (child instanceof ElementNode &&
 				((ElementNode)child).hasChildren()) {
 				this.depth++;
-				this.writeln(writer);
+				this.writeln(output);
 			}
 
 			// just emit the single child
-			this.writeNode(writer, child);
+			this.writeNode(output, child);
 		} else {
 			// wrap in a document fragment
-			this.writeElement(writer, "", view);
+			this.writeElement(output, "", view);
 		}
 
-		writer.write(");");
+		output.append(");");
 		this.depth = 0;
-		this.writeln(writer);
+		this.writeln(output);
 	}
 
-	private void writeNode(Writer writer, Node node)
+	private void writeNode(Appendable output, Node node)
 		throws IOException {
 
 		if (node instanceof LiteralNode) {
-			this.writeString(writer, ((LiteralNode)node).getValue());
+			this.writeString(output, ((LiteralNode)node).getValue());
 			return;
 		}
 
 		if (node instanceof ElementNode) {
-			this.writeElement(writer, ((ElementNode)node).getTagName(), (ElementNode)node);
+			this.writeElement(output, ((ElementNode)node).getTagName(), (ElementNode)node);
 			return;
 		}
 
 		if (node instanceof CodeBlockNode) {
-			this.writeCodeBlock(writer, (CodeBlockNode)node);
+			this.writeCodeBlock(output, (CodeBlockNode)node);
 		}
 	}
 
-	private void writeCodeBlock(Writer writer, CodeBlockNode node)
+	private void writeCodeBlock(Appendable output, CodeBlockNode node)
 		throws IOException {
 
-		writer.write(node.getClientCode());
+		output.append(node.getClientCode());
 	}
 
-	private void writeElement(Writer writer, String tagName, ElementNode node)
+	private void writeElement(Appendable output, String tagName, ElementNode node)
 		throws IOException {
 
-		writer.write('[');
+		output.append('[');
 		this.depth++;
 
-		this.writeString(writer, tagName);
+		this.writeString(output, tagName);
 
 		if (node.hasAttributes()) {
 			Set<String> attrs = node.getAttributeNames();
 			boolean singleAttr = (attrs.size() == 1);
 
-			writer.write(", {");
+			output.append(", {");
 			this.depth++;
 
 			boolean needsDelim = false;
 			for (String attr : attrs) {
 				// property delimiter
 				if (needsDelim) {
-					writer.write(',');
+					output.append(',');
 				} else {
 					needsDelim = true;
 				}
 
 				if (singleAttr) {
-					writer.write(' ');
+					output.append(' ');
 				} else {
-					this.writeln(writer);
+					this.writeln(output);
 				}
 
-				this.writeString(writer, attr);
-				writer.write(" : ");
-				this.writeNode(writer, node.getAttribute(attr));
+				this.writeString(output, attr);
+				output.append(" : ");
+				this.writeNode(output, node.getAttribute(attr));
 			}
 
 			this.depth--;
 			if (singleAttr) {
-				writer.write(' ');
+				output.append(' ');
 			} else {
-				this.writeln(writer);
+				this.writeln(output);
 			}
-			writer.write('}');
+			output.append('}');
 		}
 
 		for (Node child : node.getChildren()) {
-			writer.write(',');
-			this.writeln(writer);
-			this.writeNode(writer, child);
+			output.append(',');
+			this.writeln(output);
+			this.writeNode(output, child);
 		}
 
 		this.depth--;
 		if (node.hasChildren()) {
-			this.writeln(writer);
+			this.writeln(output);
 		}
-		writer.write(']');
+		output.append(']');
 	}
 
-	private void writeString(Writer writer, String value)
+	private void writeString(Appendable output, String value)
 		throws IOException {
 
 		if (value == null) {
-			writer.write("null");
+			output.append("null");
 			return;
 		}
 
 		int start = 0,
 			length = value.length();
 
-		writer.write('\"');
+		output.append('\"');
 
 		for (int i=start; i<length; i++) {
 			String escape;
@@ -283,27 +283,27 @@ public class ClientCodeGen implements CodeGenerator {
 			}
 
 			if (i > start) {
-				writer.write(value, start, i-start);
+				output.append(value, start, i);
 			}
 			start = i+1;
 
-			writer.write(escape);
+			output.append(escape);
 		}
 
 		if (length > start) {
-			writer.write(value, start, length-start);
+			output.append(value, start, length);
 		}
 
-		writer.write('\"');
+		output.append('\"');
 	}
 
-	private void writeln(Writer writer)
+	private void writeln(Appendable output)
 		throws IOException {
 
-		writer.write(this.settings.getNewline());
+		output.append(this.settings.getNewline());
 
 		for (int i=this.depth; i>0; i--) {
-			writer.write(this.settings.getIndent());
+			output.append(this.settings.getIndent());
 		}
 	}
 }

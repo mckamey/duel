@@ -1,8 +1,5 @@
 package org.duelengine.duel.codedom;
 
-import java.io.Writer;
-import java.util.*;
-
 /**
  * Represents a type member
  */

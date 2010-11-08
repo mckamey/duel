@@ -7,13 +7,13 @@ import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 
 /**
- * Translates markup AST to CodeDOM tree
+ * Translates the view AST to CodeDOM tree
  */
 public class CodeDOMBuilder {
 
 	private final CodeGenSettings settings;
 	private final HTMLFormatter formatter;
-	private final StringWriter buffer;
+	private final StringBuilder buffer;
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
 	private CodeTypeDeclaration viewType;
 
@@ -23,7 +23,7 @@ public class CodeDOMBuilder {
 
 	public CodeDOMBuilder(CodeGenSettings settings) {
 		this.settings = (settings != null) ? settings : new CodeGenSettings();
-		this.buffer = new StringWriter();
+		this.buffer = new StringBuilder();
 		this.formatter = new HTMLFormatter(this.buffer, this.settings.getEncodeNonASCII());
 	}
 
@@ -54,7 +54,7 @@ public class CodeDOMBuilder {
 			Void.class,
 			this.viewType.nextIdent("bind_"),
 			new CodeParameterDeclarationExpression[] {
-				new CodeParameterDeclarationExpression(Writer.class, "writer"),
+				new CodeParameterDeclarationExpression(Appendable.class, "output"),
 				new CodeParameterDeclarationExpression(Object.class, "model"),
 				new CodeParameterDeclarationExpression(int.class, "index"),
 				new CodeParameterDeclarationExpression(int.class, "count")
@@ -248,7 +248,7 @@ public class CodeDOMBuilder {
 							new CodeThisReferenceExpression(),
 							innerBind.getName(),
 							new CodeExpression[] {
-								new CodeVariableReferenceExpression("writer"),
+								new CodeVariableReferenceExpression("output"),
 								new CodeVariableReferenceExpression(modelDecl.getName()),
 								new CodeVariableReferenceExpression(indexDecl.getName()),
 								new CodeVariableReferenceExpression(countDecl.getName())
@@ -313,7 +313,7 @@ public class CodeDOMBuilder {
 							new CodeThisReferenceExpression(),
 							innerBind.getName(),
 							new CodeExpression[] {
-								new CodeVariableReferenceExpression("writer"),
+								new CodeVariableReferenceExpression("output"),
 								new CodeMethodInvokeExpression(
 									new CodeVariableReferenceExpression(iteratorDecl.getName()),
 									"next",
@@ -401,7 +401,7 @@ public class CodeDOMBuilder {
 				new CodeThisReferenceExpression(),
 					members.get(0).getName(),
 					new CodeExpression[] {
-						new CodeVariableReferenceExpression("writer"),
+						new CodeVariableReferenceExpression("output"),
 						new CodeVariableReferenceExpression("model"),
 						new CodeVariableReferenceExpression("index"),
 						new CodeVariableReferenceExpression("count")
@@ -519,17 +519,15 @@ public class CodeDOMBuilder {
 	 * @return
 	 */
 	private void flushBuffer() {
-		StringBuffer sb = this.buffer.getBuffer();
-
-		if (sb.length() < 1) {
+		if (this.buffer.length() < 1) {
 			return;
 		}
-		
+
 		// get the accumulated value
-		CodeStatement emitLit = CodeDOMUtility.emitLiteralValue(sb.toString());
+		CodeStatement emitLit = CodeDOMUtility.emitLiteralValue(this.buffer.toString());
 		this.scopeStack.peek().add(emitLit);
 
 		// clear the buffer
-		sb.setLength(0);
+		this.buffer.setLength(0);
 	}
 }

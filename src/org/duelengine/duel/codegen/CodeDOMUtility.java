@@ -20,12 +20,12 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeStatement emitLiteralValue(String literal) {
-		// writer.write("literal");
+		// output.append("literal");
 		return emitExpression(new CodePrimitiveExpression(literal));
 	}
 
 	public static CodeStatement emitVarValue(String varName) {
-		// writer.write(varName);
+		// output.append(varName);
 		return emitExpression(new CodeVariableReferenceExpression(varName));
 	}
 
@@ -39,23 +39,23 @@ final class CodeDOMUtility {
 			return emitExpression(expression);
 		}
 			
-		// this.htmlEncode(writer, expression);
+		// this.htmlEncode(output, expression);
 		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
 				"htmlEncode",
 				new CodeExpression[] {
-					new CodeVariableReferenceExpression("writer"),
+					new CodeVariableReferenceExpression("output"),
 					expression
 				}));
 	}
 
 	public static CodeStatement emitExpression(CodeExpression expression) {
-		// writer.write(expression);
+		// output.append(expression);
 		return new CodeExpressionStatement( 
 			new CodeMethodInvokeExpression(
-				new CodeVariableReferenceExpression("writer"),
-				"write",
+				new CodeVariableReferenceExpression("output"),
+				"append",
 				new CodeExpression[] { expression }));
 	}
 
@@ -66,7 +66,7 @@ final class CodeDOMUtility {
 	 */
 	public static CodeExpression inlineMethod(CodeMethod method) {
 		List<CodeParameterDeclarationExpression> parameters = method.getParameters();
-		if (parameters.size() != 4 || !parameters.get(0).getType().equals(Writer.class)) {
+		if (parameters.size() != 4 || !parameters.get(0).getType().equals(Appendable.class)) {
 			// incompatible method signature
 			return null;
 		}

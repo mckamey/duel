@@ -353,7 +353,7 @@ public class SourceTranslator {
 		if (node.depth() == 1) {
 			method.setName(this.scope.nextIdent("code_"));
 
-			method.addParameter(Writer.class, "writer");
+			method.addParameter(Appendable.class, "output");
 			method.addParameter(Object.class, "model");
 			method.addParameter(int.class, "index");
 			method.addParameter(int.class, "count");

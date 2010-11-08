@@ -1,11 +1,10 @@
 package org.duelengine.duel.codedom;
 
-import java.io.Writer;
 import java.util.*;
 
 /**
  * Represents a block of statements, providing
- * core parameters (writer, model, index, count)
+ * core parameters (output, model, index, count)
  */
 public class CodeMethod extends CodeMember {
 

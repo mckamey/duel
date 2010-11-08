@@ -21,9 +21,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 		
 		assertEquals(expected, actual);
 	}
@@ -40,9 +40,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 		
 		assertEquals(expected, actual);
 	}
@@ -60,9 +60,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -80,9 +80,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -100,9 +100,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -120,9 +120,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -163,9 +163,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -210,9 +210,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -238,9 +238,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, input);
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, input);
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -257,9 +257,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, new ViewRootNode[] { input });
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, new ViewRootNode[] { input });
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -285,9 +285,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, input);
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, input);
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -313,9 +313,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, input);
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, input);
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}
@@ -341,9 +341,9 @@ public class ServerCodeGenTests {
 
 		String expected = "";
 
-		StringWriter writer = new StringWriter();
-		new ServerCodeGen().write(writer, input);
-		String actual = writer.toString();
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, input);
+		String actual = output.toString();
 
 		assertEquals(expected, actual);
 	}

@@ -43,11 +43,11 @@ public abstract class AbstractView {
 	 */
 	protected void init() {}
 
-	public void bind(Writer writer){
-		this.bind(writer, Collections.emptyMap());
+	public void render(Appendable output){
+		this.render(output, Collections.emptyMap());
 	}
 
-	public void bind(Writer writer, Object model) {
+	public void render(Appendable output, Object model) {
 		try {
 			// TODO.
 		} finally {
@@ -100,27 +100,27 @@ public abstract class AbstractView {
 		}
 
 		// TODO: convert arbitrary object to list of properties
-		return throw new IllegalArgumentException("TODO: inject JSON convertor");
+		throw new IllegalArgumentException("TODO: inject JSON convertor");
 	}
 
 	/**
 	 * Ensures the literal text is properly encoded as HTML text
-	 * @param writer
+	 * @param output
 	 * @param literal
 	 * @throws IOException
 	 */
-	protected void htmlEncode(Writer writer, Object literal) throws IOException {
+	protected void htmlEncode(Appendable output, Object literal) throws IOException {
 		if (literal == null) {
 			return;
 		}
 
 		if (literal instanceof Boolean || literal instanceof Number) {
 			// no need to encode non-text primitives
-			writer.write(String.valueOf(literal));
+			output.append(String.valueOf(literal));
 
 		} else {
 			if (this.formatter == null) {
-				this.formatter = new HTMLFormatter(writer);
+				this.formatter = new HTMLFormatter(output);
 			}
 
 			this.formatter.writeLiteral(String.valueOf(literal));

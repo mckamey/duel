@@ -5,92 +5,92 @@ import java.io.*;
 public class HTMLFormatter {
 
 	private final boolean encodeNonASCII;
-	private final Writer writer;
+	private final Appendable output;
 
-	public HTMLFormatter(Writer writer) {
-		this(writer, true);
+	public HTMLFormatter(Appendable output) {
+		this(output, true);
 	}
 
-	public HTMLFormatter(Writer writer, boolean encodeNonASCII) {
-		if (writer == null) {
-			throw new NullPointerException("writer");
+	public HTMLFormatter(Appendable output, boolean encodeNonASCII) {
+		if (output == null) {
+			throw new NullPointerException("output");
 		}
 
-		this.writer = writer;
+		this.output = output;
 		this.encodeNonASCII = encodeNonASCII;
 	}
 
-	public Writer getWriter() {
-		return this.writer;
+	public Appendable getOutput() {
+		return this.output;
 	}
 
 	public void writeComment(String value)
 		throws IOException {
 
-		this.writer.write("<!--");
+		this.output.append("<!--");
 		this.writeLiteral(value, false);
-		this.writer.write("-->");
+		this.output.append("-->");
 	}
 
 	public void writeDocType(String value)
 		throws IOException {
 
-		this.writer.write("<!doctype");
-		this.writer.write(value);
-		this.writer.write(">");
+		this.output.append("<!doctype");
+		this.output.append(value);
+		this.output.append(">");
 	}
 
 	public void writeOpenElementBeginTag(String tagName)
 		throws IOException {
 
-		this.writer.write('<');
-		this.writer.write(tagName);
+		this.output.append('<');
+		this.output.append(tagName);
 	}
 
 	public void writeOpenAttribute(String name)
 		throws IOException {
 
-		this.writer.write(' ');
-		this.writer.write(name);
-		this.writer.write("=\"");
+		this.output.append(' ');
+		this.output.append(name);
+		this.output.append("=\"");
 	}
 
 	public void writeCloseAttribute()
 		throws IOException {
 
-		this.writer.write('"');
+		this.output.append('"');
 	}
 
 	public void writeAttribute(String name, String value)
 		throws IOException {
 
-		this.writer.write(' ');
-		this.writer.write(name);
+		this.output.append(' ');
+		this.output.append(name);
 		if (value != null) {
-			this.writer.write("=\"");
+			this.output.append("=\"");
 			this.writeLiteral(value, true);
-			this.writer.write('"');
+			this.output.append('"');
 		}
 	}
 
 	public void writeCloseElementBeginTag()
 		throws IOException {
 
-		this.writer.write('>');
+		this.output.append('>');
 	}
 
 	public void writeCloseElementVoidTag()
 		throws IOException {
 
-		this.writer.write(" />");
+		this.output.append(" />");
 	}
 
 	public void writeElementEndTag(String tagName)
 		throws IOException {
 
-		this.writer.write("</");
-		this.writer.write(tagName);
-		this.writer.write('>');
+		this.output.append("</");
+		this.output.append(tagName);
+		this.output.append('>');
 	}
 
 	public void writeLiteral(String value)
@@ -184,22 +184,22 @@ public class HTMLFormatter {
 
 			if (i > start) {
 				// emit any leading unescaped chunk
-				this.writer.write(value, start, i-start);
+				this.output.append(value, start, i);
 			}
 			start = i+1;
 
 			// emit character reference
-			this.writer.write(entity);
+			this.output.append(entity);
 		}
 
 		if (length > start) {
 			if (start == 0) {
 				// nothing escaped can write entire string directly
-				this.writer.write(value);
+				this.output.append(value);
 
 			} else {
 				// emit any trailing unescaped chunk
-				this.writer.write(value, start, length-start);
+				this.output.append(value, start, length);
 			}
 		}
 	}

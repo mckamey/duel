@@ -24,29 +24,29 @@ public class ServerCodeGen implements CodeGenerator {
 
 	/**
 	 * Generates server-side code for the given views
-	 * @param writer
+	 * @param output
 	 * @param views
 	 * @throws IOException 
 	 */
 	@Override
-	public void write(Writer writer, ViewRootNode[] views)
+	public void write(Appendable output, ViewRootNode[] views)
 		throws IOException {
 
-		this.write(writer, views != null ? Arrays.asList(views) : null);
+		this.write(output, views != null ? Arrays.asList(views) : null);
 	}
 
 	/**
 	 * Generates server-side code for the given views
-	 * @param writer
+	 * @param output
 	 * @param views
 	 * @throws IOException
 	 */
 	@Override
-	public void write(Writer writer, Iterable<ViewRootNode> views)
+	public void write(Appendable output, Iterable<ViewRootNode> views)
 		throws IOException {
 
-		if (writer == null) {
-			throw new NullPointerException("writer");
+		if (output == null) {
+			throw new NullPointerException("output");
 		}
 		if (views == null) {
 			throw new NullPointerException("views");
@@ -54,29 +54,31 @@ public class ServerCodeGen implements CodeGenerator {
 
 		for (ViewRootNode view : views) {
 			if (view != null) {
-				this.writeView(writer, view);
+				this.writeView(output, view);
 			}
 		}
 	}
 
-	private void writeView(Writer writer, ViewRootNode view)
+	private void writeView(Appendable output, ViewRootNode view)
 		throws IOException {
 
 		CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).build(view);
+
+		// TODO: generate source from CodeDOM
 	}
 
-	private void writeString(Writer writer, String value)
+	private void writeString(Appendable output, String value)
 		throws IOException {
 
 		if (value == null) {
-			writer.write("null");
+			output.append("null");
 			return;
 		}
 
 		int start = 0,
 			length = value.length();
 
-		writer.write('\"');
+		output.append('\"');
 
 		for (int i=start; i<length; i++) {
 			String escape;
@@ -115,17 +117,17 @@ public class ServerCodeGen implements CodeGenerator {
 			}
 
 			if (i > start) {
-				writer.write(value, start, i-start);
+				output.append(value, start, i);
 			}
 			start = i+1;
 
-			writer.write(escape);
+			output.append(escape);
 		}
 
 		if (length > start) {
-			writer.write(value, start, length-start);
+			output.append(value, start, length);
 		}
 
-		writer.write('\"');
+		output.append('\"');
 	}
 }
