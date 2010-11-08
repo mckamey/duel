@@ -465,7 +465,7 @@ public class CodeDOMBuilderTests {
 	}
 
 	@Test
-	public void iterationTest() throws IOException {
+	public void iterationArrayTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
@@ -510,7 +510,9 @@ public class CodeDOMBuilderTests {
 								new CodeThisReferenceExpression(),
 								"asIterable",
 								new CodeExpression[] {
-									new CodeVariableReferenceExpression("model")
+									new CodePropertyReferenceExpression(
+										new CodeVariableReferenceExpression("model"),
+										new CodePrimitiveExpression("items"))
 								})),
 						new CodeVariableDeclarationStatement(
 							int.class,
@@ -587,6 +589,126 @@ public class CodeDOMBuilderTests {
 					})
 			});
 
+		// mark as having had parens
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().getStatements().get(1)).getExpression()).getArguments().get(0).setHasParens(true);
+		
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void iterationCountTest() throws IOException {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("example"))
+			},
+			new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new FORCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("count", new ExpressionNode("4")),
+							new AttributeNode("model", new ExpressionNode("model.name")),
+						},
+						new Node[] {
+							new LiteralNode("item "),
+							new ExpressionNode("index")
+						})
+				})
+			});
+
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			null,
+			"example",
+			new CodeMethod[] {
+				new CodeMethod(Void.class, "bind_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("<div>")
+								})),
+						new CodeVariableDeclarationStatement(
+							Object.class,
+							"model_1",// model
+							new CodePropertyReferenceExpression(
+								new CodeVariableReferenceExpression("model"),
+								new CodePrimitiveExpression("name"))),
+						new CodeIterationStatement(
+							new CodeVariableCompoundDeclarationStatement(
+								new CodeVariableDeclarationStatement[] {
+									new CodeVariableDeclarationStatement(
+										int.class,
+										"index_2",// index
+										new CodePrimitiveExpression(0)),
+									new CodeVariableDeclarationStatement(
+										int.class,
+										"count_3",// count
+										new CodePrimitiveExpression(4))
+								}),// initStatement
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.LESS_THAN,
+								new CodeVariableReferenceExpression("index_2"),
+								new CodeVariableReferenceExpression("count_3")),// testExpression
+							new CodeExpressionStatement(
+								new CodeUnaryOperatorExpression(
+									CodeUnaryOperatorType.POST_INCREMENT,
+									new CodeVariableReferenceExpression("index_2"))),// incrementStatement
+							new CodeStatement[] {
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeThisReferenceExpression(),
+										"bind_2",
+										new CodeExpression[] {
+											new CodeVariableReferenceExpression("writer"),
+											new CodeVariableReferenceExpression("model_1"),
+											new CodeVariableReferenceExpression("index_2"),
+											new CodeVariableReferenceExpression("count_3")
+										}))
+							}),
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("</div>")
+								}))
+					}),
+					new CodeMethod(Void.class, "bind_2",
+							new CodeParameterDeclarationExpression[] {
+								new CodeParameterDeclarationExpression(Writer.class, "writer"),
+								new CodeParameterDeclarationExpression(Object.class, "model"),
+								new CodeParameterDeclarationExpression(int.class, "index"),
+								new CodeParameterDeclarationExpression(int.class, "count")
+							},
+							new CodeStatement[] {
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("writer"),
+										"write",
+										new CodeExpression[] {
+											new CodePrimitiveExpression("item ")
+										})),
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("writer"),
+										"write",
+										new CodeExpression[] {
+											new CodeVariableReferenceExpression("index")
+										}))
+					})
+			});
+
+		// mark as having had parens
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().getStatements().get(1)).getExpression()).getArguments().get(0).setHasParens(true);
 		
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);

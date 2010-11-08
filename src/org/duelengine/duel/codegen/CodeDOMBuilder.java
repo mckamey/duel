@@ -147,20 +147,115 @@ public class CodeDOMBuilder {
 		// build a helper method to hold the inner content
 		CodeMethod innerBind = this.buildBindMethod(node.getChildren());
 
+		Node loopCount = node.getAttribute(FORCommandNode.COUNT);
+		if (loopCount instanceof CodeBlockNode) {
+			CodeExpression countExpr = this.translateExpression(((CodeBlockNode)loopCount).getClientCode());
+
+			Node loopModel = node.getAttribute(FORCommandNode.MODEL);
+			CodeExpression modelExpr;
+			if (loopModel instanceof CodeBlockNode) {
+				modelExpr = this.translateExpression(((CodeBlockNode)loopModel).getClientCode());
+			} else {
+				modelExpr = new CodeVariableReferenceExpression("model");
+			}
+
+			this.buildIterationCount(scope, countExpr, modelExpr, innerBind);
+
+		} else {
+			CodeExpression items;
+			Node loopObj = node.getAttribute(FORCommandNode.IN);
+			if (loopObj instanceof CodeBlockNode) {
+				CodeExpression objExpr = this.translateExpression(((CodeBlockNode)loopObj).getClientCode());
+
+				items = objExpr;
+			} else {
+				Node loopArray = node.getAttribute(FORCommandNode.EACH);
+				if (!(loopArray instanceof CodeBlockNode)) {
+					throw new IllegalArgumentException("FOR loop missing its arguments");
+				}
+
+				CodeExpression arrayExpr = this.translateExpression(((CodeBlockNode)loopArray).getClientCode());
+	
+				items = new CodeMethodInvokeExpression(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"asIterable",
+						new CodeExpression[] {
+							arrayExpr
+						}),
+					"iterator",
+					null);
+			}
+
+			this.buildIterationIterable(scope, items, innerBind);
+		}
+	}
+
+	private void buildIterationCount(CodeStatementCollection scope, CodeExpression count, CodeExpression model, CodeMethod innerBind) {
+
+		// the collection to iterate over
+		CodeVariableDeclarationStatement modelDecl =
+			new CodeVariableDeclarationStatement(
+				Object.class,
+				scope.nextIdent("model_"),
+				model);
+		scope.add(modelDecl);
+
+		// the current index (embedded in for loop init statement)
+		CodeVariableDeclarationStatement indexDecl =
+			new CodeVariableDeclarationStatement(
+				int.class,
+				scope.nextIdent("index_"),
+				new CodePrimitiveExpression(0));
+
+		// the item count (embedded in for loop init statement)
+		CodeVariableDeclarationStatement countDecl =
+			new CodeVariableDeclarationStatement(
+				int.class,
+				scope.nextIdent("count_"),
+				count);
+
+		// the for loop init statement
+		CodeVariableCompoundDeclarationStatement initStatement = new CodeVariableCompoundDeclarationStatement(
+			new CodeVariableDeclarationStatement[] {
+				indexDecl,
+				countDecl
+			});
+
+		// the for loop block
+		scope.add(
+			new CodeIterationStatement(
+				initStatement,// initStatement
+				new CodeBinaryOperatorExpression(
+					CodeBinaryOperatorType.LESS_THAN,
+					new CodeVariableReferenceExpression(indexDecl.getName()),
+					new CodeVariableReferenceExpression(countDecl.getName())),// testExpression
+				new CodeExpressionStatement(
+					new CodeUnaryOperatorExpression(
+						CodeUnaryOperatorType.POST_INCREMENT,
+						new CodeVariableReferenceExpression(indexDecl.getName()))),// incrementStatement
+				new CodeStatement[] {
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeThisReferenceExpression(),
+							innerBind.getName(),
+							new CodeExpression[] {
+								new CodeVariableReferenceExpression("writer"),
+								new CodeVariableReferenceExpression(modelDecl.getName()),
+								new CodeVariableReferenceExpression(indexDecl.getName()),
+								new CodeVariableReferenceExpression(countDecl.getName())
+							}))
+				}));
+	}
+
+	private void buildIterationIterable(CodeStatementCollection scope, CodeExpression items, CodeMethod innerBind) {
+
 		// the collection to iterate over
 		CodeVariableDeclarationStatement collectionDecl =
 			new CodeVariableDeclarationStatement(
 				Collection.class,
 				scope.nextIdent("items_"),
-				new CodeMethodInvokeExpression(
-					new CodeMethodInvokeExpression(
-						new CodeThisReferenceExpression(),
-						"asIterable",
-						new CodeExpression[] {
-							new CodeVariableReferenceExpression("model")
-						}),
-					"iterator",
-					null));
+				items);
 		scope.add(collectionDecl);
 
 		// the current index

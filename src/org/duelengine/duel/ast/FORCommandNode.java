@@ -11,6 +11,11 @@ public class FORCommandNode extends CommandNode {
 	private static final String NAME = "$for";
 	private static final CommandName CMD = CommandName.FOR;
 
+	public static final String EACH = "each";
+	public static final String IN = "in";
+	public static final String COUNT = "count";
+	public static final String MODEL = "model";
+
 	public FORCommandNode() {
 		super(CMD, NAME, true);
 	}
@@ -52,10 +57,10 @@ public class FORCommandNode extends CommandNode {
 		if (name == null || name.length() == 0) {
 			throw new NullPointerException("name");
 		}
-		if (!name.equalsIgnoreCase("each") &&
-			!name.equalsIgnoreCase("in") &&
-			!name.equalsIgnoreCase("count") &&
-			!name.equalsIgnoreCase("model")) {
+		if (!name.equalsIgnoreCase(EACH) &&
+			!name.equalsIgnoreCase(IN) &&
+			!name.equalsIgnoreCase(COUNT) &&
+			!name.equalsIgnoreCase(MODEL)) {
 			// Syntax error
 			throw new IllegalArgumentException("Attribute invalid on FOR command: "+name);
 		}

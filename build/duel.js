@@ -361,6 +361,7 @@
 			items;
 
 		if (args.hasOwnProperty(COUNT)) {
+			// evaluate for-count loop
 			var m,
 				c = args[COUNT];
 
@@ -387,8 +388,8 @@
 			return result;
 		}
 
-		// first rule out for-in loop
 		if (args.hasOwnProperty(IN)) {
+			// convert for-in loop to for-each loop
 			var obj = args[IN];
 			if (isFunction(obj)) {
 				// execute code block
@@ -406,6 +407,7 @@
 				items = obj;
 			}
 		} else {
+			// evaluate for-each loop
 			items = args[EACH];
 			if (isFunction(items)) {
 				// execute code block
