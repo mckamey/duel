@@ -30,6 +30,7 @@ public class CodeDOMBuilder {
 	public CodeTypeDeclaration build(ViewRootNode viewNode) throws IOException {
 		this.viewType = new CodeTypeDeclaration();
 		try {
+			this.viewType.setAccess(AccessModifierType.PUBLIC);
 			String fullName = viewNode.getName();
 			int lastDot = fullName.lastIndexOf('.');
 			if (lastDot > 0) {
