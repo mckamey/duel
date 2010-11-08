@@ -8,6 +8,7 @@ import org.duelengine.duel.codedom.*;
 public class ServerCodeGen implements CodeGenerator {
 
 	private final CodeGenSettings settings;
+	private int depth;
 
 	public ServerCodeGen() {
 		this(null);
@@ -54,17 +55,210 @@ public class ServerCodeGen implements CodeGenerator {
 
 		for (ViewRootNode view : views) {
 			if (view != null) {
-				this.writeView(output, view);
+				this.write(output, view);
 			}
 		}
 	}
 
-	private void writeView(Appendable output, ViewRootNode view)
+	public void write(Appendable output, ViewRootNode view)
 		throws IOException {
 
 		CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).build(view);
 
-		// TODO: generate source from CodeDOM
+		this.write(output, viewType);
+	}
+
+	public void write(Appendable output, CodeTypeDeclaration view)
+		throws IOException {
+
+		this.depth = 0;
+		this.writeIntro(output, view.getNamespace(), view.getAccess(), view.getTypeName(), view.getBaseType());
+		for (CodeMember member : view.getMembers()) {
+			if (member instanceof CodeMethod) {
+				this.writeMethod(output, (CodeMethod)member);
+			} else if (member != null) {
+				throw new UnsupportedOperationException("Not implemented: "+member.getClass());
+			}
+		}
+		this.writeOutro(output);
+	}
+
+	private void writeMethod(Appendable output, CodeMethod method)
+		throws IOException {
+
+		this.writeAccessModifier(output, method.getAccess());
+		this.writeTypeName(output, method.getReturnType());
+		output.append(method.getName()).append("(");
+
+		boolean needsDelim = false;
+		for (CodeParameterDeclarationExpression param : method.getParameters()) {
+			if (needsDelim) {
+				output.append(", ");
+			} else {
+				needsDelim = true;
+			}
+			this.writeTypeName(output, param.getResultType());
+			output.append(param.getName());
+		}
+		output.append(") {");
+		this.depth++;
+		for (CodeStatement statement : method.getStatements()) {
+			this.writeStatement(output, statement);
+		}
+		this.depth--;
+		this.writeln(output);
+		output.append("}");
+		this.writeln(output);
+	}
+
+	private void writeStatement(Appendable output, CodeStatement statement)
+		throws IOException {
+
+		if (statement == null) {
+			return;
+		}
+
+		this.writeln(output);
+
+		if (statement instanceof CodeExpressionStatement) {
+			this.writeExpression(output, ((CodeExpressionStatement)statement).getExpression());
+			output.append(';');
+
+		} else {
+			throw new UnsupportedOperationException("Statement not yet supported: "+statement.getClass());
+		}
+	}
+
+	private void writeExpression(Appendable output, CodeExpression expression)
+		throws IOException {
+
+		if (expression == null) {
+			return;
+		}
+
+		boolean addParens = expression.getHasParens();
+		if (addParens) {
+			output.append('(');
+		}
+
+		try {
+			if (expression instanceof CodePrimitiveExpression) {
+				this.writeLiteral(output, ((CodePrimitiveExpression)expression).getValue());
+
+			} else if (expression instanceof CodeVariableReferenceExpression) {
+				output.append(((CodeVariableReferenceExpression)expression).getIdent());
+
+			} else if (expression instanceof CodeMethodInvokeExpression) {
+				this.writeMethodInvokeExpression(output, (CodeMethodInvokeExpression)expression);
+
+			} else {
+				throw new UnsupportedOperationException("Expression not yet supported: "+expression.getClass());
+			}
+		} finally {
+			if (addParens) {
+				output.append('(');
+			}
+		}
+	}
+
+	private void writeMethodInvokeExpression(Appendable output, CodeMethodInvokeExpression expression)
+		throws IOException {
+
+		this.writeExpression(output, expression.getTarget());
+		String methodName = expression.getMethodName();
+		if (methodName != null && methodName.length() > 0) {
+			output.append('.').append(methodName);
+		}
+		output.append('(');
+		boolean needsDelim = false;
+		for (CodeExpression arg : expression.getArguments()) {
+			if (needsDelim) {
+				output.append(", ");
+			} else {
+				needsDelim = true;
+			}
+			this.writeExpression(output, arg);
+		}
+		output.append(')');
+	}
+
+	private void writeTypeName(Appendable output, Class<?> type)
+		throws IOException {
+
+		String typeName;
+		if (type == Void.class) {
+			typeName = "void";
+		} else {
+			Package pkg = type.getPackage();
+			if (pkg == null || pkg.getName().equals("java.lang") || pkg.getName().equals("java.io") || pkg.getName().equals("java.util")) {
+				typeName = type.getSimpleName();
+			} else {
+				typeName = type.getName();
+			}
+		}
+		output.append(typeName).append(' ');
+	}
+
+	private void writeAccessModifier(Appendable output, AccessModifierType access)
+		throws IOException {
+		
+		switch (access) {
+			case PRIVATE:
+				output.append("private ");
+				break;
+			case PROTECTED:
+				output.append("protected ");
+				break;
+			case PUBLIC:
+				output.append("public ");
+				break;
+		}
+	}
+
+	private void writeIntro(Appendable output, String ns, AccessModifierType access, String typeName, Class<?> baseType)
+		throws IOException {
+
+		if (ns != null && ns.length() > 0) {
+			output.append("package ").append(ns).append(";");
+			this.writeln(output, 2);
+		}
+
+		output.append("import java.io.*;");
+		this.writeln(output);
+		output.append("import java.util.*;");
+		this.writeln(output, 2);
+		this.writeAccessModifier(output, access);
+		output.append("class ").append(typeName);
+		if (baseType != null) {
+			output.append(" extends ");
+			this.writeTypeName(output, baseType);
+			output.append('{');
+		} else {
+			output.append(" {");
+		}
+		this.depth++;
+		this.writeln(output, 2);
+	}
+
+	private void writeOutro(Appendable output) throws IOException {
+		this.depth--;
+		this.writeln(output);
+		output.append('}');
+		this.writeln(output);
+	}
+
+	private void writeLiteral(Appendable output, Object value)
+		throws IOException {
+
+		if (value == null) {
+			output.append("null");
+
+		} else if (value instanceof String) {
+			this.writeString(output, (String)value);
+
+		} else {
+			output.append(String.valueOf(value));
+		}
 	}
 
 	private void writeString(Appendable output, String value)
@@ -129,5 +323,23 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 
 		output.append('\"');
+	}
+
+	private void writeln(Appendable output)
+		throws IOException {
+
+		this.writeln(output, 1);
+	}
+
+	private void writeln(Appendable output, int newlines)
+		throws IOException {
+
+		for (int i=newlines; i>0; i--) {
+			output.append(this.settings.getNewline());
+		}
+
+		for (int i=this.depth; i>0; i--) {
+			output.append(this.settings.getIndent());
+		}
 	}
 }

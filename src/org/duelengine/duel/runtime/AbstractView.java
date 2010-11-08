@@ -48,6 +48,10 @@ public abstract class AbstractView {
 	}
 
 	public void render(Appendable output, Object model) {
+		if (output == null) {
+			throw new NullPointerException("output");
+		}
+
 		try {
 			// TODO.
 		} finally {

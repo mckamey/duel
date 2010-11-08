@@ -1,28 +1,55 @@
 package org.duelengine.duel.codegen;
 
-import java.io.*;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.duelengine.duel.ast.*;
+import org.duelengine.duel.codedom.*;
 
 public class ServerCodeGenTests {
 
 	@Test
 	public void stringSimpleTest() throws Exception {
-		ViewRootNode input = new ViewRootNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
-			},
-			new Node[] {
-				new LiteralNode("A JSON payload should be an object or array, not a string.")
+
+		CodeTypeDeclaration input = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
+			"com.example",
+			"Foo",
+			new CodeMethod[] {
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("output"),
+								"append",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")
+								}))
+					})
 			});
 
-		String expected = "";
+		String expected =
+			"package com.example;\n\n"+
+			"import java.io.*;\n"+
+			"import java.util.*;\n\n"+
+			"public class Foo extends org.duelengine.duel.runtime.AbstractView {\n\n"+
+			"\tprivate void bind_1(Appendable output, Object model, int index, int count) {\n"+
+			"\t\toutput.append(\"A JSON payload should be an object or array, not a string.\");\n"+
+			"\t}\n"+
+			"\t\n"+
+			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().write(output, new ViewRootNode[] { input });
+		new ServerCodeGen().write(output, input);
 		String actual = output.toString();
 		
 		assertEquals(expected, actual);
@@ -43,7 +70,9 @@ public class ServerCodeGenTests {
 		StringBuilder output = new StringBuilder();
 		new ServerCodeGen().write(output, new ViewRootNode[] { input });
 		String actual = output.toString();
-		
+
+		System.out.append(actual);
+
 		assertEquals(expected, actual);
 	}
 

@@ -7,9 +7,10 @@ import java.util.*;
  */
 public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 
-	private AccessModifierType access;
 	private Map<String, String> identMap;
 	private int nextID;
+	private AccessModifierType access;
+	private Class<?> baseType = org.duelengine.duel.runtime.AbstractView.class;
 	private String typeName;
 	private String namespace;
 	private final List<CodeMember> members = new ArrayList<CodeMember>();
@@ -36,6 +37,14 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 
 	public void setAccess(AccessModifierType value) {
 		this.access = (value != null) ? value : AccessModifierType.DEFAULT;
+	}
+
+	public Class<?> getBaseType() {
+		return this.baseType;
+	}
+
+	public void setBaseType(Class<?> value) {
+		this.baseType = value;
 	}
 
 	public void setTypeName(String value) {
@@ -98,6 +107,10 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 		}
 
 		CodeTypeDeclaration that = (CodeTypeDeclaration)arg;
+		if (this.baseType == null ? that.baseType != null : !this.baseType.equals(that.baseType)) {
+			return false;
+		}
+
 		if (this.namespace == null ? that.namespace != null : !this.namespace.equals(that.namespace)) {
 			return false;
 		}
@@ -127,6 +140,9 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 		final int HASH_PRIME = 1000003;
 
 		int hash = (this.access == null) ? 0 :this.access.hashCode();
+		if (this.baseType != null) {
+			hash = hash * HASH_PRIME + this.baseType.hashCode();
+		}
 		if (this.namespace != null) {
 			hash = hash * HASH_PRIME + this.namespace.hashCode();
 		}
