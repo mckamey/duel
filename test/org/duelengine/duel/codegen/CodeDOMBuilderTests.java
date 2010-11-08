@@ -508,11 +508,144 @@ public class CodeDOMBuilderTests {
 							"items_1",// collection
 							new CodeMethodInvokeExpression(
 								new CodeThisReferenceExpression(),
-								"asIterable",
+								"asItems",
 								new CodeExpression[] {
 									new CodePropertyReferenceExpression(
 										new CodeVariableReferenceExpression("model"),
 										new CodePrimitiveExpression("items"))
+								})),
+						new CodeVariableDeclarationStatement(
+							int.class,
+							"index_2",// index
+							new CodePrimitiveExpression(0)),
+						new CodeVariableDeclarationStatement(
+							int.class,
+							"count_3",// count
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("items_1"),
+								"size",
+								null)),
+						new CodeIterationStatement(
+							new CodeVariableDeclarationStatement(
+								Iterator.class,
+								"iterator_4",
+								new CodeMethodInvokeExpression(
+									new CodeVariableReferenceExpression("items_1"),
+									"iterator",
+									null)),// initStatement
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("iterator_4"),
+								"hasNext",
+								null),// testExpression
+							new CodeExpressionStatement(
+								new CodeUnaryOperatorExpression(
+									CodeUnaryOperatorType.POST_INCREMENT,
+									new CodeVariableReferenceExpression("index_2"))),// incrementStatement
+							new CodeStatement[] {
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeThisReferenceExpression(),
+										"bind_2",
+										new CodeExpression[] {
+											new CodeVariableReferenceExpression("writer"),
+											new CodeMethodInvokeExpression(
+												new CodeVariableReferenceExpression("iterator_4"),
+												"next",
+												null),
+											new CodeVariableReferenceExpression("index_2"),
+											new CodeVariableReferenceExpression("count_3")
+										}))
+							}),
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("</div>")
+								}))
+					}),
+					new CodeMethod(Void.class, "bind_2",
+							new CodeParameterDeclarationExpression[] {
+								new CodeParameterDeclarationExpression(Writer.class, "writer"),
+								new CodeParameterDeclarationExpression(Object.class, "model"),
+								new CodeParameterDeclarationExpression(int.class, "index"),
+								new CodeParameterDeclarationExpression(int.class, "count")
+							},
+							new CodeStatement[] {
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("writer"),
+										"write",
+										new CodeExpression[] {
+											new CodePrimitiveExpression("item ")
+										})),
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("writer"),
+										"write",
+										new CodeExpression[] {
+											new CodeVariableReferenceExpression("index")
+										}))
+					})
+			});
+
+		// mark as having had parens
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().getStatements().get(1)).getExpression()).getArguments().get(0).setHasParens(true);
+		
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void iterationObjectTest() throws IOException {
+
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("example"))
+			},
+			new Node[] {
+				new ElementNode("div", null, new Node[] {
+					new FORCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("in", new ExpressionNode("model.foo"))
+						},
+						new Node[] {
+							new LiteralNode("item "),
+							new ExpressionNode("index")
+						})
+				})
+			});
+
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			null,
+			"example",
+			new CodeMethod[] {
+				new CodeMethod(Void.class, "bind_1",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Writer.class, "writer"),
+						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("writer"),
+								"write",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("<div>")
+								})),
+						new CodeVariableDeclarationStatement(
+							Collection.class,
+							"items_1",// collection
+							new CodeMethodInvokeExpression(
+								new CodeThisReferenceExpression(),
+								"asEntries",
+								new CodeExpression[] {
+									new CodePropertyReferenceExpression(
+										new CodeVariableReferenceExpression("model"),
+										new CodePrimitiveExpression("foo"))
 								})),
 						new CodeVariableDeclarationStatement(
 							int.class,

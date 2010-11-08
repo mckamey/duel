@@ -61,7 +61,7 @@ public abstract class AbstractView {
 	 * @param model
 	 * @return
 	 */
-	protected Collection<?> asIterable(Object model) {
+	protected Collection<?> asItems(Object model) {
 
 		if (model instanceof Collection<?>) {
 			return (Collection<?>)model;
@@ -82,6 +82,25 @@ public abstract class AbstractView {
 
 		// null is allowed
 		return new SingleIterable(model);
+	}
+
+	/**
+	 * Adapts any Object to Iterable<Map.Entry> with size()
+	 * @param model
+	 * @return
+	 */
+	protected Collection<Map.Entry<Object,Object>> asEntries(Object model) {
+
+		// TODO: determine if Map.Entry<?,?> is flexible enough or if should just use a thin adapter
+
+		if (model instanceof Map<?,?>) {
+			@SuppressWarnings("unchecked")
+			Map<Object, Object> map = (Map<Object,Object>)model;
+			return map.entrySet();
+		}
+
+		// TODO: convert arbitrary object to list of properties
+		return throw new IllegalArgumentException("TODO: inject JSON convertor");
 	}
 
 	/**

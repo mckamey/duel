@@ -167,7 +167,15 @@ public class CodeDOMBuilder {
 			if (loopObj instanceof CodeBlockNode) {
 				CodeExpression objExpr = this.translateExpression(((CodeBlockNode)loopObj).getClientCode());
 
-				items = objExpr;
+				items = new CodeMethodInvokeExpression(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"asEntries",
+						new CodeExpression[] {
+							objExpr
+						}),
+					"iterator",
+					null);
 			} else {
 				Node loopArray = node.getAttribute(FORCommandNode.EACH);
 				if (!(loopArray instanceof CodeBlockNode)) {
@@ -175,11 +183,11 @@ public class CodeDOMBuilder {
 				}
 
 				CodeExpression arrayExpr = this.translateExpression(((CodeBlockNode)loopArray).getClientCode());
-	
+
 				items = new CodeMethodInvokeExpression(
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
-						"asIterable",
+						"asItems",
 						new CodeExpression[] {
 							arrayExpr
 						}),
