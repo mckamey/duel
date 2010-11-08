@@ -1,4 +1,4 @@
-package org.duelengine.duel.runtime;
+package org.duelengine.duel;
 
 import java.io.*;
 import java.util.*;
@@ -8,16 +8,16 @@ import org.duelengine.duel.codegen.HTMLFormatter;
 /**
  * The skeletal implementation of DUEL view runtime
  */
-public abstract class AbstractView {
+public abstract class View {
 	
 	private final ClientIDStrategy clientID;
 	private HTMLFormatter formatter;
 
-	protected AbstractView() {
+	protected View() {
 		this(new IncClientIDStrategy());
 	}
 
-	protected AbstractView(ClientIDStrategy clientID) {
+	protected View(ClientIDStrategy clientID) {
 		if (clientID == null) {
 			throw new NullPointerException("clientID");
 		}
@@ -27,7 +27,7 @@ public abstract class AbstractView {
 		this.init();
 	}
 
-	protected AbstractView(AbstractView view) {
+	protected View(View view) {
 		if (view == null) {
 			throw new NullPointerException("view");
 		}

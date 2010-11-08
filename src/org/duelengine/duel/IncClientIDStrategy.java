@@ -1,4 +1,4 @@
-package org.duelengine.duel.runtime;
+package org.duelengine.duel;
 
 public class IncClientIDStrategy implements ClientIDStrategy {
 

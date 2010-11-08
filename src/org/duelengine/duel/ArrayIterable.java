@@ -1,35 +1,36 @@
-package org.duelengine.duel.runtime;
+package org.duelengine.duel;
 
 import java.util.*;
 
 /**
- * Adapts a single Object to Iterable interface without allocating a List.
+ * Adapts Array to Iterable interface without performing a copy.
  * Implements Collection only to provide size()
  */
-class SingleIterable implements Collection<Object> {
+class ArrayIterable implements Collection<Object> {
 
-	private class SingleIterator implements Iterator<Object> {
+	private class ArrayIterator implements Iterator<Object> {
 
-		private final Object value;
-		private boolean consumed;
+		private final Object[] array;
+		private int index = -1;
+		private final int last;
 
-		public SingleIterator(Object value) {
-			this.value = value;
+		public ArrayIterator(Object[] array) {
+			this.array = array;
+			this.last = array.length-1;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return !this.consumed;
+			return (this.index < this.last);
 		}
 
 		@Override
 		public Object next() {
-			if (this.consumed) {
-				throw new NoSuchElementException("No more elements.");
+			if (this.index >= this.last) {
+				throw new NoSuchElementException("Passed end of array.");
 			}
 
-			this.consumed = true;
-			return this.value;
+			return this.array[++this.index];
 		}
 
 		@Override
@@ -38,20 +39,24 @@ class SingleIterable implements Collection<Object> {
 		}
 	}
 	
-	private final Object value;
-
-	public SingleIterable(Object value) {
-		this.value = value;
+	private final Object[] array;
+	
+	public ArrayIterable(Object[] array) {
+		this.array = array;
 	}
 
 	@Override
 	public Iterator<Object> iterator() {
-		return new SingleIterator(this.value);
+		if (array == null) {
+			throw new NullPointerException("array");
+		}
+
+		return new ArrayIterator(this.array);
 	}
 
 	@Override
 	public int size() {
-		return 1;
+		return this.array.length;
 	}
 
 	@Override

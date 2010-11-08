@@ -41,7 +41,7 @@ public class ServerCodeGenTests {
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n\n"+
-			"public class Foo extends org.duelengine.duel.runtime.AbstractView {\n\n"+
+			"public class Foo extends org.duelengine.duel.View {\n\n"+
 			"\tprivate void bind_1(Appendable output, Object model, int index, int count) {\n"+
 			"\t\toutput.append(\"A JSON payload should be an object or array, not a string.\");\n"+
 			"\t}\n"+

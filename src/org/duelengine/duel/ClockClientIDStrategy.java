@@ -1,4 +1,4 @@
-package org.duelengine.duel.runtime;
+package org.duelengine.duel;
 
 import java.util.*;
 

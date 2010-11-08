@@ -10,7 +10,7 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 	private Map<String, String> identMap;
 	private int nextID;
 	private AccessModifierType access;
-	private Class<?> baseType = org.duelengine.duel.runtime.AbstractView.class;
+	private Class<?> baseType = org.duelengine.duel.View.class;
 	private String typeName;
 	private String namespace;
 	private final List<CodeMember> members = new ArrayList<CodeMember>();
