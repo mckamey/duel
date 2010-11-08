@@ -16,6 +16,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -40,6 +41,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -68,6 +70,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -96,6 +99,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -127,6 +131,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -154,6 +159,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -185,6 +191,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -212,6 +219,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -239,6 +247,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -269,6 +278,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -296,6 +306,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -323,6 +334,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -351,6 +363,7 @@ public class SourceTranslatorTests {
 
 		CodeMethod expected =
 			new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Void.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {

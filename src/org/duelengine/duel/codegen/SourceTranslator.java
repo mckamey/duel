@@ -348,11 +348,15 @@ public class SourceTranslator {
 	}
 
 	private CodeMethod visitFunction(FunctionNode node) throws IllegalArgumentException {
-		CodeMethod method = new CodeMethod();
+		CodeMethod method = new CodeMethod(
+			AccessModifierType.PRIVATE,
+			Object.class,
+			this.scope.nextIdent("code_"),
+			null,
+			null);
 
 		if (node.depth() == 1) {
-			method.setName(this.scope.nextIdent("code_"));
-
+			method.setReturnType(Void.class);
 			method.addParameter(Appendable.class, "output");
 			method.addParameter(Object.class, "model");
 			method.addParameter(int.class, "index");

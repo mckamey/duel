@@ -7,6 +7,7 @@ import java.util.*;
  */
 public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 
+	private AccessModifierType access;
 	private Map<String, String> identMap;
 	private int nextID;
 	private String typeName;
@@ -14,13 +15,11 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 	private final List<CodeMember> members = new ArrayList<CodeMember>();
 
 	public CodeTypeDeclaration() {
+		this.access = AccessModifierType.DEFAULT;
 	}
 
-	public CodeTypeDeclaration(String namespace, String typeName, CodeMethod[] methods) {
-		this(namespace, typeName, Arrays.asList(methods));
-	}
-
-	public CodeTypeDeclaration(String namespace, String typeName, Iterable<CodeMethod> methods) {
+	public CodeTypeDeclaration(AccessModifierType access, String namespace, String typeName, CodeMethod[] methods) {
+		this.access = (access != null) ? access : AccessModifierType.DEFAULT;
 		this.namespace = namespace;
 		this.typeName = typeName;
 
@@ -29,6 +28,14 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 				this.add(method);
 			}
 		}
+	}
+
+	public AccessModifierType getAccess() {
+		return this.access;
+	}
+
+	public void setAccess(AccessModifierType value) {
+		this.access = (value != null) ? value : AccessModifierType.DEFAULT;
 	}
 
 	public void setTypeName(String value) {
@@ -112,14 +119,17 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 			}
 		}
 
-		return true;
+		return this.access == that.access;
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = (this.namespace == null) ? 0 : this.namespace.hashCode();
+		int hash = (this.access == null) ? 0 :this.access.hashCode();
+		if (this.namespace != null) {
+			hash = hash * HASH_PRIME + this.namespace.hashCode();
+		}
 		if (this.typeName != null) {
 			hash = hash * HASH_PRIME + this.typeName.hashCode();
 		}

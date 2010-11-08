@@ -21,10 +21,14 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -58,10 +62,14 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -96,10 +104,14 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -137,10 +149,14 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -180,10 +196,14 @@ public class CodeDOMBuilderTests {
 
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -221,10 +241,14 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -286,10 +310,14 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			"example",
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -394,10 +422,14 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			"example",
 			"foo2",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -485,10 +517,14 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			null,
 			"example",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -564,7 +600,7 @@ public class CodeDOMBuilderTests {
 									new CodePrimitiveExpression("</div>")
 								}))
 					}),
-					new CodeMethod(Void.class, "bind_2",
+					new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_2",
 							new CodeParameterDeclarationExpression[] {
 								new CodeParameterDeclarationExpression(Appendable.class, "output"),
 								new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -618,10 +654,11 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			null,
 			"example",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -697,7 +734,7 @@ public class CodeDOMBuilderTests {
 									new CodePrimitiveExpression("</div>")
 								}))
 					}),
-					new CodeMethod(Void.class, "bind_2",
+					new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_2",
 							new CodeParameterDeclarationExpression[] {
 								new CodeParameterDeclarationExpression(Appendable.class, "output"),
 								new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -752,10 +789,14 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			null,
 			"example",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -816,7 +857,7 @@ public class CodeDOMBuilderTests {
 									new CodePrimitiveExpression("</div>")
 								}))
 					}),
-					new CodeMethod(Void.class, "bind_2",
+					new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_2",
 							new CodeParameterDeclarationExpression[] {
 								new CodeParameterDeclarationExpression(Appendable.class, "output"),
 								new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -888,10 +929,14 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			null,
 			"foo",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),
@@ -925,10 +970,14 @@ public class CodeDOMBuilderTests {
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
 			"foo.bar",
 			"Blah",
 			new CodeMethod[] {
-				new CodeMethod(Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "model"),

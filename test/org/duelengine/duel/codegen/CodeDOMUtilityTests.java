@@ -12,6 +12,7 @@ public class CodeDOMUtilityTests {
 	public void inlineMethodVarRefTest() throws Exception {
 
 		CodeMethod input = new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -34,6 +35,7 @@ public class CodeDOMUtilityTests {
 	public void inlineMethodPrimitiveTest() throws Exception {
 
 		CodeMethod input = new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
@@ -56,6 +58,7 @@ public class CodeDOMUtilityTests {
 	public void inlineMethodMultiLineTest() throws Exception {
 
 		CodeMethod input = new CodeMethod(
+				AccessModifierType.PRIVATE,
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {

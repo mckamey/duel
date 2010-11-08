@@ -5,13 +5,24 @@ package org.duelengine.duel.codedom;
  */
 public abstract class CodeMember extends CodeObject {
 
+	private AccessModifierType access;
 	private String name;
 
 	public CodeMember() {
+		this.access = AccessModifierType.DEFAULT;
 	}
 
-	public CodeMember(String name) {
+	public CodeMember(AccessModifierType access, String name) {
 		this.name = name;
+		this.access = (access != null) ? access : AccessModifierType.DEFAULT;
+	}
+
+	public AccessModifierType getAccess() {
+		return this.access;
+	}
+
+	public void setAccess(AccessModifierType value) {
+		this.access = (value != null) ? value : AccessModifierType.DEFAULT;
 	}
 
 	public String getName() {
@@ -35,11 +46,18 @@ public abstract class CodeMember extends CodeObject {
 			return false;
 		}
 
-		return true;
+		return this.access == that.access;
 	}
 
 	@Override
 	public int hashCode() {
-		return (this.name == null) ? 0 : this.name.hashCode();
+		final int HASH_PRIME = 1000003;
+
+		int hash = (this.access == null) ? 0 :this.access.hashCode();
+		if (this.name != null) {
+			hash = hash * HASH_PRIME + this.name.hashCode();
+		}
+
+		return hash;
 	}
 }

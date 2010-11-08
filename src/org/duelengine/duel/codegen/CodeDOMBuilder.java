@@ -51,6 +51,7 @@ public class CodeDOMBuilder {
 	private CodeMethod buildBindMethod(List<Node> content) throws IOException {
 
 		CodeMethod method = new CodeMethod(
+			AccessModifierType.PRIVATE,
 			Void.class,
 			this.viewType.nextIdent("bind_"),
 			new CodeParameterDeclarationExpression[] {
