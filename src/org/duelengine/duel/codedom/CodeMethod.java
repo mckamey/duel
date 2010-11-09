@@ -40,7 +40,11 @@ public class CodeMethod extends CodeMember {
 	}
 
 	public void addParameter(Class<?> type, String name) {
-		this.parameters.add(new CodeParameterDeclarationExpression(type, name));
+		this.addParameter(new CodeParameterDeclarationExpression(type, name));
+	}
+
+	public void addParameter(CodeParameterDeclarationExpression parameter) {
+		this.parameters.add(parameter);
 	}
 
 	public CodeStatementCollection getStatements() {

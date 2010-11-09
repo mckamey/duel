@@ -2,11 +2,14 @@ package org.duelengine.duel.codegen;
 
 import java.io.*;
 import java.util.*;
+
+import org.duelengine.duel.*;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 
 public class ServerCodeGen implements CodeGenerator {
 
+	private static final String DUEL_PACKAGE = DuelView.class.getPackage().getName();
 	private final CodeGenSettings settings;
 	private int depth;
 
@@ -68,19 +71,82 @@ public class ServerCodeGen implements CodeGenerator {
 		this.write(output, viewType);
 	}
 
-	public void write(Appendable output, CodeTypeDeclaration view)
+	public void write(Appendable output, CodeTypeDeclaration type)
 		throws IOException {
 
 		this.depth = 0;
-		this.writeIntro(output, view.getNamespace(), view.getAccess(), view.getTypeName(), view.getBaseType());
-		for (CodeMember member : view.getMembers()) {
-			if (member instanceof CodeMethod) {
+		this.writeIntro(output, type.getNamespace(), type.getAccess(), type.getTypeName(), type.getBaseType());
+		for (CodeMember member : type.getMembers()) {
+			this.writeln(output, 2);
+			if (member instanceof CodeConstructor) {
+				this.writeConstructor(output, (CodeConstructor)member, type.getTypeName());
+
+			} else if (member instanceof CodeMethod) {
 				this.writeMethod(output, (CodeMethod)member);
+
 			} else if (member != null) {
 				throw new UnsupportedOperationException("Not implemented: "+member.getClass());
 			}
 		}
 		this.writeOutro(output);
+	}
+
+	private void writeConstructor(Appendable output, CodeConstructor ctor, String typeName)
+		throws IOException {
+
+		this.writeAccessModifier(output, ctor.getAccess());
+		output.append(typeName).append("(");
+
+		boolean needsDelim = false;
+		for (CodeParameterDeclarationExpression param : ctor.getParameters()) {
+			if (needsDelim) {
+				output.append(", ");
+			} else {
+				needsDelim = true;
+			}
+			this.writeTypeName(output, param.getResultType());
+			output.append(param.getName());
+		}
+		output.append(") {");
+		this.depth++;
+		List<CodeExpression> args = ctor.getBaseCtorArgs();
+		if (args.size() > 0) {
+			this.writeln(output);
+			output.append("super(");
+			needsDelim = false;
+			for (CodeExpression expression : args) {
+				if (needsDelim) {
+					output.append(", ");
+				} else {
+					needsDelim = true;
+				}
+				this.writeExpression(output, expression);
+			}
+			output.append(");");
+		} else {
+			args = ctor.getChainedCtorArgs();
+			if (args.size() > 0) {
+				this.writeln(output);
+				output.append("this(");
+				needsDelim = false;
+				for (CodeExpression expression : args) {
+					if (needsDelim) {
+						output.append(", ");
+					} else {
+						needsDelim = true;
+					}
+					this.writeExpression(output, expression);
+				}
+				output.append(");");
+			}
+		}
+
+		for (CodeStatement statement : ctor.getStatements()) {
+			this.writeStatement(output, statement);
+		}
+		this.depth--;
+		this.writeln(output);
+		output.append("}");
 	}
 
 	private void writeMethod(Appendable output, CodeMethod method)
@@ -108,7 +174,6 @@ public class ServerCodeGen implements CodeGenerator {
 		this.depth--;
 		this.writeln(output);
 		output.append("}");
-		this.writeln(output);
 	}
 
 	private void writeStatement(Appendable output, CodeStatement statement)
@@ -261,7 +326,8 @@ public class ServerCodeGen implements CodeGenerator {
 			typeName = "void";
 		} else {
 			Package pkg = type.getPackage();
-			if (pkg == null || pkg.getName().equals("java.lang") || pkg.getName().equals("java.io") || pkg.getName().equals("java.util")) {
+			String pkgName = (pkg == null) ? null : pkg.getName();
+			if (pkgName == null || "java.lang".equals(pkgName) || "java.io".equals(pkgName) || "java.util".equals(pkgName) || DUEL_PACKAGE.equals(pkgName)) {
 				typeName = type.getSimpleName();
 			} else {
 				typeName = type.getName();
@@ -297,6 +363,8 @@ public class ServerCodeGen implements CodeGenerator {
 		output.append("import java.io.*;");
 		this.writeln(output);
 		output.append("import java.util.*;");
+		this.writeln(output);
+		output.append("import ").append(DUEL_PACKAGE).append(".*;");
 		this.writeln(output, 2);
 		this.writeAccessModifier(output, access);
 		output.append("class ").append(typeName);
@@ -308,7 +376,6 @@ public class ServerCodeGen implements CodeGenerator {
 			output.append(" {");
 		}
 		this.depth++;
-		this.writeln(output, 2);
 	}
 
 	private void writeOutro(Appendable output) throws IOException {

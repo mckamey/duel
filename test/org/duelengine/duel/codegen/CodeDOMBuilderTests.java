@@ -134,7 +134,7 @@ public class CodeDOMBuilderTests {
 			});
 
 		// flag the expression as having had parens
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
@@ -181,7 +181,7 @@ public class CodeDOMBuilderTests {
 			});
 
 		// flag the expression as having had parens
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
@@ -229,7 +229,7 @@ public class CodeDOMBuilderTests {
 			});
 
 		// flag the expression as having had parens
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
@@ -391,8 +391,8 @@ public class CodeDOMBuilderTests {
 			});
 
 		// flag the conditions as having had parens
-		((CodeConditionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(1)).getCondition().setHasParens(true);
-		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)expected.getMembers().get(0)).getStatements().getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
+		((CodeConditionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().getStatements().get(1)).getCondition().setHasParens(true);
+		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
@@ -640,7 +640,7 @@ public class CodeDOMBuilderTests {
 			});
 
 		// mark as having had parens
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(4)).getStatements().getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
@@ -791,7 +791,7 @@ public class CodeDOMBuilderTests {
 			});
 
 		// mark as having had parens
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(4)).getStatements().getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
@@ -918,7 +918,7 @@ public class CodeDOMBuilderTests {
 			});
 
 		// mark as having had parens
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(4)).getStatements().getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 

@@ -41,12 +41,20 @@ public class ServerCodeGenTests {
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
-			"import java.util.*;\n\n"+
-			"public class Foo extends org.duelengine.duel.View {\n\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
 			"\tprivate void bind_1(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"A JSON payload should be an object or array, not a string.\");\n"+
 			"\t}\n"+
-			"\t\n"+
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
@@ -89,12 +97,20 @@ public class ServerCodeGenTests {
 
 		String expected =
 			"import java.io.*;\n"+
-			"import java.util.*;\n\n"+
-			"public class foo extends org.duelengine.duel.View {\n\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class foo extends DuelView {\n\n"+
+			"\tpublic foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic foo(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic foo(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
 			"\tprivate void bind_1(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.write(output, count);\n"+
 			"\t}\n"+
-			"\t\n"+
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
@@ -181,14 +197,23 @@ public class ServerCodeGenTests {
 			});
 
 		// flag the conditions as having had parens
-		((CodeConditionStatement)((CodeMethod)input.getMembers().get(0)).getStatements().getStatements().get(1)).getCondition().setHasParens(true);
-		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)input.getMembers().get(0)).getStatements().getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
+		((CodeConditionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().getStatements().get(1)).getCondition().setHasParens(true);
+		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
 
 		String expected =
 			"package example;\n\n"+
 			"import java.io.*;\n"+
-			"import java.util.*;\n\n"+
-			"public class foo extends org.duelengine.duel.View {\n\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class foo extends DuelView {\n\n"+
+			"\tpublic foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic foo(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic foo(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
 			"\tprivate void bind_1(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
 			"\t\tif (data == 0.0) {\n"+
@@ -200,7 +225,6 @@ public class ServerCodeGenTests {
 			"\t\t}\n"+
 			"\t\toutput.append(\"</div>\");\n"+
 			"\t}\n"+
-			"\t\n"+
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
@@ -287,8 +311,17 @@ public class ServerCodeGenTests {
 		String expected =
 			"package example;\n\n"+
 			"import java.io.*;\n"+
-			"import java.util.*;\n\n"+
-			"public class foo2 extends org.duelengine.duel.View {\n\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class foo2 extends DuelView {\n\n"+
+			"\tpublic foo2() {\n"+
+			"\t}\n\n"+
+			"\tpublic foo2(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic foo2(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
 			"\tprivate void bind_1(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
 			"\t\tif (data == 0.0) {\n"+
@@ -300,13 +333,12 @@ public class ServerCodeGenTests {
 			"\t\toutput.append(\"many\");\n"+
 			"\t\toutput.append(\"</div>\");\n"+
 			"\t}\n"+
-			"\t\n"+
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
 		new ServerCodeGen().write(output, input);
 		String actual = output.toString();
-
+		
 		assertEquals(expected, actual);
 	}
 }
