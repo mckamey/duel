@@ -250,6 +250,13 @@
 	 * @constant
 	 * @type {string}
 	 */
+	var KEY = "key";
+
+	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
 	var NAME = "name";
 
 	var bind;
@@ -322,23 +329,24 @@
 	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
+	 * @param {string|null} key The current property name
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	function bindContent(node, data, index, count, parts) {
+	function bindContent(node, data, index, count, key, parts) {
 		// second item might be attributes object
 		var hasAttr = (getType(node[1]) === OBJ);
 
 		if (node.length === (hasAttr ? 3 : 2)) {
 			// unwrap single nodes
-			return bind(node[node.length-1], data, index, count, parts);
+			return bind(node[node.length-1], data, index, count, key, parts);
 		}
 
 		// element array, make a doc frag
 		var result = [""];
 
 		for (var i=hasAttr ? 2 : 1, length=node.length; i<length; i++) {
-			append(result, bind(node[i], data, index, count, parts));
+			append(result, bind(node[i], data, index, count, key, parts));
 		}
 
 		return result;
@@ -352,38 +360,38 @@
 	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
+	 * @param {string|null} key The current property name
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	function loop(node, data, index, count, parts) {
+	function loop(node, data, index, count, key, parts) {
 		var args = node[1] || {},
 			result = [""],
-			items;
+			items, i, length;
 
 		if (args.hasOwnProperty(COUNT)) {
 			// evaluate for-count loop
-			var d,
-				c = args[COUNT];
-
-			if (isFunction(c)) {
+			length = args[COUNT];
+			if (isFunction(length)) {
 				// execute code block
-				c = c(data, index, count);
+				length = length(data, index, count, key);
 			}
 
+			var d;
 			if (args.hasOwnProperty(DATA)) {
 				d = args[DATA];
 				if (isFunction(d)) {
 					// execute code block
-					d = d(data, index, count);
+					d = d(data, index, count, key);
 				}
 			} else {
 				d = data;
 			}
 
 			// iterate over the items
-			for (var j=0; j<c; j++) {
+			for (i=0; i<length; i++) {
 				// Closure Compiler type cast
-				append(result, bindContent(/** @type {Array} */(node), d, j, c, parts));
+				append(result, bindContent(/** @type {Array} */(node), d, i, length, null, parts));
 			}
 			return result;
 		}
@@ -393,38 +401,46 @@
 			var obj = args[IN];
 			if (isFunction(obj)) {
 				// execute code block
-				obj = obj(data, index, count);
+				obj = obj(data, index, count, key);
 			}
 			if (getType(obj) === OBJ) {
-				// iterate over the properties
+				// accumulate the property keys to get count
 				items = [];
-				for (var key in obj) {
-					if (obj.hasOwnProperty(key)) {
-						items.push({ key: key, value: obj[key] });
+				for (var k in obj) {
+					if (obj.hasOwnProperty(k)) {
+						items.push(k);
 					}
 				}
-			} else {
-				items = obj;
+
+				// iterate over the keys
+				for (i=0, length=items.length; i<length; i++) {
+					// Closure Compiler type cast
+					append(result, bindContent(/** @type {Array} */(node), obj[items[i]], i, length, items[i], parts));
+				}
+				return result;
 			}
+
+			// just bind to single value
+			items = obj;
 		} else {
 			// evaluate for-each loop
 			items = args[EACH];
 			if (isFunction(items)) {
 				// execute code block
-				items = items(data, index, count);
+				items = items(data, index, count, key);
 			}
 		}
 
 		if (getType(items) === ARY) {
 			// iterate over the items
-			for (var i=0, length=items.length; i<length; i++) {
+			for (i=0, length=items.length; i<length; i++) {
 				// Closure Compiler type cast
-				append(result, bindContent(/** @type {Array} */(node), items[i], i, length, parts));
+				append(result, bindContent(/** @type {Array} */(node), items[i], i, length, null, parts));
 			}
 		} else {
 			// just bind the single value
 			// Closure Compiler type cast
-			result = bindContent(/** @type {Array} */(node), items, 0, 1, parts);
+			result = bindContent(/** @type {Array} */(node), items, 0, 1, null, parts);
 		}
 
 		return result;
@@ -438,10 +454,11 @@
 	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
+	 * @param {string|null} key The current property name
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	function xor(node, data, index, count, parts) {
+	function xor(node, data, index, count, key, parts) {
 		for (var i=1, length=node.length; i<length; i++) {
 
 			var block = node[i],
@@ -451,7 +468,7 @@
 			if (getType(block[1]) === OBJ && test) {
 				// execute test if exists
 				if (isFunction(test)) {
-					test = test(data, index, count);
+					test = test(data, index, count, key);
 				}
 
 				if (!test) {
@@ -460,7 +477,7 @@
 			}
 
 			// process block contents
-			return bindContent(block, data, index, count, parts);
+			return bindContent(block, data, index, count, key, parts);
 		}
 
 		return null;
@@ -470,25 +487,28 @@
 	 * Calls into another view
 	 * 
 	 * @private
-	 * @param {Array|Object|string|number|function(*,*,*):(Object|null)} node The template subtree root
+	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} node The template subtree root
 	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
+	 * @param {string|null} key The current property name
 	 * @return {Array|Object|string|number}
 	 */
-	function call(node, data, index, count) {
+	function call(node, data, index, count, key) {
 		var args = node[1];
 		if (!args || !args[VIEW]) {
 			return null;
 		}
 
 		// evaluate the arguments
-		var v = bind(args[VIEW], data, index, count),
-			d = bind(args[DATA], data, index, count),
+		var v = bind(args[VIEW], data, index, count, key),
+			d = bind(args[DATA], data, index, count, key),
 			// Closure Compiler type cast
-			i = /** @type {number|string} */ (bind(args[INDEX], data, index, count)),
+			i = /** @type {number|string} */ (bind(args[INDEX], data, index, count, key)),
 			// Closure Compiler type cast
-			c = /** @type {number} */ (bind(args[COUNT], data, index, count)),
+			c = /** @type {number} */ (bind(args[COUNT], data, index, count, key)),
+			// Closure Compiler type cast
+			k = /** @type {string} */ (bind(args[KEY], data, index, count, key)),
 			p = {};
 
 		// check for view parts
@@ -502,21 +522,22 @@
 		}
 
 		return (v && isFunction(v.getView)) ?
-			bind(v.getView(), d, i, c, p) : null;
+			bind(v.getView(), d, i, c, k, p) : null;
 	}
 
 	/**
-	 * Replaces a part place holder with the named part from the calling view
+	 * Replaces a place holder part with the named part from the calling view
 	 * 
 	 * @private
-	 * @param {Array|Object|string|number|function(*,*,*):(Object|null)} node The template subtree root
+	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} node The template subtree root
 	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
+	 * @param {string|null} key The current property name
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	function part(node, data, index, count, parts) {
+	function part(node, data, index, count, key, parts) {
 		var args = node[1] || {},
 			block = args[NAME];
 
@@ -526,21 +547,22 @@
 			block = parts[block];
 		}
 
-		return bindContent(block, data, index, count);
+		return bindContent(block, data, index, count, key);
 	}
 
 	/**
 	 * Binds the node to data
 	 * 
 	 * @private
-	 * @param {Array|Object|string|number|function(*,*,*):(Object|null)} node The template subtree root
+	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} node The template subtree root
 	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
+	 * @param {string|null} key The current property name
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	bind = function(node, data, index, count, parts) {
+	bind = function(node, data, index, count, key, parts) {
 		/**
 		 * @type {Array|Object|string|number}
 		 */
@@ -550,7 +572,7 @@
 			case FUN:
 				// execute code block
 				// Closure Compiler type cast
-				result = (/** @type {function(*,*,*):(Object|null)} */ (node))(data, index, count);
+				result = (/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key);
 				break;
 
 			case ARY:
@@ -561,27 +583,27 @@
 				var tag = node[0] || "";
 				switch (tag) {
 					case FOR:
-						result = loop(node, data, index, count, parts);
+						result = loop(node, data, index, count, key, parts);
 						break;
 					case XOR:
-						result = xor(node, data, index, count, parts);
+						result = xor(node, data, index, count, key, parts);
 						break;
 					case IF:
-						result = xor([XOR, node], data, index, count, parts);
+						result = xor([XOR, node], data, index, count, key, parts);
 						break;
 					case CALL:
 						// parts not needed when calling another view
-						result = call(node, data, index, count);
+						result = call(node, data, index, count, key);
 						break;
 					case PART:
-						result = part(node, data, index, count, parts);
+						result = part(node, data, index, count, key, parts);
 						break;
 					default:
 						// element array, first item is name
 						result = [tag];
 	
 						for (var i=1, length=node.length; i<length; i++) {
-							append(result, bind(node[i], data, index, count, parts));
+							append(result, bind(node[i], data, index, count, key, parts));
 						}
 						break;
 				}
@@ -590,19 +612,19 @@
 			case OBJ:
 				// attribute map
 				result = {};
-				for (var key in node) {
-					if (node.hasOwnProperty(key)) {
+				for (var k in node) {
+					if (node.hasOwnProperty(k)) {
 						// parts not needed when binding attributes
-						result[key] = bind(node[key], data, index, count);
+						result[k] = bind(node[k], data, index, count, key);
 					}
 				}
 				break;
-	
+
 			default:
 				result = node;
 				break;
 		}
-	
+
 		return result;
 	};
 
@@ -656,7 +678,7 @@
 		var self = function(data) {
 			try {
 				// Closure Compiler type cast
-				var result = bind(/** @type {Array} */(view), data, 0, 1);
+				var result = bind(/** @type {Array} */(view), data, 0, 1, null);
 				return new Result(result);
 			} catch (ex) {
 				// handle error with context

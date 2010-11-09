@@ -48,7 +48,7 @@
 		var self = function(data) {
 			try {
 				// Closure Compiler type cast
-				var result = bind(/** @type {Array} */(view), data, 0, 1);
+				var result = bind(/** @type {Array} */(view), data, 0, 1, null);
 				return new Result(result);
 			} catch (ex) {
 				// handle error with context

@@ -1,3 +1,5 @@
+try{
+
 module("duel(data)");
 
 test("static view", function() {
@@ -281,19 +283,19 @@ test("for-in object", function() {
 		["",
 		 	"data => ",
 		 	["dl",
-				["$for", { "in" : function(data, index, count) { return data; } },
+				["$for", { "in" : function(data) { return data; } },
 				 	["dt",
-					 	function(data, index, count) { return index; },
+					 	function(data, index) { return index; },
 					 	" of ",
 					 	function(data, index, count) { return count; },
 					 	" - ",
-					 	function(data, index, count) { return data.key; },
+					 	function(data, index, count, key) { return key; },
 					 	" : "],
 					["dd",
 					 	"(",
-					 	function(data, index, count) { return (data.value instanceof Array) ? "array" : typeof data.value; },
+					 	function(data) { return (data instanceof Array) ? "array" : typeof data; },
 					 	") ",
-					 	function(data, index, count) { return "" + data.value; }
+					 	function(data) { return "" + data; }
 				 	]
 			 	]
 		 	]
@@ -537,3 +539,7 @@ test("call wrapper view", function() {
 
 	same(actual, expected, "");
 });
+
+} catch (ex) {
+	alert(ex);
+}

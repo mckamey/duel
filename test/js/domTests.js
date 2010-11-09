@@ -1,3 +1,5 @@
+try {
+
 module("Result.toDOM()");
 
 test("nested elements with attributes", function() {
@@ -135,3 +137,7 @@ test("markup data", function() {
 
 	same(toHTML(actual), toHTML(expected), "");
 });
+
+} catch (ex) {
+	alert(ex);
+}
