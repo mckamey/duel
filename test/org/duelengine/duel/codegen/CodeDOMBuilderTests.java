@@ -33,7 +33,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -74,7 +75,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -116,7 +118,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -161,7 +164,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -208,7 +212,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -253,7 +258,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -322,7 +328,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -434,7 +441,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -529,7 +537,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -589,7 +598,8 @@ public class CodeDOMBuilderTests {
 												"next",
 												null),
 											new CodeVariableReferenceExpression("index_2"),
-											new CodeVariableReferenceExpression("count_3")
+											new CodeVariableReferenceExpression("count_3"),
+											new CodePrimitiveExpression(null)
 										}))
 							}),
 						new CodeExpressionStatement(
@@ -605,7 +615,8 @@ public class CodeDOMBuilderTests {
 								new CodeParameterDeclarationExpression(Appendable.class, "output"),
 								new CodeParameterDeclarationExpression(Object.class, "data"),
 								new CodeParameterDeclarationExpression(int.class, "index"),
-								new CodeParameterDeclarationExpression(int.class, "count")
+								new CodeParameterDeclarationExpression(int.class, "count"),
+								new CodeParameterDeclarationExpression(String.class, "key")
 							},
 							new CodeStatement[] {
 								new CodeExpressionStatement(
@@ -658,12 +669,16 @@ public class CodeDOMBuilderTests {
 			null,
 			"example",
 			new CodeMethod[] {
-				new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_1",
+				new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Void.class,
+					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -712,6 +727,13 @@ public class CodeDOMBuilderTests {
 									CodeUnaryOperatorType.POST_INCREMENT,
 									new CodeVariableReferenceExpression("index_2"))),// incrementStatement
 							new CodeStatement[] {
+								new CodeVariableDeclarationStatement(
+									Map.Entry.class,
+									"entry_5",
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("iterator_4"),
+										"next",
+										null)),
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
 										new CodeThisReferenceExpression(),
@@ -719,11 +741,15 @@ public class CodeDOMBuilderTests {
 										new CodeExpression[] {
 											new CodeVariableReferenceExpression("output"),
 											new CodeMethodInvokeExpression(
-												new CodeVariableReferenceExpression("iterator_4"),
-												"next",
+												new CodeVariableReferenceExpression("entry_5"),
+												"getValue",
 												null),
 											new CodeVariableReferenceExpression("index_2"),
-											new CodeVariableReferenceExpression("count_3")
+											new CodeVariableReferenceExpression("count_3"),
+											new CodeMethodInvokeExpression(
+												new CodeVariableReferenceExpression("entry_5"),
+												"getKey",
+												null)
 										}))
 							}),
 						new CodeExpressionStatement(
@@ -739,7 +765,8 @@ public class CodeDOMBuilderTests {
 								new CodeParameterDeclarationExpression(Appendable.class, "output"),
 								new CodeParameterDeclarationExpression(Object.class, "data"),
 								new CodeParameterDeclarationExpression(int.class, "index"),
-								new CodeParameterDeclarationExpression(int.class, "count")
+								new CodeParameterDeclarationExpression(int.class, "count"),
+								new CodeParameterDeclarationExpression(String.class, "key")
 							},
 							new CodeStatement[] {
 								new CodeExpressionStatement(
@@ -761,7 +788,7 @@ public class CodeDOMBuilderTests {
 
 		// mark as having had parens
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().getStatements().get(1)).getExpression()).getArguments().get(0).setHasParens(true);
-		
+
 		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
 
 		assertEquals(expected, actual);
@@ -801,7 +828,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -846,7 +874,8 @@ public class CodeDOMBuilderTests {
 											new CodeVariableReferenceExpression("output"),
 											new CodeVariableReferenceExpression("data_1"),
 											new CodeVariableReferenceExpression("index_2"),
-											new CodeVariableReferenceExpression("count_3")
+											new CodeVariableReferenceExpression("count_3"),
+											new CodePrimitiveExpression(null)
 										}))
 							}),
 						new CodeExpressionStatement(
@@ -862,7 +891,8 @@ public class CodeDOMBuilderTests {
 								new CodeParameterDeclarationExpression(Appendable.class, "output"),
 								new CodeParameterDeclarationExpression(Object.class, "data"),
 								new CodeParameterDeclarationExpression(int.class, "index"),
-								new CodeParameterDeclarationExpression(int.class, "count")
+								new CodeParameterDeclarationExpression(int.class, "count"),
+								new CodeParameterDeclarationExpression(String.class, "key")
 							},
 							new CodeStatement[] {
 								new CodeExpressionStatement(
@@ -941,7 +971,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -982,7 +1013,8 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(

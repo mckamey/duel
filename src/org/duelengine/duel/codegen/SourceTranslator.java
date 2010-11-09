@@ -361,6 +361,7 @@ public class SourceTranslator {
 			method.addParameter(Object.class, "data");
 			method.addParameter(int.class, "index");
 			method.addParameter(int.class, "count");
+			method.addParameter(String.class, "key");
 
 		} else {
 			// TODO: extract parameter names / types

@@ -19,7 +19,8 @@ public class CodeDOMUtilityTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("data"))
@@ -42,7 +43,8 @@ public class CodeDOMUtilityTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(new CodePrimitiveExpression("hello world."))
@@ -65,7 +67,8 @@ public class CodeDOMUtilityTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeVariableDeclarationStatement(

@@ -95,15 +95,13 @@ public abstract class View {
 	 */
 	protected Collection<Map.Entry<Object,Object>> asEntries(Object data) {
 
-		// TODO: determine if Map.Entry<?,?> is flexible enough or if should just use a thin adapter
-
 		if (data instanceof Map<?,?>) {
 			@SuppressWarnings("unchecked")
 			Map<Object, Object> map = (Map<Object,Object>)data;
 			return map.entrySet();
 		}
 
-		// TODO: convert arbitrary object to list of properties
+		// TODO: convert arbitrary object to list of Map.Entry
 		throw new IllegalArgumentException("TODO: inject JSON convertor");
 	}
 

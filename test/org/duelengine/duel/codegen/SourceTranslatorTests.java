@@ -23,7 +23,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("data"))
@@ -48,7 +49,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
@@ -77,7 +79,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
@@ -106,7 +109,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
@@ -138,7 +142,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
@@ -166,7 +171,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
@@ -198,7 +204,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
@@ -226,7 +233,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
@@ -254,7 +262,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
@@ -285,7 +294,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
@@ -313,7 +323,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
@@ -341,7 +352,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
@@ -370,7 +382,8 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count")
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
 					new CodeIterationStatement(

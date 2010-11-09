@@ -24,7 +24,8 @@ public class ServerCodeGenTests {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count")
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
 					},
 					new CodeStatement[] {
 						new CodeExpressionStatement(
@@ -42,7 +43,7 @@ public class ServerCodeGenTests {
 			"import java.io.*;\n"+
 			"import java.util.*;\n\n"+
 			"public class Foo extends org.duelengine.duel.View {\n\n"+
-			"\tprivate void bind_1(Appendable output, Object data, int index, int count) {\n"+
+			"\tprivate void bind_1(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"A JSON payload should be an object or array, not a string.\");\n"+
 			"\t}\n"+
 			"\t\n"+

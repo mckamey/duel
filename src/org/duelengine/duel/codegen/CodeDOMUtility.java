@@ -66,7 +66,7 @@ final class CodeDOMUtility {
 	 */
 	public static CodeExpression inlineMethod(CodeMethod method) {
 		List<CodeParameterDeclarationExpression> parameters = method.getParameters();
-		if (parameters.size() != 4 || !parameters.get(0).getType().equals(Appendable.class)) {
+		if (parameters.size() != 5 || !parameters.get(0).getType().equals(Appendable.class)) {
 			// incompatible method signature
 			return null;
 		}
