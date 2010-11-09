@@ -182,7 +182,14 @@ public class ServerCodeGen implements CodeGenerator {
 		this.writeExpression(output, expression.getLeft());
 		switch (expression.getOperator()) {
 			case IDENTITY_EQUALITY:
+			case VALUE_EQUALITY:
+				// TODO: create semantically correct operators
 				output.append(" == ");
+				break;
+			case IDENTITY_INEQUALITY:
+			case VALUE_INEQUALITY:
+				// TODO: create semantically correct operators
+				output.append(" != ");
 				break;
 		}
 		this.writeExpression(output, expression.getRight());
