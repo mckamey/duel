@@ -26,9 +26,9 @@ public class CodeDOMBuilderTests {
 			"foo",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -68,9 +68,9 @@ public class CodeDOMBuilderTests {
 			"foo",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -111,9 +111,9 @@ public class CodeDOMBuilderTests {
 			"foo",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -158,9 +158,9 @@ public class CodeDOMBuilderTests {
 			"foo",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -206,9 +206,9 @@ public class CodeDOMBuilderTests {
 			"foo",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -253,9 +253,9 @@ public class CodeDOMBuilderTests {
 			"foo",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -323,9 +323,9 @@ public class CodeDOMBuilderTests {
 			"foo",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -436,9 +436,9 @@ public class CodeDOMBuilderTests {
 			"foo2",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -532,9 +532,9 @@ public class CodeDOMBuilderTests {
 			"example",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -561,17 +561,20 @@ public class CodeDOMBuilderTests {
 										new CodeVariableReferenceExpression("data"),
 										new CodePrimitiveExpression("items"))
 								})),
-						new CodeVariableDeclarationStatement(
-							int.class,
-							"index_2",// index
-							new CodePrimitiveExpression(0)),
-						new CodeVariableDeclarationStatement(
-							int.class,
-							"count_3",// count
-							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("items_1"),
-								"size",
-								null)),
+						new CodeVariableCompoundDeclarationStatement(
+							new CodeVariableDeclarationStatement[]{
+								new CodeVariableDeclarationStatement(
+									int.class,
+									"index_2",// index
+									new CodePrimitiveExpression(0)),
+								new CodeVariableDeclarationStatement(
+									int.class,
+									"count_3",// count
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("items_1"),
+										"size",
+										null)),
+							}),
 						new CodeIterationStatement(
 							new CodeVariableDeclarationStatement(
 								Iterator.class,
@@ -592,7 +595,7 @@ public class CodeDOMBuilderTests {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
 										new CodeThisReferenceExpression(),
-										"bind_2",
+										"render_2",
 										new CodeExpression[] {
 											new CodeVariableReferenceExpression("output"),
 											new CodeMethodInvokeExpression(
@@ -612,30 +615,33 @@ public class CodeDOMBuilderTests {
 									new CodePrimitiveExpression("</div>")
 								}))
 					}),
-					new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_2",
-							new CodeParameterDeclarationExpression[] {
-								new CodeParameterDeclarationExpression(Appendable.class, "output"),
-								new CodeParameterDeclarationExpression(Object.class, "data"),
-								new CodeParameterDeclarationExpression(int.class, "index"),
-								new CodeParameterDeclarationExpression(int.class, "count"),
-								new CodeParameterDeclarationExpression(String.class, "key")
-							},
-							new CodeStatement[] {
-								new CodeExpressionStatement(
-									new CodeMethodInvokeExpression(
+					new CodeMethod(
+						AccessModifierType.PRIVATE,
+						Void.class,
+						"render_2",
+						new CodeParameterDeclarationExpression[] {
+							new CodeParameterDeclarationExpression(Appendable.class, "output"),
+							new CodeParameterDeclarationExpression(Object.class, "data"),
+							new CodeParameterDeclarationExpression(int.class, "index"),
+							new CodeParameterDeclarationExpression(int.class, "count"),
+							new CodeParameterDeclarationExpression(String.class, "key")
+						},
+						new CodeStatement[] {
+							new CodeExpressionStatement(
+								new CodeMethodInvokeExpression(
+									new CodeVariableReferenceExpression("output"),
+									"append",
+									new CodeExpression[] {
+										new CodePrimitiveExpression("item ")
+									})),
+							new CodeExpressionStatement(
+								new CodeMethodInvokeExpression(
+									new CodeThisReferenceExpression(),
+									"write",
+									new CodeExpression[] {
 										new CodeVariableReferenceExpression("output"),
-										"append",
-										new CodeExpression[] {
-											new CodePrimitiveExpression("item ")
-										})),
-								new CodeExpressionStatement(
-									new CodeMethodInvokeExpression(
-										new CodeThisReferenceExpression(),
-										"write",
-										new CodeExpression[] {
-											new CodeVariableReferenceExpression("output"),
-											new CodeVariableReferenceExpression("index")
-										}))
+										new CodeVariableReferenceExpression("index")
+									}))
 					})
 			});
 
@@ -673,9 +679,9 @@ public class CodeDOMBuilderTests {
 			"example",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -740,7 +746,7 @@ public class CodeDOMBuilderTests {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
 										new CodeThisReferenceExpression(),
-										"bind_2",
+										"render_2",
 										new CodeExpression[] {
 											new CodeVariableReferenceExpression("output"),
 											new CodeMethodInvokeExpression(
@@ -763,30 +769,33 @@ public class CodeDOMBuilderTests {
 									new CodePrimitiveExpression("</div>")
 								}))
 					}),
-					new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_2",
-							new CodeParameterDeclarationExpression[] {
-								new CodeParameterDeclarationExpression(Appendable.class, "output"),
-								new CodeParameterDeclarationExpression(Object.class, "data"),
-								new CodeParameterDeclarationExpression(int.class, "index"),
-								new CodeParameterDeclarationExpression(int.class, "count"),
-								new CodeParameterDeclarationExpression(String.class, "key")
-							},
-							new CodeStatement[] {
-								new CodeExpressionStatement(
-									new CodeMethodInvokeExpression(
+					new CodeMethod(
+						AccessModifierType.PRIVATE,
+						Void.class,
+						"render_2",
+						new CodeParameterDeclarationExpression[] {
+							new CodeParameterDeclarationExpression(Appendable.class, "output"),
+							new CodeParameterDeclarationExpression(Object.class, "data"),
+							new CodeParameterDeclarationExpression(int.class, "index"),
+							new CodeParameterDeclarationExpression(int.class, "count"),
+							new CodeParameterDeclarationExpression(String.class, "key")
+						},
+						new CodeStatement[] {
+							new CodeExpressionStatement(
+								new CodeMethodInvokeExpression(
+									new CodeVariableReferenceExpression("output"),
+									"append",
+									new CodeExpression[] {
+										new CodePrimitiveExpression("item ")
+									})),
+							new CodeExpressionStatement(
+								new CodeMethodInvokeExpression(
+									new CodeThisReferenceExpression(),
+									"write",
+									new CodeExpression[] {
 										new CodeVariableReferenceExpression("output"),
-										"append",
-										new CodeExpression[] {
-											new CodePrimitiveExpression("item ")
-										})),
-								new CodeExpressionStatement(
-									new CodeMethodInvokeExpression(
-										new CodeThisReferenceExpression(),
-										"write",
-										new CodeExpression[] {
-											new CodeVariableReferenceExpression("output"),
-											new CodeVariableReferenceExpression("index")
-										}))
+										new CodeVariableReferenceExpression("index")
+									}))
 					})
 			});
 
@@ -825,9 +834,9 @@ public class CodeDOMBuilderTests {
 			"example",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -873,7 +882,7 @@ public class CodeDOMBuilderTests {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
 										new CodeThisReferenceExpression(),
-										"bind_2",
+										"render_2",
 										new CodeExpression[] {
 											new CodeVariableReferenceExpression("output"),
 											new CodeVariableReferenceExpression("data_1"),
@@ -890,30 +899,33 @@ public class CodeDOMBuilderTests {
 									new CodePrimitiveExpression("</div>")
 								}))
 					}),
-					new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_2",
-							new CodeParameterDeclarationExpression[] {
-								new CodeParameterDeclarationExpression(Appendable.class, "output"),
-								new CodeParameterDeclarationExpression(Object.class, "data"),
-								new CodeParameterDeclarationExpression(int.class, "index"),
-								new CodeParameterDeclarationExpression(int.class, "count"),
-								new CodeParameterDeclarationExpression(String.class, "key")
-							},
-							new CodeStatement[] {
-								new CodeExpressionStatement(
-									new CodeMethodInvokeExpression(
+					new CodeMethod(
+						AccessModifierType.PRIVATE,
+						Void.class,
+						"render_2",
+						new CodeParameterDeclarationExpression[] {
+							new CodeParameterDeclarationExpression(Appendable.class, "output"),
+							new CodeParameterDeclarationExpression(Object.class, "data"),
+							new CodeParameterDeclarationExpression(int.class, "index"),
+							new CodeParameterDeclarationExpression(int.class, "count"),
+							new CodeParameterDeclarationExpression(String.class, "key")
+						},
+						new CodeStatement[] {
+							new CodeExpressionStatement(
+								new CodeMethodInvokeExpression(
+									new CodeVariableReferenceExpression("output"),
+									"append",
+									new CodeExpression[] {
+										new CodePrimitiveExpression("item ")
+									})),
+							new CodeExpressionStatement(
+								new CodeMethodInvokeExpression(
+									new CodeThisReferenceExpression(),
+									"write",
+									new CodeExpression[] {
 										new CodeVariableReferenceExpression("output"),
-										"append",
-										new CodeExpression[] {
-											new CodePrimitiveExpression("item ")
-										})),
-								new CodeExpressionStatement(
-									new CodeMethodInvokeExpression(
-										new CodeThisReferenceExpression(),
-										"write",
-										new CodeExpression[] {
-											new CodeVariableReferenceExpression("output"),
-											new CodeVariableReferenceExpression("index")
-										}))
+										new CodeVariableReferenceExpression("index")
+									}))
 					})
 			});
 
@@ -969,9 +981,9 @@ public class CodeDOMBuilderTests {
 			"foo",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -1011,9 +1023,9 @@ public class CodeDOMBuilderTests {
 			"Blah",
 			new CodeMethod[] {
 				new CodeMethod(
-					AccessModifierType.PRIVATE,
+					AccessModifierType.PROTECTED,
 					Void.class,
-					"bind_1",
+					"render",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),

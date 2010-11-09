@@ -1,7 +1,5 @@
 package org.duelengine.duel.codedom;
 
-import java.util.Arrays;
-
 /**
  * Represents a for loop
  */
@@ -32,11 +30,11 @@ public class CodeIterationStatement extends CodeStatement {
 		this.initStatement = value;
 	}
 
-	public CodeExpression getTestStatement() {
+	public CodeExpression getTestExpression() {
 		return this.testExpression;
 	}
 
-	public void setTestStatement(CodeExpression value) {
+	public void setTestExpression(CodeExpression value) {
 		this.testExpression = value;
 	}
 

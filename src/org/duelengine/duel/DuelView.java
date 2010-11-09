@@ -42,21 +42,62 @@ public abstract class DuelView {
 	 */
 	protected void init() {}
 
+	/**
+	 * Renders the view to the output
+	 * @param output
+	 */
 	public void render(Appendable output){
 		this.render(output, Collections.emptyMap());
 	}
 
+	/**
+	 * Binds the view to the data and renders the view to the output
+	 * @param output
+	 * @param data
+	 */
 	public void render(Appendable output, Object data) {
 		if (output == null) {
 			throw new NullPointerException("output");
 		}
 
 		try {
-			// TODO.
+			this.render(output, data, 0, 1, null);
 		} finally {
 			this.formatter = null;
 			this.clientID.resetID();
 		}
+	}
+
+	/**
+	 * The entry point into the view tree
+	 * @param output
+	 * @param data
+	 * @param index
+	 * @param count
+	 * @param key
+	 */
+	protected abstract void render(Appendable output, Object data, int index, int count, String key);
+
+	/**
+	 * Retrieves the property from the data object
+	 * @param data
+	 * @return
+	 */
+	protected Object getProperty(Object data, Object property) {
+		if (data == null || property == null) {
+			return null;
+		}
+
+		String propertyName = property.toString();
+
+		if (data instanceof Map<?,?>) {
+			@SuppressWarnings("unchecked")
+			Map<Object,Object> map = (Map<Object,Object>)data;
+			return map.get(propertyName);
+		}
+
+		// TODO: convert arbitrary object to list of Map.Entry
+		throw new IllegalArgumentException("TODO: convert object to map");
 	}
 
 	/**

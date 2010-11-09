@@ -38,10 +38,11 @@ public class CodeDOMBuilder {
 			}
 			this.viewType.setTypeName(fullName.substring(lastDot+1));
 
-			CodeMethod method = this.buildBindMethod(viewNode.getChildren());
+			CodeMethod method = this.buildRenderMethod(viewNode.getChildren());
 
-			// TODO: hook up entry point
-
+			method.setName("render");
+			method.setAccess(AccessModifierType.PROTECTED);
+			
 			return this.viewType;
 
 		} finally {
@@ -49,12 +50,13 @@ public class CodeDOMBuilder {
 		}
 	}
 
-	private CodeMethod buildBindMethod(List<Node> content) throws IOException {
+	private CodeMethod buildRenderMethod(List<Node> content)
+		throws IOException {
 
 		CodeMethod method = new CodeMethod(
 			AccessModifierType.PRIVATE,
 			Void.class,
-			this.viewType.nextIdent("bind_"),
+			this.viewType.nextIdent("render_"),
 			new CodeParameterDeclarationExpression[] {
 				new CodeParameterDeclarationExpression(Appendable.class, "output"),
 				new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -148,7 +150,7 @@ public class CodeDOMBuilder {
 		CodeStatementCollection scope = this.scopeStack.peek();
 
 		// build a helper method to hold the inner content
-		CodeMethod innerBind = this.buildBindMethod(node.getChildren());
+		CodeMethod innerBind = this.buildRenderMethod(node.getChildren());
 
 		CodeExpression dataExpr;
 		Node loopCount = node.getAttribute(FORCommandNode.COUNT);
@@ -358,7 +360,6 @@ public class CodeDOMBuilder {
 				int.class,
 				scope.nextIdent("index_"),
 				new CodePrimitiveExpression(0));
-		scope.add(indexDecl);
 
 		// the item count
 		CodeVariableDeclarationStatement countDecl =
@@ -369,7 +370,11 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(collectionDecl.getName()),
 					"size",
 					null));
-		scope.add(countDecl);
+
+		scope.add(new CodeVariableCompoundDeclarationStatement(new CodeVariableDeclarationStatement[] {
+				indexDecl,
+				countDecl 	
+			}));
 
 		// the iterator (embedded in for init)
 		CodeVariableDeclarationStatement iteratorDecl =

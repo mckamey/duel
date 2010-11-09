@@ -29,6 +29,10 @@ public class CodeVariableCompoundDeclarationStatement extends CodeStatement {
 		this.vars.add(value);
 	}
 
+	public List<CodeVariableDeclarationStatement> getVars() {
+		return this.vars;
+	}
+
 	public CodeVariableDeclarationStatement getVar(int index) {
 		return this.vars.get(index);
 	}

@@ -179,21 +179,43 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeStatement(Appendable output, CodeStatement statement)
 		throws IOException {
 
+		this.writeStatement(output, statement, false);
+	}
+
+	private void writeStatement(Appendable output, CodeStatement statement, boolean inline)
+		throws IOException {
+
 		if (statement == null) {
 			return;
 		}
 
-		this.writeln(output);
+		if (!inline) {
+			this.writeln(output);
+		}
 
+		boolean needsSemicolon; 
 		if (statement instanceof CodeExpressionStatement) {
 			this.writeExpression(output, ((CodeExpressionStatement)statement).getExpression());
-			output.append(';');
+			needsSemicolon = true;
 
 		} else if (statement instanceof CodeConditionStatement) {
-			this.writeConditionStatement(output, (CodeConditionStatement)statement);
+			needsSemicolon = this.writeConditionStatement(output, (CodeConditionStatement)statement);
+
+		} else if (statement instanceof CodeVariableDeclarationStatement) {
+			needsSemicolon = this.writeVariableDeclarationStatement(output, (CodeVariableDeclarationStatement)statement);
+
+		} else if (statement instanceof CodeIterationStatement) {
+			needsSemicolon = this.writeIterationStatement(output, (CodeIterationStatement)statement);
+
+		} else if (statement instanceof CodeVariableCompoundDeclarationStatement) {
+			needsSemicolon = this.writeVariableCompoundDeclarationStatement(output, (CodeVariableCompoundDeclarationStatement)statement);
 
 		} else {
 			throw new UnsupportedOperationException("Statement not yet supported: "+statement.getClass());
+		}
+
+		if (needsSemicolon && !inline) {
+			output.append(';');
 		}
 	}
 
@@ -228,6 +250,12 @@ public class ServerCodeGen implements CodeGenerator {
 			} else if (expression instanceof CodeBinaryOperatorExpression) {
 				this.writeBinaryOperatorExpression(output, (CodeBinaryOperatorExpression)expression);
 
+			} else if (expression instanceof CodeUnaryOperatorExpression) {
+				this.writeUnaryOperatorExpression(output, (CodeUnaryOperatorExpression)expression);
+
+			} else if (expression instanceof CodePropertyReferenceExpression) {
+				this.writePropertyReferenceExpression(output, (CodePropertyReferenceExpression)expression);
+
 			} else if (expression instanceof CodeMethodInvokeExpression) {
 				this.writeMethodInvokeExpression(output, (CodeMethodInvokeExpression)expression);
 
@@ -239,6 +267,16 @@ public class ServerCodeGen implements CodeGenerator {
 				output.append(')');
 			}
 		}
+	}
+
+	private void writePropertyReferenceExpression(Appendable output, CodePropertyReferenceExpression expression)
+		throws IOException {
+
+		output.append("this.getProperty(");
+		this.writeExpression(output, expression.getTarget());
+		output.append(", ");
+		this.writeExpression(output, expression.getPropertyName());
+		output.append(')');
 	}
 
 	private void writeBinaryOperatorExpression(Appendable output, CodeBinaryOperatorExpression expression)
@@ -256,11 +294,70 @@ public class ServerCodeGen implements CodeGenerator {
 				// TODO: create semantically correct operators
 				output.append(" != ");
 				break;
+			default:
+				throw new UnsupportedOperationException("Binary operator not yet supported: "+expression.getOperator());
 		}
 		this.writeExpression(output, expression.getRight());
 	}
 
-	private void writeConditionStatement(Appendable output, CodeConditionStatement statement)
+	private void writeUnaryOperatorExpression(Appendable output, CodeUnaryOperatorExpression expression)
+		throws IOException {
+
+		switch (expression.getOperator()) {
+			case PRE_INCREMENT:
+				output.append("++");
+				this.writeExpression(output, expression.getExpression());
+				break;
+			case POST_INCREMENT:
+				this.writeExpression(output, expression.getExpression());
+				output.append("++");
+				break;
+			default:
+				throw new UnsupportedOperationException("Unary operator not yet supported: "+expression.getOperator());
+		}
+	}
+
+	private boolean writeVariableDeclarationStatement(Appendable output, CodeVariableDeclarationStatement statement)
+		throws IOException {
+
+		this.writeTypeName(output, statement.getType());
+		output.append(statement.getName());
+		CodeExpression initExpr = statement.getInitExpression();
+		if (initExpr != null) {
+			output.append(" = ");
+			this.writeExpression(output, initExpr);
+		}
+
+		return true;
+	}
+
+	private boolean writeVariableCompoundDeclarationStatement(Appendable output, CodeVariableCompoundDeclarationStatement statement)
+		throws IOException {
+
+		List<CodeVariableDeclarationStatement> vars = statement.getVars();
+		if (vars.size() < 1) {
+			return false;
+		}
+
+		this.writeTypeName(output, vars.get(0).getType());
+		boolean needsDelim = false;
+		for (CodeVariableDeclarationStatement varRef : vars) {
+			if (needsDelim) {
+				output.append(", ");
+			} else {
+				needsDelim = true;
+			}
+			output.append(varRef.getName());
+			CodeExpression initExpr = varRef.getInitExpression();
+			if (initExpr != null) {
+				output.append(" = ");
+				this.writeExpression(output, initExpr);
+			}
+		}
+		return true;
+	}
+
+	private boolean writeConditionStatement(Appendable output, CodeConditionStatement statement)
 		throws IOException {
 
 		output.append("if (");
@@ -295,6 +392,31 @@ public class ServerCodeGen implements CodeGenerator {
 				this.writeConditionStatement(output, (CodeConditionStatement)statement.getFalseStatements().getLastStatement());
 			}
 		}
+
+		return false;
+	}
+
+	private boolean writeIterationStatement(Appendable output, CodeIterationStatement statement)
+		throws IOException {
+		
+		output.append("for (");
+
+		this.writeStatement(output, statement.getInitStatement(), true);
+		output.append("; ");
+		this.writeExpression(output, statement.getTestExpression());
+		output.append("; ");
+		this.writeStatement(output, statement.getIncrementStatement(), true);
+
+		output.append(") {");
+		this.depth++;
+		for (CodeStatement childStatement : statement.getStatements()) {
+			this.writeStatement(output, childStatement);
+		}
+		this.depth--;
+		this.writeln(output);
+		output.append('}');
+
+		return false;
 	}
 
 	private void writeMethodInvokeExpression(Appendable output, CodeMethodInvokeExpression expression)
