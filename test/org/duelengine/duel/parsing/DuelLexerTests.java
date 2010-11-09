@@ -1135,17 +1135,17 @@ public class DuelLexerTests {
 	public void conditionalBlockTest() {
 
 		String input =
-			"<div><if test='model===0'>zero<else if='model===1'>one<else>many</if></div>";
+			"<div><if test='data===0'>zero<else if='data===1'>one<else>many</if></div>";
 
 		Object[] expected = {
 				DuelToken.elemBegin("div"),
 				DuelToken.elemBegin("if"),
 				DuelToken.attrName("test"),
-				DuelToken.attrValue("model===0"),
+				DuelToken.attrValue("data===0"),
 				DuelToken.literal("zero"),
 				DuelToken.elemBegin("else"),
 				DuelToken.attrName("if"),
-				DuelToken.attrValue("model===1"),
+				DuelToken.attrValue("data===1"),
 				DuelToken.literal("one"),
 				DuelToken.elemBegin("else"),
 				DuelToken.literal("many"),
@@ -1162,17 +1162,17 @@ public class DuelLexerTests {
 	public void conditionalBlockVoidElseTest() {
 
 		String input =
-			"<div><if test='model===0'>zero<else if='model===1'/>one<else />many</if></div>";
+			"<div><if test='data===0'>zero<else if='data===1'/>one<else />many</if></div>";
 
 		Object[] expected = {
 				DuelToken.elemBegin("div"),
 				DuelToken.elemBegin("if"),
 				DuelToken.attrName("test"),
-				DuelToken.attrValue("model===0"),
+				DuelToken.attrValue("data===0"),
 				DuelToken.literal("zero"),
 				DuelToken.elemBegin("else"),
 				DuelToken.attrName("if"),
-				DuelToken.attrValue("model===1"),
+				DuelToken.attrValue("data===1"),
 				DuelToken.elemEnd("else"),
 				DuelToken.literal("one"),
 				DuelToken.elemBegin("else"),

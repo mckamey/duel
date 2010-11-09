@@ -42,13 +42,13 @@
 		 * Binds and wraps the result
 		 * 
 		 * @public
-		 * @param {*} model The data item being bound
+		 * @param {*} data The data item being bound
 		 * @return {Result}
 		 */
-		var self = function(model) {
+		var self = function(data) {
 			try {
 				// Closure Compiler type cast
-				var result = bind(/** @type {Array} */(view), model, 0, 1);
+				var result = bind(/** @type {Array} */(view), data, 0, 1);
 				return new Result(result);
 			} catch (ex) {
 				// handle error with context

@@ -7,6 +7,11 @@ public class CALLCommandNode extends CommandNode {
 	public static final String EXT_NAME = "call";
 	private static final String NAME = "$call";
 	private static final CommandName CMD = CommandName.CALL;
+	public static final String VIEW = "view";
+	public static final String DATA = "data";
+	public static final String INDEX = "index";
+	public static final String COUNT = "count";
+	public static final String KEY = "key";
 
 	public CALLCommandNode() {
 		super(CMD, NAME, true);
@@ -49,10 +54,12 @@ public class CALLCommandNode extends CommandNode {
 		if (name == null || name.length() == 0) {
 			throw new NullPointerException("name");
 		}
-		if (!name.equalsIgnoreCase("view") &&
-			!name.equalsIgnoreCase("model") &&
-			!name.equalsIgnoreCase("index") &&
-			!name.equalsIgnoreCase("count")) {
+		if (!name.equalsIgnoreCase(VIEW) &&
+			!name.equalsIgnoreCase(DATA) &&
+			!name.equalsIgnoreCase(INDEX) &&
+			!name.equalsIgnoreCase(COUNT) &&
+			!name.equalsIgnoreCase(KEY)) {
+
 			// Syntax error
 			throw new IllegalArgumentException("Attribute invalid on CALL command: "+name);
 		}

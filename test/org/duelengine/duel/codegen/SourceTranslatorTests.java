@@ -12,7 +12,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translateVarRefTest() {
-		String input = "function(model) { return model; }";
+		String input = "function(data) { return data; }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -21,12 +21,12 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
 				new CodeStatement[] {
-					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("model"))
+					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("data"))
 				});
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
@@ -37,7 +37,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translateBinaryOpStringsTest() {
-		String input = "function(model) { return model === \"Lorem ipsum\"; }";
+		String input = "function(data) { return data === \"Lorem ipsum\"; }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -46,7 +46,7 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
@@ -54,7 +54,7 @@ public class SourceTranslatorTests {
 					new CodeMethodReturnStatement(
 						new CodeBinaryOperatorExpression(
 							CodeBinaryOperatorType.IDENTITY_EQUALITY,
-							new CodeVariableReferenceExpression("model"),
+							new CodeVariableReferenceExpression("data"),
 							new CodePrimitiveExpression("Lorem ipsum")))
 				});
 
@@ -66,7 +66,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translateConcatStringsTest() {
-		String input = "function(model) { return \"Lorem ipsum\" + model; }";
+		String input = "function(data) { return \"Lorem ipsum\" + data; }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -75,7 +75,7 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
@@ -84,7 +84,7 @@ public class SourceTranslatorTests {
 						new CodeBinaryOperatorExpression(
 							CodeBinaryOperatorType.ADD,
 							new CodePrimitiveExpression("Lorem ipsum"),
-							new CodeVariableReferenceExpression("model")))
+							new CodeVariableReferenceExpression("data")))
 				});
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
@@ -95,7 +95,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translateParensBinaryOpNumbersTest() {
-		String input = "function(model, index, count) { return (count >= 1); }";
+		String input = "function(data, index, count) { return (count >= 1); }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -104,7 +104,7 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
@@ -127,7 +127,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translateObjectPropertyAccessTest() {
-		String input = "function(model) { return model.foo; }";
+		String input = "function(data) { return data.foo; }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -136,14 +136,14 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
 						new CodePropertyReferenceExpression(
-							new CodeVariableReferenceExpression("model"),
+							new CodeVariableReferenceExpression("data"),
 							new CodePrimitiveExpression("foo")))
 				});
 
@@ -155,7 +155,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translateObjectMethodCallTest() {
-		String input = "function(model) { return model.substr(5, 2); }";
+		String input = "function(data) { return data.substr(5, 2); }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -164,7 +164,7 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
@@ -172,7 +172,7 @@ public class SourceTranslatorTests {
 					new CodeMethodReturnStatement(
 						new CodeMethodInvokeExpression(
 							new CodePropertyReferenceExpression(
-								new CodeVariableReferenceExpression("model"),
+								new CodeVariableReferenceExpression("data"),
 								new CodePrimitiveExpression("substr")), null, new CodeExpression[] {
 									new CodePrimitiveExpression(5.0),
 									new CodePrimitiveExpression(2.0)
@@ -187,7 +187,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translateMapValueAccessTest() {
-		String input = "function(model) { return model['foo']; }";
+		String input = "function(data) { return data['foo']; }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -196,14 +196,14 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
 						new CodePropertyReferenceExpression(
-							new CodeVariableReferenceExpression("model"),
+							new CodeVariableReferenceExpression("data"),
 							new CodePrimitiveExpression("foo")))
 				});
 
@@ -215,7 +215,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translateArrayAccessTest() {
-		String input = "function(model) { return model[3]; }";
+		String input = "function(data) { return data[3]; }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -224,14 +224,14 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
 						new CodePropertyReferenceExpression(
-							new CodeVariableReferenceExpression("model"),
+							new CodeVariableReferenceExpression("data"),
 							new CodePrimitiveExpression(3.0)))
 				});
 
@@ -243,7 +243,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translateUnaryOpTest() {
-		String input = "function(model) { return -(42); }";
+		String input = "function(data) { return -(42); }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -252,7 +252,7 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
@@ -274,7 +274,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translatePostIncTest() {
-		String input = "function(model) { return model--; }";
+		String input = "function(data) { return data--; }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -283,7 +283,7 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
@@ -291,7 +291,7 @@ public class SourceTranslatorTests {
 					new CodeMethodReturnStatement(
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.POST_DECREMENT,
-							new CodeVariableReferenceExpression("model")))
+							new CodeVariableReferenceExpression("data")))
 				});
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
@@ -302,7 +302,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translatePreIncTest() {
-		String input = "function(model) { return ++model; }";
+		String input = "function(data) { return ++data; }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -311,7 +311,7 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
@@ -319,7 +319,7 @@ public class SourceTranslatorTests {
 					new CodeMethodReturnStatement(
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.PRE_INCREMENT,
-							new CodeVariableReferenceExpression("model")))
+							new CodeVariableReferenceExpression("data")))
 				});
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
@@ -330,7 +330,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translateTernaryTest() {
-		String input = "function(model) { return model ? 1 : 2; }";
+		String input = "function(data) { return data ? 1 : 2; }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -339,14 +339,14 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
 						new CodeTernaryOperatorExpression(
-							new CodeVariableReferenceExpression("model"),
+							new CodeVariableReferenceExpression("data"),
 							new CodePrimitiveExpression(1.0),
 							new CodePrimitiveExpression(2.0)))
 				});
@@ -359,7 +359,7 @@ public class SourceTranslatorTests {
 
 	@Test
 	public void translateForLoopTest() {
-		String input = "function(model) { for (var i=0, length=model.length; i<length; i++) { model[i].toString(); } }";
+		String input = "function(data) { for (var i=0, length=data.length; i<length; i++) { data[i].toString(); } }";
 
 		CodeMethod expected =
 			new CodeMethod(
@@ -368,7 +368,7 @@ public class SourceTranslatorTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
@@ -379,7 +379,7 @@ public class SourceTranslatorTests {
 								new CodePrimitiveExpression(0.0)),
 							new CodeVariableDeclarationStatement(null, "length4",
 								new CodePropertyReferenceExpression(
-									new CodeVariableReferenceExpression("model"),
+									new CodeVariableReferenceExpression("data"),
 									new CodePrimitiveExpression("length4"))),
 						}),
 						new CodeBinaryOperatorExpression(
@@ -395,7 +395,7 @@ public class SourceTranslatorTests {
 								new CodeMethodInvokeExpression(
 									new CodePropertyReferenceExpression(
 										new CodePropertyReferenceExpression(
-											new CodeVariableReferenceExpression("model"),
+											new CodeVariableReferenceExpression("data"),
 											new CodeVariableReferenceExpression("i2")),
 										new CodePrimitiveExpression("toString")),
 									null,

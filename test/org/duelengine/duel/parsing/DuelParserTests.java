@@ -300,7 +300,7 @@ public class DuelParserTests {
 			DuelToken.elemBegin("ul"),
 			DuelToken.elemBegin("for"),
 			DuelToken.attrName("each"),
-			DuelToken.attrValue("model.items"),
+			DuelToken.attrValue("data.items"),
 			DuelToken.literal("\n\t"),
 			DuelToken.elemBegin("li"),
 			DuelToken.literal("item here"),
@@ -314,7 +314,7 @@ public class DuelParserTests {
 			new ElementNode("ul", null, new Node[] {
 				new FORCommandNode(
 					new AttributeNode[] {
-						new AttributeNode("each", new ExpressionNode("model.items"))
+						new AttributeNode("each", new ExpressionNode("data.items"))
 					},
 					new Node[] {
 						new LiteralNode("\n\t"),
@@ -344,7 +344,7 @@ public class DuelParserTests {
 			DuelToken.elemBegin("ul"),
 			DuelToken.elemBegin("for"),
 			DuelToken.attrName("in"),
-			DuelToken.attrValue("model"),
+			DuelToken.attrValue("data"),
 			DuelToken.literal("\n\t"),
 			DuelToken.elemBegin("li"),
 			DuelToken.literal("key-value here"),
@@ -358,7 +358,7 @@ public class DuelParserTests {
 			new ElementNode("ul", null, new Node[] {
 				new FORCommandNode(
 					new AttributeNode[] {
-						new AttributeNode("in", new ExpressionNode("model"))
+						new AttributeNode("in", new ExpressionNode("data"))
 					},
 					new Node[] {
 						new LiteralNode("\n\t"),
@@ -389,8 +389,8 @@ public class DuelParserTests {
 			DuelToken.elemBegin("for"),
 			DuelToken.attrName("count"),
 			DuelToken.attrValue("4"),
-			DuelToken.attrName("model"),
-			DuelToken.attrValue("model.name"),
+			DuelToken.attrName("data"),
+			DuelToken.attrValue("data.name"),
 			DuelToken.literal("\n\t"),
 			DuelToken.elemBegin("li"),
 			DuelToken.literal("item here"),
@@ -405,7 +405,7 @@ public class DuelParserTests {
 				new FORCommandNode(
 					new AttributeNode[] {
 						new AttributeNode("count", new ExpressionNode("4")),
-						new AttributeNode("model", new ExpressionNode("model.name"))
+						new AttributeNode("data", new ExpressionNode("data.name"))
 					},
 					new Node[] {
 						new LiteralNode("\n\t"),
@@ -435,11 +435,11 @@ public class DuelParserTests {
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("if"),
 			DuelToken.attrName("test"),
-			DuelToken.attrValue("model == 0"),
+			DuelToken.attrValue("data == 0"),
 			DuelToken.literal("\n\tzero\n"),
 			DuelToken.elemBegin("else"),
 			DuelToken.attrName("if"),
-			DuelToken.attrValue("model == 1"),
+			DuelToken.attrValue("data == 1"),
 			DuelToken.literal("\n\tone\n"),
 			DuelToken.elemBegin("else"),
 			DuelToken.literal("\n\tmany\n"),
@@ -453,14 +453,14 @@ public class DuelParserTests {
 						new Node[] {
 							new IFCommandNode(
 									new AttributeNode[] {
-										new AttributeNode("test", new ExpressionNode("model == 0"))
+										new AttributeNode("test", new ExpressionNode("data == 0"))
 									},
 									new Node[] {
 										new LiteralNode("\n\tzero\n")
 									}),
 							new IFCommandNode(
 									new AttributeNode[] {
-										new AttributeNode("test", new ExpressionNode("model == 1"))
+										new AttributeNode("test", new ExpressionNode("data == 1"))
 									},
 									new Node[] {
 										new LiteralNode("\n\tone\n")
@@ -490,11 +490,11 @@ public class DuelParserTests {
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("if"),
 			DuelToken.attrName("test"),
-			DuelToken.attrValue("model===0"),
+			DuelToken.attrValue("data===0"),
 			DuelToken.literal("zero"),
 			DuelToken.elemBegin("else"),
 			DuelToken.attrName("if"),
-			DuelToken.attrValue("model===1"),
+			DuelToken.attrValue("data===1"),
 			DuelToken.elemEnd("else"),
 			DuelToken.literal("one"),
 			DuelToken.elemBegin("else"),
@@ -510,14 +510,14 @@ public class DuelParserTests {
 					new Node[] {
 						new IFCommandNode(
 							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("model===0"))
+								new AttributeNode("test", new ExpressionNode("data===0"))
 							},
 							new Node[] {
 								new LiteralNode("zero")
 							}),
 						new IFCommandNode(
 							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("model===1"))
+								new AttributeNode("test", new ExpressionNode("data===1"))
 							},
 							new Node[] {
 								new LiteralNode("one")
@@ -547,12 +547,12 @@ public class DuelParserTests {
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("if"),
 			DuelToken.attrName("test"),
-			DuelToken.attrValue("model == 0"),
+			DuelToken.attrValue("data == 0"),
 			DuelToken.literal("\n\tzero\n"),
 			DuelToken.elemEnd("if"),
 			DuelToken.elemBegin("if"),
 			DuelToken.attrName("test"),
-			DuelToken.attrValue("model == 1"),
+			DuelToken.attrValue("data == 1"),
 			DuelToken.literal("\n\tone\n"),
 			DuelToken.elemEnd("if"),
 			DuelToken.elemBegin("if"),
@@ -567,7 +567,7 @@ public class DuelParserTests {
 					new Node[] {
 						new IFCommandNode(
 							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("model == 0"))
+								new AttributeNode("test", new ExpressionNode("data == 0"))
 							},
 							new Node[] {
 								new LiteralNode("\n\tzero\n")
@@ -577,7 +577,7 @@ public class DuelParserTests {
 					new Node[] {
 						new IFCommandNode(
 							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("model == 1"))
+								new AttributeNode("test", new ExpressionNode("data == 1"))
 							},
 							new Node[] {
 								new LiteralNode("\n\tone\n")
@@ -610,11 +610,11 @@ public class DuelParserTests {
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("if"),
 			DuelToken.attrName("if"),
-			DuelToken.attrValue("model == 0"),
+			DuelToken.attrValue("data == 0"),
 			DuelToken.literal("\n\tzero\n"),
 			DuelToken.elemBegin("else"),
 			DuelToken.attrName("test"),
-			DuelToken.attrValue("model == 1"),
+			DuelToken.attrValue("data == 1"),
 			DuelToken.literal("\n\tone\n"),
 			DuelToken.elemBegin("else"),
 			DuelToken.literal("\n\tmany\n"),
@@ -628,14 +628,14 @@ public class DuelParserTests {
 						new Node[] {
 							new IFCommandNode(
 									new AttributeNode[] {
-										new AttributeNode("test", new ExpressionNode("model == 0"))
+										new AttributeNode("test", new ExpressionNode("data == 0"))
 									},
 									new Node[] {
 										new LiteralNode("\n\tzero\n")
 									}),
 							new IFCommandNode(
 									new AttributeNode[] {
-										new AttributeNode("test", new ExpressionNode("model == 1"))
+										new AttributeNode("test", new ExpressionNode("data == 1"))
 									},
 									new Node[] {
 										new LiteralNode("\n\tone\n")
@@ -665,7 +665,7 @@ public class DuelParserTests {
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("p"),
 			DuelToken.attrName("if"),
-			DuelToken.attrValue("model == 0"),
+			DuelToken.attrValue("data == 0"),
 			DuelToken.literal("no items found"),
 			DuelToken.elemEnd("p"),
 			DuelToken.elemEnd("div")
@@ -675,7 +675,7 @@ public class DuelParserTests {
 			new ElementNode("div", null, new Node[] {
 				new IFCommandNode(
 					new AttributeNode[] {
-						new AttributeNode("test", new ExpressionNode("model == 0"))
+						new AttributeNode("test", new ExpressionNode("data == 0"))
 					},
 					new Node[] {
 						new ElementNode("p", null, new Node[] {
@@ -701,7 +701,7 @@ public class DuelParserTests {
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("p"),
 			DuelToken.attrName("if"),
-			DuelToken.attrValue("model == 0"),
+			DuelToken.attrValue("data == 0"),
 			DuelToken.literal("no items found"),
 			DuelToken.elemEnd("div")
 		};
@@ -710,7 +710,7 @@ public class DuelParserTests {
 			new ElementNode("div", null, new Node[] {
 				new IFCommandNode(
 					new AttributeNode[] {
-						new AttributeNode("test", new ExpressionNode("model == 0"))
+						new AttributeNode("test", new ExpressionNode("data == 0"))
 					},
 					new Node[] {
 						new ElementNode("p", null, new Node[] {
@@ -735,14 +735,14 @@ public class DuelParserTests {
 			DuelToken.elemBegin("view"),
 			DuelToken.elemBegin("hr"),
 			DuelToken.attrName("if"),
-			DuelToken.attrValue("model.showHR"),
+			DuelToken.attrValue("data.showHR"),
 			DuelToken.literal("always shown")
 		};
 
 		ViewRootNode expected = new ViewRootNode(null, new Node[] {
 			new IFCommandNode(
 				new AttributeNode[] {
-					new AttributeNode("test", new ExpressionNode("model.showHR"))
+					new AttributeNode("test", new ExpressionNode("data.showHR"))
 				},
 				new Node[] {
 					new ElementNode("hr")
@@ -766,8 +766,8 @@ public class DuelParserTests {
 			DuelToken.elemBegin("call"),
 			DuelToken.attrName("view"),
 			DuelToken.attrValue("Foo.Other"),
-			DuelToken.attrName("model"),
-			DuelToken.attrValue("model.detail"),
+			DuelToken.attrName("data"),
+			DuelToken.attrValue("data.detail"),
 			DuelToken.attrName("index"),
 			DuelToken.attrValue("1"),
 			DuelToken.attrName("count"),
@@ -779,7 +779,7 @@ public class DuelParserTests {
 			new CALLCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("view", new ExpressionNode("Foo.Other")),
-					new AttributeNode("model", new ExpressionNode("model.detail")),
+					new AttributeNode("data", new ExpressionNode("data.detail")),
 					new AttributeNode("index", new ExpressionNode("1")),
 					new AttributeNode("count", new ExpressionNode("42"))
 				},
@@ -802,8 +802,8 @@ public class DuelParserTests {
 			DuelToken.elemBegin("call"),
 			DuelToken.attrName("view"),
 			DuelToken.attrValue("Foo.Other"),
-			DuelToken.attrName("model"),
-			DuelToken.attrValue("model.detail"),
+			DuelToken.attrName("data"),
+			DuelToken.attrValue("data.detail"),
 			DuelToken.attrName("index"),
 			DuelToken.attrValue("1"),
 			DuelToken.attrName("count"),
@@ -825,7 +825,7 @@ public class DuelParserTests {
 			new CALLCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("view", new ExpressionNode("Foo.Other")),
-					new AttributeNode("model", new ExpressionNode("model.detail")),
+					new AttributeNode("data", new ExpressionNode("data.detail")),
 					new AttributeNode("index", new ExpressionNode("1")),
 					new AttributeNode("count", new ExpressionNode("42"))
 				},

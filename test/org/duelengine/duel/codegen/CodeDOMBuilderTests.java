@@ -31,7 +31,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -72,7 +72,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -114,7 +114,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -138,14 +138,14 @@ public class CodeDOMBuilderTests {
 	}
 
 	@Test
-	public void expressionModelTest() throws IOException {
+	public void expressionDataTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
 			new Node[] {
-				new ExpressionNode("model")
+				new ExpressionNode("data")
 			});
 
 		CodeTypeDeclaration expected = new CodeTypeDeclaration(
@@ -159,7 +159,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -170,7 +170,7 @@ public class CodeDOMBuilderTests {
 								"htmlEncode",
 								new CodeExpression[] {
 									new CodeVariableReferenceExpression("output"),
-									new CodeVariableReferenceExpression("model")
+									new CodeVariableReferenceExpression("data")
 								}))
 					})
 			});
@@ -184,14 +184,14 @@ public class CodeDOMBuilderTests {
 	}
 
 	@Test
-	public void markupExpressionModelTest() throws IOException {
+	public void markupExpressionDataTest() throws IOException {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
 			new Node[] {
-				new MarkupExpressionNode("model")
+				new MarkupExpressionNode("data")
 			});
 
 
@@ -206,7 +206,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -216,7 +216,7 @@ public class CodeDOMBuilderTests {
 								new CodeVariableReferenceExpression("output"),
 								"append",
 								new CodeExpression[] {
-									new CodeVariableReferenceExpression("model")
+									new CodeVariableReferenceExpression("data")
 								}))
 					})
 			});
@@ -251,7 +251,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -288,14 +288,14 @@ public class CodeDOMBuilderTests {
 						new Node[] {
 							new IFCommandNode(
 								new AttributeNode[] {
-									new AttributeNode("test", new ExpressionNode("model === 0"))
+									new AttributeNode("test", new ExpressionNode("data === 0"))
 								},
 								new Node[] {
 									new LiteralNode("zero")
 								}),
 							new IFCommandNode(
 								new AttributeNode[] {
-									new AttributeNode("test", new ExpressionNode("model === 1"))
+									new AttributeNode("test", new ExpressionNode("data === 1"))
 								},
 								new Node[] {
 									new LiteralNode("one")
@@ -320,7 +320,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -335,7 +335,7 @@ public class CodeDOMBuilderTests {
 						new CodeConditionStatement(
 							new CodeBinaryOperatorExpression(
 								CodeBinaryOperatorType.IDENTITY_EQUALITY,
-								new CodeVariableReferenceExpression("model"),
+								new CodeVariableReferenceExpression("data"),
 								new CodePrimitiveExpression(0.0)),
 							new CodeStatement[] {
 								new CodeExpressionStatement(
@@ -350,7 +350,7 @@ public class CodeDOMBuilderTests {
 								new CodeConditionStatement(
 									new CodeBinaryOperatorExpression(
 										CodeBinaryOperatorType.IDENTITY_EQUALITY,
-										new CodeVariableReferenceExpression("model"),
+										new CodeVariableReferenceExpression("data"),
 										new CodePrimitiveExpression(1.0)),
 									new CodeStatement[] {
 										new CodeExpressionStatement(
@@ -401,14 +401,14 @@ public class CodeDOMBuilderTests {
 				new ElementNode("div", null, new Node[] {
 					new IFCommandNode(
 						new AttributeNode[] {
-							new AttributeNode("test", new StatementNode("return model == 0;"))
+							new AttributeNode("test", new StatementNode("return data == 0;"))
 						},
 						new Node[] {
 							new LiteralNode("zero")
 						}),
 					new IFCommandNode(
 						new AttributeNode[] {
-							new AttributeNode("test", new StatementNode("return model == 1;"))
+							new AttributeNode("test", new StatementNode("return data == 1;"))
 						},
 						new Node[] {
 							new LiteralNode("one")
@@ -432,7 +432,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -447,7 +447,7 @@ public class CodeDOMBuilderTests {
 						new CodeConditionStatement(
 							new CodeBinaryOperatorExpression(
 								CodeBinaryOperatorType.VALUE_EQUALITY,
-								new CodeVariableReferenceExpression("model"),
+								new CodeVariableReferenceExpression("data"),
 								new CodePrimitiveExpression(0.0)),
 							new CodeStatement[] {
 								new CodeExpressionStatement(
@@ -462,7 +462,7 @@ public class CodeDOMBuilderTests {
 						new CodeConditionStatement(
 							new CodeBinaryOperatorExpression(
 								CodeBinaryOperatorType.VALUE_EQUALITY,
-								new CodeVariableReferenceExpression("model"),
+								new CodeVariableReferenceExpression("data"),
 								new CodePrimitiveExpression(1.0)),
 							new CodeStatement[] {
 								new CodeExpressionStatement(
@@ -507,7 +507,7 @@ public class CodeDOMBuilderTests {
 				new ElementNode("div", null, new Node[] {
 					new FORCommandNode(
 						new AttributeNode[] {
-							new AttributeNode("each", new ExpressionNode("model.items"))
+							new AttributeNode("each", new ExpressionNode("data.items"))
 						},
 						new Node[] {
 							new LiteralNode("item "),
@@ -527,7 +527,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -547,7 +547,7 @@ public class CodeDOMBuilderTests {
 								"asItems",
 								new CodeExpression[] {
 									new CodePropertyReferenceExpression(
-										new CodeVariableReferenceExpression("model"),
+										new CodeVariableReferenceExpression("data"),
 										new CodePrimitiveExpression("items"))
 								})),
 						new CodeVariableDeclarationStatement(
@@ -603,7 +603,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_2",
 							new CodeParameterDeclarationExpression[] {
 								new CodeParameterDeclarationExpression(Appendable.class, "output"),
-								new CodeParameterDeclarationExpression(Object.class, "model"),
+								new CodeParameterDeclarationExpression(Object.class, "data"),
 								new CodeParameterDeclarationExpression(int.class, "index"),
 								new CodeParameterDeclarationExpression(int.class, "count")
 							},
@@ -644,7 +644,7 @@ public class CodeDOMBuilderTests {
 				new ElementNode("div", null, new Node[] {
 					new FORCommandNode(
 						new AttributeNode[] {
-							new AttributeNode("in", new ExpressionNode("model.foo"))
+							new AttributeNode("in", new ExpressionNode("data.foo"))
 						},
 						new Node[] {
 							new LiteralNode("item "),
@@ -661,7 +661,7 @@ public class CodeDOMBuilderTests {
 				new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -681,7 +681,7 @@ public class CodeDOMBuilderTests {
 								"asEntries",
 								new CodeExpression[] {
 									new CodePropertyReferenceExpression(
-										new CodeVariableReferenceExpression("model"),
+										new CodeVariableReferenceExpression("data"),
 										new CodePrimitiveExpression("foo"))
 								})),
 						new CodeVariableDeclarationStatement(
@@ -737,7 +737,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_2",
 							new CodeParameterDeclarationExpression[] {
 								new CodeParameterDeclarationExpression(Appendable.class, "output"),
-								new CodeParameterDeclarationExpression(Object.class, "model"),
+								new CodeParameterDeclarationExpression(Object.class, "data"),
 								new CodeParameterDeclarationExpression(int.class, "index"),
 								new CodeParameterDeclarationExpression(int.class, "count")
 							},
@@ -779,7 +779,7 @@ public class CodeDOMBuilderTests {
 					new FORCommandNode(
 						new AttributeNode[] {
 							new AttributeNode("count", new ExpressionNode("4")),
-							new AttributeNode("model", new ExpressionNode("model.name")),
+							new AttributeNode("data", new ExpressionNode("data.name")),
 						},
 						new Node[] {
 							new LiteralNode("item "),
@@ -799,7 +799,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -813,9 +813,9 @@ public class CodeDOMBuilderTests {
 								})),
 						new CodeVariableDeclarationStatement(
 							Object.class,
-							"model_1",// model
+							"data_1",// data
 							new CodePropertyReferenceExpression(
-								new CodeVariableReferenceExpression("model"),
+								new CodeVariableReferenceExpression("data"),
 								new CodePrimitiveExpression("name"))),
 						new CodeIterationStatement(
 							new CodeVariableCompoundDeclarationStatement(
@@ -844,7 +844,7 @@ public class CodeDOMBuilderTests {
 										"bind_2",
 										new CodeExpression[] {
 											new CodeVariableReferenceExpression("output"),
-											new CodeVariableReferenceExpression("model_1"),
+											new CodeVariableReferenceExpression("data_1"),
 											new CodeVariableReferenceExpression("index_2"),
 											new CodeVariableReferenceExpression("count_3")
 										}))
@@ -860,7 +860,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethod(AccessModifierType.PRIVATE, Void.class, "bind_2",
 							new CodeParameterDeclarationExpression[] {
 								new CodeParameterDeclarationExpression(Appendable.class, "output"),
-								new CodeParameterDeclarationExpression(Object.class, "model"),
+								new CodeParameterDeclarationExpression(Object.class, "data"),
 								new CodeParameterDeclarationExpression(int.class, "index"),
 								new CodeParameterDeclarationExpression(int.class, "count")
 							},
@@ -939,7 +939,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -980,7 +980,7 @@ public class CodeDOMBuilderTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},

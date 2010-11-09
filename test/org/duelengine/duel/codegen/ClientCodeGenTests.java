@@ -62,7 +62,7 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel(function(model, index, count) { return (count); });\n";
+			"var foo = duel(function(data, index, count) { return (count); });\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, new ViewRootNode[] { input });
@@ -72,19 +72,19 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void markupExpressionModelTest() throws Exception {
+	public void markupExpressionDataTest() throws Exception {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
 			new Node[] {
-				new MarkupExpressionNode("model")
+				new MarkupExpressionNode("data")
 			});
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel(function(model) { return duel.raw(model); });\n";
+			"var foo = duel(function(data) { return duel.raw(data); });\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, new ViewRootNode[] { input });
@@ -128,7 +128,7 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel(function(model, index) { bar(index); });\n";
+			"var foo = duel(function(data, index) { bar(index); });\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, new ViewRootNode[] { input });
@@ -150,14 +150,14 @@ public class ClientCodeGenTests {
 						new Node[] {
 							new IFCommandNode(
 								new AttributeNode[] {
-									new AttributeNode("test", new ExpressionNode("model === 0"))
+									new AttributeNode("test", new ExpressionNode("data === 0"))
 								},
 								new Node[] {
 									new LiteralNode("zero")
 								}),
 							new IFCommandNode(
 								new AttributeNode[] {
-									new AttributeNode("test", new ExpressionNode("model === 1"))
+									new AttributeNode("test", new ExpressionNode("data === 1"))
 								},
 								new Node[] {
 									new LiteralNode("one")
@@ -176,10 +176,10 @@ public class ClientCodeGenTests {
 			"var foo = duel(\n"+
 			"\t[\"div\",\n"+
 			"\t\t[\"$xor\",\n"+
-			"\t\t\t[\"$if\", { \"test\" : function(model) { return (model === 0); } },\n"+
+			"\t\t\t[\"$if\", { \"test\" : function(data) { return (data === 0); } },\n"+
 			"\t\t\t\t\"zero\"\n"+
 			"\t\t\t],\n"+
-			"\t\t\t[\"$if\", { \"test\" : function(model) { return (model === 1); } },\n"+
+			"\t\t\t[\"$if\", { \"test\" : function(data) { return (data === 1); } },\n"+
 			"\t\t\t\t\"one\"\n"+
 			"\t\t\t],\n"+
 			"\t\t\t[\"$if\",\n"+
@@ -206,7 +206,7 @@ public class ClientCodeGenTests {
 				new ElementNode("div", null, new Node[] {
 					new FORCommandNode(
 						new AttributeNode[] {
-							new AttributeNode("each", new ExpressionNode("model.items"))
+							new AttributeNode("each", new ExpressionNode("data.items"))
 						},
 						new Node[] {
 							new LiteralNode("item "),
@@ -219,9 +219,9 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = duel(\n"+
 			"\t[\"div\",\n"+
-			"\t\t[\"$for\", { \"each\" : function(model) { return (model.items); } },\n"+
+			"\t\t[\"$for\", { \"each\" : function(data) { return (data.items); } },\n"+
 			"\t\t\t\"item \",\n"+
-			"\t\t\tfunction(model, index) { return (index); }\n"+
+			"\t\t\tfunction(data, index) { return (index); }\n"+
 			"\t\t]\n"+
 			"\t]);\n";
 
@@ -243,7 +243,7 @@ public class ClientCodeGenTests {
 				new ElementNode("div", null, new Node[] {
 					new FORCommandNode(
 						new AttributeNode[] {
-							new AttributeNode("in", new ExpressionNode("model"))
+							new AttributeNode("in", new ExpressionNode("data"))
 						},
 						new Node[] {
 							new LiteralNode("property "),
@@ -256,9 +256,9 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = duel(\n"+
 			"\t[\"div\",\n"+
-			"\t\t[\"$for\", { \"in\" : function(model) { return (model); } },\n"+
+			"\t\t[\"$for\", { \"in\" : function(data) { return (data); } },\n"+
 			"\t\t\t\"property \",\n"+
-			"\t\t\tfunction(model, index) { return (index); }\n"+
+			"\t\t\tfunction(data, index) { return (index); }\n"+
 			"\t\t]\n"+
 			"\t]);\n";
 
@@ -281,7 +281,7 @@ public class ClientCodeGenTests {
 					new FORCommandNode(
 						new AttributeNode[] {
 							new AttributeNode("count", new ExpressionNode("4")),
-							new AttributeNode("model", new ExpressionNode("model"))
+							new AttributeNode("data", new ExpressionNode("data"))
 						},
 						new Node[] {
 							new LiteralNode("item "),
@@ -294,9 +294,9 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = duel(\n"+
 			"\t[\"div\",\n"+
-			"\t\t[\"$for\", {\n\t\t\t\t\"count\" : function() { return (4); },\n\t\t\t\t\"model\" : function(model) { return (model); }\n\t\t\t},\n"+
+			"\t\t[\"$for\", {\n\t\t\t\t\"count\" : function() { return (4); },\n\t\t\t\t\"data\" : function(data) { return (data); }\n\t\t\t},\n"+
 			"\t\t\t\"item \",\n"+
-			"\t\t\tfunction(model, index) { return (index); }\n"+
+			"\t\t\tfunction(data, index) { return (index); }\n"+
 			"\t\t]\n"+
 			"\t]);\n";
 

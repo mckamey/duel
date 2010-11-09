@@ -14,7 +14,7 @@ public class FORCommandNode extends CommandNode {
 	public static final String EACH = "each";
 	public static final String IN = "in";
 	public static final String COUNT = "count";
-	public static final String MODEL = "model";
+	public static final String DATA = "data";
 
 	public FORCommandNode() {
 		super(CMD, NAME, true);
@@ -60,7 +60,7 @@ public class FORCommandNode extends CommandNode {
 		if (!name.equalsIgnoreCase(EACH) &&
 			!name.equalsIgnoreCase(IN) &&
 			!name.equalsIgnoreCase(COUNT) &&
-			!name.equalsIgnoreCase(MODEL)) {
+			!name.equalsIgnoreCase(DATA)) {
 			// Syntax error
 			throw new IllegalArgumentException("Attribute invalid on FOR command: "+name);
 		}

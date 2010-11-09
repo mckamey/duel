@@ -57,7 +57,7 @@ public class CodeDOMBuilder {
 			this.viewType.nextIdent("bind_"),
 			new CodeParameterDeclarationExpression[] {
 				new CodeParameterDeclarationExpression(Appendable.class, "output"),
-				new CodeParameterDeclarationExpression(Object.class, "model"),
+				new CodeParameterDeclarationExpression(Object.class, "data"),
 				new CodeParameterDeclarationExpression(int.class, "index"),
 				new CodeParameterDeclarationExpression(int.class, "count")
 			},
@@ -153,15 +153,15 @@ public class CodeDOMBuilder {
 		if (loopCount instanceof CodeBlockNode) {
 			CodeExpression countExpr = this.translateExpression(((CodeBlockNode)loopCount).getClientCode());
 
-			Node loopModel = node.getAttribute(FORCommandNode.MODEL);
-			CodeExpression modelExpr;
-			if (loopModel instanceof CodeBlockNode) {
-				modelExpr = this.translateExpression(((CodeBlockNode)loopModel).getClientCode());
+			Node loopData = node.getAttribute(FORCommandNode.DATA);
+			CodeExpression dataExpr;
+			if (loopData instanceof CodeBlockNode) {
+				dataExpr = this.translateExpression(((CodeBlockNode)loopData).getClientCode());
 			} else {
-				modelExpr = new CodeVariableReferenceExpression("model");
+				dataExpr = new CodeVariableReferenceExpression("data");
 			}
 
-			this.buildIterationCount(scope, countExpr, modelExpr, innerBind);
+			this.buildIterationCount(scope, countExpr, dataExpr, innerBind);
 
 		} else {
 			CodeExpression items;
@@ -201,15 +201,15 @@ public class CodeDOMBuilder {
 		}
 	}
 
-	private void buildIterationCount(CodeStatementCollection scope, CodeExpression count, CodeExpression model, CodeMethod innerBind) {
+	private void buildIterationCount(CodeStatementCollection scope, CodeExpression count, CodeExpression data, CodeMethod innerBind) {
 
 		// the collection to iterate over
-		CodeVariableDeclarationStatement modelDecl =
+		CodeVariableDeclarationStatement dataDecl =
 			new CodeVariableDeclarationStatement(
 				Object.class,
-				scope.nextIdent("model_"),
-				model);
-		scope.add(modelDecl);
+				scope.nextIdent("data_"),
+				data);
+		scope.add(dataDecl);
 
 		// the current index (embedded in for loop init statement)
 		CodeVariableDeclarationStatement indexDecl =
@@ -251,7 +251,7 @@ public class CodeDOMBuilder {
 							innerBind.getName(),
 							new CodeExpression[] {
 								new CodeVariableReferenceExpression("output"),
-								new CodeVariableReferenceExpression(modelDecl.getName()),
+								new CodeVariableReferenceExpression(dataDecl.getName()),
 								new CodeVariableReferenceExpression(indexDecl.getName()),
 								new CodeVariableReferenceExpression(countDecl.getName())
 							}))
@@ -404,7 +404,7 @@ public class CodeDOMBuilder {
 					members.get(0).getName(),
 					new CodeExpression[] {
 						new CodeVariableReferenceExpression("output"),
-						new CodeVariableReferenceExpression("model"),
+						new CodeVariableReferenceExpression("data"),
 						new CodeVariableReferenceExpression("index"),
 						new CodeVariableReferenceExpression("count")
 					});

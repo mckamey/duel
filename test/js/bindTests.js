@@ -1,4 +1,4 @@
-module("duel(model)");
+module("duel(data)");
 
 test("static view", function() {
 
@@ -26,7 +26,7 @@ test("static view", function() {
 
 test("simple expressions", function() {
 
-	var model = {
+	var data = {
 	        name: "Foo.js",
 	        url: "http://example.com/foo.js",
 	        size: 5.87,
@@ -37,24 +37,24 @@ test("simple expressions", function() {
 		["div", { "class" : "download" },
 			["h2",
 			 	"Filename: ",
-				function(model, index, count) { return model.name; }
+				function(data, index, count) { return data.name; }
 			],
 			["p",
 			 	"URL: ",
-			 	["a", { "href" : function(model, index, count) { return model.url; }, "target" : "_blank" },
-			 	 	function(model, index, count) { return model.url ;}
+			 	["a", { "href" : function(data, index, count) { return data.url; }, "target" : "_blank" },
+			 	 	function(data, index, count) { return data.url ;}
 			 	],
 			 	" (",
-			 	function(model, index, count) { return model.size ;},
+			 	function(data, index, count) { return data.size ;},
 			 	"KB)"
 		 	],
 			["p",
 			 	"Description: ",
-			 	function(model, index, count) { return model.details; }
+			 	function(data, index, count) { return data.details; }
 			]
 		]);
 
-	var actual = view(model).value;
+	var actual = view(data).value;
 
 	var expected = 
 		["div", { "class" : "download" },
@@ -80,19 +80,19 @@ test("simple orphaned if/else", function() {
 
 	var view = duel(
 		["",
-		 	["$if", { "test" : function(model, index, count) { return model.name === "Example"; } },
-		 	 	["p", "True: Example === ", function(model, index, count) { return model.name; } ]
+		 	["$if", { "test" : function(data, index, count) { return data.name === "Example"; } },
+		 	 	["p", "True: Example === ", function(data, index, count) { return data.name; } ]
 		 	],
-		 	["$if", { "test" : function(model, index, count) { return model.name !== "Example"; } },
-		 	 	["p", "False: Example !== ", function(model, index, count) { return model.name; } ]
+		 	["$if", { "test" : function(data, index, count) { return data.name !== "Example"; } },
+		 	 	["p", "False: Example !== ", function(data, index, count) { return data.name; } ]
 		 	],
 		 	["$if",
 		 	 	["p", "Both: orphaned else always executes" ]
 		 	]
 		]);
 
-	var model1 = { name: "Example" };
-	var actual1 = view(model1).value;
+	var data1 = { name: "Example" };
+	var actual1 = view(data1).value;
 	var expected1 =
 		["",
 		 	["p", "True: Example === Example"],
@@ -101,8 +101,8 @@ test("simple orphaned if/else", function() {
 
 	same(actual1, expected1, "Binding with simple if statements.");
 
-	var model2 = { name: "Sample" };
-	var actual2 = view(model2).value;
+	var data2 = { name: "Sample" };
+	var actual2 = view(data2).value;
 	var expected2 =
 		["",
 		 	["p", "False: Example !== Sample"],
@@ -116,31 +116,31 @@ test("XOR block", function() {
 
 	var view = duel(
 	 	["$xor",
-		 	["$if", { "test" : function(model, index, count) { return !model.children || !model.children.length; } },
+		 	["$if", { "test" : function(data, index, count) { return !data.children || !data.children.length; } },
 		 	 	["p", "Has no items."]
 		 	],
-		 	["$if", { "test" : function(model, index, count) { return model.children && model.children.length === 1; } },
+		 	["$if", { "test" : function(data, index, count) { return data.children && data.children.length === 1; } },
 		 	 	["p", "Has only one item."]
 		 	],
 		 	["$if",
-		 	 	["p", "Has ", function(model, index, count) { return model.children.length; }, " items."]
+		 	 	["p", "Has ", function(data, index, count) { return data.children.length; }, " items."]
 		 	]
 	 	]);
 
-	var model1 = { name: "Three", children: [0,2,4] };
-	var actual1 = view(model1).value;
+	var data1 = { name: "Three", children: [0,2,4] };
+	var actual1 = view(data1).value;
 	var expected1 = ["p", "Has 3 items."];
 
 	same(actual1, expected1, "Binding with choose block.");
 
-	var model2 = { name: "One", children: [42] };
-	var actual2 = view(model2).value;
+	var data2 = { name: "One", children: [42] };
+	var actual2 = view(data2).value;
 	var expected2 = ["p", "Has only one item."];
 
 	same(actual2, expected2, "Binding with choose block.");
 
-	var model3 = { name: "Zero", children: [] };
-	var actual3 = view(model3).value;
+	var data3 = { name: "Zero", children: [] };
+	var actual3 = view(data3).value;
 	var expected3 = ["p", "Has no items."];
 
 	same(actual3, expected3, "");
@@ -148,7 +148,7 @@ test("XOR block", function() {
 
 test("for-each array", function() {
 
-	var model = {
+	var data = {
 	        title: "This is the title",
 	        items: [
 	            { name: "One" },
@@ -162,26 +162,26 @@ test("for-each array", function() {
 	var view = duel(
 		["div", { "class" : "list", "style" : "color:blue" },
 			["h2",
-			 	function(model, index, count) { return model.title; }
+			 	function(data, index, count) { return data.title; }
 			],
 			["ul",
-			 	["$for", { "each" : function(model, index, count) { return model.items; } },
+			 	["$for", { "each" : function(data, index, count) { return data.items; } },
 					["li", { "class" : "item" },
 						["b",
-						 	function(model, index, count) { return model.name; }
+						 	function(data, index, count) { return data.name; }
 						],
 						": ",
 						["i",
-						 	function(model, index, count) { return index + 1; },
+						 	function(data, index, count) { return index + 1; },
 							" of ",
-							function(model, index, count) { return count; }
+							function(data, index, count) { return count; }
 						]
 					]
 			 	]
 			]
 		]);
 
-	var actual = view(model).value;
+	var actual = view(data).value;
 
 	var expected =
 		["div", { "class" : "list", "style" : "color:blue" },
@@ -220,7 +220,7 @@ test("for-each array", function() {
 
 test("for-each primitive", function() {
 
-	var model = {
+	var data = {
 	        title: "This is the title",
 	        items: "One"
 	    };
@@ -228,26 +228,26 @@ test("for-each primitive", function() {
 	var view = duel(
 		["div", { "class" : "list", "style" : "color:blue" },
 			["h2",
-			 	function(model, index, count) { return model.title; }
+			 	function(data, index, count) { return data.title; }
 			],
 			["ul",
-			 	["$for", { "each" : function(model, index, count) { return model.items; } },
+			 	["$for", { "each" : function(data, index, count) { return data.items; } },
 					["li", { "class" : "item" },
 						["b",
-						 	function(model, index, count) { return model; }
+						 	function(data, index, count) { return data; }
 						],
 						": ",
 						["i",
-						 	function(model, index, count) { return index + 1; },
+						 	function(data, index, count) { return index + 1; },
 							" of ",
-							function(model, index, count) { return count; }
+							function(data, index, count) { return count; }
 						]
 					]
 			 	]
 			]
 		]);
 
-	var actual = view(model).value;
+	var actual = view(data).value;
 
 	var expected =
 		["div", { "class" : "list", "style" : "color:blue" },
@@ -265,7 +265,7 @@ test("for-each primitive", function() {
 });
 
 test("for-in object", function() {
-	var model = {
+	var data = {
 	        name: "List of items",
 	        total: 5,
 	        items: [
@@ -279,31 +279,31 @@ test("for-in object", function() {
 
 	var view = duel(
 		["",
-		 	"model => ",
+		 	"data => ",
 		 	["dl",
-				["$for", { "in" : function(model, index, count) { return model; } },
+				["$for", { "in" : function(data, index, count) { return data; } },
 				 	["dt",
-					 	function(model, index, count) { return index; },
+					 	function(data, index, count) { return index; },
 					 	" of ",
-					 	function(model, index, count) { return count; },
+					 	function(data, index, count) { return count; },
 					 	" - ",
-					 	function(model, index, count) { return model.key; },
+					 	function(data, index, count) { return data.key; },
 					 	" : "],
 					["dd",
 					 	"(",
-					 	function(model, index, count) { return (model.value instanceof Array) ? "array" : typeof model.value; },
+					 	function(data, index, count) { return (data.value instanceof Array) ? "array" : typeof data.value; },
 					 	") ",
-					 	function(model, index, count) { return "" + model.value; }
+					 	function(data, index, count) { return "" + data.value; }
 				 	]
 			 	]
 		 	]
 	 	]);
 
-	var actual = view(model).value;
+	var actual = view(data).value;
 
 	var expected =
 		["",
-		 	"model => ",
+		 	"data => ",
 		 	["dl",
 		 	 	["dt", "0 of 3 - name : "],
 		 	 	["dd", "(string) List of items"],
@@ -318,7 +318,7 @@ test("for-in object", function() {
 });
 
 test("for-count", function() {
-	var model = {
+	var data = {
 	        name: "List of items",
 	        total: 5,
 	        items: [
@@ -335,22 +335,22 @@ test("for-count", function() {
 		 	"list => ",
 		 	["dl",
 				["$for", {
-						"count" : function(model, index, count) { return 4; },
-						"model" : function(model, index, count) { return model.name; }
+						"count" : function(data, index, count) { return 4; },
+						"data" : function(data, index, count) { return data.name; }
 					},
 				 	["dt",
-					 	function(model, index, count) { return index; },
+					 	function(data, index, count) { return index; },
 					 	" of ",
-					 	function(model, index, count) { return count; },
+					 	function(data, index, count) { return count; },
 					 	": "],
 					["dd",
-					 	function(model, index, count) { return "" + model; }
+					 	function(data, index, count) { return "" + data; }
 				 	]
 			 	]
 		 	]
 	 	]);
 
-	var actual = view(model).value;
+	var actual = view(data).value;
 
 	var expected =
 		["",
@@ -372,7 +372,7 @@ test("for-count", function() {
 
 test("markup data", function() {
 
-	var model = {
+	var data = {
 	        details: "<blink>Lorem ipsum dolor sit amet</blink>"
 	    };
 
@@ -380,11 +380,11 @@ test("markup data", function() {
 		["div", { "class" : "test" },
 			["p",
 			 	"Description: ",
-			 	function(model, index, count) { return duel.raw(model.details); }
+			 	function(data, index, count) { return duel.raw(data.details); }
 			]
 		]);
 
-	var actual = view(model).value;
+	var actual = view(data).value;
 
 	var expected = 
 		["div", { "class" : "test" },
@@ -399,7 +399,7 @@ test("markup data", function() {
 
 test("call view", function() {
 
-	var model = {
+	var data = {
 	        name: "Outer list",
 	        items: ["One", "Two", "Three"]
 	    };
@@ -407,25 +407,25 @@ test("call view", function() {
 	var Foo = {
 			itemView: duel(
 					["li",
-					 	"model: ",
-					 	function(model, index, count) { return model; },
+					 	"data: ",
+					 	function(data, index, count) { return data; },
 					 	["br"],
 					 	"index: ",
-					 	function(model, index, count) { return index; },
+					 	function(data, index, count) { return index; },
 					 	["br"],
 					 	"count: ",
-					 	function(model, index, count) { return count; },
+					 	function(data, index, count) { return count; },
 					]),
 			listView: duel(
 					["div",
-					 	["h2", function(model, index, count) { return model.name; } ],
+					 	["h2", function(data, index, count) { return data.name; } ],
 						["ul",
-						 	["$for", { "each" : function(model, index, count) { return model.items; } },
+						 	["$for", { "each" : function(data, index, count) { return data.items; } },
 						 		["$call", {
-							 			"view" : function(model, index, count) { return Foo.itemView; },
-							 			"model" :  function(model, index, count) { return model; },
-							 			"index" :  function(model, index, count) { return index; },
-							 			"count" :  function(model, index, count) { return count; }
+							 			"view" : function(data, index, count) { return Foo.itemView; },
+							 			"data" :  function(data, index, count) { return data; },
+							 			"index" :  function(data, index, count) { return index; },
+							 			"count" :  function(data, index, count) { return count; }
 						 			}
 						 		]
 						 	]
@@ -433,28 +433,28 @@ test("call view", function() {
 					])
 			};
 
-	var actual = Foo.listView(model).value;
+	var actual = Foo.listView(data).value;
 
 	var expected = 
 		["div",
 		 	["h2", "Outer list" ],
 			["ul",
 				["li",
-					"model: One",
+					"data: One",
 					["br"],
 					"index: 0",
 					["br"],
 					"count: 3"
 				],
 				["li",
-					"model: Two",
+					"data: Two",
 					["br"],
 					"index: 1",
 					["br"],
 					"count: 3"
 				],
 				["li",
-					"model: Three",
+					"data: Three",
 					["br"],
 					"index: 2",
 					["br"],
@@ -468,7 +468,7 @@ test("call view", function() {
 
 test("call wrapper view", function() {
 
-	var model = {
+	var data = {
 	        name: "Outer list",
 	        items: ["One", "Two", "Three"]
 	    };
@@ -480,24 +480,24 @@ test("call wrapper view", function() {
 					]),
 			listView: duel(
 					["div",
-					 	["h2", function(model, index, count) { return model.name; } ],
+					 	["h2", function(data, index, count) { return data.name; } ],
 						["ul",
-						 	["$for", { "each" : function(model, index, count) { return model.items; } },
+						 	["$for", { "each" : function(data, index, count) { return data.items; } },
 						 		["$call", {
-							 			"view" : function(model, index, count) { return Foo.itemView; },
-							 			"model" :  function(model, index, count) { return model; },
-							 			"index" :  function(model, index, count) { return index; },
-							 			"count" :  function(model, index, count) { return count; }
+							 			"view" : function(data, index, count) { return Foo.itemView; },
+							 			"data" :  function(data, index, count) { return data; },
+							 			"index" :  function(data, index, count) { return index; },
+							 			"count" :  function(data, index, count) { return count; }
 						 			},
 						 			["$part", { "name" : "itemLayout" },
-						 			 	"model: ",
-									 	function(model, index, count) { return model; },
+						 			 	"data: ",
+									 	function(data, index, count) { return data; },
 									 	["br"],
 									 	"index: ",
-									 	function(model, index, count) { return index; },
+									 	function(data, index, count) { return index; },
 									 	["br"],
 									 	"count: ",
-									 	function(model, index, count) { return count; }
+									 	function(data, index, count) { return count; }
 								 	]
 						 		]
 						 	]
@@ -505,28 +505,28 @@ test("call wrapper view", function() {
 					])
 			};
 
-	var actual = Foo.listView(model).value;
+	var actual = Foo.listView(data).value;
 
 	var expected = 
 		["div",
 		 	["h2", "Outer list" ],
 			["ul",
 				["li",
-					"model: One",
+					"data: One",
 					["br"],
 					"index: 0",
 					["br"],
 					"count: 3"
 				],
 				["li",
-					"model: Two",
+					"data: Two",
 					["br"],
 					"index: 1",
 					["br"],
 					"count: 3"
 				],
 				["li",
-					"model: Three",
+					"data: Three",
 					["br"],
 					"index: 2",
 					["br"],

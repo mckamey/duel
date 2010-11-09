@@ -17,15 +17,15 @@ public class CodeDOMUtilityTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
 				new CodeStatement[] {
-					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("model"))
+					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("data"))
 				});
 
-		CodeExpression expected = new CodeVariableReferenceExpression("model");
+		CodeExpression expected = new CodeVariableReferenceExpression("data");
 		
 		CodeExpression actual = CodeDOMUtility.inlineMethod(input);
 		assertEquals(expected, actual);
@@ -40,7 +40,7 @@ public class CodeDOMUtilityTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},
@@ -63,7 +63,7 @@ public class CodeDOMUtilityTests {
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "model"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count")
 				},

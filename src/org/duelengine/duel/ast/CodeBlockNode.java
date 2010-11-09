@@ -4,11 +4,12 @@ public abstract class CodeBlockNode extends BlockNode {
 
 	public enum ArgList {
 		NONE,
-		MODEL,
+		DATA,
 		INDEX,
-		COUNT
+		COUNT,
+		KEY
 	}
-	
+
 	protected CodeBlockNode(String begin, String end, String value) {
 		super(begin, end, value);
 	}
@@ -23,6 +24,10 @@ public abstract class CodeBlockNode extends BlockNode {
 			return ArgList.NONE;
 		}
 
+		if (value.indexOf("key") >= 0) {
+			return ArgList.KEY;
+		}
+
 		if (value.indexOf("count") >= 0) {
 			return ArgList.COUNT;
 		}
@@ -31,8 +36,8 @@ public abstract class CodeBlockNode extends BlockNode {
 			return ArgList.INDEX;
 		}
 
-		if (value.indexOf("model") >= 0) {
-			return ArgList.MODEL;
+		if (value.indexOf("data") >= 0) {
+			return ArgList.DATA;
 		}
 
 		return ArgList.NONE;
@@ -40,12 +45,14 @@ public abstract class CodeBlockNode extends BlockNode {
 
 	protected String formatParamList() {
 		switch (this.getParamList()) {
-			case MODEL:
-				return "model";
+			case DATA:
+				return "data";
 			case INDEX:
-				return "model, index";
+				return "data, index";
 			case COUNT:
-				return "model, index, count";
+				return "data, index, count";
+			case KEY:
+				return "data, index, count, key";
 			default:
 				return "";
 		}

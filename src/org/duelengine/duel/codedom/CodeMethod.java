@@ -3,8 +3,7 @@ package org.duelengine.duel.codedom;
 import java.util.*;
 
 /**
- * Represents a block of statements, providing
- * core parameters (output, model, index, count)
+ * Represents a method
  */
 public class CodeMethod extends CodeMember {
 

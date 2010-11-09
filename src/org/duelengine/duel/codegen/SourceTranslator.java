@@ -322,7 +322,7 @@ public class SourceTranslator {
 			return new ScriptVariableReferenceExpression(ident);
 		}
 
-		if (!"model".equals(ident) && !"index".equals(ident) && !"count".equals(ident)) {
+		if (!"data".equals(ident) && !"index".equals(ident) && !"count".equals(ident) && !"key".equals(ident)) {
 			// map to the unique server-side identifier
 			ident = this.scope.uniqueIdent(ident);
 		}
@@ -358,7 +358,7 @@ public class SourceTranslator {
 		if (node.depth() == 1) {
 			method.setReturnType(Void.class);
 			method.addParameter(Appendable.class, "output");
-			method.addParameter(Object.class, "model");
+			method.addParameter(Object.class, "data");
 			method.addParameter(int.class, "index");
 			method.addParameter(int.class, "count");
 

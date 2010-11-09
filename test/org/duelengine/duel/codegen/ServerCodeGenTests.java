@@ -22,7 +22,7 @@ public class ServerCodeGenTests {
 					"bind_1",
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "model"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count")
 					},
@@ -42,7 +42,7 @@ public class ServerCodeGenTests {
 			"import java.io.*;\n"+
 			"import java.util.*;\n\n"+
 			"public class Foo extends org.duelengine.duel.View {\n\n"+
-			"\tprivate void bind_1(Appendable output, Object model, int index, int count) {\n"+
+			"\tprivate void bind_1(Appendable output, Object data, int index, int count) {\n"+
 			"\t\toutput.append(\"A JSON payload should be an object or array, not a string.\");\n"+
 			"\t}\n"+
 			"\t\n"+
@@ -97,14 +97,14 @@ public class ServerCodeGenTests {
 	}
 
 	//@Test
-	public void markupExpressionModelTest() throws Exception {
+	public void markupExpressionDataTest() throws Exception {
 
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
 			new Node[] {
-				new MarkupExpressionNode("model")
+				new MarkupExpressionNode("data")
 			});
 
 		String expected = "";
@@ -169,14 +169,14 @@ public class ServerCodeGenTests {
 						new Node[] {
 							new IFCommandNode(
 								new AttributeNode[] {
-									new AttributeNode("test", new ExpressionNode("model === 0"))
+									new AttributeNode("test", new ExpressionNode("data === 0"))
 								},
 								new Node[] {
 									new LiteralNode("zero")
 								}),
 							new IFCommandNode(
 								new AttributeNode[] {
-									new AttributeNode("test", new ExpressionNode("model === 1"))
+									new AttributeNode("test", new ExpressionNode("data === 1"))
 								},
 								new Node[] {
 									new LiteralNode("one")

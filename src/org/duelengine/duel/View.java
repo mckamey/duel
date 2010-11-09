@@ -47,7 +47,7 @@ public abstract class View {
 		this.render(output, Collections.emptyMap());
 	}
 
-	public void render(Appendable output, Object model) {
+	public void render(Appendable output, Object data) {
 		if (output == null) {
 			throw new NullPointerException("output");
 		}
@@ -62,44 +62,44 @@ public abstract class View {
 
 	/**
 	 * Adapts any Object to Iterable with size()
-	 * @param model
+	 * @param data
 	 * @return
 	 */
-	protected Collection<?> asItems(Object model) {
+	protected Collection<?> asItems(Object data) {
 
-		if (model instanceof Collection<?>) {
-			return (Collection<?>)model;
+		if (data instanceof Collection<?>) {
+			return (Collection<?>)data;
 		}
 
-		if (model instanceof Object[]) {
-			return new ArrayIterable((Object[])model);
+		if (data instanceof Object[]) {
+			return new ArrayIterable((Object[])data);
 		}
 
-		if (model instanceof Iterable<?>) {
+		if (data instanceof Iterable<?>) {
 			// unfortunate but we need the size
 			List<Object> list = new LinkedList<Object>();
-			for (Object item : (Iterable<?>)model) {
+			for (Object item : (Iterable<?>)data) {
 				list.add(item);
 			}
 			return list;
 		}
 
 		// null is allowed
-		return new SingleIterable(model);
+		return new SingleIterable(data);
 	}
 
 	/**
 	 * Adapts any Object to Iterable<Map.Entry> with size()
-	 * @param model
+	 * @param data
 	 * @return
 	 */
-	protected Collection<Map.Entry<Object,Object>> asEntries(Object model) {
+	protected Collection<Map.Entry<Object,Object>> asEntries(Object data) {
 
 		// TODO: determine if Map.Entry<?,?> is flexible enough or if should just use a thin adapter
 
-		if (model instanceof Map<?,?>) {
+		if (data instanceof Map<?,?>) {
 			@SuppressWarnings("unchecked")
-			Map<Object, Object> map = (Map<Object,Object>)model;
+			Map<Object, Object> map = (Map<Object,Object>)data;
 			return map.entrySet();
 		}
 

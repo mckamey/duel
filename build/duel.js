@@ -229,7 +229,7 @@
 	 * @constant
 	 * @type {string}
 	 */
-	var MODEL = "model";
+	var DATA = "data";
 
 	/**
 	 * @private
@@ -319,71 +319,71 @@
 	 * 
 	 * @private
 	 * @param {Array} node The template subtree root
-	 * @param {*} model The data item being bound
+	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	function bindContent(node, model, index, count, parts) {
+	function bindContent(node, data, index, count, parts) {
 		// second item might be attributes object
 		var hasAttr = (getType(node[1]) === OBJ);
 
 		if (node.length === (hasAttr ? 3 : 2)) {
 			// unwrap single nodes
-			return bind(node[node.length-1], model, index, count, parts);
+			return bind(node[node.length-1], data, index, count, parts);
 		}
 
 		// element array, make a doc frag
 		var result = [""];
 
 		for (var i=hasAttr ? 2 : 1, length=node.length; i<length; i++) {
-			append(result, bind(node[i], model, index, count, parts));
+			append(result, bind(node[i], data, index, count, parts));
 		}
 
 		return result;
 	}
 
 	/**
-	 * Binds the content once for each item in model
+	 * Binds the content once for each item in data
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number|function(*,number,number):*} node The template subtree root
-	 * @param {*} model The data item being bound
+	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	function loop(node, model, index, count, parts) {
+	function loop(node, data, index, count, parts) {
 		var args = node[1] || {},
 			result = [""],
 			items;
 
 		if (args.hasOwnProperty(COUNT)) {
 			// evaluate for-count loop
-			var m,
+			var d,
 				c = args[COUNT];
 
 			if (isFunction(c)) {
 				// execute code block
-				c = c(model, index, count);
+				c = c(data, index, count);
 			}
 
-			if (args.hasOwnProperty(MODEL)) {
-				m = args[MODEL];
-				if (isFunction(m)) {
+			if (args.hasOwnProperty(DATA)) {
+				d = args[DATA];
+				if (isFunction(d)) {
 					// execute code block
-					m = m(model, index, count);
+					d = d(data, index, count);
 				}
 			} else {
-				m = model;
+				d = data;
 			}
 
 			// iterate over the items
 			for (var j=0; j<c; j++) {
 				// Closure Compiler type cast
-				append(result, bindContent(/** @type {Array} */(node), m, j, c, parts));
+				append(result, bindContent(/** @type {Array} */(node), d, j, c, parts));
 			}
 			return result;
 		}
@@ -393,7 +393,7 @@
 			var obj = args[IN];
 			if (isFunction(obj)) {
 				// execute code block
-				obj = obj(model, index, count);
+				obj = obj(data, index, count);
 			}
 			if (getType(obj) === OBJ) {
 				// iterate over the properties
@@ -411,7 +411,7 @@
 			items = args[EACH];
 			if (isFunction(items)) {
 				// execute code block
-				items = items(model, index, count);
+				items = items(data, index, count);
 			}
 		}
 
@@ -435,13 +435,13 @@
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} node The template subtree root
-	 * @param {*} model The data item being bound
+	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	function xor(node, model, index, count, parts) {
+	function xor(node, data, index, count, parts) {
 		for (var i=1, length=node.length; i<length; i++) {
 
 			var block = node[i],
@@ -451,7 +451,7 @@
 			if (getType(block[1]) === OBJ && test) {
 				// execute test if exists
 				if (isFunction(test)) {
-					test = test(model, index, count);
+					test = test(data, index, count);
 				}
 
 				if (!test) {
@@ -460,7 +460,7 @@
 			}
 
 			// process block contents
-			return bindContent(block, model, index, count, parts);
+			return bindContent(block, data, index, count, parts);
 		}
 
 		return null;
@@ -471,24 +471,24 @@
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number|function(*,*,*):(Object|null)} node The template subtree root
-	 * @param {*} model The data item being bound
+	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @return {Array|Object|string|number}
 	 */
-	function call(node, model, index, count) {
+	function call(node, data, index, count) {
 		var args = node[1];
 		if (!args || !args[VIEW]) {
 			return null;
 		}
 
 		// evaluate the arguments
-		var v = bind(args[VIEW], model, index, count),
-			m = bind(args[MODEL], model, index, count),
+		var v = bind(args[VIEW], data, index, count),
+			d = bind(args[DATA], data, index, count),
 			// Closure Compiler type cast
-			i = /** @type {number|string} */ (bind(args[INDEX], model, index, count)),
+			i = /** @type {number|string} */ (bind(args[INDEX], data, index, count)),
 			// Closure Compiler type cast
-			c = /** @type {number} */ (bind(args[COUNT], model, index, count)),
+			c = /** @type {number} */ (bind(args[COUNT], data, index, count)),
 			p = {};
 
 		// check for view parts
@@ -502,7 +502,7 @@
 		}
 
 		return (v && isFunction(v.getView)) ?
-			bind(v.getView(), m, i, c, p) : null;
+			bind(v.getView(), d, i, c, p) : null;
 	}
 
 	/**
@@ -510,13 +510,13 @@
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number|function(*,*,*):(Object|null)} node The template subtree root
-	 * @param {*} model The data item being bound
+	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	function part(node, model, index, count, parts) {
+	function part(node, data, index, count, parts) {
 		var args = node[1] || {},
 			block = args[NAME];
 
@@ -526,21 +526,21 @@
 			block = parts[block];
 		}
 
-		return bindContent(block, model, index, count);
+		return bindContent(block, data, index, count);
 	}
 
 	/**
-	 * Binds the node to model
+	 * Binds the node to data
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number|function(*,*,*):(Object|null)} node The template subtree root
-	 * @param {*} model The data item being bound
+	 * @param {*} data The data item being bound
 	 * @param {number|string} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
-	bind = function(node, model, index, count, parts) {
+	bind = function(node, data, index, count, parts) {
 		/**
 		 * @type {Array|Object|string|number}
 		 */
@@ -550,7 +550,7 @@
 			case FUN:
 				// execute code block
 				// Closure Compiler type cast
-				result = (/** @type {function(*,*,*):(Object|null)} */ (node))(model, index, count);
+				result = (/** @type {function(*,*,*):(Object|null)} */ (node))(data, index, count);
 				break;
 
 			case ARY:
@@ -561,27 +561,27 @@
 				var tag = node[0] || "";
 				switch (tag) {
 					case FOR:
-						result = loop(node, model, index, count, parts);
+						result = loop(node, data, index, count, parts);
 						break;
 					case XOR:
-						result = xor(node, model, index, count, parts);
+						result = xor(node, data, index, count, parts);
 						break;
 					case IF:
-						result = xor([XOR, node], model, index, count, parts);
+						result = xor([XOR, node], data, index, count, parts);
 						break;
 					case CALL:
 						// parts not needed when calling another view
-						result = call(node, model, index, count);
+						result = call(node, data, index, count);
 						break;
 					case PART:
-						result = part(node, model, index, count, parts);
+						result = part(node, data, index, count, parts);
 						break;
 					default:
 						// element array, first item is name
 						result = [tag];
 	
 						for (var i=1, length=node.length; i<length; i++) {
-							append(result, bind(node[i], model, index, count, parts));
+							append(result, bind(node[i], data, index, count, parts));
 						}
 						break;
 				}
@@ -593,7 +593,7 @@
 				for (var key in node) {
 					if (node.hasOwnProperty(key)) {
 						// parts not needed when binding attributes
-						result[key] = bind(node[key], model, index, count);
+						result[key] = bind(node[key], data, index, count);
 					}
 				}
 				break;
@@ -650,13 +650,13 @@
 		 * Binds and wraps the result
 		 * 
 		 * @public
-		 * @param {*} model The data item being bound
+		 * @param {*} data The data item being bound
 		 * @return {Result}
 		 */
-		var self = function(model) {
+		var self = function(data) {
 			try {
 				// Closure Compiler type cast
-				var result = bind(/** @type {Array} */(view), model, 0, 1);
+				var result = bind(/** @type {Array} */(view), data, 0, 1);
 				return new Result(result);
 			} catch (ex) {
 				// handle error with context
