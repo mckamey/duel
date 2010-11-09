@@ -5,11 +5,11 @@ import java.util.*;
 /**
  * Represents a sequence of statements
  */
-public class CodeStatementCollection implements Iterable<CodeStatement>, IdentifierScope {
+public class CodeStatementCollection extends ArrayList<CodeStatement> implements IdentifierScope {
 
+	private static final long serialVersionUID = 1L;
 	private Map<String, String> identMap;
 	private int nextID;
-	private final List<CodeStatement> statements = new ArrayList<CodeStatement>();
 
 	public CodeStatementCollection() {
 	}
@@ -26,36 +26,46 @@ public class CodeStatementCollection implements Iterable<CodeStatement>, Identif
 		}
 	}
 
-	public List<CodeStatement> getStatements() {
-		return this.statements;
-	}
-
-	public void addAll(Iterable<CodeStatement> statements) {
-		if (statements != null) {
-			for (CodeStatement statement : statements) {
-				this.add(statement);
-			}
+	public boolean addAll(CodeStatementBlock block) {
+		if (block == null) {
+			return false;
 		}
+
+		for (CodeStatement statement : block.getStatements()) {
+			super.add(statement);
+		}
+		return true;
 	}
 
-	public void add(CodeExpression expression) {
-		this.add(new CodeExpressionStatement(expression));
+	public boolean addAll(CodeStatement[] statements) {
+		if (statements == null) {
+			return false;
+		}
+
+		for (CodeStatement statement : statements) {
+			super.add(statement);
+		}
+		return true;
 	}
 
-	public void add(CodeStatement statement) {
-		this.statements.add(statement);
+	public boolean add(CodeExpression expression) {
+		return this.add(new CodeExpressionStatement(expression));
 	}
 
-	public CodeStatement getLastStatement() {
-		if (this.statements.isEmpty()) {
+	public CodeStatement getFirstStatement() {
+		if (this.isEmpty()) {
 			return null;
 		}
 
-		return this.statements.get(this.statements.size()-1);
+		return this.get(0);
 	}
 
-	public int size() {
-		return this.statements.size();
+	public CodeStatement getLastStatement() {
+		if (this.isEmpty()) {
+			return null;
+		}
+
+		return this.get(this.size()-1);
 	}
 
 	@Override
@@ -80,7 +90,7 @@ public class CodeStatementCollection implements Iterable<CodeStatement>, Identif
 
 	@Override
 	public Iterator<CodeStatement> iterator() {
-		return this.statements.iterator();
+		return super.iterator();
 	}
 
 	@Override
@@ -92,14 +102,14 @@ public class CodeStatementCollection implements Iterable<CodeStatement>, Identif
 
 		CodeStatementCollection that = (CodeStatementCollection)arg;
 
-		int length = this.statements.size();
-		if (length != that.statements.size()) {
+		int length = this.size();
+		if (length != that.size()) {
 			return false;
 		}
 
 		for (int i=0; i<length; i++) {
-			CodeStatement thisStatement = this.statements.get(i);
-			CodeStatement thatStatement = that.statements.get(i);
+			CodeStatement thisStatement = this.get(i);
+			CodeStatement thatStatement = that.get(i);
 			if (thisStatement == null ? thatStatement != null : !thisStatement.equals(thatStatement)) {
 				return false;
 			}
@@ -110,6 +120,6 @@ public class CodeStatementCollection implements Iterable<CodeStatement>, Identif
 
 	@Override
 	public int hashCode() {
-		return this.statements.hashCode();
+		return super.hashCode();
 	}
 }

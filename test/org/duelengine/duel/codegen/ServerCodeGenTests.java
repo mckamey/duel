@@ -197,8 +197,8 @@ public class ServerCodeGenTests {
 			});
 
 		// flag the conditions as having had parens
-		((CodeConditionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().getStatements().get(1)).getCondition().setHasParens(true);
-		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
+		((CodeConditionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().get(1)).getCondition().setHasParens(true);
+		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
 
 		String expected =
 			"package example;\n\n"+
@@ -338,6 +338,8 @@ public class ServerCodeGenTests {
 		StringBuilder output = new StringBuilder();
 		new ServerCodeGen().write(output, input);
 		String actual = output.toString();
+
+		System.out.println(actual);
 		
 		assertEquals(expected, actual);
 	}

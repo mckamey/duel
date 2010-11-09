@@ -1,11 +1,9 @@
 package org.duelengine.duel.codedom;
 
-import java.util.*;
-
 /**
  * Only used internally to pass around a sequence of statements as a CodeObject
  */
-public class CodeStatementBlock extends CodeObject implements Iterable<CodeStatement> {
+public class CodeStatementBlock extends CodeObject {
 
 	private final CodeStatementCollection statements = new CodeStatementCollection();
 
@@ -13,16 +11,14 @@ public class CodeStatementBlock extends CodeObject implements Iterable<CodeState
 	}
 
 	public CodeStatementBlock(CodeStatement[] statements) {
-		if (statements != null) {
-			this.statements.addAll(Arrays.asList(statements));
-		}
+		this.statements.addAll(statements);
 	}
 
-	public Iterable<CodeStatement> getStatements() {
+	public CodeStatementCollection getStatements() {
 		return this.statements;
 	}
 
-	public void addAll(Iterable<CodeStatement> statements) {
+	public void addAll(CodeStatementBlock statements) {
 		this.statements.addAll(statements);
 	}
 
@@ -32,11 +28,6 @@ public class CodeStatementBlock extends CodeObject implements Iterable<CodeState
 
 	public void add(CodeStatement statement) {
 		this.statements.add(statement);
-	}
-
-	@Override
-	public Iterator<CodeStatement> iterator() {
-		return this.statements.iterator();
 	}
 
 	@Override

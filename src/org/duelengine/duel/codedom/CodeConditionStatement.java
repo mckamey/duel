@@ -15,11 +15,11 @@ public class CodeConditionStatement extends CodeStatement {
 		this.condition = condition;
 
 		if (trueStatements != null) {
-			this.trueStatements.addAll(Arrays.asList(trueStatements));
+			this.trueStatements.addAll(trueStatements);
 		}
 
 		if (falseStatements != null) {
-			this.falseStatements.addAll(Arrays.asList(falseStatements));
+			this.falseStatements.addAll(falseStatements);
 		}
 	}
 

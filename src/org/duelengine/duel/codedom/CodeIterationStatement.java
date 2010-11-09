@@ -20,7 +20,7 @@ public class CodeIterationStatement extends CodeStatement {
 		this.testExpression = testExpression;
 		this.incrementStatement = incrementStatement;
 		if (statements != null) {
-			this.statements.addAll(Arrays.asList(statements));
+			this.statements.addAll(statements);
 		}
 	}
 

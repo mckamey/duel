@@ -23,7 +23,7 @@ public class CodeMethod extends CodeMember {
 			this.parameters.addAll(Arrays.asList(parameters));
 		}
 		if (statements != null) {
-			this.statements.addAll(Arrays.asList(statements));
+			this.statements.addAll(statements);
 		}
 	}
 
