@@ -191,7 +191,7 @@
 					if (child.hasOwnProperty(name)) {
 						buffer.append(' ', name);
 						var val = child[name];
-						if (val) {
+						if (getType(val) !== NUL) {
 							buffer.append('="', attrEncode(val), '"');
 						}
 					}

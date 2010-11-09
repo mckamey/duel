@@ -174,6 +174,22 @@ test("markup data", function() {
 	same(actual, expected, "");
 });
 
+test("falsey attribute values", function() {
+
+	var view = duel(
+		["div", { "data-str" : "", "data-num" : 0, "data-bool" : false, "data-null" : null, "data-undef" : undefined },
+		 	"Lorem ipsum"
+		]);
+
+	var actual = view().toString();
+
+	var expected = 
+		'<div data-str="" data-num="0" data-bool="false" data-null data-undef>'+
+		'Lorem ipsum'+
+		'</div>';
+	same(actual, expected, "");
+});
+
 } catch (ex) {
 	alert(ex);
 }

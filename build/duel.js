@@ -911,7 +911,7 @@
 					if (child.hasOwnProperty(name)) {
 						buffer.append(' ', name);
 						var val = child[name];
-						if (val) {
+						if (getType(val) !== NUL) {
 							buffer.append('="', attrEncode(val), '"');
 						}
 					}
@@ -1184,8 +1184,15 @@
 		for (var name in attr) {
 			if (attr.hasOwnProperty(name)) {
 				// attributeValue
-				var value = attr[name];
-				if (name && value) {
+				var value = attr[name],
+					type = getType(value);
+
+				if (name) {
+					if (type === NUL) {
+						value = "";
+						type = VAL;
+					}
+
 					name = ATTRMAP[name.toLowerCase()] || name;
 					if (name === "style") {
 						if (typeof elem.style.cssText !== "undefined") {
@@ -1193,8 +1200,10 @@
 						} else {
 							elem.style = value;
 						}
+
 					} else if (name === "class") {
 						elem.className = value;
+
 					} else if (EVTS[name]) {
 						addHandler(elem, name, value);
 
@@ -1202,15 +1211,16 @@
 						if (ATTRDUP[name]) {
 							addHandler(elem, ATTRDUP[name], value);
 						}
-					} else if (getType(value) === VAL) {
+
+					} else if (type === VAL) {
 						elem.setAttribute(name, value);
 	
 						// also set duplicated attributes
 						if (ATTRDUP[name]) {
 							elem.setAttribute(ATTRDUP[name], value);
 						}
+
 					} else {
-	
 						// allow direct setting of complex properties
 						elem[name] = value;
 	
@@ -1256,7 +1266,7 @@
 	}
 
 	/**
-	 * Removes leading and trailing whitespace nodes
+	 * Converts the markup to DOM nodes
 	 * 
 	 * @private
 	 * @param {string|Markup} value The node

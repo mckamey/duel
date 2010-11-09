@@ -138,6 +138,26 @@ test("markup data", function() {
 	same(toHTML(actual), toHTML(expected), "");
 });
 
+test("falsey attribute values", function() {
+
+	var view = duel(
+		["div", { "data-str" : "", "data-num" : 0, "data-bool" : false, "data-null" : null, "data-undef" : undefined },
+		 	"Lorem ipsum"
+		]);
+
+	var actual = view().toDOM();
+
+	var expected = document.createElement("div");
+	expected.setAttribute("data-str", "");
+	expected.setAttribute("data-num", 0);
+	expected.setAttribute("data-bool", false);
+	expected.setAttribute("data-null", "");
+	expected.setAttribute("data-undef", "");
+	expected.appendChild(document.createTextNode("Lorem ipsum"));
+
+	same(toHTML(actual), toHTML(expected), "");
+});
+
 } catch (ex) {
 	alert(ex);
 }
