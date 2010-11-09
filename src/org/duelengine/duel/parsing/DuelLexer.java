@@ -564,16 +564,16 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 			case '%':
 				switch (this.nextChar()) {
-					case '-':	// "<%--", "--%>"		ASP/PSP/JSP-style code comment
+					case '-':	// "<%--", "--%>"		ASP/PSP/JSP code comment
 						begin = "<%--";
 						end = "--%>";
 						value = this.tryScanBlockValue("--", end);
 						break;
 
 					case '@':	// "<%@",  "%>"			ASP/JSP/PSP directive
-					case '=':	// "<%=",  "%>"			ASP/JSP/PSP expression
+					case '=':	// "<%=",  "%>"			ASP/JSP/ERB/PSP expression
 					case '!':	// "<%!",  "%>"			JSP declaration
-					case '#':	// "<%#",  "%>"			ASP.NET data-bind expression
+					case '#':	// "<%#",  "%>"			ASP.NET data-bind expression/ERB comment
 					case '$':	// "<%$",  "%>"			ASP.NET extension
 					case ':':	// "<%:",  "%>"			ASP.NET HTML-encoded expression
 						begin = "<%"+(char)this.ch;
@@ -581,7 +581,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 						value = this.tryScanBlockValue(""+(char)this.ch, end);
 						break;
 
-					default:
+					default:	// "<%",  "%>"			ASP/JSP/ERB/PSP code block
 						begin = "<%";
 						end = "%>";
 						value = this.tryScanBlockValue("", end);

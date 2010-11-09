@@ -1,7 +1,5 @@
 package org.duelengine.duel.codegen;
 
-import java.io.*;
-import java.util.*;
 import org.duelengine.duel.codedom.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
