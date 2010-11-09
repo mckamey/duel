@@ -124,6 +124,9 @@ public class ServerCodeGen implements CodeGenerator {
 			this.writeExpression(output, ((CodeExpressionStatement)statement).getExpression());
 			output.append(';');
 
+		} else if (statement instanceof CodeConditionStatement) {
+			this.writeConditionStatement(output, (CodeConditionStatement)statement);
+
 		} else {
 			throw new UnsupportedOperationException("Statement not yet supported: "+statement.getClass());
 		}
@@ -132,11 +135,17 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeExpression(Appendable output, CodeExpression expression)
 		throws IOException {
 
+		this.writeExpression(output, expression, false);
+	}
+
+	private void writeExpression(Appendable output, CodeExpression expression, boolean ignoreParens)
+		throws IOException {
+
 		if (expression == null) {
 			return;
 		}
 
-		boolean addParens = expression.getHasParens();
+		boolean addParens = !ignoreParens && expression.getHasParens();
 		if (addParens) {
 			output.append('(');
 		}
@@ -151,6 +160,9 @@ public class ServerCodeGen implements CodeGenerator {
 			} else if (expression instanceof CodeThisReferenceExpression) {
 				output.append("this");
 
+			} else if (expression instanceof CodeBinaryOperatorExpression) {
+				this.writeBinaryOperatorExpression(output, (CodeBinaryOperatorExpression)expression);
+
 			} else if (expression instanceof CodeMethodInvokeExpression) {
 				this.writeMethodInvokeExpression(output, (CodeMethodInvokeExpression)expression);
 
@@ -159,7 +171,56 @@ public class ServerCodeGen implements CodeGenerator {
 			}
 		} finally {
 			if (addParens) {
-				output.append('(');
+				output.append(')');
+			}
+		}
+	}
+
+	private void writeBinaryOperatorExpression(Appendable output, CodeBinaryOperatorExpression expression)
+		throws IOException {
+
+		this.writeExpression(output, expression.getLeft());
+		switch (expression.getOperator()) {
+			case IDENTITY_EQUALITY:
+				output.append(" == ");
+				break;
+		}
+		this.writeExpression(output, expression.getRight());
+	}
+
+	private void writeConditionStatement(Appendable output, CodeConditionStatement statement)
+		throws IOException {
+
+		output.append("if (");
+		this.writeExpression(output, statement.getCondition(), true);
+		output.append(") {");
+		this.depth++;
+
+		for (CodeStatement trueStatement : statement.getTrueStatements()) {
+			this.writeStatement(output, trueStatement);
+		}
+
+		this.depth--;
+		this.writeln(output);
+		output.append('}');
+
+		if (statement.getFalseStatements().size() > 0) {
+			boolean nestedConditionals =
+				(statement.getFalseStatements().size() == 1) &&
+				(statement.getFalseStatements().getLastStatement() instanceof CodeConditionStatement);
+
+			output.append(" else ");
+			if (!nestedConditionals) {
+				output.append('{');
+				this.depth++;
+				for (CodeStatement falseStatement : statement.getFalseStatements()) {
+					this.writeStatement(output, falseStatement);
+				}
+				this.depth--;
+				this.writeln(output);
+				output.append('}');
+			} else {
+				this.writeConditionStatement(output, (CodeConditionStatement)statement.getFalseStatements().getLastStatement());
 			}
 		}
 	}
