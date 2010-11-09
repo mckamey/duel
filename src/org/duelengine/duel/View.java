@@ -97,35 +97,49 @@ public abstract class View {
 
 		if (data instanceof Map<?,?>) {
 			@SuppressWarnings("unchecked")
-			Map<Object, Object> map = (Map<Object,Object>)data;
+			Map<Object,Object> map = (Map<Object,Object>)data;
 			return map.entrySet();
 		}
 
 		// TODO: convert arbitrary object to list of Map.Entry
-		throw new IllegalArgumentException("TODO: inject JSON convertor");
+		throw new IllegalArgumentException("TODO: convert object to map");
 	}
 
 	/**
-	 * Ensures the literal text is properly encoded as HTML text
+	 * Writes the value to the output
 	 * @param output
-	 * @param literal
+	 * @param value
 	 * @throws IOException
 	 */
-	protected void htmlEncode(Appendable output, Object literal) throws IOException {
-		if (literal == null) {
+	protected void write(Appendable output, Object value) throws IOException {
+		if (value == null) {
 			return;
 		}
 
-		if (literal instanceof Boolean || literal instanceof Number) {
+		output.append(value.toString());
+	}
+
+	/**
+	 * Ensures the value is properly encoded as HTML text
+	 * @param output
+	 * @param value
+	 * @throws IOException
+	 */
+	protected void htmlEncode(Appendable output, Object value) throws IOException {
+		if (value == null) {
+			return;
+		}
+
+		if (value instanceof Boolean || value instanceof Number) {
 			// no need to encode non-text primitives
-			output.append(String.valueOf(literal));
+			output.append(value.toString());
 
 		} else {
 			if (this.formatter == null) {
 				this.formatter = new HTMLFormatter(output);
 			}
 
-			this.formatter.writeLiteral(String.valueOf(literal));
+			this.formatter.writeLiteral(String.valueOf(value));
 		}
 	}
 }

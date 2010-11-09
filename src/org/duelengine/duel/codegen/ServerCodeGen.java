@@ -148,6 +148,9 @@ public class ServerCodeGen implements CodeGenerator {
 			} else if (expression instanceof CodeVariableReferenceExpression) {
 				output.append(((CodeVariableReferenceExpression)expression).getIdent());
 
+			} else if (expression instanceof CodeThisReferenceExpression) {
+				output.append("this");
+
 			} else if (expression instanceof CodeMethodInvokeExpression) {
 				this.writeMethodInvokeExpression(output, (CodeMethodInvokeExpression)expression);
 

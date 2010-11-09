@@ -21,7 +21,13 @@ final class CodeDOMUtility {
 
 	public static CodeStatement emitLiteralValue(String literal) {
 		// output.append("literal");
-		return emitExpression(new CodePrimitiveExpression(literal));
+		return new CodeExpressionStatement(
+			new CodeMethodInvokeExpression(
+				new CodeVariableReferenceExpression("output"),
+				"append",
+				new CodeExpression[] {
+					new CodePrimitiveExpression(literal)
+				}));
 	}
 
 	public static CodeStatement emitVarValue(String varName) {
@@ -51,12 +57,15 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeStatement emitExpression(CodeExpression expression) {
-		// output.append(expression);
-		return new CodeExpressionStatement( 
+		// this.write(output, expression);
+		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(
-				new CodeVariableReferenceExpression("output"),
-				"append",
-				new CodeExpression[] { expression }));
+				new CodeThisReferenceExpression(),
+				"write",
+				new CodeExpression[] {
+					new CodeVariableReferenceExpression("output"),
+					expression
+				}));
 	}
 
 	/**
