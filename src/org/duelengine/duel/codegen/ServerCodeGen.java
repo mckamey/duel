@@ -208,7 +208,7 @@ public class ServerCodeGen implements CodeGenerator {
 			needsSemicolon = this.writeIterationStatement(output, (CodeIterationStatement)statement);
 
 		} else if (statement instanceof CodeVariableCompoundDeclarationStatement) {
-			needsSemicolon = this.writeVariableCompoundDeclarationStatement(output, (CodeVariableCompoundDeclarationStatement)statement);
+			needsSemicolon = this.writeVariableCompoundDeclarationStatement(output, (CodeVariableCompoundDeclarationStatement)statement, inline);
 
 		} else {
 			throw new UnsupportedOperationException("Statement not yet supported: "+statement.getClass());
@@ -331,7 +331,7 @@ public class ServerCodeGen implements CodeGenerator {
 		return true;
 	}
 
-	private boolean writeVariableCompoundDeclarationStatement(Appendable output, CodeVariableCompoundDeclarationStatement statement)
+	private boolean writeVariableCompoundDeclarationStatement(Appendable output, CodeVariableCompoundDeclarationStatement statement, boolean inline)
 		throws IOException {
 
 		List<CodeVariableDeclarationStatement> vars = statement.getVars();
@@ -340,10 +340,16 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 
 		this.writeTypeName(output, vars.get(0).getType());
+		this.depth++;
 		boolean needsDelim = false;
 		for (CodeVariableDeclarationStatement varRef : vars) {
 			if (needsDelim) {
-				output.append(", ");
+				output.append(',');
+				if (inline) {
+					output.append(' ');
+				} else {
+					this.writeln(output);
+				}
 			} else {
 				needsDelim = true;
 			}
@@ -354,6 +360,7 @@ public class ServerCodeGen implements CodeGenerator {
 				this.writeExpression(output, initExpr);
 			}
 		}
+		this.depth--;
 		return true;
 	}
 

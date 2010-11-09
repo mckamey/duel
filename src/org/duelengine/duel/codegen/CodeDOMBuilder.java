@@ -267,7 +267,6 @@ public class CodeDOMBuilder {
 				int.class,
 				scope.nextIdent("index_"),
 				new CodePrimitiveExpression(0));
-		scope.add(indexDecl);
 
 		// the item count
 		CodeVariableDeclarationStatement countDecl =
@@ -278,7 +277,11 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(collectionDecl.getName()),
 					"size",
 					null));
-		scope.add(countDecl);
+
+		scope.add(new CodeVariableCompoundDeclarationStatement(new CodeVariableDeclarationStatement[] {
+				indexDecl,
+				countDecl 	
+			}));
 
 		// the iterator (embedded in for init)
 		CodeVariableDeclarationStatement iteratorDecl =

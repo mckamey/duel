@@ -708,17 +708,20 @@ public class CodeDOMBuilderTests {
 										new CodeVariableReferenceExpression("data"),
 										new CodePrimitiveExpression("foo"))
 								})),
-						new CodeVariableDeclarationStatement(
-							int.class,
-							"index_2",// index
-							new CodePrimitiveExpression(0)),
-						new CodeVariableDeclarationStatement(
-							int.class,
-							"count_3",// count
-							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("items_1"),
-								"size",
-								null)),
+						new CodeVariableCompoundDeclarationStatement(
+							new CodeVariableDeclarationStatement[]{
+								new CodeVariableDeclarationStatement(
+									int.class,
+									"index_2",// index
+									new CodePrimitiveExpression(0)),
+								new CodeVariableDeclarationStatement(
+									int.class,
+									"count_3",// count
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression("items_1"),
+										"size",
+										null)),
+							}),
 						new CodeIterationStatement(
 							new CodeVariableDeclarationStatement(
 								Iterator.class,
