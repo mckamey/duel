@@ -4,22 +4,23 @@
 	<title>DUEL build results</title>
 	<style type="text/css">
 		body { font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial; font-size: 9pt; margin: 0 auto; padding: 0; width: 60%; }
-		h1 { background-color: #006699; border: 1px solid #333333; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; color: white; font-size: 14pt; font-weight: bold; margin: 1em 0; padding: 0.25em; text-align: center; }
+		h1 { color: white; font-size: 14pt; font-weight: bold; margin: 1em 0; padding: 0.25em; text-align: center; }
 		h2 { font-size: 12pt; }
-		dl { border: 1px solid silver; background-color: #F1F1F1; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; margin: 0; padding: 0.75em 0.25em; }
+		dl, ul { margin: 0; padding: 0.75em 0.25em; }
 		dl dt { font-weight: bold; margin: 0 0 0 0.5em; padding: 0.25em 0 0.25em 0.5em; }
 		dl dd { list-style-type: none; margin: 0 0 0 1.5em; padding: 0.25em 0 0.25em 1.5em; }
-		ul { border: 1px solid silver; background-color: #F1F1F1; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; margin: 0; padding: 0.75em 0.25em; }
 		ul li { list-style-type: none; margin: 0 0 0 0.5em; padding: 0.25em 0 0.25em 0.5em; }
+		.box { background-color: #F1F1F1; border: 1px solid silver; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; box-shadow: 0 0 4px #DDDDDD; -moz-box-shadow: 0 0 4px #DDDDDD; -webkit-box-shadow: 0 0 4px #DDDDDD; }
+		h1.box { background-color: #006699; border: 1px solid #333333; box-shadow: 0 0 8px silver; -moz-box-shadow: 0 0 8px silver; -webkit-box-shadow: 0 0 8px silver; }
 		a:link, a:hover, a:active, a:visited { color: #006699; }
 	</style>
 </head>
 <body>
 
-	<h1>DUEL build results</h1>
+	<h1 class="box">DUEL build results</h1>
 
 	<h2>unit tests</h2>
-	<dl>
+	<dl class="box">
 		<dt>client-side unit tests</dt>
 		<dd><a href="test/js-unit.html">QUnit test results</a></dd>
 		<dt>server-side unit tests</dt>
@@ -27,7 +28,7 @@
 	</dl>
 
 	<h2>download</h2>
-	<dl>
+	<dl class="box">
 		<dt>client-side runtime</dt>
 		<dd><a href="duel.js">duel.js</a></dd>
 		<dd><a href="duel.min.js">duel.min.js</a></dd>
@@ -36,7 +37,7 @@
 	</dl>
 
 	<h2>resources</h2>
-	<ul>
+	<ul class="box">
 		<li><a href="http://duelengine.org">DUEL website</a></li>
 		<li><a href="http://bitbucket.org/mckamey/duel">DUEL source code</a></li>
 	</ul>
