@@ -676,4 +676,147 @@ public class ServerCodeGenTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void iterationCountTest() throws IOException {
+
+		CodeTypeDeclaration input = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
+			null,
+			"example",
+			new CodeMethod[] {
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("output"),
+								"append",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("<div>")
+								})),
+						new CodeVariableDeclarationStatement(
+							Object.class,
+							"data_1",// data
+							new CodePropertyReferenceExpression(
+								new CodeVariableReferenceExpression("data"),
+								new CodePrimitiveExpression("name"))),
+						new CodeIterationStatement(
+							new CodeVariableCompoundDeclarationStatement(
+								new CodeVariableDeclarationStatement[] {
+									new CodeVariableDeclarationStatement(
+										int.class,
+										"index_2",// index
+										new CodePrimitiveExpression(0)),
+									new CodeVariableDeclarationStatement(
+										int.class,
+										"count_3",// count
+										new CodePrimitiveExpression(4))
+								}),// initStatement
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.LESS_THAN,
+								new CodeVariableReferenceExpression("index_2"),
+								new CodeVariableReferenceExpression("count_3")),// testExpression
+							new CodeExpressionStatement(
+								new CodeUnaryOperatorExpression(
+									CodeUnaryOperatorType.POST_INCREMENT,
+									new CodeVariableReferenceExpression("index_2"))),// incrementStatement
+							new CodeStatement[] {
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeThisReferenceExpression(),
+										"render_2",
+										new CodeExpression[] {
+											new CodeVariableReferenceExpression("output"),
+											new CodeVariableReferenceExpression("data_1"),
+											new CodeVariableReferenceExpression("index_2"),
+											new CodeVariableReferenceExpression("count_3"),
+											new CodePrimitiveExpression(null)
+										}))
+							}),
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression("output"),
+								"append",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("</div>")
+								}))
+					}),
+					new CodeMethod(
+						AccessModifierType.PRIVATE,
+						Void.class,
+						"render_2",
+						new CodeParameterDeclarationExpression[] {
+							new CodeParameterDeclarationExpression(Appendable.class, "output"),
+							new CodeParameterDeclarationExpression(Object.class, "data"),
+							new CodeParameterDeclarationExpression(int.class, "index"),
+							new CodeParameterDeclarationExpression(int.class, "count"),
+							new CodeParameterDeclarationExpression(String.class, "key")
+						},
+						new CodeStatement[] {
+							new CodeExpressionStatement(
+								new CodeMethodInvokeExpression(
+									new CodeVariableReferenceExpression("output"),
+									"append",
+									new CodeExpression[] {
+										new CodePrimitiveExpression("item ")
+									})),
+							new CodeExpressionStatement(
+								new CodeMethodInvokeExpression(
+									new CodeThisReferenceExpression(),
+									"write",
+									new CodeExpression[] {
+										new CodeVariableReferenceExpression("output"),
+										new CodeVariableReferenceExpression("index")
+									}))
+					})
+			});
+
+		// mark as having had parens
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+
+		String expected =
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class example extends DuelView {\n\n"+
+			"\tpublic example() {\n"+
+			"\t}\n\n"+
+			"\tpublic example(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic example(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
+			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\toutput.append(\"<div>\");\n"+
+			"\t\tObject data_1 = this.getProperty(data, \"name\");\n"+
+			"\t\tfor (int index_2 = 0, count_3 = 4; index_2 < count_3; index_2++) {\n"+
+			"\t\t\tthis.render_2(output, data_1, index_2, count_3, null);\n"+
+			"\t\t}\n"+
+			"\t\toutput.append(\"</div>\");\n"+
+			"\t}\n\n"+
+			"\tprivate void render_2(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\toutput.append(\"item \");\n"+
+			"\t\tthis.write(output, (index));\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().write(output, input);
+		String actual = output.toString();
+
+		System.out.println(actual);
+		
+		assertEquals(expected, actual);
+	}
 }

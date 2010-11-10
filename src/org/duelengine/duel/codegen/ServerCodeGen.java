@@ -284,6 +284,18 @@ public class ServerCodeGen implements CodeGenerator {
 
 		this.writeExpression(output, expression.getLeft());
 		switch (expression.getOperator()) {
+			case GREATER_THAN:
+				output.append(" > ");
+				break;
+			case GREATER_THAN_OR_EQUAL:
+				output.append(" >= ");
+				break;
+			case LESS_THAN:
+				output.append(" < ");
+				break;
+			case LESS_THAN_OR_EQUAL:
+				output.append(" <= ");
+				break;
 			case IDENTITY_EQUALITY:
 			case VALUE_EQUALITY:
 				// TODO: create semantically correct operators
