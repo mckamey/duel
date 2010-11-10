@@ -488,7 +488,7 @@ public class ServerCodeGenTests {
 			"\t\tCollection items_1 = this.asItems(this.getProperty(data, \"items\"));\n"+
 			"\t\tint index_2 = 0,\n" +
 			"\t\t\tcount_3 = items_1.size();\n"+
-			"\t\tfor (Iterator iterator_4 = items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
+			"\t\tfor (Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
 			"\t\t\tthis.render_2(output, iterator_4.next(), index_2, count_3, null);\n"+
 			"\t\t}\n"+
 			"\t\toutput.append(\"</div>\");\n"+
@@ -658,7 +658,7 @@ public class ServerCodeGenTests {
 			"\t\tCollection items_1 = this.asEntries(this.getProperty(data, \"foo\"));\n"+
 			"\t\tint index_2 = 0,\n"+
 			"\t\t\tcount_3 = items_1.size();\n"+
-			"\t\tfor (Iterator iterator_4 = items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
+			"\t\tfor (Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
 			"\t\t\tEntry entry_5 = iterator_4.next();\n"+
 			"\t\t\tthis.render_2(output, entry_5.getValue(), index_2, count_3, entry_5.getKey());\n"+
 			"\t\t}\n"+
@@ -800,7 +800,7 @@ public class ServerCodeGenTests {
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
 			"\t\tObject data_1 = this.getProperty(data, \"name\");\n"+
-			"\t\tfor (int index_2 = 0, count_3 = 4; index_2 < count_3; index_2++) {\n"+
+			"\t\tfor (int index_2=0, count_3=4; index_2 < count_3; index_2++) {\n"+
 			"\t\t\tthis.render_2(output, data_1, index_2, count_3, null);\n"+
 			"\t\t}\n"+
 			"\t\toutput.append(\"</div>\");\n"+

@@ -9,6 +9,12 @@ import org.duelengine.duel.codedom.*;
 
 public class ServerCodeGen implements CodeGenerator {
 
+	private enum ParensSetting {
+		AUTO,
+		FORCE,
+		SUPPRESS
+	}
+	
 	private static final String DUEL_PACKAGE = DuelView.class.getPackage().getName();
 	private final CodeGenSettings settings;
 	private int depth;
@@ -202,7 +208,7 @@ public class ServerCodeGen implements CodeGenerator {
 			needsSemicolon = this.writeConditionStatement(output, (CodeConditionStatement)statement);
 
 		} else if (statement instanceof CodeVariableDeclarationStatement) {
-			needsSemicolon = this.writeVariableDeclarationStatement(output, (CodeVariableDeclarationStatement)statement);
+			needsSemicolon = this.writeVariableDeclarationStatement(output, (CodeVariableDeclarationStatement)statement, inline);
 
 		} else if (statement instanceof CodeIterationStatement) {
 			needsSemicolon = this.writeIterationStatement(output, (CodeIterationStatement)statement);
@@ -222,17 +228,29 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeExpression(Appendable output, CodeExpression expression)
 		throws IOException {
 
-		this.writeExpression(output, expression, false);
+		this.writeExpression(output, expression, ParensSetting.AUTO);
 	}
 
-	private void writeExpression(Appendable output, CodeExpression expression, boolean ignoreParens)
+	private void writeExpression(Appendable output, CodeExpression expression, ParensSetting parens)
 		throws IOException {
 
 		if (expression == null) {
 			return;
 		}
 
-		boolean addParens = !ignoreParens && expression.getHasParens();
+		boolean addParens;
+		switch (parens) {
+			case FORCE:
+				addParens = true;
+				break;
+			case SUPPRESS:
+				addParens = false;
+				break;
+			default:
+				addParens = expression.getHasParens();
+				break;
+		}
+
 		if (addParens) {
 			output.append('(');
 		}
@@ -282,33 +300,35 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeBinaryOperatorExpression(Appendable output, CodeBinaryOperatorExpression expression)
 		throws IOException {
 
-		this.writeExpression(output, expression.getLeft());
+		String operator;
 		switch (expression.getOperator()) {
 			case GREATER_THAN:
-				output.append(" > ");
+				operator = " > ";
 				break;
 			case GREATER_THAN_OR_EQUAL:
-				output.append(" >= ");
+				operator = " >= ";
 				break;
 			case LESS_THAN:
-				output.append(" < ");
+				operator = " < ";
 				break;
 			case LESS_THAN_OR_EQUAL:
-				output.append(" <= ");
+				operator = " <= ";
 				break;
 			case IDENTITY_EQUALITY:
 			case VALUE_EQUALITY:
-				// TODO: create semantically correct operators
-				output.append(" == ");
+				// TODO: create semantically correct equality operators
+				operator = " == ";
 				break;
 			case IDENTITY_INEQUALITY:
 			case VALUE_INEQUALITY:
-				// TODO: create semantically correct operators
-				output.append(" != ");
+				// TODO: create semantically correct inequality operators
+				operator = " != ";
 				break;
 			default:
 				throw new UnsupportedOperationException("Binary operator not yet supported: "+expression.getOperator());
 		}
+		this.writeExpression(output, expression.getLeft());
+		output.append(operator);
 		this.writeExpression(output, expression.getRight());
 	}
 
@@ -329,14 +349,18 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 	}
 
-	private boolean writeVariableDeclarationStatement(Appendable output, CodeVariableDeclarationStatement statement)
+	private boolean writeVariableDeclarationStatement(Appendable output, CodeVariableDeclarationStatement statement, boolean inline)
 		throws IOException {
 
 		this.writeTypeName(output, statement.getType());
 		output.append(statement.getName());
 		CodeExpression initExpr = statement.getInitExpression();
 		if (initExpr != null) {
-			output.append(" = ");
+			if (inline) {
+				output.append('=');
+			} else {
+				output.append(" = ");
+			}
 			this.writeExpression(output, initExpr);
 		}
 
@@ -368,7 +392,11 @@ public class ServerCodeGen implements CodeGenerator {
 			output.append(varRef.getName());
 			CodeExpression initExpr = varRef.getInitExpression();
 			if (initExpr != null) {
-				output.append(" = ");
+				if (inline) {
+					output.append('=');
+				} else {
+					output.append(" = ");
+				}
 				this.writeExpression(output, initExpr);
 			}
 		}
@@ -380,7 +408,7 @@ public class ServerCodeGen implements CodeGenerator {
 		throws IOException {
 
 		output.append("if (");
-		this.writeExpression(output, statement.getCondition(), true);
+		this.writeExpression(output, statement.getCondition(), ParensSetting.SUPPRESS);
 		output.append(") {");
 		this.depth++;
 
