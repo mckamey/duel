@@ -58,6 +58,19 @@
 		</jscomp>
 	</target>
 
+	<target name="test.js" depends="compile.js" description="Test JS">
+		<copy file="${test.dir}/index.html"
+			todir="${build.dir}"/>
+		<copydir src="${test.dir}/js"
+			dest="${reports.dir}/js" />
+		<copy file="${test.dir}/unit.html"
+			tofile="${reports.dir}/js-unit.html"/>
+		<copy file="${lib.dir}/qunit/qunit.js"
+			todir="${reports.dir}/js"/>
+		<copy file="${lib.dir}/qunit/qunit.css"
+			todir="${reports.dir}/js"/>
+	</target>
+
 	<target name="clean" depends="init">
 		<delete dir="${build.dir}" />
 		<delete dir="${bin.dir}" />
@@ -150,7 +163,7 @@
 		</javadoc>
 	</target>
 
-	<target name="all" depends="clean,compile.js,test.report">
+	<target name="all" depends="clean,test.js,test.report">
 		<echo message="Build completed." />
 	</target>
 

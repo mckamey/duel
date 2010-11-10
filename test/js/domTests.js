@@ -24,7 +24,7 @@ test("nested elements with attributes", function() {
 	var actual = view().toDOM();
 
 	var temp, expected = document.createElement("div");
-	expected.setAttribute("class", "download");
+	expected.className = "download";
 
 	temp = document.createElement("h2");
 	temp.appendChild(document.createTextNode("Filename: Foo.js"));
