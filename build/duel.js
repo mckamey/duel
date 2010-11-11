@@ -431,13 +431,14 @@
 			}
 		}
 
-		if (getType(items) === ARY) {
+		var type = getType(items); 
+		if (type === ARY) {
 			// iterate over the items
 			for (i=0, length=items.length; i<length; i++) {
 				// Closure Compiler type cast
 				append(result, bindContent(/** @type {Array} */(node), items[i], i, length, null, parts));
 			}
-		} else {
+		} else if (type !== NUL) {
 			// just bind the single value
 			// Closure Compiler type cast
 			result = bindContent(/** @type {Array} */(node), items, 0, 1, null, parts);

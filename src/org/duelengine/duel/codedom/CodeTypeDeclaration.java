@@ -47,7 +47,7 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 
 		for (CodeParameterDeclarationExpression parameter : parameters) {
 			ctor.addParameter(parameter);
-			ctor.getBaseCtorArgs().add(new CodeVariableReferenceExpression(parameter.getName()));
+			ctor.getBaseCtorArgs().add(new CodeVariableReferenceExpression(parameter));
 		}
 		
 		this.add(ctor);

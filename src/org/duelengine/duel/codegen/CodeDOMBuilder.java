@@ -161,7 +161,7 @@ public class CodeDOMBuilder {
 			if (loopData instanceof CodeBlockNode) {
 				dataExpr = this.translateExpression(((CodeBlockNode)loopData).getClientCode());
 			} else {
-				dataExpr = new CodeVariableReferenceExpression("data");
+				dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
 			}
 
 			this.buildIterationCount(scope, countExpr, dataExpr, innerBind);
@@ -221,22 +221,22 @@ public class CodeDOMBuilder {
 				initStatement,// initStatement
 				new CodeBinaryOperatorExpression(
 					CodeBinaryOperatorType.LESS_THAN,
-					new CodeVariableReferenceExpression(indexDecl.getName()),
-					new CodeVariableReferenceExpression(countDecl.getName())),// testExpression
+					new CodeVariableReferenceExpression(indexDecl),
+					new CodeVariableReferenceExpression(countDecl)),// testExpression
 				new CodeExpressionStatement(
 					new CodeUnaryOperatorExpression(
 						CodeUnaryOperatorType.POST_INCREMENT,
-						new CodeVariableReferenceExpression(indexDecl.getName()))),// incrementStatement
+						new CodeVariableReferenceExpression(indexDecl))),// incrementStatement
 				new CodeStatement[] {
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
 							new CodeThisReferenceExpression(),
 							innerBind.getName(),
 							new CodeExpression[] {
-								new CodeVariableReferenceExpression("output"),
-								new CodeVariableReferenceExpression(dataDecl.getName()),
-								new CodeVariableReferenceExpression(indexDecl.getName()),
-								new CodeVariableReferenceExpression(countDecl.getName()),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
+								new CodeVariableReferenceExpression(dataDecl),
+								new CodeVariableReferenceExpression(indexDecl),
+								new CodeVariableReferenceExpression(countDecl),
 								new CodePrimitiveExpression(null)
 							}))
 				}));
@@ -246,7 +246,7 @@ public class CodeDOMBuilder {
 		CodeExpression data = new CodeMethodInvokeExpression(
 			new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
-				"asEntries",
+				"asObject",
 				new CodeExpression[] {
 					objExpr
 				}),
@@ -274,7 +274,7 @@ public class CodeDOMBuilder {
 				int.class,
 				scope.nextIdent("count_"),
 				new CodeMethodInvokeExpression(
-					new CodeVariableReferenceExpression(collectionDecl.getName()),
+					new CodeVariableReferenceExpression(collectionDecl),
 					"size",
 					null));
 
@@ -289,7 +289,7 @@ public class CodeDOMBuilder {
 				Iterator.class,
 				scope.nextIdent("iterator_"),
 				new CodeMethodInvokeExpression(
-					new CodeVariableReferenceExpression(collectionDecl.getName()),
+					new CodeVariableReferenceExpression(collectionDecl),
 					"iterator",
 					null));
 
@@ -299,7 +299,7 @@ public class CodeDOMBuilder {
 				Map.Entry.class,
 				scope.nextIdent("entry_"),
 				new CodeMethodInvokeExpression(
-					new CodeVariableReferenceExpression(iteratorDecl.getName()),
+					new CodeVariableReferenceExpression(iteratorDecl),
 					"next",
 					null));
 		
@@ -308,13 +308,13 @@ public class CodeDOMBuilder {
 			new CodeIterationStatement(
 				iteratorDecl,// initStatement
 				new CodeMethodInvokeExpression(
-					new CodeVariableReferenceExpression(iteratorDecl.getName()),
+					new CodeVariableReferenceExpression(iteratorDecl),
 					"hasNext",
 					null),// testExpression
 				new CodeExpressionStatement(
 					new CodeUnaryOperatorExpression(
 						CodeUnaryOperatorType.POST_INCREMENT,
-						new CodeVariableReferenceExpression(indexDecl.getName()))),// incrementStatement
+						new CodeVariableReferenceExpression(indexDecl))),// incrementStatement
 				new CodeStatement[] {
 					entryDecl,
 					new CodeExpressionStatement(
@@ -322,15 +322,15 @@ public class CodeDOMBuilder {
 							new CodeThisReferenceExpression(),
 							innerBind.getName(),
 							new CodeExpression[] {
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(entryDecl.getName()),
+									new CodeVariableReferenceExpression(entryDecl),
 									"getValue",
 									null),
-								new CodeVariableReferenceExpression(indexDecl.getName()),
-								new CodeVariableReferenceExpression(countDecl.getName()),
+								new CodeVariableReferenceExpression(indexDecl),
+								new CodeVariableReferenceExpression(countDecl),
 								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(entryDecl.getName()),
+									new CodeVariableReferenceExpression(entryDecl),
 									"getKey",
 									null)
 							}))
@@ -339,15 +339,13 @@ public class CodeDOMBuilder {
 
 	private void buildIterationArray(CodeStatementCollection scope, CodeExpression arrayExpr, CodeMethod innerBind) {
 
-		CodeExpression items = new CodeMethodInvokeExpression(
+		CodeExpression items = 
 			new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
-				"asItems",
+				"asArray",
 				new CodeExpression[] {
 					arrayExpr
-				}),
-			"iterator",
-			null);
+				});
 
 		// the collection to iterate over
 		CodeVariableDeclarationStatement collectionDecl =
@@ -370,7 +368,7 @@ public class CodeDOMBuilder {
 				int.class,
 				scope.nextIdent("count_"),
 				new CodeMethodInvokeExpression(
-					new CodeVariableReferenceExpression(collectionDecl.getName()),
+					new CodeVariableReferenceExpression(collectionDecl),
 					"size",
 					null));
 
@@ -385,7 +383,7 @@ public class CodeDOMBuilder {
 				Iterator.class,
 				scope.nextIdent("iterator_"),
 				new CodeMethodInvokeExpression(
-					new CodeVariableReferenceExpression(collectionDecl.getName()),
+					new CodeVariableReferenceExpression(collectionDecl),
 					"iterator",
 					null));
 
@@ -394,26 +392,26 @@ public class CodeDOMBuilder {
 			new CodeIterationStatement(
 				iteratorDecl,// initStatement
 				new CodeMethodInvokeExpression(
-					new CodeVariableReferenceExpression(iteratorDecl.getName()),
+					new CodeVariableReferenceExpression(iteratorDecl),
 					"hasNext",
 					null),// testExpression
 				new CodeExpressionStatement(
 					new CodeUnaryOperatorExpression(
 						CodeUnaryOperatorType.POST_INCREMENT,
-						new CodeVariableReferenceExpression(indexDecl.getName()))),// incrementStatement
+						new CodeVariableReferenceExpression(indexDecl))),// incrementStatement
 				new CodeStatement[] {
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
 							new CodeThisReferenceExpression(),
 							innerBind.getName(),
 							new CodeExpression[] {
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(iteratorDecl.getName()),
+									new CodeVariableReferenceExpression(iteratorDecl),
 									"next",
 									null),
-								new CodeVariableReferenceExpression(indexDecl.getName()),
-								new CodeVariableReferenceExpression(countDecl.getName()),
+								new CodeVariableReferenceExpression(indexDecl),
+								new CodeVariableReferenceExpression(countDecl),
 								new CodePrimitiveExpression(null)
 							}))
 				}));
@@ -496,11 +494,11 @@ public class CodeDOMBuilder {
 				new CodeThisReferenceExpression(),
 					members.get(0).getName(),
 					new CodeExpression[] {
-						new CodeVariableReferenceExpression("output"),
-						new CodeVariableReferenceExpression("data"),
-						new CodeVariableReferenceExpression("index"),
-						new CodeVariableReferenceExpression("count"),
-						new CodeVariableReferenceExpression("key")
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key")
 					});
 		}
 		return expression;
@@ -577,7 +575,7 @@ public class CodeDOMBuilder {
 		String id = localVar.getName();
 
 		// emit the value of the var
-		CodeStatement emitVar = CodeDOMUtility.emitVarValue(id);
+		CodeStatement emitVar = CodeDOMUtility.emitVarValue(localVar);
 		scope.add(emitVar);
 
 		return id;

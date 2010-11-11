@@ -322,12 +322,23 @@ public class SourceTranslator {
 			return new ScriptVariableReferenceExpression(ident);
 		}
 
-		if (!"data".equals(ident) && !"index".equals(ident) && !"count".equals(ident) && !"key".equals(ident)) {
-			// map to the unique server-side identifier
-			ident = this.scope.uniqueIdent(ident);
+		if ("data".equals(ident)) {
+			return new CodeVariableReferenceExpression(Object.class, "data");
 		}
 
-		return new CodeVariableReferenceExpression(ident);
+		if ("index".equals(ident) || "count".equals(ident)) {
+			return new CodeVariableReferenceExpression(int.class, ident);
+		}
+
+		if ("key".equals(ident)) {
+			return new CodeVariableReferenceExpression(String.class, ident);
+		}
+
+		// map to the unique server-side identifier
+		ident = this.scope.uniqueIdent(ident);
+
+		// TODO: surface result type?
+		return new CodeVariableReferenceExpression(Object.class, ident);
 	}
 
 	private CodeObject visitForLoop(ForLoop node) {

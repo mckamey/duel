@@ -33,7 +33,7 @@ public class ServerCodeGenTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")
@@ -61,7 +61,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().write(output, input);
+		new ServerCodeGen().writeCode(output, input);
 		String actual = output.toString();
 		
 		assertEquals(expected, actual);
@@ -92,8 +92,8 @@ public class ServerCodeGenTests {
 								new CodeThisReferenceExpression(),
 								"write",
 								new CodeExpression[] {
-									new CodeVariableReferenceExpression("output"),
-									new CodeVariableReferenceExpression("count")
+									new CodeVariableReferenceExpression(Appendable.class, "output"),
+									new CodeVariableReferenceExpression(int.class, "count")
 								}))
 					})
 			});
@@ -117,7 +117,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().write(output, input);
+		new ServerCodeGen().writeCode(output, input);
 		String actual = output.toString();
 		
 		assertEquals(expected, actual);
@@ -145,7 +145,7 @@ public class ServerCodeGenTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("<div>")
@@ -153,12 +153,12 @@ public class ServerCodeGenTests {
 						new CodeConditionStatement(
 							new CodeBinaryOperatorExpression(
 								CodeBinaryOperatorType.IDENTITY_EQUALITY,
-								new CodeVariableReferenceExpression("data"),
+								new CodeVariableReferenceExpression(Object.class, "data"),
 								new CodePrimitiveExpression(0.0)),
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("output"),
+										new CodeVariableReferenceExpression(Appendable.class, "output"),
 										"append",
 										new CodeExpression[] {
 											new CodePrimitiveExpression("zero")
@@ -168,12 +168,12 @@ public class ServerCodeGenTests {
 								new CodeConditionStatement(
 									new CodeBinaryOperatorExpression(
 										CodeBinaryOperatorType.IDENTITY_EQUALITY,
-										new CodeVariableReferenceExpression("data"),
+										new CodeVariableReferenceExpression(Object.class, "data"),
 										new CodePrimitiveExpression(1.0)),
 									new CodeStatement[] {
 										new CodeExpressionStatement(
 											new CodeMethodInvokeExpression(
-												new CodeVariableReferenceExpression("output"),
+												new CodeVariableReferenceExpression(Appendable.class, "output"),
 												"append",
 												new CodeExpression[] {
 													new CodePrimitiveExpression("one")
@@ -182,7 +182,7 @@ public class ServerCodeGenTests {
 									new CodeStatement[] {
 										new CodeExpressionStatement(
 											new CodeMethodInvokeExpression(
-												new CodeVariableReferenceExpression("output"),
+												new CodeVariableReferenceExpression(Appendable.class, "output"),
 												"append",
 												new CodeExpression[] {
 													new CodePrimitiveExpression("many")
@@ -191,7 +191,7 @@ public class ServerCodeGenTests {
 							}),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("</div>")
@@ -231,7 +231,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().write(output, input);
+		new ServerCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -259,7 +259,7 @@ public class ServerCodeGenTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("<div>")
@@ -267,12 +267,12 @@ public class ServerCodeGenTests {
 						new CodeConditionStatement(
 							new CodeBinaryOperatorExpression(
 								CodeBinaryOperatorType.VALUE_EQUALITY,
-								new CodeVariableReferenceExpression("data"),
+								new CodeVariableReferenceExpression(Object.class, "data"),
 								new CodePrimitiveExpression(0.0)),
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("output"),
+										new CodeVariableReferenceExpression(Appendable.class, "output"),
 										"append",
 										new CodeExpression[] {
 											new CodePrimitiveExpression("zero")
@@ -282,12 +282,12 @@ public class ServerCodeGenTests {
 						new CodeConditionStatement(
 							new CodeBinaryOperatorExpression(
 								CodeBinaryOperatorType.VALUE_EQUALITY,
-								new CodeVariableReferenceExpression("data"),
+								new CodeVariableReferenceExpression(Object.class, "data"),
 								new CodePrimitiveExpression(1.0)),
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("output"),
+										new CodeVariableReferenceExpression(Appendable.class, "output"),
 										"append",
 										new CodeExpression[] {
 											new CodePrimitiveExpression("one")
@@ -296,14 +296,14 @@ public class ServerCodeGenTests {
 							null),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("many")
 								})),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("</div>")
@@ -339,7 +339,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().write(output, input);
+		new ServerCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -367,7 +367,7 @@ public class ServerCodeGenTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("<div>")
@@ -377,10 +377,10 @@ public class ServerCodeGenTests {
 							"items_1",// collection
 							new CodeMethodInvokeExpression(
 								new CodeThisReferenceExpression(),
-								"asItems",
+								"asArray",
 								new CodeExpression[] {
 									new CodePropertyReferenceExpression(
-										new CodeVariableReferenceExpression("data"),
+										new CodeVariableReferenceExpression(Object.class, "data"),
 										new CodePrimitiveExpression("items"))
 								})),
 						new CodeVariableCompoundDeclarationStatement(
@@ -393,7 +393,7 @@ public class ServerCodeGenTests {
 									int.class,
 									"count_3",// count
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("items_1"),
+										new CodeVariableReferenceExpression(Collection.class, "items_1"),
 										"size",
 										null)),
 							}),
@@ -402,36 +402,36 @@ public class ServerCodeGenTests {
 								Iterator.class,
 								"iterator_4",
 								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression("items_1"),
+									new CodeVariableReferenceExpression(Collection.class, "items_1"),
 									"iterator",
 									null)),// initStatement
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("iterator_4"),
+								new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
 								"hasNext",
 								null),// testExpression
 							new CodeExpressionStatement(
 								new CodeUnaryOperatorExpression(
 									CodeUnaryOperatorType.POST_INCREMENT,
-									new CodeVariableReferenceExpression("index_2"))),// incrementStatement
+									new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
 										new CodeThisReferenceExpression(),
 										"render_2",
 										new CodeExpression[] {
-											new CodeVariableReferenceExpression("output"),
+											new CodeVariableReferenceExpression(Appendable.class, "output"),
 											new CodeMethodInvokeExpression(
-												new CodeVariableReferenceExpression("iterator_4"),
+												new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
 												"next",
 												null),
-											new CodeVariableReferenceExpression("index_2"),
-											new CodeVariableReferenceExpression("count_3"),
+											new CodeVariableReferenceExpression(int.class, "index_2"),
+											new CodeVariableReferenceExpression(int.class, "count_3"),
 											new CodePrimitiveExpression(null)
 										}))
 							}),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("</div>")
@@ -451,7 +451,7 @@ public class ServerCodeGenTests {
 						new CodeStatement[] {
 							new CodeExpressionStatement(
 								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression("output"),
+									new CodeVariableReferenceExpression(Appendable.class, "output"),
 									"append",
 									new CodeExpression[] {
 										new CodePrimitiveExpression("item ")
@@ -461,8 +461,8 @@ public class ServerCodeGenTests {
 									new CodeThisReferenceExpression(),
 									"write",
 									new CodeExpression[] {
-										new CodeVariableReferenceExpression("output"),
-										new CodeVariableReferenceExpression("index")
+										new CodeVariableReferenceExpression(Appendable.class, "output"),
+										new CodeVariableReferenceExpression(int.class, "index")
 									}))
 					})
 			});
@@ -485,7 +485,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
-			"\t\tCollection items_1 = this.asItems(this.getProperty(data, \"items\"));\n"+
+			"\t\tCollection items_1 = this.asArray(this.getProperty(data, \"items\"));\n"+
 			"\t\tint index_2 = 0,\n" +
 			"\t\t\tcount_3 = items_1.size();\n"+
 			"\t\tfor (Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
@@ -499,9 +499,9 @@ public class ServerCodeGenTests {
 			"\t}\n}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().write(output, input);
+		new ServerCodeGen().writeCode(output, input);
 		String actual = output.toString();
-		
+
 		assertEquals(expected, actual);
 	}
 
@@ -527,7 +527,7 @@ public class ServerCodeGenTests {
 						new CodeStatement[] {
 							new CodeExpressionStatement(
 								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression("output"),
+									new CodeVariableReferenceExpression(Appendable.class, "output"),
 									"append",
 									new CodeExpression[] {
 										new CodePrimitiveExpression("<div>")
@@ -537,10 +537,10 @@ public class ServerCodeGenTests {
 								"items_1",// collection
 								new CodeMethodInvokeExpression(
 									new CodeThisReferenceExpression(),
-									"asEntries",
+									"asObject",
 									new CodeExpression[] {
 										new CodePropertyReferenceExpression(
-											new CodeVariableReferenceExpression("data"),
+											new CodeVariableReferenceExpression(Object.class, "data"),
 											new CodePrimitiveExpression("foo"))
 									})),
 							new CodeVariableCompoundDeclarationStatement(
@@ -553,7 +553,7 @@ public class ServerCodeGenTests {
 										int.class,
 										"count_3",// count
 										new CodeMethodInvokeExpression(
-											new CodeVariableReferenceExpression("items_1"),
+											new CodeVariableReferenceExpression(Collection.class, "items_1"),
 											"size",
 											null)),
 								}),
@@ -562,23 +562,23 @@ public class ServerCodeGenTests {
 									Iterator.class,
 									"iterator_4",
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("items_1"),
+										new CodeVariableReferenceExpression(Collection.class, "items_1"),
 										"iterator",
 										null)),// initStatement
 								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression("iterator_4"),
+									new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
 									"hasNext",
 									null),// testExpression
 								new CodeExpressionStatement(
 									new CodeUnaryOperatorExpression(
 										CodeUnaryOperatorType.POST_INCREMENT,
-										new CodeVariableReferenceExpression("index_2"))),// incrementStatement
+										new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
 								new CodeStatement[] {
 									new CodeVariableDeclarationStatement(
 										Map.Entry.class,
 										"entry_5",
 										new CodeMethodInvokeExpression(
-											new CodeVariableReferenceExpression("iterator_4"),
+											new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
 											"next",
 											null)),
 									new CodeExpressionStatement(
@@ -586,22 +586,22 @@ public class ServerCodeGenTests {
 											new CodeThisReferenceExpression(),
 											"render_2",
 											new CodeExpression[] {
-												new CodeVariableReferenceExpression("output"),
+												new CodeVariableReferenceExpression(Appendable.class, "output"),
 												new CodeMethodInvokeExpression(
-													new CodeVariableReferenceExpression("entry_5"),
+													new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
 													"getValue",
 													null),
-												new CodeVariableReferenceExpression("index_2"),
-												new CodeVariableReferenceExpression("count_3"),
+												new CodeVariableReferenceExpression(int.class, "index_2"),
+												new CodeVariableReferenceExpression(int.class, "count_3"),
 												new CodeMethodInvokeExpression(
-													new CodeVariableReferenceExpression("entry_5"),
+													new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
 													"getKey",
 													null)
 											}))
 								}),
 							new CodeExpressionStatement(
 								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression("output"),
+									new CodeVariableReferenceExpression(Appendable.class, "output"),
 									"append",
 									new CodeExpression[] {
 										new CodePrimitiveExpression("</div>")
@@ -621,7 +621,7 @@ public class ServerCodeGenTests {
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression("output"),
+										new CodeVariableReferenceExpression(Appendable.class, "output"),
 										"append",
 										new CodeExpression[] {
 											new CodePrimitiveExpression("item ")
@@ -631,8 +631,8 @@ public class ServerCodeGenTests {
 										new CodeThisReferenceExpression(),
 										"write",
 										new CodeExpression[] {
-											new CodeVariableReferenceExpression("output"),
-											new CodeVariableReferenceExpression("index")
+											new CodeVariableReferenceExpression(Appendable.class, "output"),
+											new CodeVariableReferenceExpression(int.class, "index")
 										}))
 						})
 				});
@@ -655,7 +655,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
-			"\t\tCollection items_1 = this.asEntries(this.getProperty(data, \"foo\"));\n"+
+			"\t\tCollection items_1 = this.asObject(this.getProperty(data, \"foo\"));\n"+
 			"\t\tint index_2 = 0,\n"+
 			"\t\t\tcount_3 = items_1.size();\n"+
 			"\t\tfor (Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
@@ -671,7 +671,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().write(output, input);
+		new ServerCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -699,7 +699,7 @@ public class ServerCodeGenTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("<div>")
@@ -708,7 +708,7 @@ public class ServerCodeGenTests {
 							Object.class,
 							"data_1",// data
 							new CodePropertyReferenceExpression(
-								new CodeVariableReferenceExpression("data"),
+								new CodeVariableReferenceExpression(Object.class, "data"),
 								new CodePrimitiveExpression("name"))),
 						new CodeIterationStatement(
 							new CodeVariableCompoundDeclarationStatement(
@@ -724,28 +724,28 @@ public class ServerCodeGenTests {
 								}),// initStatement
 							new CodeBinaryOperatorExpression(
 								CodeBinaryOperatorType.LESS_THAN,
-								new CodeVariableReferenceExpression("index_2"),
-								new CodeVariableReferenceExpression("count_3")),// testExpression
+								new CodeVariableReferenceExpression(int.class, "index_2"),
+								new CodeVariableReferenceExpression(int.class, "count_3")),// testExpression
 							new CodeExpressionStatement(
 								new CodeUnaryOperatorExpression(
 									CodeUnaryOperatorType.POST_INCREMENT,
-									new CodeVariableReferenceExpression("index_2"))),// incrementStatement
+									new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
 										new CodeThisReferenceExpression(),
 										"render_2",
 										new CodeExpression[] {
-											new CodeVariableReferenceExpression("output"),
-											new CodeVariableReferenceExpression("data_1"),
-											new CodeVariableReferenceExpression("index_2"),
-											new CodeVariableReferenceExpression("count_3"),
+											new CodeVariableReferenceExpression(Appendable.class, "output"),
+											new CodeVariableReferenceExpression(Object.class, "data_1"),
+											new CodeVariableReferenceExpression(int.class, "index_2"),
+											new CodeVariableReferenceExpression(int.class, "count_3"),
 											new CodePrimitiveExpression(null)
 										}))
 							}),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression("output"),
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodeExpression[] {
 									new CodePrimitiveExpression("</div>")
@@ -765,7 +765,7 @@ public class ServerCodeGenTests {
 						new CodeStatement[] {
 							new CodeExpressionStatement(
 								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression("output"),
+									new CodeVariableReferenceExpression(Appendable.class, "output"),
 									"append",
 									new CodeExpression[] {
 										new CodePrimitiveExpression("item ")
@@ -775,8 +775,8 @@ public class ServerCodeGenTests {
 									new CodeThisReferenceExpression(),
 									"write",
 									new CodeExpression[] {
-										new CodeVariableReferenceExpression("output"),
-										new CodeVariableReferenceExpression("index")
+										new CodeVariableReferenceExpression(Appendable.class, "output"),
+										new CodeVariableReferenceExpression(int.class, "index")
 									}))
 					})
 			});
@@ -812,11 +812,69 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().write(output, input);
+		new ServerCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
-		System.out.println(actual);
-		
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void ternaryOpTest() throws IOException {
+
+		CodeTypeDeclaration input = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
+			"com.example",
+			"Foo",
+			new CodeMethod[] {
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeExpression[] {
+									new CodeVariableReferenceExpression(Appendable.class, "output"),
+									new CodeTernaryOperatorExpression(
+										new CodeVariableReferenceExpression(Object.class, "data"),
+										new CodePrimitiveExpression(1.0),
+										new CodePrimitiveExpression(2.0))
+								}))
+					})
+			});
+
+		String expected =
+			"package com.example;\n\n"+
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
+			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\tthis.write(output, this.asBoolean(data) ? 1.0 : 2.0);\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
 		assertEquals(expected, actual);
 	}
 }

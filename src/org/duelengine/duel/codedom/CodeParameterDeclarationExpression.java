@@ -11,7 +11,7 @@ public class CodeParameterDeclarationExpression extends CodeExpression {
 	public CodeParameterDeclarationExpression() {
 	}
 
-	public CodeParameterDeclarationExpression(Class type, String name) {
+	public CodeParameterDeclarationExpression(Class<?> type, String name) {
 		this.type = type;
 		this.name = name;
 	}

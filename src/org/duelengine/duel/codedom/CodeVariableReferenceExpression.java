@@ -3,12 +3,28 @@ package org.duelengine.duel.codedom;
 public class CodeVariableReferenceExpression extends CodeExpression {
 
 	private String ident;
+	private Class<?> resultType = Object.class;
 
 	public CodeVariableReferenceExpression() {
 	}
 
-	public CodeVariableReferenceExpression(String ident) {
+	public CodeVariableReferenceExpression(Class<?> type, String ident) {
 		this.ident = ident;
+		this.setResultType(type);
+	}
+
+	public CodeVariableReferenceExpression(CodeVariableDeclarationStatement variable) {
+		if (variable != null) {
+			this.ident = variable.getName();
+			this.setResultType(variable.getType());
+		}
+	}
+
+	public CodeVariableReferenceExpression(CodeParameterDeclarationExpression variable) {
+		if (variable != null) {
+			this.ident = variable.getName();
+			this.setResultType(variable.getType());
+		}
 	}
 
 	public String getIdent() {
@@ -21,11 +37,11 @@ public class CodeVariableReferenceExpression extends CodeExpression {
 
 	@Override
 	public Class<?> getResultType() {
-		if (this.ident != null && (this.ident.equals("index") || this.ident.equals("count"))) {
-			return int.class;
-		}
+		return this.resultType;
+	}
 
-		return Object.class;
+	public void setResultType(Class<?> value) {
+		this.resultType = (value == null) ? Object.class : value;
 	}
 
 	@Override
@@ -36,7 +52,10 @@ public class CodeVariableReferenceExpression extends CodeExpression {
 		}
 
 		CodeVariableReferenceExpression that = (CodeVariableReferenceExpression)arg;
-		if (this.ident == null ? that.ident != null : !this.ident.equals(that.ident)){
+		if (this.ident == null ? that.ident != null : !this.ident.equals(that.ident)) {
+			return false;
+		}
+		if (this.resultType == null ? that.resultType != null : !this.resultType.equals(that.resultType)) {
 			return false;
 		}
 		return super.equals(arg);
@@ -49,6 +68,9 @@ public class CodeVariableReferenceExpression extends CodeExpression {
 		int hash = super.hashCode();
 		if (this.ident != null) {
 			hash = hash * HASH_PRIME + this.ident.hashCode();
+		}
+		if (this.resultType != null) {
+			hash = hash * HASH_PRIME + this.resultType.hashCode();
 		}
 		return hash;
 	}

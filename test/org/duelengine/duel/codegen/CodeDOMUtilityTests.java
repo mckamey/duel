@@ -21,10 +21,10 @@ public class CodeDOMUtilityTests {
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
-					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("data"))
+					new CodeMethodReturnStatement(new CodeVariableReferenceExpression(Object.class, "data"))
 				});
 
-		CodeExpression expected = new CodeVariableReferenceExpression("data");
+		CodeExpression expected = new CodeVariableReferenceExpression(Object.class, "data");
 		
 		CodeExpression actual = CodeDOMUtility.inlineMethod(input);
 		assertEquals(expected, actual);
@@ -58,26 +58,26 @@ public class CodeDOMUtilityTests {
 	public void inlineMethodMultiLineTest() throws Exception {
 
 		CodeMethod input = new CodeMethod(
-				AccessModifierType.PRIVATE,
-				Object.class,
-				"code_1",
-				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "data"),
-					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count"),
-					new CodeParameterDeclarationExpression(String.class, "key")
-				},
-				new CodeStatement[] {
-					new CodeVariableDeclarationStatement(
-						Object.class,
-						"foo",
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.LESS_THAN_OR_EQUAL,
-							new CodeVariableReferenceExpression("index"),
-							new CodeVariableReferenceExpression("count"))),
-					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("foo"))
-				});
+			AccessModifierType.PRIVATE,
+			Object.class,
+			"code_1",
+			new CodeParameterDeclarationExpression[] {
+				new CodeParameterDeclarationExpression(Appendable.class, "output"),
+				new CodeParameterDeclarationExpression(Object.class, "data"),
+				new CodeParameterDeclarationExpression(int.class, "index"),
+				new CodeParameterDeclarationExpression(int.class, "count"),
+				new CodeParameterDeclarationExpression(String.class, "key")
+			},
+			new CodeStatement[] {
+				new CodeVariableDeclarationStatement(
+					Object.class,
+					"foo",
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.LESS_THAN_OR_EQUAL,
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"))),
+				new CodeMethodReturnStatement(new CodeVariableReferenceExpression(Object.class, "foo"))
+			});
 
 		CodeExpression expected = null;
 		

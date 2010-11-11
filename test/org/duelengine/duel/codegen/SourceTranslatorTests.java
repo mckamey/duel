@@ -1,9 +1,7 @@
 package org.duelengine.duel.codegen;
 
-import java.io.*;
 import java.util.*;
 
-import org.duelengine.duel.ast.CodeBlockNode;
 import org.duelengine.duel.codedom.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -27,7 +25,7 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeStatement[] {
-					new CodeMethodReturnStatement(new CodeVariableReferenceExpression("data"))
+					new CodeMethodReturnStatement(new CodeVariableReferenceExpression(Object.class, "data"))
 				});
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
@@ -56,7 +54,7 @@ public class SourceTranslatorTests {
 					new CodeMethodReturnStatement(
 						new CodeBinaryOperatorExpression(
 							CodeBinaryOperatorType.IDENTITY_EQUALITY,
-							new CodeVariableReferenceExpression("data"),
+							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("Lorem ipsum")))
 				});
 
@@ -87,7 +85,7 @@ public class SourceTranslatorTests {
 						new CodeBinaryOperatorExpression(
 							CodeBinaryOperatorType.ADD,
 							new CodePrimitiveExpression("Lorem ipsum"),
-							new CodeVariableReferenceExpression("data")))
+							new CodeVariableReferenceExpression(Object.class, "data")))
 				});
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
@@ -116,7 +114,7 @@ public class SourceTranslatorTests {
 					new CodeMethodReturnStatement(
 						new CodeBinaryOperatorExpression(
 							CodeBinaryOperatorType.GREATER_THAN_OR_EQUAL,
-							new CodeVariableReferenceExpression("count"),
+							new CodeVariableReferenceExpression(int.class, "count"),
 							new CodePrimitiveExpression(1.0)))
 				});
 
@@ -148,7 +146,7 @@ public class SourceTranslatorTests {
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
 						new CodePropertyReferenceExpression(
-							new CodeVariableReferenceExpression("data"),
+							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("foo")))
 				});
 
@@ -178,7 +176,7 @@ public class SourceTranslatorTests {
 					new CodeMethodReturnStatement(
 						new CodeMethodInvokeExpression(
 							new CodePropertyReferenceExpression(
-								new CodeVariableReferenceExpression("data"),
+								new CodeVariableReferenceExpression(Object.class, "data"),
 								new CodePrimitiveExpression("substr")), null, new CodeExpression[] {
 									new CodePrimitiveExpression(5.0),
 									new CodePrimitiveExpression(2.0)
@@ -210,7 +208,7 @@ public class SourceTranslatorTests {
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
 						new CodePropertyReferenceExpression(
-							new CodeVariableReferenceExpression("data"),
+							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("foo")))
 				});
 
@@ -239,7 +237,7 @@ public class SourceTranslatorTests {
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
 						new CodePropertyReferenceExpression(
-							new CodeVariableReferenceExpression("data"),
+							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression(3.0)))
 				});
 
@@ -301,7 +299,7 @@ public class SourceTranslatorTests {
 					new CodeMethodReturnStatement(
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.POST_DECREMENT,
-							new CodeVariableReferenceExpression("data")))
+							new CodeVariableReferenceExpression(Object.class, "data")))
 				});
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
@@ -330,7 +328,7 @@ public class SourceTranslatorTests {
 					new CodeMethodReturnStatement(
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.PRE_INCREMENT,
-							new CodeVariableReferenceExpression("data")))
+							new CodeVariableReferenceExpression(Object.class, "data")))
 				});
 
 		List<CodeMember> actual = new SourceTranslator(new CodeTypeDeclaration()).translate(input);
@@ -358,7 +356,7 @@ public class SourceTranslatorTests {
 				new CodeStatement[] {
 					new CodeMethodReturnStatement(
 						new CodeTernaryOperatorExpression(
-							new CodeVariableReferenceExpression("data"),
+							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression(1.0),
 							new CodePrimitiveExpression(2.0)))
 				});
@@ -388,28 +386,28 @@ public class SourceTranslatorTests {
 				new CodeStatement[] {
 					new CodeIterationStatement(
 						new CodeVariableCompoundDeclarationStatement(new CodeVariableDeclarationStatement[] {
-							new CodeVariableDeclarationStatement(null, "i2",
+							new CodeVariableDeclarationStatement(Object.class, "i2",
 								new CodePrimitiveExpression(0.0)),
-							new CodeVariableDeclarationStatement(null, "length4",
+							new CodeVariableDeclarationStatement(Object.class, "length4",
 								new CodePropertyReferenceExpression(
-									new CodeVariableReferenceExpression("data"),
+									new CodeVariableReferenceExpression(Object.class, "data"),
 									new CodePrimitiveExpression("length4"))),
 						}),
 						new CodeBinaryOperatorExpression(
 							CodeBinaryOperatorType.LESS_THAN,
-							new CodeVariableReferenceExpression("i2"),
-							new CodeVariableReferenceExpression("length4")),
+							new CodeVariableReferenceExpression(Object.class, "i2"),
+							new CodeVariableReferenceExpression(Object.class, "length4")),
 						new CodeExpressionStatement(
 							new CodeUnaryOperatorExpression(
 								CodeUnaryOperatorType.POST_INCREMENT,
-								new CodeVariableReferenceExpression("i2"))),
+								new CodeVariableReferenceExpression(Object.class, "i2"))),
 						new CodeStatement[] {
 							new CodeExpressionStatement(
 								new CodeMethodInvokeExpression(
 									new CodePropertyReferenceExpression(
 										new CodePropertyReferenceExpression(
-											new CodeVariableReferenceExpression("data"),
-											new CodeVariableReferenceExpression("i2")),
+											new CodeVariableReferenceExpression(Object.class, "data"),
+											new CodeVariableReferenceExpression(Object.class, "i2")),
 										new CodePrimitiveExpression("toString")),
 									null,
 									null))

@@ -11,6 +11,8 @@ public abstract class DuelView {
 	
 	private final ClientIDStrategy clientID;
 	private HTMLFormatter formatter;
+	private static final Double ZERO = Double.valueOf(0);
+	private static final Double NaN = Double.valueOf(Double.NaN);
 
 	protected DuelView() {
 		this(new IncClientIDStrategy());
@@ -96,18 +98,66 @@ public abstract class DuelView {
 			return map.get(propertyName);
 		}
 
-		// TODO: convert arbitrary object to list of Map.Entry
+		// TODO: convert arbitrary object to Map
 		throw new IllegalArgumentException("TODO: convert object to map");
 	}
 
 	/**
-	 * Adapts any Object to Iterable with size()
+	 * Coerces any Object to a JS Boolean
 	 * @param data
 	 * @return
 	 */
-	protected Collection<?> asItems(Object data) {
+	protected boolean asBoolean(Object data) {
+		return
+			!(data == null ||
+			Boolean.FALSE.equals(data) ||
+			"".equals(data) ||
+			ZERO.equals(data) ||
+			NaN.equals(data));
+	}
+
+	/**
+	 * Coerces any Object to a JS Number
+	 * @param data
+	 * @return
+	 */
+	protected double asNumber(Object data) {
+		if (data == null) {
+			return 0.0;
+		}
+
+		if (data instanceof Number) {
+			return ((Number)data).doubleValue();
+		}
+
+		if (data instanceof Character) {
+			return ((Character)data).charValue();
+		}
+		
+		return this.asBoolean(data) ? NaN : 0.0;
+	}
+
+	/**
+	 * Coerces any Object to a JS String 
+	 * @param data
+	 * @return
+	 */
+	protected String asString(Object data) {
+		return (data == null) ? "" : data.toString();
+	}
+
+	/**
+	 * Coerces any Object to a JS Array
+	 * @param data
+	 * @return
+	 */
+	protected Collection<?> asArray(Object data) {
+		if (data == null) {
+			return Collections.EMPTY_LIST;
+		}
 
 		if (data instanceof Collection<?>) {
+			// already is
 			return (Collection<?>)data;
 		}
 
@@ -124,16 +174,15 @@ public abstract class DuelView {
 			return list;
 		}
 
-		// null is allowed
 		return new SingleIterable(data);
 	}
 
 	/**
-	 * Adapts any Object to Iterable<Map.Entry> with size()
+	 * Coerces any Object to a JS Object
 	 * @param data
 	 * @return
 	 */
-	protected Collection<Map.Entry<Object,Object>> asEntries(Object data) {
+	protected Collection<Map.Entry<Object,Object>> asObject(Object data) {
 
 		if (data instanceof Map<?,?>) {
 			@SuppressWarnings("unchecked")
@@ -141,7 +190,7 @@ public abstract class DuelView {
 			return map.entrySet();
 		}
 
-		// TODO: convert arbitrary object to list of Map.Entry
+		// TODO: convert arbitrary object to Iterable<Map.Entry> with size()
 		throw new IllegalArgumentException("TODO: convert object to map");
 	}
 
@@ -151,7 +200,9 @@ public abstract class DuelView {
 	 * @param value
 	 * @throws IOException
 	 */
-	protected void write(Appendable output, Object value) throws IOException {
+	protected void write(Appendable output, Object value)
+		throws IOException {
+
 		if (value == null) {
 			return;
 		}
@@ -165,7 +216,9 @@ public abstract class DuelView {
 	 * @param value
 	 * @throws IOException
 	 */
-	protected void htmlEncode(Appendable output, Object value) throws IOException {
+	protected void htmlEncode(Appendable output, Object value)
+		throws IOException {
+
 		if (value == null) {
 			return;
 		}

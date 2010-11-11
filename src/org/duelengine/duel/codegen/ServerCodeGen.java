@@ -74,27 +74,64 @@ public class ServerCodeGen implements CodeGenerator {
 
 		CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).build(view);
 
-		this.write(output, viewType);
+		this.writeCode(output, viewType);
 	}
 
-	public void write(Appendable output, CodeTypeDeclaration type)
+	public void writeCode(Appendable output, CodeObject code)
+		throws IOException {
+
+		if (code instanceof CodeTypeDeclaration) {
+			this.writeTypeDeclaration((CodeTypeDeclaration)code, output);
+
+		} else if (code instanceof CodeStatement) {
+			this.writeStatement(output, (CodeStatement)code);
+
+		} else if (code instanceof CodeExpression) {
+			this.writeExpression(output, (CodeExpression)code);
+
+		} else if (code instanceof CodeMember) {
+			this.writeMember(output, "Ctor", (CodeMember)code);
+
+		} else if (code instanceof CodeStatementBlock) {
+			output.append('{');
+			this.depth++;
+			for (CodeStatement statement : ((CodeStatementBlock)code).getStatements()) {
+				this.writeStatement(output, statement);
+			}
+			this.depth--;
+			this.writeln(output);
+			output.append('}');
+
+		} else {
+			throw new UnsupportedOperationException("Not implemented: "+code.getClass());
+		}
+	}
+
+	private void writeTypeDeclaration(CodeTypeDeclaration type, Appendable output)
 		throws IOException {
 
 		this.depth = 0;
 		this.writeIntro(output, type.getNamespace(), type.getAccess(), type.getTypeName(), type.getBaseType());
+		String typeName = type.getTypeName();
 		for (CodeMember member : type.getMembers()) {
 			this.writeln(output, 2);
-			if (member instanceof CodeConstructor) {
-				this.writeConstructor(output, (CodeConstructor)member, type.getTypeName());
-
-			} else if (member instanceof CodeMethod) {
-				this.writeMethod(output, (CodeMethod)member);
-
-			} else if (member != null) {
-				throw new UnsupportedOperationException("Not implemented: "+member.getClass());
-			}
+			this.writeMember(output, typeName, member);
 		}
 		this.writeOutro(output);
+	}
+
+	private void writeMember(Appendable output, String typeName, CodeMember member)
+		throws IOException {
+
+		if (member instanceof CodeConstructor) {
+			this.writeConstructor(output, (CodeConstructor)member, typeName);
+
+		} else if (member instanceof CodeMethod) {
+			this.writeMethod(output, (CodeMethod)member);
+
+		} else if (member != null) {
+			throw new UnsupportedOperationException("Not implemented: "+member.getClass());
+		}
 	}
 
 	private void writeConstructor(Appendable output, CodeConstructor ctor, String typeName)
@@ -110,8 +147,7 @@ public class ServerCodeGen implements CodeGenerator {
 			} else {
 				needsDelim = true;
 			}
-			this.writeTypeName(output, param.getResultType());
-			output.append(param.getName());
+			writeParameterDeclaration(output, param);
 		}
 		output.append(") {");
 		this.depth++;
@@ -169,8 +205,7 @@ public class ServerCodeGen implements CodeGenerator {
 			} else {
 				needsDelim = true;
 			}
-			this.writeTypeName(output, param.getResultType());
-			output.append(param.getName());
+			this.writeParameterDeclaration(output, param);
 		}
 		output.append(") {");
 		this.depth++;
@@ -180,6 +215,12 @@ public class ServerCodeGen implements CodeGenerator {
 		this.depth--;
 		this.writeln(output);
 		output.append("}");
+	}
+
+	private void writeParameterDeclaration(Appendable output, CodeParameterDeclarationExpression param) throws IOException {
+
+		this.writeTypeName(output, param.getResultType());
+		output.append(param.getName());
 	}
 
 	private void writeStatement(Appendable output, CodeStatement statement)
@@ -257,27 +298,35 @@ public class ServerCodeGen implements CodeGenerator {
 
 		try {
 			if (expression instanceof CodePrimitiveExpression) {
-				this.writeLiteral(output, ((CodePrimitiveExpression)expression).getValue());
+				this.writePrimitive(output, ((CodePrimitiveExpression)expression).getValue());
 
 			} else if (expression instanceof CodeVariableReferenceExpression) {
 				output.append(((CodeVariableReferenceExpression)expression).getIdent());
 
+			} else if (expression instanceof CodeBinaryOperatorExpression) {
+				this.writeBinaryOperator(output, (CodeBinaryOperatorExpression)expression);
+
+			} else if (expression instanceof CodeUnaryOperatorExpression) {
+				this.writeUnaryOperator(output, (CodeUnaryOperatorExpression)expression);
+
+			} else if (expression instanceof CodePropertyReferenceExpression) {
+				this.writePropertyReference(output, (CodePropertyReferenceExpression)expression);
+
+			} else if (expression instanceof CodeTernaryOperatorExpression) {
+				this.writeTernaryOperator(output, (CodeTernaryOperatorExpression)expression);
+
+			} else if (expression instanceof CodeMethodInvokeExpression) {
+				this.writeMethodInvoke(output, (CodeMethodInvokeExpression)expression);
+
 			} else if (expression instanceof CodeThisReferenceExpression) {
 				output.append("this");
 
-			} else if (expression instanceof CodeBinaryOperatorExpression) {
-				this.writeBinaryOperatorExpression(output, (CodeBinaryOperatorExpression)expression);
-
-			} else if (expression instanceof CodeUnaryOperatorExpression) {
-				this.writeUnaryOperatorExpression(output, (CodeUnaryOperatorExpression)expression);
-
-			} else if (expression instanceof CodePropertyReferenceExpression) {
-				this.writePropertyReferenceExpression(output, (CodePropertyReferenceExpression)expression);
-
-			} else if (expression instanceof CodeMethodInvokeExpression) {
-				this.writeMethodInvokeExpression(output, (CodeMethodInvokeExpression)expression);
+			} else if (expression instanceof CodeParameterDeclarationExpression) {
+				this.writeParameterDeclaration(output, (CodeParameterDeclarationExpression)expression);
 
 			} else {
+				// TODO: build client-side deferred execution
+				
 				throw new UnsupportedOperationException("Expression not yet supported: "+expression.getClass());
 			}
 		} finally {
@@ -287,7 +336,7 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 	}
 
-	private void writePropertyReferenceExpression(Appendable output, CodePropertyReferenceExpression expression)
+	private void writePropertyReference(Appendable output, CodePropertyReferenceExpression expression)
 		throws IOException {
 
 		output.append("this.getProperty(");
@@ -297,11 +346,30 @@ public class ServerCodeGen implements CodeGenerator {
 		output.append(')');
 	}
 
-	private void writeBinaryOperatorExpression(Appendable output, CodeBinaryOperatorExpression expression)
+	private void writeBinaryOperator(Appendable output, CodeBinaryOperatorExpression expression)
 		throws IOException {
 
+		boolean asNumber = true;
 		String operator;
 		switch (expression.getOperator()) {
+			case IDENTITY_EQUALITY:
+				operator = " == ";
+				asNumber = false;
+				break;
+			case VALUE_EQUALITY:
+				// TODO: coerce values before compare
+				operator = " == ";
+				asNumber = false;
+				break;
+			case IDENTITY_INEQUALITY:
+				operator = " != ";
+				asNumber = false;
+				break;
+			case VALUE_INEQUALITY:
+				// TODO: coerce values before compare
+				operator = " != ";
+				asNumber = false;
+				break;
 			case GREATER_THAN:
 				operator = " > ";
 				break;
@@ -314,39 +382,167 @@ public class ServerCodeGen implements CodeGenerator {
 			case LESS_THAN_OR_EQUAL:
 				operator = " <= ";
 				break;
-			case IDENTITY_EQUALITY:
-			case VALUE_EQUALITY:
-				// TODO: create semantically correct equality operators
-				operator = " == ";
+			case ADD:
+				operator = " + ";
 				break;
-			case IDENTITY_INEQUALITY:
-			case VALUE_INEQUALITY:
-				// TODO: create semantically correct inequality operators
-				operator = " != ";
+			case ADD_ASSIGN:
+				operator = " += ";
+				break;
+			case ASSIGN:
+				operator = " = ";
+				break;
+			case BITWISE_AND:
+				operator = " & ";
+				break;
+			case BITWISE_AND_ASSIGN:
+				operator = " &= ";
+				break;
+			case BITWISE_OR:
+				operator = " | ";
+				break;
+			case BITWISE_OR_ASSIGN:
+				operator = " |= ";
+				break;
+			case BITWISE_XOR:
+				operator = " ^ ";
+				break;
+			case BITWISE_XOR_ASSIGN:
+				operator = " ^= ";
+				break;
+			case BOOLEAN_AND:
+				operator = " && ";
+				break;
+			case BOOLEAN_OR:
+				operator = " || ";
+				break;
+			case DIVIDE:
+				operator = " / ";
+				break;
+			case DIVIDE_ASSIGN:
+				operator = " /= ";
+				break;
+			case MODULUS:
+				operator = " % ";
+				break;
+			case MODULUS_ASSIGN:
+				operator = " %= ";
+				break;
+			case MULTIPLY:
+				operator = " * ";
+				break;
+			case MULTIPLY_ASSIGN:
+				operator = " *= ";
+				break;
+			case SHIFT_LEFT:
+				operator = " << ";
+				break;
+			case SHIFT_LEFT_ASSIGN:
+				operator = " <<= ";
+				break;
+			case SHIFT_RIGHT:
+				operator = " >> ";
+				break;
+			case SHIFT_RIGHT_ASSIGN:
+				operator = " >>= ";
+				break;
+			case SUBTRACT:
+				operator = " - ";
+				break;
+			case SUBTRACT_ASSIGN:
+				operator = " -= ";
+				break;
+			case USHIFT_RIGHT:
+				operator = " >>> ";
+				break;
+			case USHIFT_RIGHT_ASSIGN:
+				operator = " >>>= ";
 				break;
 			default:
 				throw new UnsupportedOperationException("Binary operator not yet supported: "+expression.getOperator());
 		}
-		this.writeExpression(output, expression.getLeft());
+
+		if (asNumber) {
+			this.writeExpression(output, CodeDOMUtility.ensureNumber(expression.getLeft()));
+		} else {
+			this.writeExpression(output, expression.getLeft());
+		}
+
 		output.append(operator);
-		this.writeExpression(output, expression.getRight());
+
+		if (asNumber) {
+			this.writeExpression(output, CodeDOMUtility.ensureNumber(expression.getRight()));
+		} else {
+			this.writeExpression(output, expression.getRight());
+		}
 	}
 
-	private void writeUnaryOperatorExpression(Appendable output, CodeUnaryOperatorExpression expression)
+	private void writeUnaryOperator(Appendable output, CodeUnaryOperatorExpression expression)
 		throws IOException {
 
+		CodeExpression expr = expression.getExpression(); 
+
+		String operator;
+		boolean isPost = false;
 		switch (expression.getOperator()) {
-			case PRE_INCREMENT:
-				output.append("++");
-				this.writeExpression(output, expression.getExpression());
+			case LOGICAL_NEGATION:
+				operator = "!";
+				expr = CodeDOMUtility.ensureBoolean(expr);
+				break;
+			case BITWISE_NEGATION:
+				operator = "~";
+				expr = CodeDOMUtility.ensureNumber(expr);
+				break;
+			case NEGATION:
+				operator = "-";
+				expr = CodeDOMUtility.ensureNumber(expr);
+				break;
+			case POSITIVE:
+				operator = "+";
+				expr = CodeDOMUtility.ensureNumber(expr);
+				break;
+			case POST_DECREMENT:
+				// TODO: convert into type safe expression
+				// data-- => (data = (asNumber(data)-1))
+				operator = "--";
+				isPost = true;
 				break;
 			case POST_INCREMENT:
-				this.writeExpression(output, expression.getExpression());
-				output.append("++");
+				// TODO: convert into type safe expression
+				// data-- => (data = (asNumber(data)+1))
+				operator = "++";
+				isPost = true;
+				break;
+			case PRE_DECREMENT:
+				// TODO: convert into type safe expression
+				// data-- => (data = (asNumber(data)-1))
+				operator = "--";
+				break;
+			case PRE_INCREMENT:
+				// TODO: convert into type safe expression
+				// data-- => (data = (asNumber(data)+1))
+				operator = "++";
 				break;
 			default:
 				throw new UnsupportedOperationException("Unary operator not yet supported: "+expression.getOperator());
 		}
+
+		if (isPost) {
+			this.writeExpression(output, expr);
+			output.append(operator);
+		} else {
+			output.append(operator);
+			this.writeExpression(output, expr);
+		}
+	}
+
+	private void writeTernaryOperator(Appendable output, CodeTernaryOperatorExpression expression)
+		throws IOException {
+
+		this.writeExpression(output, CodeDOMUtility.ensureBoolean(expression.getTestExpression()));
+		output.append(" ? ");
+		this.writeExpression(output, expression.getTrueExpression());
+		output.append(" : ");
+		this.writeExpression(output, expression.getFalseExpression());
 	}
 
 	private boolean writeVariableDeclarationStatement(Appendable output, CodeVariableDeclarationStatement statement, boolean inline)
@@ -466,7 +662,7 @@ public class ServerCodeGen implements CodeGenerator {
 		return false;
 	}
 
-	private void writeMethodInvokeExpression(Appendable output, CodeMethodInvokeExpression expression)
+	private void writeMethodInvoke(Appendable output, CodeMethodInvokeExpression expression)
 		throws IOException {
 
 		this.writeExpression(output, expression.getTarget());
@@ -476,13 +672,15 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 		output.append('(');
 		boolean needsDelim = false;
-		for (CodeExpression arg : expression.getArguments()) {
+		List<CodeExpression> args = expression.getArguments();
+		boolean singleArg = (args.size() == 1);
+		for (CodeExpression arg : args) {
 			if (needsDelim) {
 				output.append(", ");
 			} else {
 				needsDelim = true;
 			}
-			this.writeExpression(output, arg);
+			this.writeExpression(output, arg, singleArg ? ParensSetting.SUPPRESS : ParensSetting.AUTO);
 		}
 		output.append(')');
 	}
@@ -554,7 +752,7 @@ public class ServerCodeGen implements CodeGenerator {
 		this.writeln(output);
 	}
 
-	private void writeLiteral(Appendable output, Object value)
+	private void writePrimitive(Appendable output, Object value)
 		throws IOException {
 
 		if (value == null) {
