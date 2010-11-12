@@ -350,8 +350,7 @@ public class ServerCodeGen implements CodeGenerator {
 		throws IOException {
 
 		boolean asNumber = true,
-			isAssign = false,
-			asAssign = false;
+			isAssign = false;
 
 		String operator;
 		switch (expression.getOperator()) {
@@ -393,59 +392,82 @@ public class ServerCodeGen implements CodeGenerator {
 				asNumber = !CodeDOMUtility.isNumber(expression.getLeft());
 				break;
 			case ADD_ASSIGN:
-				operator = " + ";
-				asAssign = true;
-				// TODO: sort out ambiguous expressions
-				asNumber = !CodeDOMUtility.isNumber(expression.getLeft());
+				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
+					// TODO: sort out ambiguous expressions
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.ADD, expression.getLeft(), expression.getRight()));
+					return;
+				}
+				operator = " += ";
 				break;
 			case SUBTRACT:
 				operator = " - ";
 				break;
 			case SUBTRACT_ASSIGN:
-				operator = " - ";
-				asAssign = true;
+				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SUBTRACT, expression.getLeft(), expression.getRight()));
+					return;
+				}
+				operator = " -= ";
 				break;
 			case MULTIPLY:
 				operator = " * ";
 				break;
 			case MULTIPLY_ASSIGN:
-				operator = " * ";
-				asAssign = true;
+				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MULTIPLY, expression.getLeft(), expression.getRight()));
+					return;
+				}
+				operator = " *= ";
 				break;
 			case DIVIDE:
 				operator = " / ";
 				break;
 			case DIVIDE_ASSIGN:
-				operator = " / ";
-				asAssign = true;
+				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.DIVIDE, expression.getLeft(), expression.getRight()));
+					return;
+				}
+				operator = " /= ";
 				break;
 			case MODULUS:
 				operator = " % ";
 				break;
 			case MODULUS_ASSIGN:
-				operator = " % ";
-				asAssign = true;
+				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MODULUS, expression.getLeft(), expression.getRight()));
+					return;
+				}
+				operator = " %= ";
 				break;
 			case BITWISE_AND:
 				operator = " & ";
 				break;
 			case BITWISE_AND_ASSIGN:
-				operator = " & ";
-				asAssign = true;
+				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_AND, expression.getLeft(), expression.getRight()));
+					return;
+				}
+				operator = " &= ";
 				break;
 			case BITWISE_OR:
 				operator = " | ";
 				break;
 			case BITWISE_OR_ASSIGN:
-				operator = " | ";
-				asAssign = true;
+				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_OR, expression.getLeft(), expression.getRight()));
+					return;
+				}
+				operator = " |= ";
 				break;
 			case BITWISE_XOR:
 				operator = " ^ ";
 				break;
 			case BITWISE_XOR_ASSIGN:
-				operator = " ^ ";
-				asAssign = true;
+				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_XOR, expression.getLeft(), expression.getRight()));
+					return;
+				}
+				operator = " ^= ";
 				break;
 			case BOOLEAN_AND:
 				operator = " && ";
@@ -457,30 +479,34 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " << ";
 				break;
 			case SHIFT_LEFT_ASSIGN:
-				operator = " << ";
-				asAssign = true;
+				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_LEFT, expression.getLeft(), expression.getRight()));
+					return;
+				}
+				operator = " <<= ";
 				break;
 			case SHIFT_RIGHT:
 				operator = " >> ";
 				break;
 			case SHIFT_RIGHT_ASSIGN:
-				operator = " >> ";
-				asAssign = true;
+				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_RIGHT, expression.getLeft(), expression.getRight()));
+					return;
+				}
+				operator = " >>= ";
 				break;
 			case USHIFT_RIGHT:
 				operator = " >>> ";
 				break;
 			case USHIFT_RIGHT_ASSIGN:
-				operator = " >>> ";
-				asAssign = true;
+				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.USHIFT_RIGHT, expression.getLeft(), expression.getRight()));
+					return;
+				}
+				operator = " >>>= ";
 				break;
 			default:
 				throw new UnsupportedOperationException("Unknown binary operator: "+expression.getOperator());
-		}
-
-		if (asAssign) {
-			this.writeExpression(output, expression.getLeft());
-			output.append(" = ");
 		}
 
 		if (asNumber && !isAssign) {
@@ -491,7 +517,9 @@ public class ServerCodeGen implements CodeGenerator {
 
 		output.append(operator);
 
-		if (asNumber) {
+		if (isAssign) {
+			this.writeExpression(output, CodeDOMUtility.ensureType(expression.getLeft().getResultType(), expression.getRight()));
+		} else if (asNumber) {
 			this.writeExpression(output, CodeDOMUtility.ensureNumber(expression.getRight()));
 		} else {
 			this.writeExpression(output, expression.getRight());

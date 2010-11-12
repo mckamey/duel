@@ -106,13 +106,19 @@ final class CodeDOMUtility {
 	}
 
 	public static boolean isBoolean(CodeExpression expression) {
-		Class<?> exprType = expression.getResultType();
+		return isBoolean(expression.getResultType());
+	}
+
+	public static boolean isBoolean(Class<?> exprType) {
 		return (boolean.class.equals(exprType) ||
 			Boolean.class.equals(exprType));
 	}
 
 	public static boolean isNumber(CodeExpression expression) {
-		Class<?> exprType = expression.getResultType();
+		return isNumber(expression.getResultType());
+	}
+
+	public static boolean isNumber(Class<?> exprType) {
 		return (Number.class.isAssignableFrom(exprType) ||
 			int.class.isAssignableFrom(exprType) ||
 			double.class.isAssignableFrom(exprType) ||
@@ -123,7 +129,11 @@ final class CodeDOMUtility {
 	}
 
 	public static boolean isString(CodeExpression expression) {
-		return (String.class.equals(expression.getResultType()));
+		return isString(expression.getResultType());
+	}
+
+	public static boolean isString(Class<?> exprType) {
+		return String.class.equals(exprType);
 	}
 
 	public static CodeExpression ensureBoolean(CodeExpression expression) {
@@ -201,23 +211,11 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeExpression safePreIncrement(CodeExpression i) {
-		return new CodeBinaryOperatorExpression(
-			CodeBinaryOperatorType.ASSIGN,
-			i,
-			new CodeBinaryOperatorExpression(
-				CodeBinaryOperatorType.ADD,
-				i,
-				new CodePrimitiveExpression(1.0)));
+		return asAssignment(CodeBinaryOperatorType.ADD, i, new CodePrimitiveExpression(1.0));
 	}
 
 	public static CodeExpression safePreDecrement(CodeExpression i) {
-		return new CodeBinaryOperatorExpression(
-			CodeBinaryOperatorType.ASSIGN,
-			i,
-			new CodeBinaryOperatorExpression(
-				CodeBinaryOperatorType.SUBTRACT,
-				i,
-				new CodePrimitiveExpression(1.0)));
+		return asAssignment(CodeBinaryOperatorType.SUBTRACT, i, new CodePrimitiveExpression(1.0));
 	}
 
 	public static CodeExpression safePostIncrement(CodeExpression i) {
@@ -226,7 +224,7 @@ final class CodeDOMUtility {
 			"echo",
 			new CodeExpression[] {
 				ensureNumber(i),
-				safePreIncrement(i)
+				asAssignment(CodeBinaryOperatorType.ADD, i, new CodePrimitiveExpression(1.0))
 			});
 	}
 
@@ -236,7 +234,33 @@ final class CodeDOMUtility {
 			"echo",
 			new CodeExpression[] {
 				ensureNumber(i),
-				safePreDecrement(i)
+				asAssignment(CodeBinaryOperatorType.SUBTRACT, i, new CodePrimitiveExpression(1.0))
 			});
+	}
+
+	public static CodeExpression asAssignment(CodeBinaryOperatorType op, CodeExpression a, CodeExpression b) {
+		CodeBinaryOperatorExpression expr = new CodeBinaryOperatorExpression(op, a, b);
+		expr.setHasParens(true);
+
+		expr = new CodeBinaryOperatorExpression(CodeBinaryOperatorType.ASSIGN, a, expr);
+		expr.setHasParens(true);
+		return expr;
+	}
+
+	public static CodeExpression ensureType(Class<?> varType, CodeExpression expr) {
+		Class<?> valueType = expr.getResultType();
+		if (varType.isAssignableFrom(valueType)) {
+			return expr;
+		}
+		if (isNumber(varType)) {
+			return ensureNumber(expr);
+		}
+		if (isString(varType)) {
+			return ensureString(expr);
+		}
+		if (isBoolean(varType)) {
+			return ensureBoolean(expr);
+		}
+		return expr;
 	}
 }

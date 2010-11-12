@@ -877,4 +877,292 @@ public class ServerCodeGenTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void unaryPostIncTest() throws IOException {
+
+		CodeTypeDeclaration input = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
+			"com.example",
+			"Foo",
+			new CodeMethod[] {
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeExpression[] {
+									new CodeVariableReferenceExpression(Appendable.class, "output"),
+									new CodeUnaryOperatorExpression(
+										CodeUnaryOperatorType.POST_INCREMENT,
+										new CodeVariableReferenceExpression(Object.class, "data"))
+								}))
+					})
+			});
+
+		String expected =
+			"package com.example;\n\n"+
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
+			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\tthis.write(output, this.echo(this.asNumber(data), (data = (this.asNumber(data) + 1.0))));\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void unaryPreDecTest() throws IOException {
+
+		CodeTypeDeclaration input = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
+			"com.example",
+			"Foo",
+			new CodeMethod[] {
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeExpression[] {
+									new CodeVariableReferenceExpression(Appendable.class, "output"),
+									new CodeUnaryOperatorExpression(
+										CodeUnaryOperatorType.PRE_DECREMENT,
+										new CodeVariableReferenceExpression(Object.class, "data"))
+								}))
+					})
+			});
+
+		String expected =
+			"package com.example;\n\n"+
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
+			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\tthis.write(output, (data = (this.asNumber(data) - 1.0)));\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void binaryModAssignTest() throws IOException {
+
+		CodeTypeDeclaration input = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
+			"com.example",
+			"Foo",
+			new CodeMethod[] {
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeExpression[] {
+									new CodeVariableReferenceExpression(Appendable.class, "output"),
+									new CodeBinaryOperatorExpression(
+										CodeBinaryOperatorType.MODULUS_ASSIGN,
+										new CodeVariableReferenceExpression(Object.class, "data"),
+										new CodePrimitiveExpression(5))
+								}))
+					})
+			});
+
+		String expected =
+			"package com.example;\n\n"+
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
+			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\tthis.write(output, (data = (this.asNumber(data) % 5)));\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void binaryAssignTest() throws IOException {
+
+		CodeTypeDeclaration input = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
+			"com.example",
+			"Foo",
+			new CodeMethod[] {
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.ASSIGN,
+								new CodeVariableReferenceExpression(Object.class, "data"),
+								new CodeVariableReferenceExpression(String.class, "key")
+						))
+					})
+			});
+
+		String expected =
+			"package com.example;\n\n"+
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
+			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\tdata = key;\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void binaryAssignCastTest() throws IOException {
+
+		CodeTypeDeclaration input = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
+			"com.example",
+			"Foo",
+			new CodeMethod[] {
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.ASSIGN,
+								new CodeVariableReferenceExpression(int.class, "count"),
+								new CodeVariableReferenceExpression(Object.class, "data")
+						))
+					})
+			});
+
+		String expected =
+			"package com.example;\n\n"+
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
+			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\tcount = this.asNumber(data);\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
 }
