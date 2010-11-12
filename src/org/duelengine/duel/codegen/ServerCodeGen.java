@@ -523,25 +523,49 @@ public class ServerCodeGen implements CodeGenerator {
 				expr = CodeDOMUtility.ensureNumber(expr);
 				break;
 			case POST_DECREMENT:
-				// TODO: convert into type safe expression
-				// data-- => (data = (asNumber(data)-1))
+				if (!CodeDOMUtility.isNumber(expr)) {
+					// convert into type safe expression
+					// data-- => echo(asNumber(data), (data = asNumber(data)-1))
+					this.writeExpression(output, CodeDOMUtility.safePostDecrement(expr));
+					return;
+				}
+
+				// statically type safe
 				operator = "--";
 				isPost = true;
 				break;
 			case POST_INCREMENT:
-				// TODO: convert into type safe expression
-				// data-- => (data = (asNumber(data)+1))
+				if (!CodeDOMUtility.isNumber(expr)) {
+					// convert into type safe expression
+					// data-- => echo(asNumber(data), (data = asNumber(data)+1))
+					this.writeExpression(output, CodeDOMUtility.safePostIncrement(expr));
+					return;
+				}
+
+				// statically type safe
 				operator = "++";
 				isPost = true;
 				break;
 			case PRE_DECREMENT:
-				// TODO: convert into type safe expression
-				// data-- => (data = (asNumber(data)-1))
+				if (!CodeDOMUtility.isNumber(expr)) {
+					// convert into type safe expression
+					// --data => (data = (asNumber(data)-1))
+					this.writeExpression(output, CodeDOMUtility.safePreDecrement(expr));
+					return;
+				}
+
+				// statically type safe
 				operator = "--";
 				break;
 			case PRE_INCREMENT:
-				// TODO: convert into type safe expression
-				// data-- => (data = (asNumber(data)+1))
+				if (!CodeDOMUtility.isNumber(expr)) {
+					// convert into type safe expression
+					// ++data => (data = (asNumber(data)+1))
+					this.writeExpression(output, CodeDOMUtility.safePreIncrement(expr));
+					return;
+				}
+
+				// statically type safe
 				operator = "++";
 				break;
 			default:

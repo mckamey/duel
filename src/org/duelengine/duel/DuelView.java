@@ -198,6 +198,7 @@ public abstract class DuelView {
 	 * @return
 	 */
 	protected String asString(Object data) {
+		// TODO: check special values like NaN and +/-Infinity
 		return (data == null) ? "" : data.toString();
 	}
 
@@ -289,5 +290,15 @@ public abstract class DuelView {
 
 			this.formatter.writeLiteral(String.valueOf(value));
 		}
+	}
+
+	/**
+	 * A work-around for dynamic post-inc/dec operators
+	 * @param value
+	 * @param ignore
+	 * @return
+	 */
+	protected double echo(double value, double ignore) {
+		return value;
 	}
 }

@@ -199,4 +199,44 @@ final class CodeDOMUtility {
 			CodeUnaryOperatorType.LOGICAL_NEGATION,
 			coerceEqual(a, b));
 	}
+
+	public static CodeExpression safePreIncrement(CodeExpression i) {
+		return new CodeBinaryOperatorExpression(
+			CodeBinaryOperatorType.ASSIGN,
+			i,
+			new CodeBinaryOperatorExpression(
+				CodeBinaryOperatorType.ADD,
+				i,
+				new CodePrimitiveExpression(1.0)));
+	}
+
+	public static CodeExpression safePreDecrement(CodeExpression i) {
+		return new CodeBinaryOperatorExpression(
+			CodeBinaryOperatorType.ASSIGN,
+			i,
+			new CodeBinaryOperatorExpression(
+				CodeBinaryOperatorType.SUBTRACT,
+				i,
+				new CodePrimitiveExpression(1.0)));
+	}
+
+	public static CodeExpression safePostIncrement(CodeExpression i) {
+		return new CodeMethodInvokeExpression(
+			new CodeThisReferenceExpression(),
+			"echo",
+			new CodeExpression[] {
+				ensureNumber(i),
+				safePreIncrement(i)
+			});
+	}
+
+	public static CodeExpression safePostDecrement(CodeExpression i) {
+		return new CodeMethodInvokeExpression(
+			new CodeThisReferenceExpression(),
+			"echo",
+			new CodeExpression[] {
+				ensureNumber(i),
+				safePreDecrement(i)
+			});
+	}
 }
