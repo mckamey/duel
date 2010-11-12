@@ -105,11 +105,29 @@ final class CodeDOMUtility {
 		return null;
 	}
 
-	public static CodeExpression ensureBoolean(CodeExpression expression) {
+	public static boolean isBoolean(CodeExpression expression) {
 		Class<?> exprType = expression.getResultType();
-		if (boolean.class.equals(exprType) ||
-			Boolean.class.equals(exprType)) {
+		return (boolean.class.equals(exprType) ||
+			Boolean.class.equals(exprType));
+	}
 
+	public static boolean isNumber(CodeExpression expression) {
+		Class<?> exprType = expression.getResultType();
+		return (Number.class.isAssignableFrom(exprType) ||
+			int.class.isAssignableFrom(exprType) ||
+			double.class.isAssignableFrom(exprType) ||
+			float.class.isAssignableFrom(exprType) ||
+			long.class.isAssignableFrom(exprType) ||
+			short.class.isAssignableFrom(exprType) ||
+			byte.class.isAssignableFrom(exprType));
+	}
+
+	public static boolean isString(CodeExpression expression) {
+		return (String.class.equals(expression.getResultType()));
+	}
+
+	public static CodeExpression ensureBoolean(CodeExpression expression) {
+		if (isBoolean(expression)) {
 			return expression;
 		}
 
@@ -123,15 +141,7 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeExpression ensureNumber(CodeExpression expression) {
-		Class<?> exprType = expression.getResultType();
-		if (Number.class.isAssignableFrom(exprType) ||
-			int.class.isAssignableFrom(exprType) ||
-			double.class.isAssignableFrom(exprType) ||
-			float.class.isAssignableFrom(exprType) ||
-			long.class.isAssignableFrom(exprType) ||
-			short.class.isAssignableFrom(exprType) ||
-			byte.class.isAssignableFrom(exprType)) {
-
+		if (isNumber(expression)) {
 			return expression;
 		}
 
@@ -145,7 +155,7 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeExpression ensureString(CodeExpression expression) {
-		if (String.class.equals(expression.getResultType())) {
+		if (isString(expression)) {
 			return expression;
 		}
 
@@ -156,5 +166,37 @@ final class CodeDOMUtility {
 			new CodeExpression[] {
 				expression
 			});
+	}
+
+	public static CodeExpression equal(CodeExpression a, CodeExpression b) {
+		return new CodeMethodInvokeExpression(
+			new CodeThisReferenceExpression(),
+			"equal",
+			new CodeExpression[] {
+				a,
+				b
+			});
+	}
+
+	public static CodeExpression notEqual(CodeExpression a, CodeExpression b) {
+		return new CodeUnaryOperatorExpression(
+			CodeUnaryOperatorType.LOGICAL_NEGATION,
+			equal(a, b));
+	}
+
+	public static CodeExpression coerceEqual(CodeExpression a, CodeExpression b) {
+		return new CodeMethodInvokeExpression(
+			new CodeThisReferenceExpression(),
+			"coerceEqual",
+			new CodeExpression[] {
+				a,
+				b
+			});
+	}
+
+	public static CodeExpression coerceNotEqual(CodeExpression a, CodeExpression b) {
+		return new CodeUnaryOperatorExpression(
+			CodeUnaryOperatorType.LOGICAL_NEGATION,
+			coerceEqual(a, b));
 	}
 }

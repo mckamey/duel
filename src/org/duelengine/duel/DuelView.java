@@ -2,6 +2,8 @@ package org.duelengine.duel;
 
 import java.io.*;
 import java.util.*;
+
+import org.duelengine.duel.codedom.CodeExpression;
 import org.duelengine.duel.codegen.HTMLFormatter;
 
 /**
@@ -100,6 +102,59 @@ public abstract class DuelView {
 
 		// TODO: convert arbitrary object to Map
 		throw new IllegalArgumentException("TODO: convert object to map");
+	}
+
+	/**
+	 * Performs equality test
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	protected boolean equal(Object a, Object b) {
+		return (a == null) ? (b == null) : a.equals(b);
+	}
+
+	/**
+	 * Coerces objects before performing equality test
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	protected boolean coerceEqual(Object a, Object b) {
+		if (a == null) {
+			return (b == null);
+		}
+
+		// attempt to coerce b to the type of a
+		Class<?> aType = a.getClass();
+		if (this.isNumber(aType)) {
+			b = this.asNumber(b);
+		} else if (this.isString(aType)) {
+			b = this.asString(b);
+		} else if (this.isBoolean(aType)) {
+			b = this.asBoolean(b);
+		}
+
+		return a.equals(b);
+	}
+
+	private boolean isBoolean(Class<?> exprType) {
+		return (boolean.class.equals(exprType) ||
+			Boolean.class.equals(exprType));
+	}
+
+	private boolean isNumber(Class<?> exprType) {
+		return (Number.class.isAssignableFrom(exprType) ||
+			int.class.isAssignableFrom(exprType) ||
+			double.class.isAssignableFrom(exprType) ||
+			float.class.isAssignableFrom(exprType) ||
+			long.class.isAssignableFrom(exprType) ||
+			short.class.isAssignableFrom(exprType) ||
+			byte.class.isAssignableFrom(exprType));
+	}
+
+	private boolean isString(Class<?> exprType) {
+		return (String.class.equals(exprType));
 	}
 
 	/**

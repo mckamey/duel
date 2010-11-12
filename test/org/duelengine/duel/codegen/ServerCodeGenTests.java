@@ -219,9 +219,9 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
-			"\t\tif (data == 0.0) {\n"+
+			"\t\tif (this.equal(data, 0.0)) {\n"+
 			"\t\t\toutput.append(\"zero\");\n"+
-			"\t\t} else if (data == 1.0) {\n"+
+			"\t\t} else if (this.equal(data, 1.0)) {\n"+
 			"\t\t\toutput.append(\"one\");\n"+
 			"\t\t} else {\n"+
 			"\t\t\toutput.append(\"many\");\n"+
@@ -327,10 +327,10 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
-			"\t\tif (data == 0.0) {\n"+
+			"\t\tif (this.coerceEqual(data, 0.0)) {\n"+
 			"\t\t\toutput.append(\"zero\");\n"+
 			"\t\t}\n"+
-			"\t\tif (data == 1.0) {\n"+
+			"\t\tif (this.coerceEqual(data, 1.0)) {\n"+
 			"\t\t\toutput.append(\"one\");\n"+
 			"\t\t}\n"+
 			"\t\toutput.append(\"many\");\n"+
