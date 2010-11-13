@@ -249,7 +249,7 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeParameterDeclaration(Appendable output, CodeParameterDeclarationExpression param) throws IOException {
 
 		this.writeTypeName(output, param.getResultType());
-		if (param.getVarLengthParam()) {
+		if (param.getVarArgs()) {
 			output.append("... ");
 		} else {
 			output.append(' ');
