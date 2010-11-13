@@ -291,6 +291,9 @@ public class ServerCodeGen implements CodeGenerator {
 		} else if (statement instanceof CodeVariableCompoundDeclarationStatement) {
 			needsSemicolon = this.writeVariableCompoundDeclarationStatement(output, (CodeVariableCompoundDeclarationStatement)statement, inline);
 
+		} else if (statement instanceof CodeMethodReturnStatement) {
+			needsSemicolon = this.writeMethodReturn(output, (CodeMethodReturnStatement)statement);
+
 		} else {
 			throw new UnsupportedOperationException("Statement not yet supported: "+statement.getClass());
 		}
@@ -298,6 +301,19 @@ public class ServerCodeGen implements CodeGenerator {
 		if (needsSemicolon && !inline) {
 			output.append(';');
 		}
+	}
+
+	private boolean writeMethodReturn(Appendable output, CodeMethodReturnStatement statement)
+		throws IOException {
+
+		output.append("return");
+		CodeExpression expr = statement.getExpression();
+		if (expr != null) {
+			output.append(' ');
+			this.writeExpression(output, expr);
+		}
+			
+		return true;
 	}
 
 	private void writeExpression(Appendable output, CodeExpression expression)

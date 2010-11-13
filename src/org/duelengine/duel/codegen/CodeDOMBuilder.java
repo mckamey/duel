@@ -43,6 +43,7 @@ public class CodeDOMBuilder {
 
 			method.setName("render");
 			method.setAccess(AccessModifierType.PROTECTED);
+			// TODO: method.setOverride(true);
 
 			return this.viewType;
 
@@ -103,7 +104,7 @@ public class CodeDOMBuilder {
 					this.buildCall((CALLCommandNode)node);
 					return;
 				case PART:
-					this.buildPart((PARTCommandNode)node);
+					this.buildPart((PARTCommandNode)node, false);
 					return;
 				default:
 					throw new IllegalStateException("Invalid command node type: "+command.getCommand());
@@ -144,7 +145,8 @@ public class CodeDOMBuilder {
 		}
 	}
 
-	private void buildCall(CALLCommandNode node) {
+	private void buildCall(CALLCommandNode node)
+		throws IOException {
 
 		// generate a field to hold the child template
 		CodeField field = new CodeField(
@@ -219,10 +221,37 @@ public class CodeDOMBuilder {
 				indexExpr,
 				countExpr,
 				keyExpr));
+
+		for (Node child : node.getChildren()) {
+			if (child instanceof PARTCommandNode)
+			this.buildPart((PARTCommandNode)child, true);
+		}
 	}
 
-	private void buildPart(PARTCommandNode node) {
-		throw new UnsupportedOperationException("PART not yet implemented");
+	private void buildPart(PARTCommandNode node, boolean inCall)
+		throws IOException {
+
+		CodeMethod getNameMethod = new CodeMethod(
+			AccessModifierType.PUBLIC,
+			String.class,
+			"getName",
+			null,
+			new CodeMethodReturnStatement(new CodePrimitiveExpression(node.getName())));
+		
+		getNameMethod.setOverride(true);
+
+		CodeMethod renderMethod = this.buildRenderMethod(node.getChildren());
+
+		renderMethod.setName("render");
+		renderMethod.setAccess(AccessModifierType.PROTECTED);
+		// TODO: renderMethod.setOverride(true);
+
+		CodeTypeDeclaration part = CodeDOMUtility.createPartType(
+			this.viewType.nextIdent("part_"),
+			getNameMethod,
+			renderMethod);
+
+		this.viewType.add(part);
 	}
 
 	private void buildIteration(FORCommandNode node) throws IOException {

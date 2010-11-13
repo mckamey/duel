@@ -5,6 +5,7 @@ public class PARTCommandNode extends CommandNode {
 	public static final String EXT_NAME = "part";
 	private static final String NAME = "$part";
 	private static final CommandName CMD = CommandName.PART;
+	private String name;
 
 	public PARTCommandNode() {
 		super(CMD, NAME, false);
@@ -14,6 +15,14 @@ public class PARTCommandNode extends CommandNode {
 		super(CMD, NAME, false, attr, children);
 	}
 
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String value) {
+		this.name = value;
+	}
+	
 	@Override
 	public boolean isSelf(String tag) {
 		return EXT_NAME.equalsIgnoreCase(tag) || NAME.equalsIgnoreCase(tag);
@@ -35,12 +44,15 @@ public class PARTCommandNode extends CommandNode {
 		if (name == null || name.length() == 0) {
 			throw new NullPointerException("name");
 		}
-
 		if (!name.equalsIgnoreCase("name")) {
 			// Syntax error
-			throw new IllegalArgumentException("Attribute invalid on PART command: "+name);
+			throw new IllegalArgumentException("Attribute invalid on PART declaration: "+name);
+		}
+		if (value != null && !(value instanceof LiteralNode)) {
+			// Syntax error
+			throw new IllegalArgumentException("PART name must be a string literal: "+value.getClass());
 		}
 
-		super.setAttribute(name, value);
+		this.name = (value == null ? null : ((LiteralNode)value).getValue());
 	}
 }
