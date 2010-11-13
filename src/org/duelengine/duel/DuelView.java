@@ -8,10 +8,11 @@ import java.util.*;
  */
 public abstract class DuelView {
 
-	private final ClientIDStrategy clientID;
-	private HTMLFormatter formatter;
 	private static final Double ZERO = Double.valueOf(0);
 	private static final Double NaN = Double.valueOf(Double.NaN);
+	private final ClientIDStrategy clientID;
+	private Map<String, DuelPart> parts = null;
+	private HTMLFormatter formatter;
 
 	protected DuelView() {
 		this(new IncClientIDStrategy());
@@ -24,10 +25,11 @@ public abstract class DuelView {
 
 		this.clientID = clientID;
 
+		// allow view to define default parts and child views
 		this.init();
 	}
 
-	protected DuelView(DuelView view, DuelView... parts) {
+	protected DuelView(DuelView view, DuelPart... parts) {
 		if (view == null) {
 			throw new NullPointerException("view");
 		}
@@ -35,13 +37,43 @@ public abstract class DuelView {
 		// share the naming context
 		this.clientID = view.clientID;
 
+		// first allow view to define default parts and child views
 		this.init();
+
+		// then allow caller to replace parts
+		this.putAllParts(parts);
 	}
 
 	/**
-	 * Allows more complex initialization of internal objects
+	 * Allows more complex initialization of views and parts
 	 */
 	protected void init() {}
+
+	protected DuelView getPart(String name) {
+		if (this.parts == null || !this.parts.containsKey(name)) {
+			return null;
+		}
+			
+		return this.parts.get(name);
+	}
+
+	protected void putAllParts(DuelPart... parts) {
+		if (parts == null || parts.length < 1) {
+			return;
+		}
+
+		if (this.parts == null) {
+			this.parts = new HashMap<String, DuelPart>(parts.length);
+		}
+
+		for (DuelPart part : parts) {
+			if (part == null || part.getPartName() == null) {
+				continue;
+			}
+
+			this.parts.put(part.getPartName(), part);
+		}
+	}
 
 	/**
 	 * Renders the view to the output

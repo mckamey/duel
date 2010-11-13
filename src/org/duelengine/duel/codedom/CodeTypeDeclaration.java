@@ -1,60 +1,36 @@
 package org.duelengine.duel.codedom;
 
 import java.util.*;
-import org.duelengine.duel.DuelView;
-import org.duelengine.duel.ClientIDStrategy;
 
 /**
- * A simplified class definition which assumes defining a DuelView
+ * Represents a class definition
  */
 public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 
 	private Map<String, String> identMap;
 	private int nextID;
 	private AccessModifierType access;
-	private Class<?> baseType = DuelView.class;
+	private Class<?> baseType;
 	private String typeName;
 	private String namespace;
 	private final List<CodeMember> members = new ArrayList<CodeMember>();
 
 	public CodeTypeDeclaration() {
+		this.baseType = Object.class;
 		this.access = AccessModifierType.DEFAULT;
-
-		this.addCtor();
-		this.addCtor(new CodeParameterDeclarationExpression(ClientIDStrategy.class, "clientID"));
-		this.addCtor(
-			new CodeParameterDeclarationExpression(DuelView.class, "view"),
-			new CodeParameterDeclarationExpression(DuelView.class, "parts", true));
 	}
 
-	public CodeTypeDeclaration(AccessModifierType access, String namespace, String typeName, CodeMember[] members) {
+	public CodeTypeDeclaration(AccessModifierType access, String namespace, String typeName, Class<?> baseType, CodeMember... members) {
+		this.baseType = (baseType != null) ? baseType : Object.class;
 		this.access = (access != null) ? access : AccessModifierType.DEFAULT;
 		this.namespace = namespace;
 		this.typeName = typeName;
-
-		this.addCtor();
-		this.addCtor(new CodeParameterDeclarationExpression(ClientIDStrategy.class, "clientID"));
-		this.addCtor(
-			new CodeParameterDeclarationExpression(DuelView.class, "view"),
-			new CodeParameterDeclarationExpression(DuelView.class, "parts", true));
 
 		if (members != null) {
 			for (CodeMember member : members) {
 				this.add(member);
 			}
 		}
-	}
-
-	private void addCtor(CodeParameterDeclarationExpression... parameters) {
-		CodeConstructor ctor = new CodeConstructor();
-		ctor.setAccess(AccessModifierType.PUBLIC);
-
-		for (CodeParameterDeclarationExpression parameter : parameters) {
-			ctor.addParameter(parameter);
-			ctor.getBaseCtorArgs().add(new CodeVariableReferenceExpression(parameter));
-		}
-		
-		this.add(ctor);
 	}
 
 	public AccessModifierType getAccess() {
@@ -70,7 +46,7 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 	}
 
 	public void setBaseType(Class<?> value) {
-		this.baseType = value;
+		this.baseType = (value != null) ? value : Object.class;
 	}
 
 	public void setTypeName(String value) {

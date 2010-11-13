@@ -1,12 +1,63 @@
 package org.duelengine.duel.codegen;
 
 import java.util.*;
+import org.duelengine.duel.ClientIDStrategy;
+import org.duelengine.duel.DuelPart;
+import org.duelengine.duel.DuelView;
 import org.duelengine.duel.codedom.*;
 
 final class CodeDOMUtility {
 
 	// static class
 	private CodeDOMUtility() {}
+
+	public static CodeTypeDeclaration createViewType(String namespace, String typeName, CodeMember... members) {
+		CodeTypeDeclaration viewType = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
+			namespace,
+			typeName,
+			DuelView.class);
+
+		viewType.add(createCtor());
+		viewType.add(createCtor(
+			new CodeParameterDeclarationExpression(ClientIDStrategy.class, "clientID")));
+		viewType.add(createCtor(
+			new CodeParameterDeclarationExpression(DuelView.class, "view"),
+			new CodeParameterDeclarationExpression(DuelPart.class, "parts", true)));
+
+		if (members != null) {
+			for (CodeMember member : members) {
+				viewType.add(member);
+			}
+		}
+		
+		return viewType;
+	}
+
+	public static CodeTypeDeclaration createPartType(String typeName, CodeMember... members) {
+		CodeTypeDeclaration partType = new CodeTypeDeclaration(
+			AccessModifierType.PRIVATE,
+			null,
+			typeName,
+			DuelPart.class,
+			members);
+
+		partType.add(createCtor(new CodeParameterDeclarationExpression(DuelView.class, "view")));
+		
+		return partType;
+	}
+	
+	public static CodeConstructor createCtor(CodeParameterDeclarationExpression... parameters) {
+		CodeConstructor ctor = new CodeConstructor();
+		ctor.setAccess(AccessModifierType.PUBLIC);
+
+		for (CodeParameterDeclarationExpression parameter : parameters) {
+			ctor.addParameter(parameter);
+			ctor.getBaseCtorArgs().add(new CodeVariableReferenceExpression(parameter));
+		}
+
+		return ctor;
+	}
 
 	public static CodeVariableDeclarationStatement nextID(IdentifierScope varGen) {
 		return new CodeVariableDeclarationStatement(

@@ -72,7 +72,7 @@ public class ServerCodeGen implements CodeGenerator {
 	public void write(Appendable output, ViewRootNode view)
 		throws IOException {
 
-		CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).build(view);
+		CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).buildView(view);
 
 		this.writeCode(output, viewType);
 	}

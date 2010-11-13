@@ -30,22 +30,20 @@ public class CodeDOMBuilder {
 		this.formatter = new HTMLFormatter(this.buffer, this.settings.getEncodeNonASCII());
 	}
 
-	public CodeTypeDeclaration build(ViewRootNode viewNode) throws IOException {
-		this.viewType = new CodeTypeDeclaration();
+	public CodeTypeDeclaration buildView(ViewRootNode viewNode) throws IOException {
 		try {
-			this.viewType.setAccess(AccessModifierType.PUBLIC);
 			String fullName = viewNode.getName();
 			int lastDot = fullName.lastIndexOf('.');
-			if (lastDot > 0) {
-				this.viewType.setNamespace(fullName.substring(0, lastDot));
-			}
-			this.viewType.setTypeName(fullName.substring(lastDot+1));
+			String name = fullName.substring(lastDot+1);
+			String ns = (lastDot > 0) ? fullName.substring(0, lastDot) : null;
+
+			this.viewType = CodeDOMUtility.createViewType(ns, name);
 
 			CodeMethod method = this.buildRenderMethod(viewNode.getChildren());
 
 			method.setName("render");
 			method.setAccess(AccessModifierType.PROTECTED);
-			
+
 			return this.viewType;
 
 		} finally {

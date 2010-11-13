@@ -19,6 +19,10 @@ public class SourceTranslator {
 
 	private final IdentifierScope scope;
 
+	public SourceTranslator() {
+		this(new CodeTypeDeclaration());
+	}
+	
 	public SourceTranslator(IdentifierScope scope) {
 		if (scope == null) {
 			throw new NullPointerException("scope");
