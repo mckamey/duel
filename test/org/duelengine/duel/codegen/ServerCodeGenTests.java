@@ -246,8 +246,7 @@ public class ServerCodeGenTests {
 								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodePrimitiveExpression("zero")))
-					},
-					null),
+					}),
 				new CodeConditionStatement(
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.VALUE_EQUALITY,
@@ -259,8 +258,7 @@ public class ServerCodeGenTests {
 								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
 								new CodePrimitiveExpression("one")))
-					},
-					null),
+					}),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
@@ -1056,8 +1054,7 @@ public class ServerCodeGenTests {
 			new CodeField(
 				AccessModifierType.PRIVATE,
 				org.duelengine.duel.DuelView.class,
-				"view_2",
-				null),
+				"view_2"),
 			new CodeMethod(
 				AccessModifierType.PROTECTED,
 				Void.class,

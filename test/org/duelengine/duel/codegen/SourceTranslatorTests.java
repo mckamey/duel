@@ -24,9 +24,7 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(new CodeVariableReferenceExpression(Object.class, "data"))
-				});
+				new CodeMethodReturnStatement(new CodeVariableReferenceExpression(Object.class, "data")));
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
 		assertNotNull(actual);
@@ -50,13 +48,11 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.IDENTITY_EQUALITY,
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodePrimitiveExpression("Lorem ipsum")))
-				});
+				new CodeMethodReturnStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.IDENTITY_EQUALITY,
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression("Lorem ipsum"))));
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
 		assertNotNull(actual);
@@ -80,13 +76,11 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.ADD,
-							new CodePrimitiveExpression("Lorem ipsum"),
-							new CodeVariableReferenceExpression(Object.class, "data")))
-				});
+				new CodeMethodReturnStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.ADD,
+						new CodePrimitiveExpression("Lorem ipsum"),
+						new CodeVariableReferenceExpression(Object.class, "data"))));
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
 		assertNotNull(actual);
@@ -110,13 +104,11 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.GREATER_THAN_OR_EQUAL,
-							new CodeVariableReferenceExpression(int.class, "count"),
-							new CodePrimitiveExpression(1.0)))
-				});
+				new CodeMethodReturnStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.GREATER_THAN_OR_EQUAL,
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodePrimitiveExpression(1.0))));
 
 		// need to signal that a parens was absorbed
 		((CodeMethodReturnStatement)expected.getStatements().getLastStatement()).getExpression().setHasParens(true);
@@ -143,12 +135,10 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(
-						new CodePropertyReferenceExpression(
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodePrimitiveExpression("foo")))
-				});
+				new CodeMethodReturnStatement(
+					new CodePropertyReferenceExpression(
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression("foo"))));
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
 		assertNotNull(actual);
@@ -172,16 +162,14 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(
-						new CodeMethodInvokeExpression(
-							new CodePropertyReferenceExpression(
-								new CodeVariableReferenceExpression(Object.class, "data"),
-								new CodePrimitiveExpression("substr")),
-								null,
-								new CodePrimitiveExpression(5.0),
-								new CodePrimitiveExpression(2.0)))
-				});
+				new CodeMethodReturnStatement(
+					new CodeMethodInvokeExpression(
+						new CodePropertyReferenceExpression(
+							new CodeVariableReferenceExpression(Object.class, "data"),
+							new CodePrimitiveExpression("substr")),
+							null,
+							new CodePrimitiveExpression(5.0),
+							new CodePrimitiveExpression(2.0))));
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
 		assertNotNull(actual);
@@ -205,12 +193,10 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(
-						new CodePropertyReferenceExpression(
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodePrimitiveExpression("foo")))
-				});
+				new CodeMethodReturnStatement(
+					new CodePropertyReferenceExpression(
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression("foo"))));
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
 		assertNotNull(actual);
@@ -234,12 +220,10 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(
-						new CodePropertyReferenceExpression(
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodePrimitiveExpression(3.0)))
-				});
+				new CodeMethodReturnStatement(
+					new CodePropertyReferenceExpression(
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression(3.0))));
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
 		assertNotNull(actual);
@@ -263,12 +247,10 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(
-						new CodeUnaryOperatorExpression(
-							CodeUnaryOperatorType.NEGATION,
-							new CodePrimitiveExpression(42.0)))
-				});
+				new CodeMethodReturnStatement(
+					new CodeUnaryOperatorExpression(
+						CodeUnaryOperatorType.NEGATION,
+						new CodePrimitiveExpression(42.0))));
 
 		// need to signal that a parens was absorbed
 		((CodeUnaryOperatorExpression)((CodeMethodReturnStatement)expected.getStatements().getLastStatement()).getExpression()).getExpression().setHasParens(true);
@@ -295,12 +277,10 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(
-						new CodeUnaryOperatorExpression(
-							CodeUnaryOperatorType.POST_DECREMENT,
-							new CodeVariableReferenceExpression(Object.class, "data")))
-				});
+				new CodeMethodReturnStatement(
+					new CodeUnaryOperatorExpression(
+						CodeUnaryOperatorType.POST_DECREMENT,
+						new CodeVariableReferenceExpression(Object.class, "data"))));
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
 		assertNotNull(actual);
@@ -324,12 +304,10 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(
-						new CodeUnaryOperatorExpression(
-							CodeUnaryOperatorType.PRE_INCREMENT,
-							new CodeVariableReferenceExpression(Object.class, "data")))
-				});
+				new CodeMethodReturnStatement(
+					new CodeUnaryOperatorExpression(
+						CodeUnaryOperatorType.PRE_INCREMENT,
+						new CodeVariableReferenceExpression(Object.class, "data"))));
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
 		assertNotNull(actual);
@@ -353,13 +331,11 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(
-						new CodeTernaryOperatorExpression(
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodePrimitiveExpression(1.0),
-							new CodePrimitiveExpression(2.0)))
-				});
+				new CodeMethodReturnStatement(
+					new CodeTernaryOperatorExpression(
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression(1.0),
+						new CodePrimitiveExpression(2.0))));
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
 		assertNotNull(actual);
@@ -383,32 +359,30 @@ public class SourceTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeIterationStatement(
-						new CodeVariableCompoundDeclarationStatement(
-							new CodeVariableDeclarationStatement(Object.class, "i2",
-								new CodePrimitiveExpression(0.0)),
-							new CodeVariableDeclarationStatement(Object.class, "length4",
+				new CodeIterationStatement(
+					new CodeVariableCompoundDeclarationStatement(
+						new CodeVariableDeclarationStatement(Object.class, "i2",
+							new CodePrimitiveExpression(0.0)),
+						new CodeVariableDeclarationStatement(Object.class, "length4",
+							new CodePropertyReferenceExpression(
+								new CodeVariableReferenceExpression(Object.class, "data"),
+								new CodePrimitiveExpression("length4")))),
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.LESS_THAN,
+						new CodeVariableReferenceExpression(Object.class, "i2"),
+						new CodeVariableReferenceExpression(Object.class, "length4")),
+					new CodeExpressionStatement(
+						new CodeUnaryOperatorExpression(
+							CodeUnaryOperatorType.POST_INCREMENT,
+							new CodeVariableReferenceExpression(Object.class, "i2"))),
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodePropertyReferenceExpression(
 								new CodePropertyReferenceExpression(
 									new CodeVariableReferenceExpression(Object.class, "data"),
-									new CodePrimitiveExpression("length4")))),
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.LESS_THAN,
-							new CodeVariableReferenceExpression(Object.class, "i2"),
-							new CodeVariableReferenceExpression(Object.class, "length4")),
-						new CodeExpressionStatement(
-							new CodeUnaryOperatorExpression(
-								CodeUnaryOperatorType.POST_INCREMENT,
-								new CodeVariableReferenceExpression(Object.class, "i2"))),
-						new CodeExpressionStatement(
-							new CodeMethodInvokeExpression(
-								new CodePropertyReferenceExpression(
-									new CodePropertyReferenceExpression(
-										new CodeVariableReferenceExpression(Object.class, "data"),
-										new CodeVariableReferenceExpression(Object.class, "i2")),
-									new CodePrimitiveExpression("toString")),
-								null)))
-				});
+									new CodeVariableReferenceExpression(Object.class, "i2")),
+								new CodePrimitiveExpression("toString")),
+							null))));
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
 		assertNotNull(actual);

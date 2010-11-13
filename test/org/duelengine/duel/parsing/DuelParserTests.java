@@ -82,10 +82,12 @@ public class DuelParserTests {
 	@Test
 	public void elemAttribTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
-			new ElementNode("div", new AttributeNode[] {
-				new AttributeNode("class", new LiteralNode("foo"))
-			}));
+		ViewRootNode expected =
+			new ViewRootNode(null,
+				new ElementNode("div",
+					new AttributeNode[] {
+						new AttributeNode("class", new LiteralNode("foo"))
+					}));
 
 		Iterable<ViewRootNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),

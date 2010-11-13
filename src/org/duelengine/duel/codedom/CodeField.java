@@ -11,6 +11,10 @@ public class CodeField extends CodeMember {
 	public CodeField() {
 	}
 
+	public CodeField(AccessModifierType access, Class<?> type, String methodName) {
+		this(access, type, methodName, null);
+	}
+
 	public CodeField(AccessModifierType access, Class<?> type, String methodName, CodeExpression initExpression) {
 		super(access, methodName);
 		if (type != null) {

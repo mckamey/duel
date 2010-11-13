@@ -150,8 +150,7 @@ public class CodeDOMBuilder {
 		CodeField field = new CodeField(
 				AccessModifierType.PRIVATE,
 				DuelView.class,
-				this.viewType.nextIdent("view_"),
-				null);
+				this.viewType.nextIdent("view_"));
 		this.viewType.add(field);
 
 		// determine the name of the template

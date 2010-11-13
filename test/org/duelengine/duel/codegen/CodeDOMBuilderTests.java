@@ -858,10 +858,11 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 			},
-			new CALLCommandNode(new AttributeNode[] {
-				new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
-				new AttributeNode("data", new ExpressionNode("data.foo"))
-			}));
+			new CALLCommandNode(
+				new AttributeNode[] {
+					new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
+					new AttributeNode("data", new ExpressionNode("data.foo"))
+				}));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			"foo.bar",
@@ -895,8 +896,7 @@ public class CodeDOMBuilderTests {
 			new CodeField(
 				AccessModifierType.PRIVATE,
 				org.duelengine.duel.DuelView.class,
-				"view_2",
-				null),
+				"view_2"),
 			new CodeMethod(
 				AccessModifierType.PROTECTED,
 				Void.class,
@@ -927,16 +927,17 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 			},
-			new CALLCommandNode(new AttributeNode[] {
-				new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
-				new AttributeNode("data", new ExpressionNode("data"))
-			},
-			new PARTCommandNode(
+			new CALLCommandNode(
 				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("header"))
+					new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
+					new AttributeNode("data", new ExpressionNode("data"))
 				},
-				new ElementNode("div", null,
-					new LiteralNode("Lorem ipsum.")))));
+				new PARTCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("name", new LiteralNode("header"))
+					},
+					new ElementNode("div", null,
+						new LiteralNode("Lorem ipsum.")))));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			"foo.bar",
@@ -968,8 +969,7 @@ public class CodeDOMBuilderTests {
 			new CodeField(
 				AccessModifierType.PRIVATE,
 				org.duelengine.duel.DuelView.class,
-				"view_2",
-				null),
+				"view_2"),
 			new CodeMethod(
 				AccessModifierType.PROTECTED,
 				Void.class,

@@ -11,6 +11,10 @@ public class CodeConditionStatement extends CodeStatement {
 	public CodeConditionStatement() {
 	}
 
+	public CodeConditionStatement(CodeExpression condition, CodeStatement[] trueStatements) {
+		this(condition, trueStatements, null);
+	}
+
 	public CodeConditionStatement(CodeExpression condition, CodeStatement[] trueStatements, CodeStatement[] falseStatements) {
 		this.condition = condition;
 

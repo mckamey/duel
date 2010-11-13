@@ -20,9 +20,7 @@ public class CodeDOMUtilityTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(new CodeVariableReferenceExpression(Object.class, "data"))
-				});
+				new CodeMethodReturnStatement(new CodeVariableReferenceExpression(Object.class, "data")));
 
 		CodeExpression expected = new CodeVariableReferenceExpression(Object.class, "data");
 		
@@ -44,9 +42,7 @@ public class CodeDOMUtilityTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeMethodReturnStatement(new CodePrimitiveExpression("hello world."))
-				});
+				new CodeMethodReturnStatement(new CodePrimitiveExpression("hello world.")));
 
 		CodeExpression expected = new CodePrimitiveExpression("hello world.");
 		
@@ -68,16 +64,14 @@ public class CodeDOMUtilityTests {
 				new CodeParameterDeclarationExpression(int.class, "count"),
 				new CodeParameterDeclarationExpression(String.class, "key")
 			},
-			new CodeStatement[] {
-				new CodeVariableDeclarationStatement(
-					Object.class,
-					"foo",
-					new CodeBinaryOperatorExpression(
-						CodeBinaryOperatorType.LESS_THAN_OR_EQUAL,
-						new CodeVariableReferenceExpression(int.class, "index"),
-						new CodeVariableReferenceExpression(int.class, "count"))),
-				new CodeMethodReturnStatement(new CodeVariableReferenceExpression(Object.class, "foo"))
-			});
+			new CodeVariableDeclarationStatement(
+				Object.class,
+				"foo",
+				new CodeBinaryOperatorExpression(
+					CodeBinaryOperatorType.LESS_THAN_OR_EQUAL,
+					new CodeVariableReferenceExpression(int.class, "index"),
+					new CodeVariableReferenceExpression(int.class, "count"))),
+			new CodeMethodReturnStatement(new CodeVariableReferenceExpression(Object.class, "foo")));
 
 		CodeExpression expected = null;
 		
