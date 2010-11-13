@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import org.duelengine.duel.DuelView;
+import org.duelengine.duel.HTMLFormatter;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 

@@ -1,4 +1,4 @@
-package org.duelengine.duel.codegen;
+package org.duelengine.duel;
 
 import java.io.*;
 

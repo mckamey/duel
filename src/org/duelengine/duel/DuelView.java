@@ -3,14 +3,11 @@ package org.duelengine.duel;
 import java.io.*;
 import java.util.*;
 
-import org.duelengine.duel.codedom.CodeExpression;
-import org.duelengine.duel.codegen.HTMLFormatter;
-
 /**
  * The skeletal implementation of DUEL view runtime
  */
 public abstract class DuelView {
-	
+
 	private final ClientIDStrategy clientID;
 	private HTMLFormatter formatter;
 	private static final Double ZERO = Double.valueOf(0);
