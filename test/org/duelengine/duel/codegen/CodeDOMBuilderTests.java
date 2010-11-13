@@ -39,6 +39,9 @@ public class CodeDOMBuilderTests {
 				)
 			);
 
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
 		assertEquals(expected, actual);
@@ -73,6 +76,9 @@ public class CodeDOMBuilderTests {
 						new CodePrimitiveExpression("\\&#x0008;&#x000C;\n\r\t&#x0123;&#x4567;&#x89AB;&#xCDEF;&#xABCD;&#xEF4A;\"")))
 				)
 			);
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -111,7 +117,8 @@ public class CodeDOMBuilderTests {
 				)
 			);
 
-		// flag the expression as having had parens
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
@@ -151,7 +158,8 @@ public class CodeDOMBuilderTests {
 				)
 			);
 
-		// flag the expression as having had parens
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
@@ -192,7 +200,8 @@ public class CodeDOMBuilderTests {
 				)
 			);
 
-		// flag the expression as having had parens
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
@@ -233,6 +242,9 @@ public class CodeDOMBuilderTests {
 							new CodePrimitiveExpression("PI"))))
 				)
 			);
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -322,7 +334,8 @@ public class CodeDOMBuilderTests {
 				)
 			);
 
-		// flag the conditions as having had parens
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 		((CodeConditionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(1)).getCondition().setHasParens(true);
 		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
 
@@ -410,6 +423,9 @@ public class CodeDOMBuilderTests {
 						new CodePrimitiveExpression("</div>")))
 				)
 			);
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -526,7 +542,8 @@ public class CodeDOMBuilderTests {
 						new CodeVariableReferenceExpression(int.class, "index")))
 			));
 
-		// mark as having had parens
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
@@ -652,7 +669,8 @@ public class CodeDOMBuilderTests {
 						new CodeVariableReferenceExpression(int.class, "index")))
 				));
 
-		// mark as having had parens
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
@@ -759,7 +777,8 @@ public class CodeDOMBuilderTests {
 						new CodeVariableReferenceExpression(int.class, "index")))
 			));
 
-		// mark as having had parens
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
@@ -813,6 +832,9 @@ public class CodeDOMBuilderTests {
 				)
 			);
 
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
 		assertEquals(expected, actual);
@@ -846,6 +868,9 @@ public class CodeDOMBuilderTests {
 						"append",
 						new CodePrimitiveExpression("<div></div>")))
 				));
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -914,6 +939,8 @@ public class CodeDOMBuilderTests {
 							new CodeThisReferenceExpression())))
 				));
 
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 		((CodeMethod)expected.getMembers().get(5)).setOverride(true);
 
@@ -1015,8 +1042,8 @@ public class CodeDOMBuilderTests {
 								"part_3",
 								new CodeThisReferenceExpression()))))
 				));
-
-		// TODO: ((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
 		((CodeMethod)expected.getMembers().get(6)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(5)).getMembers().get(1)).setOverride(true);

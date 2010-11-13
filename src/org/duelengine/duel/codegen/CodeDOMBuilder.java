@@ -43,7 +43,7 @@ public class CodeDOMBuilder {
 
 			method.setName("render");
 			method.setAccess(AccessModifierType.PROTECTED);
-			// TODO: method.setOverride(true);
+			method.setOverride(true);
 
 			return this.viewType;
 

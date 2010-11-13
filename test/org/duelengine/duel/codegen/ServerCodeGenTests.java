@@ -37,6 +37,9 @@ public class ServerCodeGenTests {
 						new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")))
 				));
 
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
+
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
@@ -51,6 +54,7 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"A JSON payload should be an object or array, not a string.\");\n"+
 			"\t}\n"+
@@ -88,6 +92,9 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(int.class, "count")))
 				));
 
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
+
 		String expected =
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
@@ -101,6 +108,7 @@ public class ServerCodeGenTests {
 			"\tpublic foo(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.write(output, count);\n"+
 			"\t}\n"+
@@ -175,7 +183,8 @@ public class ServerCodeGenTests {
 						new CodePrimitiveExpression("</div>")))
 				));
 
-		// flag the conditions as having had parens
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
 		((CodeConditionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().get(1)).getCondition().setHasParens(true);
 		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
 
@@ -193,6 +202,7 @@ public class ServerCodeGenTests {
 			"\tpublic foo(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
 			"\t\tif (this.equal(data, 0.0)) {\n"+
@@ -271,6 +281,9 @@ public class ServerCodeGenTests {
 						new CodePrimitiveExpression("</div>")))
 				));
 
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
+
 		String expected =
 			"package example;\n\n"+
 			"import java.io.*;\n"+
@@ -285,6 +298,7 @@ public class ServerCodeGenTests {
 			"\tpublic foo2(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
 			"\t\tif (this.coerceEqual(data, 0.0)) {\n"+
@@ -402,7 +416,8 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(int.class, "index")))
 			));
 
-		// mark as having had parens
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		String expected =
@@ -418,6 +433,7 @@ public class ServerCodeGenTests {
 			"\tpublic example(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
 			"\t\tCollection items_1 = this.asArray(this.getProperty(data, \"items\"));\n"+
@@ -545,7 +561,8 @@ public class ServerCodeGenTests {
 							new CodeVariableReferenceExpression(int.class, "index")))
 			));
 
-		// mark as having had parens
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		String expected =
@@ -561,6 +578,7 @@ public class ServerCodeGenTests {
 			"\tpublic example(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
 			"\t\tCollection items_1 = this.asObject(this.getProperty(data, \"foo\"));\n"+
@@ -670,7 +688,8 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(int.class, "index")))
 			));
 
-		// mark as having had parens
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		String expected =
@@ -686,6 +705,7 @@ public class ServerCodeGenTests {
 			"\tpublic example(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
 			"\t\tObject data_1 = this.getProperty(data, \"name\");\n"+
@@ -735,6 +755,9 @@ public class ServerCodeGenTests {
 							new CodePrimitiveExpression(2.0))))
 				));
 
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
+
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
@@ -749,6 +772,7 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.write(output, this.asBoolean(data) ? 1.0 : 2.0);\n"+
 			"\t}\n"+
@@ -788,6 +812,9 @@ public class ServerCodeGenTests {
 							new CodeVariableReferenceExpression(Object.class, "data"))))
 				));
 
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
+
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
@@ -802,6 +829,7 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.write(output, this.echo(this.asNumber(data), (data = (this.asNumber(data) + 1))));\n"+
 			"\t}\n"+
@@ -841,6 +869,9 @@ public class ServerCodeGenTests {
 							new CodeVariableReferenceExpression(Object.class, "data"))))
 				));
 
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
+
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
@@ -855,6 +886,7 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.write(output, (data = (this.asNumber(data) - 1)));\n"+
 			"\t}\n"+
@@ -895,6 +927,9 @@ public class ServerCodeGenTests {
 							new CodePrimitiveExpression(5.0))))
 				));
 
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
+
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
@@ -909,6 +944,7 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.write(output, (data = (this.asNumber(data) % 5.0)));\n"+
 			"\t}\n"+
@@ -945,6 +981,9 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(String.class, "key")))
 				));
 
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
+
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
@@ -959,6 +998,7 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tdata = key;\n"+
 			"\t}\n"+
@@ -995,6 +1035,9 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(Object.class, "data")))
 				));
 
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
+
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
@@ -1009,6 +1052,7 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tcount = this.asNumber(data);\n"+
 			"\t}\n"+
@@ -1072,6 +1116,9 @@ public class ServerCodeGenTests {
 							new CodeThisReferenceExpression())))
 				));
 
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
+
 		String expected =
 			"package foo.bar;\n\n"+
 			"import java.io.*;\n"+
@@ -1086,6 +1133,7 @@ public class ServerCodeGenTests {
 			"\tpublic Blah(DuelView view, DuelPart... parts) {\n"+
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
+			"\t@Override\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.view_2.render(output, data, index, count, key);\n"+
 			"\t}\n\n"+
