@@ -203,7 +203,7 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 		this.writeAccessModifier(output, method.getAccess());
 		this.writeTypeName(output, method.getReturnType());
-		output.append(method.getName()).append("(");
+		output.append(' ').append(method.getName()).append('(');
 
 		boolean needsDelim = false;
 		for (CodeParameterDeclarationExpression param : method.getParameters()) {
@@ -229,7 +229,7 @@ public class ServerCodeGen implements CodeGenerator {
 
 		this.writeAccessModifier(output, field.getAccess());
 		this.writeTypeName(output, field.getType());
-		output.append(field.getName());
+		output.append(' ').append(field.getName());
 		
 		CodeExpression initExpression = field.getInitExpression();
 		if (initExpression != null) {
@@ -243,6 +243,11 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeParameterDeclaration(Appendable output, CodeParameterDeclarationExpression param) throws IOException {
 
 		this.writeTypeName(output, param.getResultType());
+		if (param.getVarLengthParam()) {
+			output.append("... ");
+		} else {
+			output.append(' ');
+		}
 		output.append(param.getName());
 	}
 
@@ -659,7 +664,7 @@ public class ServerCodeGen implements CodeGenerator {
 		throws IOException {
 
 		this.writeTypeName(output, statement.getType());
-		output.append(statement.getName());
+		output.append(' ').append(statement.getName());
 		CodeExpression initExpr = statement.getInitExpression();
 		if (initExpr != null) {
 			if (inline) {
@@ -682,6 +687,7 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 
 		this.writeTypeName(output, vars.get(0).getType());
+		output.append(' ');
 		this.depth++;
 		boolean needsDelim = false;
 		for (CodeVariableDeclarationStatement varRef : vars) {
@@ -810,7 +816,7 @@ public class ServerCodeGen implements CodeGenerator {
 				typeName = type.getName();
 			}
 		}
-		output.append(typeName).append(' ');
+		output.append(typeName);
 	}
 
 	private void writeAccessModifier(Appendable output, AccessModifierType access)
@@ -866,10 +872,8 @@ public class ServerCodeGen implements CodeGenerator {
 		if (baseType != null) {
 			output.append(" extends ");
 			this.writeTypeName(output, baseType);
-			output.append('{');
-		} else {
-			output.append(" {");
 		}
+		output.append(" {");
 		this.depth++;
 	}
 

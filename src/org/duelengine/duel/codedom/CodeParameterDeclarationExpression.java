@@ -7,13 +7,19 @@ public class CodeParameterDeclarationExpression extends CodeExpression {
 
 	private String name;
 	private Class<?> type = Object.class;
+	private boolean isVarLengthParam;
 
 	public CodeParameterDeclarationExpression() {
 	}
 
 	public CodeParameterDeclarationExpression(Class<?> type, String name) {
-		this.type = type;
+		this(type, name, false);
+	}
+
+	public CodeParameterDeclarationExpression(Class<?> type, String name, boolean variableLengthParam) {
+		this.type = (type == null) ? Object.class : type;
 		this.name = name;
+		this.isVarLengthParam = variableLengthParam;
 	}
 
 	public Class<?> getType() {
@@ -30,6 +36,14 @@ public class CodeParameterDeclarationExpression extends CodeExpression {
 
 	public void setName(String value) {
 		this.name = value;
+	}
+
+	public boolean getVarLengthParam() {
+		return this.isVarLengthParam;
+	}
+
+	public void setVarLengthParam(boolean value) {
+		this.isVarLengthParam = value;
 	}
 
 	@Override
