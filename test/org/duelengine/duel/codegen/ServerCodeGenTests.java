@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import org.duelengine.duel.DuelView;
 import org.duelengine.duel.codedom.*;
 
 public class ServerCodeGenTests {
@@ -52,8 +54,8 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic Foo(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic Foo(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"A JSON payload should be an object or array, not a string.\");\n"+
@@ -108,8 +110,8 @@ public class ServerCodeGenTests {
 			"\tpublic foo(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic foo(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic foo(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.write(output, count);\n"+
@@ -214,8 +216,8 @@ public class ServerCodeGenTests {
 			"\tpublic foo(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic foo(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic foo(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
@@ -322,8 +324,8 @@ public class ServerCodeGenTests {
 			"\tpublic foo2(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic foo2(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic foo2(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
@@ -480,8 +482,8 @@ public class ServerCodeGenTests {
 			"\tpublic example(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic example(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic example(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
@@ -650,8 +652,8 @@ public class ServerCodeGenTests {
 			"\tpublic example(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic example(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic example(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
@@ -794,8 +796,8 @@ public class ServerCodeGenTests {
 			"\tpublic example(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic example(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic example(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
@@ -863,8 +865,8 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic Foo(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic Foo(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.write(output, this.asBoolean(data) ? 1.0 : 2.0);\n"+
@@ -922,8 +924,8 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic Foo(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic Foo(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.write(output, this.echo(this.asNumber(data), (data = (this.asNumber(data) + 1.0))));\n"+
@@ -981,8 +983,8 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic Foo(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic Foo(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.write(output, (data = (this.asNumber(data) - 1.0)));\n"+
@@ -1041,8 +1043,8 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic Foo(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic Foo(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.write(output, (data = (this.asNumber(data) % 5)));\n"+
@@ -1096,8 +1098,8 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic Foo(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic Foo(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tdata = key;\n"+
@@ -1151,8 +1153,8 @@ public class ServerCodeGenTests {
 			"\tpublic Foo(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic Foo(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic Foo(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tcount = this.asNumber(data);\n"+
@@ -1239,8 +1241,8 @@ public class ServerCodeGenTests {
 			"\tpublic Blah(ClientIDStrategy clientID) {\n"+
 			"\t\tsuper(clientID);\n"+
 			"\t}\n\n"+
-			"\tpublic Blah(DuelView view) {\n"+
-			"\t\tsuper(view);\n"+
+			"\tpublic Blah(DuelView view, DuelView... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
 			"\t\tthis.view_2.render(output, data, index, count, key);\n"+

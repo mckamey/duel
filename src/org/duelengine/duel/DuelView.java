@@ -27,7 +27,7 @@ public abstract class DuelView {
 		this.init();
 	}
 
-	protected DuelView(DuelView view) {
+	protected DuelView(DuelView view, DuelView... parts) {
 		if (view == null) {
 			throw new NullPointerException("view");
 		}

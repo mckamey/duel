@@ -7,7 +7,7 @@ import org.duelengine.duel.ClientIDStrategy;
 /**
  * A simplified class definition which assumes defining a DuelView
  */
-public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
+public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 
 	private Map<String, String> identMap;
 	private int nextID;
@@ -22,7 +22,9 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 
 		this.addCtor();
 		this.addCtor(new CodeParameterDeclarationExpression(ClientIDStrategy.class, "clientID"));
-		this.addCtor(new CodeParameterDeclarationExpression(DuelView.class, "view"));
+		this.addCtor(
+			new CodeParameterDeclarationExpression(DuelView.class, "view"),
+			new CodeParameterDeclarationExpression(DuelView.class, "parts", true));
 	}
 
 	public CodeTypeDeclaration(AccessModifierType access, String namespace, String typeName, CodeMember[] members) {
@@ -32,7 +34,9 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 
 		this.addCtor();
 		this.addCtor(new CodeParameterDeclarationExpression(ClientIDStrategy.class, "clientID"));
-		this.addCtor(new CodeParameterDeclarationExpression(DuelView.class, "view"));
+		this.addCtor(
+			new CodeParameterDeclarationExpression(DuelView.class, "view"),
+			new CodeParameterDeclarationExpression(DuelView.class, "parts", true));
 
 		if (members != null) {
 			for (CodeMember member : members) {
