@@ -37,11 +37,23 @@ public abstract class DuelView {
 		// share the naming context
 		this.clientID = view.clientID;
 
-		// first allow view to define default parts and child views
+		// first allow view to define child views and default parts
 		this.init();
 
-		// then allow caller to replace parts
-		this.putAllParts(parts);
+		// then allow caller to replace parts by name
+		if (parts != null && parts.length > 0) {
+			if (this.parts == null) {
+				this.parts = new HashMap<String, DuelPart>(parts.length);
+			}
+	
+			for (DuelPart part : parts) {
+				if (part == null || part.getPartName() == null) {
+					continue;
+				}
+	
+				this.parts.put(part.getPartName(), part);
+			}
+		}
 	}
 
 	/**
@@ -49,30 +61,42 @@ public abstract class DuelView {
 	 */
 	protected void init() {}
 
-	protected DuelView getPart(String name) {
-		if (this.parts == null || !this.parts.containsKey(name)) {
-			return null;
-		}
-			
-		return this.parts.get(name);
-	}
-
-	protected void putAllParts(DuelPart... parts) {
-		if (parts == null || parts.length < 1) {
+	/**
+	 * Sets the partial view for a named area
+	 * @param part
+	 */
+	protected void addPart(DuelPart part) {
+		if (part == null || part.getPartName() == null) {
 			return;
 		}
 
 		if (this.parts == null) {
-			this.parts = new HashMap<String, DuelPart>(parts.length);
+			this.parts = new HashMap<String, DuelPart>(4);
 		}
 
-		for (DuelPart part : parts) {
-			if (part == null || part.getPartName() == null) {
-				continue;
-			}
+		this.parts.put(part.getPartName(), part);
+	}
 
-			this.parts.put(part.getPartName(), part);
+	/**
+	 * Renders a named partial view
+	 * @param partName
+	 * @param output
+	 * @param data
+	 * @param index
+	 * @param count
+	 * @param key
+	 */
+	protected void renderPart(String partName, Appendable output, Object data, int index, int count, String key) {
+		if (this.parts == null || !this.parts.containsKey(partName)) {
+			return;
 		}
+			
+		DuelPart part = this.parts.get(partName);
+		if (part == null) {
+			return;
+		}
+
+		part.render(output, data, index, count, key);
 	}
 
 	/**

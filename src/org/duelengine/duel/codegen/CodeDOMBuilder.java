@@ -104,7 +104,7 @@ public class CodeDOMBuilder {
 					this.buildCall((CALLCommandNode)node);
 					return;
 				case PART:
-					this.buildPart((PARTCommandNode)node, false);
+					this.buildPartPlaceholder((PARTCommandNode)node);
 					return;
 				default:
 					throw new IllegalStateException("Invalid command node type: "+command.getCommand());
@@ -169,6 +169,14 @@ public class CodeDOMBuilder {
 			throw new IllegalArgumentException("Unexpected Call command view attribute: "+attr);
 		}
 
+		CodeExpression[] ctorArgs = new CodeExpression[node.getChildren().size()+1];
+		ctorArgs[0] = new CodeThisReferenceExpression();
+
+		int i = 0;
+		for (Node child : node.getChildren()) {
+			ctorArgs[++i] = this.buildPart((PARTCommandNode)child);
+		}
+
 		// insert an initialization statement into the init method
 		CodeMethod initMethod = this.ensureInitMethod();
 		initMethod.getStatements().add(
@@ -178,7 +186,7 @@ public class CodeDOMBuilder {
 					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
 					new CodeObjectCreateExpression(
 						viewName.trim(),
-						new CodeThisReferenceExpression()))));
+						ctorArgs))));
 
 		CodeExpression dataExpr;
 		Node callData = node.getAttribute(CALLCommandNode.DATA);
@@ -221,37 +229,60 @@ public class CodeDOMBuilder {
 				indexExpr,
 				countExpr,
 				keyExpr));
-
-		for (Node child : node.getChildren()) {
-			if (child instanceof PARTCommandNode)
-			this.buildPart((PARTCommandNode)child, true);
-		}
 	}
 
-	private void buildPart(PARTCommandNode node, boolean inCall)
+	private CodeObjectCreateExpression buildPart(PARTCommandNode node)
 		throws IOException {
+
+		CodeTypeDeclaration part = CodeDOMUtility.createPartType(
+				this.viewType.nextIdent("part_"));
+		this.viewType.add(part);
+
+		String partName = node.getName();
+		if (partName == null) {
+			throw new IllegalArgumentException("PART command is missing name");
+		}
 
 		CodeMethod getNameMethod = new CodeMethod(
 			AccessModifierType.PUBLIC,
 			String.class,
 			"getName",
 			null,
-			new CodeMethodReturnStatement(new CodePrimitiveExpression(node.getName())));
-		
+			new CodeMethodReturnStatement(new CodePrimitiveExpression(partName)));
 		getNameMethod.setOverride(true);
+		part.add(getNameMethod);
 
-		CodeMethod renderMethod = this.buildRenderMethod(node.getChildren());
+		CodeTypeDeclaration parentView = this.viewType;
+		try {
+			this.viewType = part;
 
-		renderMethod.setName("render");
-		renderMethod.setAccess(AccessModifierType.PROTECTED);
-		// TODO: renderMethod.setOverride(true);
+			CodeMethod renderMethod = this.buildRenderMethod(node.getChildren());
+	
+			renderMethod.setName("render");
+			renderMethod.setAccess(AccessModifierType.PROTECTED);
+			// TODO: renderMethod.setOverride(true);
 
-		CodeTypeDeclaration part = CodeDOMUtility.createPartType(
-			this.viewType.nextIdent("part_"),
-			getNameMethod,
-			renderMethod);
+		} finally {
+			this.viewType = parentView;
+		}
 
-		this.viewType.add(part);
+		return new CodeObjectCreateExpression(part.getTypeName(), new CodeThisReferenceExpression());
+	}
+
+	private void buildPartPlaceholder(PARTCommandNode part)
+		throws IOException {
+
+		CodeObjectCreateExpression createPart = this.buildPart(part);
+
+		// insert an initialization statement into the init method
+		CodeMethod initMethod = this.ensureInitMethod();
+		initMethod.getStatements().add(
+			new CodeExpressionStatement(
+				new CodeMethodInvokeExpression(
+					new CodeThisReferenceExpression(),
+					"addPart",
+					createPart)));
+
 	}
 
 	private void buildIteration(FORCommandNode node) throws IOException {

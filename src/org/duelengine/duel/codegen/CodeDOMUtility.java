@@ -91,7 +91,7 @@ final class CodeDOMUtility {
 			// can optimize based on static analysis
 			return emitExpression(expression);
 		}
-			
+
 		// this.htmlEncode(output, expression);
 		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(
