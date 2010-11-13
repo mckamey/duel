@@ -260,7 +260,7 @@ public class CodeDOMBuilder {
 	
 			renderMethod.setName("render");
 			renderMethod.setAccess(AccessModifierType.PROTECTED);
-			// TODO: renderMethod.setOverride(true);
+			renderMethod.setOverride(true);
 
 		} finally {
 			this.viewType = parentView;

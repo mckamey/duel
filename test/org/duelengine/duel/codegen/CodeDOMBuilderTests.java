@@ -1016,9 +1016,11 @@ public class CodeDOMBuilderTests {
 								new CodeThisReferenceExpression()))))
 				));
 
+		// TODO: ((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(6)).setOverride(true);
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(5)).getMembers().get(1)).setOverride(true);
-		((CodeMethod)expected.getMembers().get(6)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(5)).getMembers().get(2)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
