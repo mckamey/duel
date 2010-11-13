@@ -65,8 +65,7 @@ final class CodeDOMUtility {
 			varGen.nextIdent("id_"),
 			new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
-				"nextID",
-				null));
+				"nextID"));
 	}
 
 	public static CodeStatement emitLiteralValue(String literal) {
@@ -75,9 +74,7 @@ final class CodeDOMUtility {
 			new CodeMethodInvokeExpression(
 				new CodeVariableReferenceExpression(Appendable.class, "output"),
 				"append",
-				new CodeExpression[] {
-					new CodePrimitiveExpression(literal)
-				}));
+				new CodePrimitiveExpression(literal)));
 	}
 
 	public static CodeStatement emitVarValue(CodeVariableDeclarationStatement localVar) {
@@ -100,10 +97,8 @@ final class CodeDOMUtility {
 			new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
 				"htmlEncode",
-				new CodeExpression[] {
-					new CodeVariableReferenceExpression(Appendable.class, "output"),
-					expression
-				}));
+				new CodeVariableReferenceExpression(Appendable.class, "output"),
+				expression));
 	}
 
 	public static CodeStatement emitExpression(CodeExpression expression) {
@@ -113,9 +108,7 @@ final class CodeDOMUtility {
 				new CodeMethodInvokeExpression(
 					new CodeVariableReferenceExpression(Appendable.class, "output"),
 					"append",
-					new CodeExpression[] {
-						expression
-					}));
+					expression));
 
 		}
 
@@ -196,9 +189,7 @@ final class CodeDOMUtility {
 		return new CodeMethodInvokeExpression(
 			new CodeThisReferenceExpression(),
 			"asBoolean",
-			new CodeExpression[] {
-				expression
-			});
+			expression);
 	}
 
 	public static CodeExpression ensureNumber(CodeExpression expression) {
@@ -210,9 +201,7 @@ final class CodeDOMUtility {
 		return new CodeMethodInvokeExpression(
 			new CodeThisReferenceExpression(),
 			"asNumber",
-			new CodeExpression[] {
-				expression
-			});
+			expression);
 	}
 
 	public static CodeExpression ensureString(CodeExpression expression) {
@@ -224,19 +213,15 @@ final class CodeDOMUtility {
 		return new CodeMethodInvokeExpression(
 			new CodeThisReferenceExpression(),
 			"asString",
-			new CodeExpression[] {
-				expression
-			});
+			expression);
 	}
 
 	public static CodeExpression equal(CodeExpression a, CodeExpression b) {
 		return new CodeMethodInvokeExpression(
 			new CodeThisReferenceExpression(),
 			"equal",
-			new CodeExpression[] {
-				a,
-				b
-			});
+			a,
+			b);
 	}
 
 	public static CodeExpression notEqual(CodeExpression a, CodeExpression b) {
@@ -249,10 +234,8 @@ final class CodeDOMUtility {
 		return new CodeMethodInvokeExpression(
 			new CodeThisReferenceExpression(),
 			"coerceEqual",
-			new CodeExpression[] {
-				a,
-				b
-			});
+			a,
+			b);
 	}
 
 	public static CodeExpression coerceNotEqual(CodeExpression a, CodeExpression b) {
@@ -273,20 +256,16 @@ final class CodeDOMUtility {
 		return new CodeMethodInvokeExpression(
 			new CodeThisReferenceExpression(),
 			"echo",
-			new CodeExpression[] {
-				ensureNumber(i),
-				asAssignment(CodeBinaryOperatorType.ADD, i, new CodePrimitiveExpression(1.0))
-			});
+			ensureNumber(i),
+			asAssignment(CodeBinaryOperatorType.ADD, i, new CodePrimitiveExpression(1.0)));
 	}
 
 	public static CodeExpression safePostDecrement(CodeExpression i) {
 		return new CodeMethodInvokeExpression(
 			new CodeThisReferenceExpression(),
 			"echo",
-			new CodeExpression[] {
-				ensureNumber(i),
-				asAssignment(CodeBinaryOperatorType.SUBTRACT, i, new CodePrimitiveExpression(1.0))
-			});
+			ensureNumber(i),
+			asAssignment(CodeBinaryOperatorType.SUBTRACT, i, new CodePrimitiveExpression(1.0)));
 	}
 
 	public static CodeExpression asAssignment(CodeBinaryOperatorType op, CodeExpression a, CodeExpression b) {

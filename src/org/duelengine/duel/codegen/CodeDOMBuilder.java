@@ -177,9 +177,7 @@ public class CodeDOMBuilder {
 					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
 					new CodeObjectCreateExpression(
 						viewName.trim(),
-						new CodeExpression[] {
-							new CodeThisReferenceExpression()
-						}))));
+						new CodeThisReferenceExpression()))));
 
 		CodeExpression dataExpr;
 		Node callData = node.getAttribute(CALLCommandNode.DATA);
@@ -217,13 +215,11 @@ public class CodeDOMBuilder {
 		scope.add(new CodeMethodInvokeExpression(
 			new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
 			"render",
-			new CodeExpression[] {
-				new CodeVariableReferenceExpression(Appendable.class, "output"),
+			new CodeVariableReferenceExpression(Appendable.class, "output"),
 				dataExpr,
 				indexExpr,
 				countExpr,
-				keyExpr
-			}));
+				keyExpr));
 	}
 
 	private void buildPart(PARTCommandNode node) {
@@ -322,26 +318,22 @@ public class CodeDOMBuilder {
 						new CodeMethodInvokeExpression(
 							new CodeThisReferenceExpression(),
 							innerBind.getName(),
-							new CodeExpression[] {
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeVariableReferenceExpression(dataDecl),
-								new CodeVariableReferenceExpression(indexDecl),
-								new CodeVariableReferenceExpression(countDecl),
-								new CodePrimitiveExpression(null)
-							}))
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(dataDecl),
+							new CodeVariableReferenceExpression(indexDecl),
+							new CodeVariableReferenceExpression(countDecl),
+							new CodePrimitiveExpression(null)))
 				}));
 	}
 
 	private void buildIterationObject(CodeStatementCollection scope, CodeExpression objExpr, CodeMethod innerBind) {
-		CodeExpression data = new CodeMethodInvokeExpression(
+		CodeExpression data =
 			new CodeMethodInvokeExpression(
-				new CodeThisReferenceExpression(),
-				"asObject",
-				new CodeExpression[] {
-					objExpr
-				}),
-			"iterator",
-			null);
+				new CodeMethodInvokeExpression(
+					new CodeThisReferenceExpression(),
+					"asObject",
+					objExpr),
+				"iterator");
 
 		// the collection to iterate over
 		CodeVariableDeclarationStatement collectionDecl =
@@ -365,8 +357,7 @@ public class CodeDOMBuilder {
 				scope.nextIdent("count_"),
 				new CodeMethodInvokeExpression(
 					new CodeVariableReferenceExpression(collectionDecl),
-					"size",
-					null));
+					"size"));
 
 		scope.add(new CodeVariableCompoundDeclarationStatement(new CodeVariableDeclarationStatement[] {
 				indexDecl,
@@ -380,8 +371,7 @@ public class CodeDOMBuilder {
 				scope.nextIdent("iterator_"),
 				new CodeMethodInvokeExpression(
 					new CodeVariableReferenceExpression(collectionDecl),
-					"iterator",
-					null));
+					"iterator"));
 
 		// the entry (embedded in for body)
 		CodeVariableDeclarationStatement entryDecl = 
@@ -390,8 +380,7 @@ public class CodeDOMBuilder {
 				scope.nextIdent("entry_"),
 				new CodeMethodInvokeExpression(
 					new CodeVariableReferenceExpression(iteratorDecl),
-					"next",
-					null));
+					"next"));
 		
 		// the for loop block
 		scope.add(
@@ -399,8 +388,7 @@ public class CodeDOMBuilder {
 				iteratorDecl,// initStatement
 				new CodeMethodInvokeExpression(
 					new CodeVariableReferenceExpression(iteratorDecl),
-					"hasNext",
-					null),// testExpression
+					"hasNext"),// testExpression
 				new CodeExpressionStatement(
 					new CodeUnaryOperatorExpression(
 						CodeUnaryOperatorType.POST_INCREMENT,
@@ -411,19 +399,15 @@ public class CodeDOMBuilder {
 						new CodeMethodInvokeExpression(
 							new CodeThisReferenceExpression(),
 							innerBind.getName(),
-							new CodeExpression[] {
 								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								new CodeMethodInvokeExpression(
 									new CodeVariableReferenceExpression(entryDecl),
-									"getValue",
-									null),
+									"getValue"),
 								new CodeVariableReferenceExpression(indexDecl),
 								new CodeVariableReferenceExpression(countDecl),
 								new CodeMethodInvokeExpression(
 									new CodeVariableReferenceExpression(entryDecl),
-									"getKey",
-									null)
-							}))
+									"getKey")))
 				}));
 	}
 
@@ -433,9 +417,7 @@ public class CodeDOMBuilder {
 			new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
 				"asArray",
-				new CodeExpression[] {
-					arrayExpr
-				});
+				arrayExpr);
 
 		// the collection to iterate over
 		CodeVariableDeclarationStatement collectionDecl =
@@ -459,8 +441,7 @@ public class CodeDOMBuilder {
 				scope.nextIdent("count_"),
 				new CodeMethodInvokeExpression(
 					new CodeVariableReferenceExpression(collectionDecl),
-					"size",
-					null));
+					"size"));
 
 		scope.add(new CodeVariableCompoundDeclarationStatement(new CodeVariableDeclarationStatement[] {
 				indexDecl,
@@ -474,8 +455,7 @@ public class CodeDOMBuilder {
 				scope.nextIdent("iterator_"),
 				new CodeMethodInvokeExpression(
 					new CodeVariableReferenceExpression(collectionDecl),
-					"iterator",
-					null));
+					"iterator"));
 
 		// the for loop block
 		scope.add(
@@ -483,8 +463,7 @@ public class CodeDOMBuilder {
 				iteratorDecl,// initStatement
 				new CodeMethodInvokeExpression(
 					new CodeVariableReferenceExpression(iteratorDecl),
-					"hasNext",
-					null),// testExpression
+					"hasNext"),// testExpression
 				new CodeExpressionStatement(
 					new CodeUnaryOperatorExpression(
 						CodeUnaryOperatorType.POST_INCREMENT,
@@ -494,16 +473,13 @@ public class CodeDOMBuilder {
 						new CodeMethodInvokeExpression(
 							new CodeThisReferenceExpression(),
 							innerBind.getName(),
-							new CodeExpression[] {
 								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								new CodeMethodInvokeExpression(
 									new CodeVariableReferenceExpression(iteratorDecl),
-									"next",
-									null),
+									"next"),
 								new CodeVariableReferenceExpression(indexDecl),
 								new CodeVariableReferenceExpression(countDecl),
-								new CodePrimitiveExpression(null)
-							}))
+								new CodePrimitiveExpression(null)))
 				}));
 	}
 
@@ -583,13 +559,11 @@ public class CodeDOMBuilder {
 			expression = new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
 					members.get(0).getName(),
-					new CodeExpression[] {
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
-						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodeVariableReferenceExpression(int.class, "index"),
-						new CodeVariableReferenceExpression(int.class, "count"),
-						new CodeVariableReferenceExpression(String.class, "key")
-					});
+					new CodeVariableReferenceExpression(Appendable.class, "output"),
+					new CodeVariableReferenceExpression(Object.class, "data"),
+					new CodeVariableReferenceExpression(int.class, "index"),
+					new CodeVariableReferenceExpression(int.class, "count"),
+					new CodeVariableReferenceExpression(String.class, "key"));
 		}
 		return expression;
 	}

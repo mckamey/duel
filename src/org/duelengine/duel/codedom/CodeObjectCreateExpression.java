@@ -13,7 +13,7 @@ public class CodeObjectCreateExpression extends CodeExpression {
 	public CodeObjectCreateExpression() {
 	}
 
-	public CodeObjectCreateExpression(String typeName, CodeExpression[] args) {
+	public CodeObjectCreateExpression(String typeName, CodeExpression... args) {
 		this.typeName = typeName;
 		if (args != null) {
 			this.arguments.addAll(Arrays.asList(args));

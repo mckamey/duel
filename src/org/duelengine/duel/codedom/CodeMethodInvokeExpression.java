@@ -14,7 +14,7 @@ public class CodeMethodInvokeExpression extends CodeExpression {
 	public CodeMethodInvokeExpression() {
 	}
 
-	public CodeMethodInvokeExpression(CodeExpression target, String methodName, CodeExpression[] args) {
+	public CodeMethodInvokeExpression(CodeExpression target, String methodName, CodeExpression... args) {
 		this.target = target;
 		this.methodName = methodName;
 		if (args != null) {

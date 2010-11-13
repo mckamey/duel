@@ -177,10 +177,10 @@ public class SourceTranslatorTests {
 						new CodeMethodInvokeExpression(
 							new CodePropertyReferenceExpression(
 								new CodeVariableReferenceExpression(Object.class, "data"),
-								new CodePrimitiveExpression("substr")), null, new CodeExpression[] {
-									new CodePrimitiveExpression(5.0),
-									new CodePrimitiveExpression(2.0)
-								}))
+								new CodePrimitiveExpression("substr")),
+								null,
+								new CodePrimitiveExpression(5.0),
+								new CodePrimitiveExpression(2.0)))
 				});
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);
@@ -409,7 +409,6 @@ public class SourceTranslatorTests {
 											new CodeVariableReferenceExpression(Object.class, "data"),
 											new CodeVariableReferenceExpression(Object.class, "i2")),
 										new CodePrimitiveExpression("toString")),
-									null,
 									null))
 						})
 				});

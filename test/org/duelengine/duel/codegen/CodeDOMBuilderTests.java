@@ -37,9 +37,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")
-						}))
+						new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")))
 				)
 			);
 
@@ -76,9 +74,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("\\&#x0008;&#x000C;\n\r\t&#x0123;&#x4567;&#x89AB;&#xCDEF;&#xABCD;&#xEF4A;\"")
-						}))
+						new CodePrimitiveExpression("\\&#x0008;&#x000C;\n\r\t&#x0123;&#x4567;&#x89AB;&#xCDEF;&#xABCD;&#xEF4A;\"")))
 				)
 			);
 
@@ -116,10 +112,8 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeExpression[] {
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							new CodeVariableReferenceExpression(int.class, "count")
-						}))
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(int.class, "count")))
 				)
 			);
 
@@ -160,10 +154,8 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"htmlEncode",
-						new CodeExpression[] {
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							new CodeVariableReferenceExpression(Object.class, "data")
-						}))
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(Object.class, "data")))
 				)
 			);
 
@@ -205,10 +197,8 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeExpression[] {
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							new CodeVariableReferenceExpression(Object.class, "data")
-						}))
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(Object.class, "data")))
 				)
 			);
 
@@ -249,13 +239,10 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"htmlEncode",
-						new CodeExpression[] {
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							new CodePropertyReferenceExpression(
-								new ScriptVariableReferenceExpression("Math"),
-								new CodePrimitiveExpression("PI"))
-							
-						}))
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodePropertyReferenceExpression(
+							new ScriptVariableReferenceExpression("Math"),
+							new CodePrimitiveExpression("PI"))))
 				)
 			);
 
@@ -316,9 +303,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("<div>")
-						})),
+						new CodePrimitiveExpression("<div>"))),
 				new CodeConditionStatement(
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.IDENTITY_EQUALITY,
@@ -329,9 +314,7 @@ public class CodeDOMBuilderTests {
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
-								new CodeExpression[] {
-									new CodePrimitiveExpression("zero")
-								}))
+								new CodePrimitiveExpression("zero")))
 					},
 					new CodeStatement[] {
 						new CodeConditionStatement(
@@ -344,27 +327,21 @@ public class CodeDOMBuilderTests {
 									new CodeMethodInvokeExpression(
 										new CodeVariableReferenceExpression(Appendable.class, "output"),
 										"append",
-										new CodeExpression[] {
-											new CodePrimitiveExpression("one")
-										}))
+										new CodePrimitiveExpression("one")))
 							},
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
 										new CodeVariableReferenceExpression(Appendable.class, "output"),
 										"append",
-										new CodeExpression[] {
-											new CodePrimitiveExpression("many")
-										}))
+										new CodePrimitiveExpression("many")))
 							})
 					}),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("</div>")
-						}))
+						new CodePrimitiveExpression("</div>")))
 				)
 			);
 
@@ -426,9 +403,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("<div>")
-						})),
+						new CodePrimitiveExpression("<div>"))),
 				new CodeConditionStatement(
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.VALUE_EQUALITY,
@@ -439,9 +414,7 @@ public class CodeDOMBuilderTests {
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
-								new CodeExpression[] {
-									new CodePrimitiveExpression("zero")
-								}))
+								new CodePrimitiveExpression("zero")))
 					},
 					null),
 				new CodeConditionStatement(
@@ -454,25 +427,19 @@ public class CodeDOMBuilderTests {
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(Appendable.class, "output"),
 								"append",
-								new CodeExpression[] {
-									new CodePrimitiveExpression("one")
-								}))
+								new CodePrimitiveExpression("one")))
 					},
 					null),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("many")
-						})),
+						new CodePrimitiveExpression("many"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("</div>")
-						}))
+						new CodePrimitiveExpression("</div>")))
 				)
 			);
 
@@ -519,20 +486,16 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("<div>")
-						})),
+						new CodePrimitiveExpression("<div>"))),
 				new CodeVariableDeclarationStatement(
 					Collection.class,
 					"items_1",// collection
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"asArray",
-						new CodeExpression[] {
-							new CodePropertyReferenceExpression(
-								new CodeVariableReferenceExpression(Object.class, "data"),
-								new CodePrimitiveExpression("items"))
-						})),
+						new CodePropertyReferenceExpression(
+							new CodeVariableReferenceExpression(Object.class, "data"),
+							new CodePrimitiveExpression("items")))),
 				new CodeVariableCompoundDeclarationStatement(
 					new CodeVariableDeclarationStatement[]{
 						new CodeVariableDeclarationStatement(
@@ -544,8 +507,7 @@ public class CodeDOMBuilderTests {
 							"count_3",// count
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(Collection.class, "items_1"),
-								"size",
-								null)),
+								"size")),
 					}),
 				new CodeIterationStatement(
 					new CodeVariableDeclarationStatement(
@@ -553,12 +515,10 @@ public class CodeDOMBuilderTests {
 						"iterator_4",
 						new CodeMethodInvokeExpression(
 							new CodeVariableReferenceExpression(Collection.class, "items_1"),
-							"iterator",
-							null)),// initStatement
+							"iterator")),// initStatement
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
-						"hasNext",
-						null),// testExpression
+						"hasNext"),// testExpression
 					new CodeExpressionStatement(
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.POST_INCREMENT,
@@ -568,24 +528,19 @@ public class CodeDOMBuilderTests {
 							new CodeMethodInvokeExpression(
 								new CodeThisReferenceExpression(),
 								"render_2",
-								new CodeExpression[] {
-									new CodeVariableReferenceExpression(Appendable.class, "output"),
-									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
-										"next",
-										null),
-									new CodeVariableReferenceExpression(int.class, "index_2"),
-									new CodeVariableReferenceExpression(int.class, "count_3"),
-									new CodePrimitiveExpression(null)
-								}))
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
+								new CodeMethodInvokeExpression(
+									new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
+									"next"),
+								new CodeVariableReferenceExpression(int.class, "index_2"),
+								new CodeVariableReferenceExpression(int.class, "count_3"),
+								new CodePrimitiveExpression(null)))
 					}),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("</div>")
-						}))
+						new CodePrimitiveExpression("</div>")))
 			),
 			new CodeMethod(
 				AccessModifierType.PRIVATE,
@@ -602,19 +557,14 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("item ")
-						})),
+						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeExpression[] {
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							new CodeVariableReferenceExpression(int.class, "index")
-						}))
-			)
-			);
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(int.class, "index")))
+			));
 
 		// mark as having had parens
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
@@ -662,20 +612,16 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("<div>")
-						})),
+						new CodePrimitiveExpression("<div>"))),
 				new CodeVariableDeclarationStatement(
 					Collection.class,
 					"items_1",// collection
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"asObject",
-						new CodeExpression[] {
-							new CodePropertyReferenceExpression(
-								new CodeVariableReferenceExpression(Object.class, "data"),
-								new CodePrimitiveExpression("foo"))
-						})),
+						new CodePropertyReferenceExpression(
+							new CodeVariableReferenceExpression(Object.class, "data"),
+							new CodePrimitiveExpression("foo")))),
 				new CodeVariableCompoundDeclarationStatement(
 					new CodeVariableDeclarationStatement[]{
 						new CodeVariableDeclarationStatement(
@@ -687,8 +633,7 @@ public class CodeDOMBuilderTests {
 							"count_3",// count
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(Collection.class, "items_1"),
-								"size",
-								null)),
+								"size")),
 					}),
 				new CodeIterationStatement(
 					new CodeVariableDeclarationStatement(
@@ -696,12 +641,10 @@ public class CodeDOMBuilderTests {
 						"iterator_4",
 						new CodeMethodInvokeExpression(
 							new CodeVariableReferenceExpression(Collection.class, "items_1"),
-							"iterator",
-							null)),// initStatement
+							"iterator")),// initStatement
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
-						"hasNext",
-						null),// testExpression
+						"hasNext"),// testExpression
 					new CodeExpressionStatement(
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.POST_INCREMENT,
@@ -712,33 +655,26 @@ public class CodeDOMBuilderTests {
 							"entry_5",
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
-								"next",
-								null)),
+								"next")),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
 								new CodeThisReferenceExpression(),
 								"render_2",
-								new CodeExpression[] {
-									new CodeVariableReferenceExpression(Appendable.class, "output"),
-									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
-										"getValue",
-										null),
-									new CodeVariableReferenceExpression(int.class, "index_2"),
-									new CodeVariableReferenceExpression(int.class, "count_3"),
-									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
-										"getKey",
-										null)
-								}))
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
+								new CodeMethodInvokeExpression(
+									new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
+									"getValue"),
+								new CodeVariableReferenceExpression(int.class, "index_2"),
+								new CodeVariableReferenceExpression(int.class, "count_3"),
+								new CodeMethodInvokeExpression(
+									new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
+									"getKey")))
 					}),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("</div>")
-						}))
+						new CodePrimitiveExpression("</div>")))
 			),
 			new CodeMethod(
 				AccessModifierType.PRIVATE,
@@ -755,17 +691,13 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("item ")
-						})),
+						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeExpression[] {
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							new CodeVariableReferenceExpression(int.class, "index")
-						}))
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(int.class, "index")))
 				));
 
 		// mark as having had parens
@@ -815,9 +747,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("<div>")
-						})),
+						new CodePrimitiveExpression("<div>"))),
 				new CodeVariableDeclarationStatement(
 					Object.class,
 					"data_1",// data
@@ -849,21 +779,17 @@ public class CodeDOMBuilderTests {
 							new CodeMethodInvokeExpression(
 								new CodeThisReferenceExpression(),
 								"render_2",
-								new CodeExpression[] {
-									new CodeVariableReferenceExpression(Appendable.class, "output"),
-									new CodeVariableReferenceExpression(Object.class, "data_1"),
-									new CodeVariableReferenceExpression(int.class, "index_2"),
-									new CodeVariableReferenceExpression(int.class, "count_3"),
-									new CodePrimitiveExpression(null)
-								}))
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
+								new CodeVariableReferenceExpression(Object.class, "data_1"),
+								new CodeVariableReferenceExpression(int.class, "index_2"),
+								new CodeVariableReferenceExpression(int.class, "count_3"),
+								new CodePrimitiveExpression(null)))
 					}),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("</div>")
-						}))
+						new CodePrimitiveExpression("</div>")))
 			),
 			new CodeMethod(
 				AccessModifierType.PRIVATE,
@@ -880,17 +806,13 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("item ")
-						})),
+						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeExpression[] {
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							new CodeVariableReferenceExpression(int.class, "index")
-						}))
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(int.class, "index")))
 			));
 
 		// mark as having had parens
@@ -957,9 +879,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("<div class=\"foo\" style=\"color:red\"><ul class=\"bar\"><li>one</li><li>two</li><li>three</li></ul></div>")
-						}))
+						new CodePrimitiveExpression("<div class=\"foo\" style=\"color:red\"><ul class=\"bar\"><li>one</li><li>two</li><li>three</li></ul></div>")))
 				)
 			);
 
@@ -996,9 +916,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
 						"append",
-						new CodeExpression[] {
-							new CodePrimitiveExpression("<div></div>")
-						}))
+						new CodePrimitiveExpression("<div></div>")))
 				));
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
@@ -1040,15 +958,13 @@ public class CodeDOMBuilderTests {
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
 						"render",
-						new CodeExpression[] {
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							new CodePropertyReferenceExpression(
-								new CodeVariableReferenceExpression(Object.class, "data"),
-								new CodePrimitiveExpression("foo")),
-							new CodeVariableReferenceExpression(int.class, "index"),
-							new CodeVariableReferenceExpression(int.class, "count"),
-							new CodeVariableReferenceExpression(String.class, "key")
-						}))
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodePropertyReferenceExpression(
+							new CodeVariableReferenceExpression(Object.class, "data"),
+							new CodePrimitiveExpression("foo")),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key")))
 				),
 			new CodeField(
 				AccessModifierType.PRIVATE,
@@ -1069,9 +985,7 @@ public class CodeDOMBuilderTests {
 							"view_2"),
 						new CodeObjectCreateExpression(
 							"foo.bar.Yada",
-							new CodeExpression[] {
-								new CodeThisReferenceExpression()
-							})))
+							new CodeThisReferenceExpression())))
 				));
 
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
@@ -1126,13 +1040,11 @@ public class CodeDOMBuilderTests {
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
 						"render",
-						new CodeExpression[] {
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodeVariableReferenceExpression(int.class, "index"),
-							new CodeVariableReferenceExpression(int.class, "count"),
-							new CodeVariableReferenceExpression(String.class, "key")
-						}))
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key")))
 				),
 			new CodeField(
 				AccessModifierType.PRIVATE,
@@ -1153,9 +1065,7 @@ public class CodeDOMBuilderTests {
 							"view_2"),
 						new CodeObjectCreateExpression(
 							"foo.bar.Yada",
-							new CodeExpression[] {
-								new CodeThisReferenceExpression()
-							})))
+							new CodeThisReferenceExpression())))
 				));
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
