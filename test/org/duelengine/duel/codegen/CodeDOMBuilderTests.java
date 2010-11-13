@@ -15,9 +15,7 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
-			new Node[] {
-				new LiteralNode("A JSON payload should be an object or array, not a string.")
-			});
+			new LiteralNode("A JSON payload should be an object or array, not a string."));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			null,
@@ -52,9 +50,7 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
-			new Node[] {
-				new LiteralNode("\\\b\f\n\r\t\u0123\u4567\u89AB\uCDEF\uabcd\uef4A\"")
-			});
+			new LiteralNode("\\\b\f\n\r\t\u0123\u4567\u89AB\uCDEF\uabcd\uef4A\""));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			null,
@@ -90,9 +86,7 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
-			new Node[] {
-				new ExpressionNode("count")
-			});
+			new ExpressionNode("count"));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			null,
@@ -132,9 +126,7 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
-			new Node[] {
-				new ExpressionNode("data")
-			});
+			new ExpressionNode("data"));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			null,
@@ -174,9 +166,7 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
-			new Node[] {
-				new MarkupExpressionNode("data")
-			});
+			new MarkupExpressionNode("data"));
 
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
@@ -217,9 +207,7 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
-			new Node[] {
-				new StatementNode("return Math.PI;")
-			});
+			new StatementNode("return Math.PI;"));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			null,
@@ -258,32 +246,21 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("example.foo"))
 			},
-			new Node[] {
-				new ElementNode("div", null, new Node[] {
-					new XORCommandNode(null,
-						new Node[] {
-							new IFCommandNode(
-								new AttributeNode[] {
-									new AttributeNode("test", new ExpressionNode("data === 0"))
-								},
-								new Node[] {
-									new LiteralNode("zero")
-								}),
-							new IFCommandNode(
-								new AttributeNode[] {
-									new AttributeNode("test", new ExpressionNode("data === 1"))
-								},
-								new Node[] {
-									new LiteralNode("one")
-								}),
-							new IFCommandNode(
-								null,
-								new Node[] {
-									new LiteralNode("many")
-								}),
-						})
-				})
-			});
+			new ElementNode("div", null,
+				new XORCommandNode(null,
+					new IFCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("test", new ExpressionNode("data === 0"))
+						},
+						new LiteralNode("zero")),
+					new IFCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("test", new ExpressionNode("data === 1"))
+						},
+						new LiteralNode("one")),
+					new IFCommandNode(null,
+						new LiteralNode("many")))
+			));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			"example",
@@ -361,29 +338,20 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("example.foo2"))
 			},
-			new Node[] {
-				new ElementNode("div", null, new Node[] {
-					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new StatementNode("return data == 0;"))
-						},
-						new Node[] {
-							new LiteralNode("zero")
-						}),
-					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new StatementNode("return data == 1;"))
-						},
-						new Node[] {
-							new LiteralNode("one")
-						}),
-					new IFCommandNode(
-						null,
-						new Node[] {
-							new LiteralNode("many")
-						}),
-				})
-			});
+			new ElementNode("div", null,
+				new IFCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("test", new StatementNode("return data == 0;"))
+					},
+					new LiteralNode("zero")),
+				new IFCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("test", new StatementNode("return data == 1;"))
+					},
+					new LiteralNode("one")),
+				new IFCommandNode(null,
+					new LiteralNode("many"))
+			));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			"example",
@@ -455,18 +423,14 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("example"))
 			},
-			new Node[] {
-				new ElementNode("div", null, new Node[] {
-					new FORCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("each", new ExpressionNode("data.items"))
-						},
-						new Node[] {
-							new LiteralNode("item "),
-							new ExpressionNode("index")
-						})
-				})
-			});
+			new ElementNode("div", null,
+				new FORCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("each", new ExpressionNode("data.items"))
+					},
+					new LiteralNode("item "),
+					new ExpressionNode("index"))
+			));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			null,
@@ -577,18 +541,14 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("example"))
 			},
-			new Node[] {
-				new ElementNode("div", null, new Node[] {
-					new FORCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("in", new ExpressionNode("data.foo"))
-						},
-						new Node[] {
-							new LiteralNode("item "),
-							new ExpressionNode("index")
-						})
-				})
-			});
+			new ElementNode("div", null,
+				new FORCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("in", new ExpressionNode("data.foo"))
+					},
+					new LiteralNode("item "),
+					new ExpressionNode("index"))
+			));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			null,
@@ -707,19 +667,15 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("example"))
 			},
-			new Node[] {
-				new ElementNode("div", null, new Node[] {
-					new FORCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("count", new ExpressionNode("4")),
-							new AttributeNode("data", new ExpressionNode("data.name")),
-						},
-						new Node[] {
-							new LiteralNode("item "),
-							new ExpressionNode("index")
-						})
-				})
-			});
+			new ElementNode("div", null,
+				new FORCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("count", new ExpressionNode("4")),
+						new AttributeNode("data", new ExpressionNode("data.name")),
+					},
+					new LiteralNode("item "),
+					new ExpressionNode("index"))
+			));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			null,
@@ -818,36 +774,22 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
-			new Node[] {
-				new ElementNode("div",
+			new ElementNode("div",
+				new AttributeNode[] {
+					new AttributeNode("class", new LiteralNode("foo")),
+					new AttributeNode("style", new LiteralNode("color:red"))
+				},
+				new ElementNode("ul",
 					new AttributeNode[] {
-						new AttributeNode("class", new LiteralNode("foo")),
-						new AttributeNode("style", new LiteralNode("color:red"))
+						new AttributeNode("class", new LiteralNode("bar"))
 					},
-					new Node[] {
-					new ElementNode("ul",
-						new AttributeNode[] {
-							new AttributeNode("class", new LiteralNode("bar"))
-						},
-						new Node[] {
-							new ElementNode("li",
-									null,
-									new Node[] {
-										new LiteralNode("one")
-									}),
-							new ElementNode("li",
-									null,
-									new Node[] {
-										new LiteralNode("two")
-									}),
-							new ElementNode("li",
-									null,
-									new Node[] {
-										new LiteralNode("three")
-									}),
-						})
-				})
-			});
+					new ElementNode("li", null,
+						new LiteralNode("one")),
+					new ElementNode("li", null,
+						new LiteralNode("two")),
+					new ElementNode("li", null,
+						new LiteralNode("three")))
+			));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			null,
@@ -882,9 +824,7 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 			},
-			new Node[] {
-				new ElementNode("div")
-			});
+			new ElementNode("div"));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			"foo.bar",
@@ -918,12 +858,10 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 			},
-			new Node[] {
-				new CALLCommandNode(new AttributeNode[] {
-					new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
-					new AttributeNode("data", new ExpressionNode("data.foo"))
-				})
-			});
+			new CALLCommandNode(new AttributeNode[] {
+				new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
+				new AttributeNode("data", new ExpressionNode("data.foo"))
+			}));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			"foo.bar",
@@ -989,23 +927,16 @@ public class CodeDOMBuilderTests {
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 			},
-			new Node[] {
-				new CALLCommandNode(new AttributeNode[] {
-					new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
-					new AttributeNode("data", new ExpressionNode("data"))
+			new CALLCommandNode(new AttributeNode[] {
+				new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
+				new AttributeNode("data", new ExpressionNode("data"))
+			},
+			new PARTCommandNode(
+				new AttributeNode[] {
+					new AttributeNode("name", new LiteralNode("header"))
 				},
-				new Node[] {
-					new PARTCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("name", new LiteralNode("header"))
-						},
-						new Node[] {
-							new ElementNode("div", null, new Node[] {
-								new LiteralNode("Lorem ipsum.")
-							})
-						})
-				})
-			});
+				new ElementNode("div", null,
+					new LiteralNode("Lorem ipsum.")))));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			"foo.bar",

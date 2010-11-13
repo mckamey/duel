@@ -117,10 +117,8 @@ final class CodeDOMUtility {
 			new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
 				"write",
-				new CodeExpression[] {
-					new CodeVariableReferenceExpression(Appendable.class, "output"),
-					expression
-				}));
+				new CodeVariableReferenceExpression(Appendable.class, "output"),
+				expression));
 	}
 
 	/**
