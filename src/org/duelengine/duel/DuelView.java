@@ -45,12 +45,12 @@ public abstract class DuelView {
 			if (this.parts == null) {
 				this.parts = new HashMap<String, DuelPart>(parts.length);
 			}
-	
+
 			for (DuelPart part : parts) {
 				if (part == null || part.getPartName() == null) {
 					continue;
 				}
-	
+
 				this.parts.put(part.getPartName(), part);
 			}
 		}
@@ -90,7 +90,7 @@ public abstract class DuelView {
 		if (this.parts == null || !this.parts.containsKey(partName)) {
 			return;
 		}
-			
+
 		DuelPart part = this.parts.get(partName);
 		if (part == null) {
 			return;

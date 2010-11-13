@@ -1053,4 +1053,161 @@ public class CodeDOMBuilderTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void wrapperViewTest() throws IOException {
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			},
+			new ElementNode("div",
+				new AttributeNode[] {
+					new AttributeNode("class", new LiteralNode("dialog"))
+				},
+				new PARTCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("name", new LiteralNode("header"))
+						},
+						new ElementNode("h2", null,
+							new LiteralNode("Warning"))),
+				new ElementNode("hr"),
+				new PARTCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("name", new LiteralNode("body"))
+						},
+						new ElementNode("div", null,
+							new LiteralNode("Lorem ipsum.")))));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			"foo.bar",
+			"Blah",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodePrimitiveExpression("<div class=\"dialog\">"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"renderPart",
+						new CodePrimitiveExpression("header"),
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodePrimitiveExpression("<hr />"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"renderPart",
+						new CodePrimitiveExpression("body"),
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodePrimitiveExpression("</div>")))
+			),
+			CodeDOMUtility.createPartType(
+				"part_2",
+				new CodeMethod(
+					AccessModifierType.PUBLIC,
+					String.class,
+					"getName",
+					null,
+					new CodeMethodReturnStatement(new CodePrimitiveExpression("header"))),
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							"append",
+							new CodePrimitiveExpression("<h2>Warning</h2>")))
+					)),
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"init",
+				null,
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"addPart",
+						new CodeObjectCreateExpression(
+							"part_2",
+							new CodeThisReferenceExpression()))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"addPart",
+						new CodeObjectCreateExpression(
+							"part_3",
+							new CodeThisReferenceExpression())))),
+			CodeDOMUtility.createPartType(
+				"part_3",
+				new CodeMethod(
+					AccessModifierType.PUBLIC,
+					String.class,
+					"getName",
+					null,
+					new CodeMethodReturnStatement(new CodePrimitiveExpression("body"))),
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							"append",
+							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
+					)));
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(5)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(4)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(4)).getMembers().get(2)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(6)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(6)).getMembers().get(2)).setOverride(true);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+		
+		assertEquals(expected, actual);
+	}
 }

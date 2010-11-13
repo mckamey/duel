@@ -1,14 +1,10 @@
 package org.duelengine.duel.codegen;
 
 import java.io.*;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-
-import org.duelengine.duel.DuelView;
 import org.duelengine.duel.codedom.*;
 
 public class ServerCodeGenTests {
@@ -1270,6 +1266,199 @@ public class ServerCodeGenTests {
 			"\t@Override\n"+
 			"\tprotected void init() {\n"+
 			"\t\tthis.view_2 = new foo.bar.Yada(this, new part_3(this));\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void wrapperViewTest() throws IOException {
+
+		CodeTypeDeclaration input = CodeDOMUtility.createViewType(
+			"foo.bar",
+			"Blah",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodePrimitiveExpression("<div class=\"dialog\">"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"renderPart",
+						new CodePrimitiveExpression("header"),
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodePrimitiveExpression("<hr />"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"renderPart",
+						new CodePrimitiveExpression("body"),
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodePrimitiveExpression("</div>")))
+			),
+			CodeDOMUtility.createPartType(
+				"part_2",
+				new CodeMethod(
+					AccessModifierType.PUBLIC,
+					String.class,
+					"getName",
+					null,
+					new CodeMethodReturnStatement(new CodePrimitiveExpression("header"))),
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							"append",
+							new CodePrimitiveExpression("<h2>Warning</h2>")))
+					)),
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"init",
+				null,
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"addPart",
+						new CodeObjectCreateExpression(
+							"part_2",
+							new CodeThisReferenceExpression()))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"addPart",
+						new CodeObjectCreateExpression(
+							"part_3",
+							new CodeThisReferenceExpression())))),
+			CodeDOMUtility.createPartType(
+				"part_3",
+				new CodeMethod(
+					AccessModifierType.PUBLIC,
+					String.class,
+					"getName",
+					null,
+					new CodeMethodReturnStatement(new CodePrimitiveExpression("body"))),
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							"append",
+							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
+					)));
+
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(3)).setOverride(true);
+		((CodeMethod)input.getMembers().get(5)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(4)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(4)).getMembers().get(2)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(6)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(6)).getMembers().get(2)).setOverride(true);
+
+		String expected =
+			"package foo.bar;\n\n"+
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Blah extends DuelView {\n\n"+
+			"\tpublic Blah() {\n"+
+			"\t}\n\n"+
+			"\tpublic Blah(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic Blah(DuelView view, DuelPart... parts) {\n"+
+			"\t\tsuper(view, parts);\n"+
+			"\t}\n\n"+
+			"\t@Override\n"+
+			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\toutput.append(\"<div class=\\\"dialog\\\">\");\n"+
+			"\t\tthis.renderPart(\"header\", output, data, index, count, key);\n"+
+			"\t\toutput.append(\"<hr />\");\n"+
+			"\t\tthis.renderPart(\"body\", output, data, index, count, key);\n"+
+			"\t\toutput.append(\"</div>\");\n"+
+			"\t}\n\n"+
+			"\tprivate class part_2 extends DuelPart {\n\n"+
+			"\t\tpublic part_2(DuelView view) {\n"+
+			"\t\t\tsuper(view);\n"+
+			"\t\t}\n\n"+
+			"\t\t@Override\n"+
+			"\t\tpublic String getName() {\n"+
+			"\t\t\treturn \"header\";\n"+
+			"\t\t}\n\n"+
+			"\t\t@Override\n"+
+			"\t\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\t\toutput.append(\"<h2>Warning</h2>\");\n"+
+			"\t\t}\n"+
+			"\t}\n\n"+
+			"\t@Override\n"+
+			"\tprotected void init() {\n"+
+			"\t\tthis.addPart(new part_2(this));\n"+
+			"\t\tthis.addPart(new part_3(this));\n"+
+			"\t}\n\n"+
+			"\tprivate class part_3 extends DuelPart {\n\n"+
+			"\t\tpublic part_3(DuelView view) {\n"+
+			"\t\t\tsuper(view);\n"+
+			"\t\t}\n\n"+
+			"\t\t@Override\n"+
+			"\t\tpublic String getName() {\n"+
+			"\t\t\treturn \"body\";\n"+
+			"\t\t}\n\n"+
+			"\t\t@Override\n"+
+			"\t\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\t\toutput.append(\"<div>Lorem ipsum.</div>\");\n"+
+			"\t\t}\n"+
 			"\t}\n"+
 			"}\n";
 

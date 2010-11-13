@@ -283,6 +283,18 @@ public class CodeDOMBuilder {
 					"addPart",
 					createPart)));
 
+		// parent scope
+		CodeStatementCollection scope = this.scopeStack.peek();
+
+		scope.add(new CodeMethodInvokeExpression(
+			new CodeThisReferenceExpression(),
+			"renderPart",
+			new CodePrimitiveExpression(part.getName()),
+			new CodeVariableReferenceExpression(Appendable.class, "output"),
+			new CodeVariableReferenceExpression(Object.class, "data"),
+			new CodeVariableReferenceExpression(int.class, "index"),
+			new CodeVariableReferenceExpression(int.class, "count"),
+			new CodeVariableReferenceExpression(String.class, "key")));
 	}
 
 	private void buildIteration(FORCommandNode node) throws IOException {
