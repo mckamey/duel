@@ -1165,4 +1165,96 @@ public class ServerCodeGenTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void callCommandTest() throws IOException {
+
+		CodeTypeDeclaration input = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
+			"foo.bar",
+			"Blah",
+			new CodeMember[] {
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeFieldReferenceExpression(
+									new CodeThisReferenceExpression(),
+									org.duelengine.duel.DuelView.class,
+									"view_2"),
+								"render",
+								new CodeExpression[] {
+									new CodeVariableReferenceExpression(Appendable.class, "output"),
+									new CodeVariableReferenceExpression(Object.class, "data"),
+									new CodeVariableReferenceExpression(int.class, "index"),
+									new CodeVariableReferenceExpression(int.class, "count"),
+									new CodeVariableReferenceExpression(String.class, "key")
+								}))
+					}),
+				new CodeField(
+						AccessModifierType.PRIVATE,
+						org.duelengine.duel.DuelView.class,
+						"view_2",
+						null
+					),
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"init",
+					null,
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.ASSIGN,
+								new CodeFieldReferenceExpression(
+									new CodeThisReferenceExpression(),
+									org.duelengine.duel.DuelView.class,
+									"view_2"),
+								new CodeObjectCreateExpression(
+									"foo.bar.Yada",
+									new CodeExpression[] {
+										new CodeThisReferenceExpression()
+									})))
+					})
+			});
+
+		String expected =
+			"package foo.bar;\n\n"+
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Blah extends DuelView {\n\n"+
+			"\tpublic Blah() {\n"+
+			"\t}\n\n"+
+			"\tpublic Blah(ClientIDStrategy clientID) {\n"+
+			"\t\tsuper(clientID);\n"+
+			"\t}\n\n"+
+			"\tpublic Blah(DuelView view) {\n"+
+			"\t\tsuper(view);\n"+
+			"\t}\n\n"+
+			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
+			"\t\tthis.view_2.render(output, data, index, count, key);\n"+
+			"\t}\n\n"+
+			"\tprivate DuelView view_2;\n\n"+
+			"\tprotected void init() {\n"+
+			"\t\tthis.view_2 = new foo.bar.Yada(this);\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
 }

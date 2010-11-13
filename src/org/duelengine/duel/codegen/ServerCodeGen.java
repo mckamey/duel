@@ -129,6 +129,9 @@ public class ServerCodeGen implements CodeGenerator {
 		} else if (member instanceof CodeMethod) {
 			this.writeMethod(output, (CodeMethod)member);
 
+		} else if (member instanceof CodeField) {
+			this.writeField(output, (CodeField)member);
+
 		} else if (member != null) {
 			throw new UnsupportedOperationException("Not implemented: "+member.getClass());
 		}
@@ -194,6 +197,10 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeMethod(Appendable output, CodeMethod method)
 		throws IOException {
 
+		if (method.getOverride()) {
+			output.append("@Override");
+			this.writeln(output);
+		}
 		this.writeAccessModifier(output, method.getAccess());
 		this.writeTypeName(output, method.getReturnType());
 		output.append(method.getName()).append("(");
@@ -215,6 +222,22 @@ public class ServerCodeGen implements CodeGenerator {
 		this.depth--;
 		this.writeln(output);
 		output.append("}");
+	}
+
+	private void writeField(Appendable output, CodeField field)
+		throws IOException {
+
+		this.writeAccessModifier(output, field.getAccess());
+		this.writeTypeName(output, field.getType());
+		output.append(field.getName());
+		
+		CodeExpression initExpression = field.getInitExpression();
+		if (initExpression != null) {
+			output.append(" = ");
+			this.writeExpression(output, initExpression);
+		}
+
+		output.append(';');
 	}
 
 	private void writeParameterDeclaration(Appendable output, CodeParameterDeclarationExpression param) throws IOException {
@@ -318,11 +341,17 @@ public class ServerCodeGen implements CodeGenerator {
 			} else if (expression instanceof CodeMethodInvokeExpression) {
 				this.writeMethodInvoke(output, (CodeMethodInvokeExpression)expression);
 
+			} else if (expression instanceof CodeFieldReferenceExpression) {
+				this.writeFieldReference(output, (CodeFieldReferenceExpression)expression);
+
 			} else if (expression instanceof CodeThisReferenceExpression) {
 				output.append("this");
 
 			} else if (expression instanceof CodeParameterDeclarationExpression) {
 				this.writeParameterDeclaration(output, (CodeParameterDeclarationExpression)expression);
+
+			} else if (expression instanceof CodeObjectCreateExpression) {
+				this.writeObjectCreate(output, (CodeObjectCreateExpression)expression);
 
 			} else {
 				// TODO: build client-side deferred execution
@@ -334,6 +363,13 @@ public class ServerCodeGen implements CodeGenerator {
 				output.append(')');
 			}
 		}
+	}
+
+	private void writeFieldReference(Appendable output, CodeFieldReferenceExpression expression)
+		throws IOException {
+
+		this.writeExpression(output, expression.getTarget());
+		output.append('.').append(expression.getFieldName());
 	}
 
 	private void writePropertyReference(Appendable output, CodePropertyReferenceExpression expression)
@@ -791,6 +827,24 @@ public class ServerCodeGen implements CodeGenerator {
 				output.append("public ");
 				break;
 		}
+	}
+
+	private void writeObjectCreate(Appendable output, CodeObjectCreateExpression expression)
+		throws IOException {
+
+		output.append("new ").append(expression.getTypeName()).append('(');
+		boolean needsDelim = false;
+		List<CodeExpression> args = expression.getArguments();
+		boolean singleArg = (args.size() == 1);
+		for (CodeExpression arg : args) {
+			if (needsDelim) {
+				output.append(", ");
+			} else {
+				needsDelim = true;
+			}
+			this.writeExpression(output, arg, singleArg ? ParensSetting.SUPPRESS : ParensSetting.AUTO);
+		}
+		output.append(')');
 	}
 
 	private void writeIntro(Appendable output, String ns, AccessModifierType access, String typeName, Class<?> baseType)

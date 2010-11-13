@@ -3,13 +3,14 @@ package org.duelengine.duel.codedom;
 import java.util.*;
 
 /**
- * Represents a method
+ * Represents an instance method
  */
 public class CodeMethod extends CodeMember {
 
 	private Class<?> returnType = Void.class;
 	private final List<CodeParameterDeclarationExpression> parameters = new ArrayList<CodeParameterDeclarationExpression>();
 	private final CodeStatementCollection statements = new CodeStatementCollection();
+	private boolean isOverride;
 
 	public CodeMethod() {
 	}
@@ -28,11 +29,19 @@ public class CodeMethod extends CodeMember {
 	}
 
 	public Class<?> getReturnType() {
-		return returnType;
+		return this.returnType;
 	}
 
-	public void setReturnType(Class<?> returnType) {
-		this.returnType = returnType;
+	public void setReturnType(Class<?> value) {
+		this.returnType = (value != null) ? value : Void.class;
+	}
+
+	public boolean getOverride() {
+		return this.isOverride;
+	}
+
+	public void setOverride(boolean value) {
+		this.isOverride = value;
 	}
 
 	public List<CodeParameterDeclarationExpression> getParameters() {

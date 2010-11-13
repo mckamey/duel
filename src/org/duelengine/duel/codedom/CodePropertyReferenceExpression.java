@@ -42,10 +42,10 @@ public class CodePropertyReferenceExpression extends CodeExpression {
 		}
 
 		CodePropertyReferenceExpression that = (CodePropertyReferenceExpression)arg;
-		if (this.propertyName == null ? that.propertyName != null : !this.propertyName.equals(that.propertyName)) {
+		if (this.target == null ? that.target != null : !this.target.equals(that.target)) {
 			return false;
 		}
-		if (this.target == null ? that.target != null : !this.target.equals(that.target)) {
+		if (this.propertyName == null ? that.propertyName != null : !this.propertyName.equals(that.propertyName)) {
 			return false;
 		}
 		return super.equals(arg);
@@ -56,11 +56,11 @@ public class CodePropertyReferenceExpression extends CodeExpression {
 		final int HASH_PRIME = 1000003;
 
 		int hash = super.hashCode();
-		if (this.propertyName != null) {
-			hash = hash * HASH_PRIME + this.propertyName.hashCode();
-		}
 		if (this.target != null) {
 			hash = hash * HASH_PRIME + this.target.hashCode();
+		}
+		if (this.propertyName != null) {
+			hash = hash * HASH_PRIME + this.propertyName.hashCode();
 		}
 		return hash;
 	}

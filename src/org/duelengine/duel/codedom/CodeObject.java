@@ -11,7 +11,7 @@ public abstract class CodeObject {
 			new ServerCodeGen().writeCode(buffer, this);
 			return buffer.toString();
 		} catch (Exception ex) {
-			return super.toString();
+			return super.toString()+'\n'+ex.getMessage();
 		}
 	}
 }

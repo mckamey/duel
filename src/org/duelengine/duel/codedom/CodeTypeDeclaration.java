@@ -25,7 +25,7 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 		this.addCtor(new CodeParameterDeclarationExpression(DuelView.class, "view"));
 	}
 
-	public CodeTypeDeclaration(AccessModifierType access, String namespace, String typeName, CodeMethod[] methods) {
+	public CodeTypeDeclaration(AccessModifierType access, String namespace, String typeName, CodeMember[] members) {
 		this.access = (access != null) ? access : AccessModifierType.DEFAULT;
 		this.namespace = namespace;
 		this.typeName = typeName;
@@ -34,9 +34,9 @@ public class CodeTypeDeclaration extends CodeObject implements IdentifierScope {
 		this.addCtor(new CodeParameterDeclarationExpression(ClientIDStrategy.class, "clientID"));
 		this.addCtor(new CodeParameterDeclarationExpression(DuelView.class, "view"));
 
-		if (methods != null) {
-			for (CodeMethod method : methods) {
-				this.add(method);
+		if (members != null) {
+			for (CodeMember member : members) {
+				this.add(member);
 			}
 		}
 	}

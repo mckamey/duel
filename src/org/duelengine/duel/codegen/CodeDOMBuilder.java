@@ -3,6 +3,7 @@ package org.duelengine.duel.codegen;
 import java.io.*;
 import java.util.*;
 
+import org.duelengine.duel.DuelView;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 
@@ -16,6 +17,7 @@ public class CodeDOMBuilder {
 	private final StringBuilder buffer;
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
 	private CodeTypeDeclaration viewType;
+	private CodeMethod initMethod;
 
 	public CodeDOMBuilder() {
 		this(null);
@@ -46,6 +48,7 @@ public class CodeDOMBuilder {
 			return this.viewType;
 
 		} finally {
+			this.initMethod = null;
 			this.viewType = null;
 		}
 	}
@@ -99,7 +102,10 @@ public class CodeDOMBuilder {
 					this.buildIteration((FORCommandNode)node);
 					return;
 				case CALL:
+					this.buildCall((CALLCommandNode)node);
+					return;
 				case PART:
+					this.buildPart((PARTCommandNode)node);
 					return;
 				default:
 					throw new IllegalStateException("Invalid command node type: "+command.getCommand());
@@ -138,6 +144,59 @@ public class CodeDOMBuilder {
 			this.formatter.writeComment(doctype.getValue());
 			return;
 		}
+	}
+
+	private void buildCall(CALLCommandNode node) {
+
+		// generate a field to hold the child template
+		CodeField field = new CodeField(
+				AccessModifierType.PRIVATE,
+				DuelView.class,
+				this.viewType.nextIdent("view_"),
+				null);
+		this.viewType.add(field);
+
+		// determine the name of the template
+		String viewName = null;
+		Node attr = node.getAttribute(CALLCommandNode.VIEW);
+		if (attr instanceof LiteralNode) {
+			viewName = ((LiteralNode)attr).getValue();
+		} else if (attr instanceof ExpressionNode) {
+			viewName = ((ExpressionNode)attr).getValue();
+		}
+
+		if (viewName == null) {
+			throw new IllegalArgumentException("Unexpected Call command view attribute: "+attr);
+		}
+
+		// insert an initialization statement into the init method
+		CodeMethod initMethod = this.ensureInitMethod();
+		initMethod.getStatements().add(
+			new CodeExpressionStatement(
+				new CodeBinaryOperatorExpression(
+					CodeBinaryOperatorType.ASSIGN,
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
+					new CodeObjectCreateExpression(
+						viewName.trim(),
+						new CodeExpression[] {
+							new CodeThisReferenceExpression()
+						}))));
+
+		CodeStatementCollection scope = this.scopeStack.peek();
+		scope.add(new CodeMethodInvokeExpression(
+			new CodeFieldReferenceExpression( new CodeThisReferenceExpression(), field),
+			"render",
+			new CodeExpression[] {
+				new CodeVariableReferenceExpression(Appendable.class, "output"),
+				new CodeVariableReferenceExpression(Object.class, "data"),
+				new CodeVariableReferenceExpression(int.class, "index"),
+				new CodeVariableReferenceExpression(int.class, "count"),
+				new CodeVariableReferenceExpression(String.class, "key")
+			}));
+	}
+
+	private void buildPart(PARTCommandNode node) {
+		throw new UnsupportedOperationException("PART not yet implemented");
 	}
 
 	private void buildIteration(FORCommandNode node) throws IOException {
@@ -606,6 +665,23 @@ public class CodeDOMBuilder {
 		this.flushBuffer();
 		CodeStatementCollection scope = this.scopeStack.peek();
 		scope.add(writeStatement);
+	}
+
+	private CodeMethod ensureInitMethod() {
+		if (this.initMethod != null) {
+			return this.initMethod;
+		}
+
+		this.initMethod = new CodeMethod(
+			AccessModifierType.PROTECTED,
+			Void.class,
+			"init",
+			null,
+			null);
+		this.initMethod.setOverride(true);
+		this.viewType.add(this.initMethod);
+
+		return this.initMethod;
 	}
 
 	/**

@@ -1051,4 +1051,81 @@ public class CodeDOMBuilderTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void callViewTest() throws IOException {
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			},
+			new Node[] {
+				new CALLCommandNode(new AttributeNode[] {
+					new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
+					new AttributeNode("data", new ExpressionNode("data"))
+				})
+			});
+
+		CodeTypeDeclaration expected = new CodeTypeDeclaration(
+			AccessModifierType.PUBLIC,
+			"foo.bar",
+			"Blah",
+			new CodeMember[] {
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeFieldReferenceExpression(
+									new CodeThisReferenceExpression(),
+									org.duelengine.duel.DuelView.class,
+									"view_2"),
+								"render",
+								new CodeExpression[] {
+									new CodeVariableReferenceExpression(Appendable.class, "output"),
+									new CodeVariableReferenceExpression(Object.class, "data"),
+									new CodeVariableReferenceExpression(int.class, "index"),
+									new CodeVariableReferenceExpression(int.class, "count"),
+									new CodeVariableReferenceExpression(String.class, "key")
+								}))
+					}),
+				new CodeField(
+						AccessModifierType.PRIVATE,
+						org.duelengine.duel.DuelView.class,
+						"view_2",
+						null
+					),
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"init",
+					null,
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.ASSIGN,
+								new CodeFieldReferenceExpression(
+									new CodeThisReferenceExpression(),
+									org.duelengine.duel.DuelView.class,
+									"view_2"),
+								new CodeObjectCreateExpression(
+									"foo.bar.Yada",
+									new CodeExpression[] {
+										new CodeThisReferenceExpression()
+									})))
+					})
+			});
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().build(input);
+
+		assertEquals(expected, actual);
+	}
 }
