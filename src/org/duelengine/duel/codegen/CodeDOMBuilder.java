@@ -65,8 +65,7 @@ public class CodeDOMBuilder {
 				new CodeParameterDeclarationExpression(int.class, "index"),
 				new CodeParameterDeclarationExpression(int.class, "count"),
 				new CodeParameterDeclarationExpression(String.class, "key")
-			},
-			null);
+			});
 
 		this.viewType.add(method);
 
@@ -708,7 +707,6 @@ public class CodeDOMBuilder {
 			AccessModifierType.PROTECTED,
 			Void.class,
 			"init",
-			null,
 			null);
 		this.initMethod.setOverride(true);
 		this.viewType.add(this.initMethod);

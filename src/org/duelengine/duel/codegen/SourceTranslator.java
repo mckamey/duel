@@ -367,7 +367,6 @@ public class SourceTranslator {
 			AccessModifierType.PRIVATE,
 			Object.class,
 			this.scope.nextIdent("code_"),
-			null,
 			null);
 
 		if (node.depth() == 1) {

@@ -30,16 +30,14 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")
-							}))
-				})
-			);
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")
+						}))
+				));
 
 		String expected =
 			"package com.example;\n\n"+
@@ -84,17 +82,15 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeThisReferenceExpression(),
-							"write",
-							new CodeExpression[] {
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeVariableReferenceExpression(int.class, "count")
-							}))
-				})
-			);
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeExpression[] {
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(int.class, "count")
+						}))
+				));
 
 		String expected =
 			"import java.io.*;\n"+
@@ -138,62 +134,60 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("<div>")
-							})),
-					new CodeConditionStatement(
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.IDENTITY_EQUALITY,
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodePrimitiveExpression(0.0)),
-						new CodeStatement[] {
-							new CodeExpressionStatement(
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(Appendable.class, "output"),
-									"append",
-									new CodeExpression[] {
-										new CodePrimitiveExpression("zero")
-									}))
-						},
-						new CodeStatement[] {
-							new CodeConditionStatement(
-								new CodeBinaryOperatorExpression(
-									CodeBinaryOperatorType.IDENTITY_EQUALITY,
-									new CodeVariableReferenceExpression(Object.class, "data"),
-									new CodePrimitiveExpression(1.0)),
-								new CodeStatement[] {
-									new CodeExpressionStatement(
-										new CodeMethodInvokeExpression(
-											new CodeVariableReferenceExpression(Appendable.class, "output"),
-											"append",
-											new CodeExpression[] {
-												new CodePrimitiveExpression("one")
-											}))
-								},
-								new CodeStatement[] {
-									new CodeExpressionStatement(
-										new CodeMethodInvokeExpression(
-											new CodeVariableReferenceExpression(Appendable.class, "output"),
-											"append",
-											new CodeExpression[] {
-												new CodePrimitiveExpression("many")
-											}))
-								})
-						}),
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("</div>")
-							}))
-				})
-			);
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("<div>")
+						})),
+				new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.IDENTITY_EQUALITY,
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression(0.0)),
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
+								"append",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("zero")
+								}))
+					},
+					new CodeStatement[] {
+						new CodeConditionStatement(
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.IDENTITY_EQUALITY,
+								new CodeVariableReferenceExpression(Object.class, "data"),
+								new CodePrimitiveExpression(1.0)),
+							new CodeStatement[] {
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression(Appendable.class, "output"),
+										"append",
+										new CodeExpression[] {
+											new CodePrimitiveExpression("one")
+										}))
+							},
+							new CodeStatement[] {
+								new CodeExpressionStatement(
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression(Appendable.class, "output"),
+										"append",
+										new CodeExpression[] {
+											new CodePrimitiveExpression("many")
+										}))
+							})
+					}),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("</div>")
+						}))
+				));
 
 		// flag the conditions as having had parens
 		((CodeConditionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().get(1)).getCondition().setHasParens(true);
@@ -250,60 +244,58 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("<div>")
-							})),
-					new CodeConditionStatement(
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.VALUE_EQUALITY,
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodePrimitiveExpression(0.0)),
-						new CodeStatement[] {
-							new CodeExpressionStatement(
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(Appendable.class, "output"),
-									"append",
-									new CodeExpression[] {
-										new CodePrimitiveExpression("zero")
-									}))
-						},
-						null),
-					new CodeConditionStatement(
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.VALUE_EQUALITY,
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodePrimitiveExpression(1.0)),
-						new CodeStatement[] {
-							new CodeExpressionStatement(
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(Appendable.class, "output"),
-									"append",
-									new CodeExpression[] {
-										new CodePrimitiveExpression("one")
-									}))
-						},
-						null),
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("many")
-							})),
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("</div>")
-							}))
-				})
-			);
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("<div>")
+						})),
+				new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.VALUE_EQUALITY,
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression(0.0)),
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
+								"append",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("zero")
+								}))
+					},
+					null),
+				new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.VALUE_EQUALITY,
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression(1.0)),
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
+								"append",
+								new CodeExpression[] {
+									new CodePrimitiveExpression("one")
+								}))
+					},
+					null),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("many")
+						})),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("</div>")
+						}))
+				));
 
 		String expected =
 			"package example;\n\n"+
@@ -356,108 +348,105 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("<div>")
-							})),
-					new CodeVariableDeclarationStatement(
-						Collection.class,
-						"items_1",// collection
-						new CodeMethodInvokeExpression(
-							new CodeThisReferenceExpression(),
-							"asArray",
-							new CodeExpression[] {
-								new CodePropertyReferenceExpression(
-									new CodeVariableReferenceExpression(Object.class, "data"),
-									new CodePrimitiveExpression("items"))
-							})),
-					new CodeVariableCompoundDeclarationStatement(
-						new CodeVariableDeclarationStatement[]{
-							new CodeVariableDeclarationStatement(
-								int.class,
-								"index_2",// index
-								new CodePrimitiveExpression(0)),
-							new CodeVariableDeclarationStatement(
-								int.class,
-								"count_3",// count
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(Collection.class, "items_1"),
-									"size",
-									null)),
-						}),
-					new CodeIterationStatement(
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("<div>")
+						})),
+				new CodeVariableDeclarationStatement(
+					Collection.class,
+					"items_1",// collection
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"asArray",
+						new CodeExpression[] {
+							new CodePropertyReferenceExpression(
+								new CodeVariableReferenceExpression(Object.class, "data"),
+								new CodePrimitiveExpression("items"))
+						})),
+				new CodeVariableCompoundDeclarationStatement(
+					new CodeVariableDeclarationStatement[]{
 						new CodeVariableDeclarationStatement(
-							Iterator.class,
-							"iterator_4",
+							int.class,
+							"index_2",// index
+							new CodePrimitiveExpression(0)),
+						new CodeVariableDeclarationStatement(
+							int.class,
+							"count_3",// count
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(Collection.class, "items_1"),
-								"iterator",
-								null)),// initStatement
+								"size",
+								null)),
+					}),
+				new CodeIterationStatement(
+					new CodeVariableDeclarationStatement(
+						Iterator.class,
+						"iterator_4",
 						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
-							"hasNext",
-							null),// testExpression
-						new CodeExpressionStatement(
-							new CodeUnaryOperatorExpression(
-								CodeUnaryOperatorType.POST_INCREMENT,
-								new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
-						new CodeStatement[] {
-							new CodeExpressionStatement(
-								new CodeMethodInvokeExpression(
-									new CodeThisReferenceExpression(),
-									"render_2",
-									new CodeExpression[] {
-										new CodeVariableReferenceExpression(Appendable.class, "output"),
-										new CodeMethodInvokeExpression(
-											new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
-											"next",
-											null),
-										new CodeVariableReferenceExpression(int.class, "index_2"),
-										new CodeVariableReferenceExpression(int.class, "count_3"),
-										new CodePrimitiveExpression(null)
-									}))
-						}),
+							new CodeVariableReferenceExpression(Collection.class, "items_1"),
+							"iterator",
+							null)),// initStatement
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
+						"hasNext",
+						null),// testExpression
 					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("</div>")
-							}))
-				}),
-				new CodeMethod(
-					AccessModifierType.PRIVATE,
-					Void.class,
-					"render_2",
-					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "data"),
-						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count"),
-						new CodeParameterDeclarationExpression(String.class, "key")
-					},
+						new CodeUnaryOperatorExpression(
+							CodeUnaryOperatorType.POST_INCREMENT,
+							new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								"append",
-								new CodeExpression[] {
-									new CodePrimitiveExpression("item ")
-								})),
-						new CodeExpressionStatement(
-							new CodeMethodInvokeExpression(
 								new CodeThisReferenceExpression(),
-								"write",
+								"render_2",
 								new CodeExpression[] {
 									new CodeVariableReferenceExpression(Appendable.class, "output"),
-									new CodeVariableReferenceExpression(int.class, "index")
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
+										"next",
+										null),
+									new CodeVariableReferenceExpression(int.class, "index_2"),
+									new CodeVariableReferenceExpression(int.class, "count_3"),
+									new CodePrimitiveExpression(null)
 								}))
-				})
-			);
+					}),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("</div>")
+						}))
+			),
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Void.class,
+				"render_2",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("item ")
+						})),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeExpression[] {
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(int.class, "index")
+						}))
+			));
 
 		// mark as having had parens
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
@@ -514,118 +503,115 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("<div>")
-							})),
-					new CodeVariableDeclarationStatement(
-						Collection.class,
-						"items_1",// collection
-						new CodeMethodInvokeExpression(
-							new CodeThisReferenceExpression(),
-							"asObject",
-							new CodeExpression[] {
-								new CodePropertyReferenceExpression(
-									new CodeVariableReferenceExpression(Object.class, "data"),
-									new CodePrimitiveExpression("foo"))
-							})),
-					new CodeVariableCompoundDeclarationStatement(
-						new CodeVariableDeclarationStatement[]{
-							new CodeVariableDeclarationStatement(
-								int.class,
-								"index_2",// index
-								new CodePrimitiveExpression(0)),
-							new CodeVariableDeclarationStatement(
-								int.class,
-								"count_3",// count
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(Collection.class, "items_1"),
-									"size",
-									null)),
-						}),
-					new CodeIterationStatement(
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("<div>")
+						})),
+				new CodeVariableDeclarationStatement(
+					Collection.class,
+					"items_1",// collection
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"asObject",
+						new CodeExpression[] {
+							new CodePropertyReferenceExpression(
+								new CodeVariableReferenceExpression(Object.class, "data"),
+								new CodePrimitiveExpression("foo"))
+						})),
+				new CodeVariableCompoundDeclarationStatement(
+					new CodeVariableDeclarationStatement[]{
 						new CodeVariableDeclarationStatement(
-							Iterator.class,
-							"iterator_4",
+							int.class,
+							"index_2",// index
+							new CodePrimitiveExpression(0)),
+						new CodeVariableDeclarationStatement(
+							int.class,
+							"count_3",// count
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(Collection.class, "items_1"),
-								"iterator",
-								null)),// initStatement
+								"size",
+								null)),
+					}),
+				new CodeIterationStatement(
+					new CodeVariableDeclarationStatement(
+						Iterator.class,
+						"iterator_4",
 						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
-							"hasNext",
-							null),// testExpression
-						new CodeExpressionStatement(
-							new CodeUnaryOperatorExpression(
-								CodeUnaryOperatorType.POST_INCREMENT,
-								new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
-						new CodeStatement[] {
-							new CodeVariableDeclarationStatement(
-								Map.Entry.class,
-								"entry_5",
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
-									"next",
-									null)),
-							new CodeExpressionStatement(
-								new CodeMethodInvokeExpression(
-									new CodeThisReferenceExpression(),
-									"render_2",
-									new CodeExpression[] {
-										new CodeVariableReferenceExpression(Appendable.class, "output"),
-										new CodeMethodInvokeExpression(
-											new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
-											"getValue",
-											null),
-										new CodeVariableReferenceExpression(int.class, "index_2"),
-										new CodeVariableReferenceExpression(int.class, "count_3"),
-										new CodeMethodInvokeExpression(
-											new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
-											"getKey",
-											null)
-									}))
-						}),
+							new CodeVariableReferenceExpression(Collection.class, "items_1"),
+							"iterator",
+							null)),// initStatement
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
+						"hasNext",
+						null),// testExpression
 					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("</div>")
-							}))
-				}),
-				new CodeMethod(
-					AccessModifierType.PRIVATE,
-					Void.class,
-					"render_2",
-					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "data"),
-						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count"),
-						new CodeParameterDeclarationExpression(String.class, "key")
-					},
+						new CodeUnaryOperatorExpression(
+							CodeUnaryOperatorType.POST_INCREMENT,
+							new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
 					new CodeStatement[] {
-						new CodeExpressionStatement(
+						new CodeVariableDeclarationStatement(
+							Map.Entry.class,
+							"entry_5",
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								"append",
-								new CodeExpression[] {
-									new CodePrimitiveExpression("item ")
-								})),
+								new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
+								"next",
+								null)),
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
 								new CodeThisReferenceExpression(),
-								"write",
+								"render_2",
 								new CodeExpression[] {
 									new CodeVariableReferenceExpression(Appendable.class, "output"),
-									new CodeVariableReferenceExpression(int.class, "index")
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
+										"getValue",
+										null),
+									new CodeVariableReferenceExpression(int.class, "index_2"),
+									new CodeVariableReferenceExpression(int.class, "count_3"),
+									new CodeMethodInvokeExpression(
+										new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
+										"getKey",
+										null)
 								}))
-				})
-			);
+					}),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("</div>")
+						}))
+			),
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Void.class,
+				"render_2",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							"append",
+							new CodeExpression[] {
+								new CodePrimitiveExpression("item ")
+							})),
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeExpression[] {
+								new CodeVariableReferenceExpression(Appendable.class, "output"),
+								new CodeVariableReferenceExpression(int.class, "index")
+							}))
+			));
 
 		// mark as having had parens
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
@@ -684,90 +670,87 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("<div>")
+						})),
+				new CodeVariableDeclarationStatement(
+					Object.class,
+					"data_1",// data
+					new CodePropertyReferenceExpression(
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression("name"))),
+				new CodeIterationStatement(
+					new CodeVariableCompoundDeclarationStatement(
+						new CodeVariableDeclarationStatement[] {
+							new CodeVariableDeclarationStatement(
+								int.class,
+								"index_2",// index
+								new CodePrimitiveExpression(0)),
+							new CodeVariableDeclarationStatement(
+								int.class,
+								"count_3",// count
+								new CodePrimitiveExpression(4))
+						}),// initStatement
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.LESS_THAN,
+						new CodeVariableReferenceExpression(int.class, "index_2"),
+						new CodeVariableReferenceExpression(int.class, "count_3")),// testExpression
 					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("<div>")
-							})),
-					new CodeVariableDeclarationStatement(
-						Object.class,
-						"data_1",// data
-						new CodePropertyReferenceExpression(
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodePrimitiveExpression("name"))),
-					new CodeIterationStatement(
-						new CodeVariableCompoundDeclarationStatement(
-							new CodeVariableDeclarationStatement[] {
-								new CodeVariableDeclarationStatement(
-									int.class,
-									"index_2",// index
-									new CodePrimitiveExpression(0)),
-								new CodeVariableDeclarationStatement(
-									int.class,
-									"count_3",// count
-									new CodePrimitiveExpression(4))
-							}),// initStatement
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.LESS_THAN,
-							new CodeVariableReferenceExpression(int.class, "index_2"),
-							new CodeVariableReferenceExpression(int.class, "count_3")),// testExpression
-						new CodeExpressionStatement(
-							new CodeUnaryOperatorExpression(
-								CodeUnaryOperatorType.POST_INCREMENT,
-								new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
-						new CodeStatement[] {
-							new CodeExpressionStatement(
-								new CodeMethodInvokeExpression(
-									new CodeThisReferenceExpression(),
-									"render_2",
-									new CodeExpression[] {
-										new CodeVariableReferenceExpression(Appendable.class, "output"),
-										new CodeVariableReferenceExpression(Object.class, "data_1"),
-										new CodeVariableReferenceExpression(int.class, "index_2"),
-										new CodeVariableReferenceExpression(int.class, "count_3"),
-										new CodePrimitiveExpression(null)
-									}))
-						}),
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							"append",
-							new CodeExpression[] {
-								new CodePrimitiveExpression("</div>")
-							}))
-				}),
-				new CodeMethod(
-					AccessModifierType.PRIVATE,
-					Void.class,
-					"render_2",
-					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Appendable.class, "output"),
-						new CodeParameterDeclarationExpression(Object.class, "data"),
-						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count"),
-						new CodeParameterDeclarationExpression(String.class, "key")
-					},
+						new CodeUnaryOperatorExpression(
+							CodeUnaryOperatorType.POST_INCREMENT,
+							new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								"append",
-								new CodeExpression[] {
-									new CodePrimitiveExpression("item ")
-								})),
-						new CodeExpressionStatement(
-							new CodeMethodInvokeExpression(
 								new CodeThisReferenceExpression(),
-								"write",
+								"render_2",
 								new CodeExpression[] {
 									new CodeVariableReferenceExpression(Appendable.class, "output"),
-									new CodeVariableReferenceExpression(int.class, "index")
+									new CodeVariableReferenceExpression(Object.class, "data_1"),
+									new CodeVariableReferenceExpression(int.class, "index_2"),
+									new CodeVariableReferenceExpression(int.class, "count_3"),
+									new CodePrimitiveExpression(null)
 								}))
-				})
-			);
+					}),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("</div>")
+						}))
+			),
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Void.class,
+				"render_2",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						"append",
+						new CodeExpression[] {
+							new CodePrimitiveExpression("item ")
+						})),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeExpression[] {
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(int.class, "index")
+						}))
+			));
 
 		// mark as having had parens
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
@@ -823,20 +806,18 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeThisReferenceExpression(),
-							"write",
-							new CodeExpression[] {
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeTernaryOperatorExpression(
-									new CodeVariableReferenceExpression(Object.class, "data"),
-									new CodePrimitiveExpression(1.0),
-									new CodePrimitiveExpression(2.0))
-							}))
-				})
-			);
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeExpression[] {
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeTernaryOperatorExpression(
+								new CodeVariableReferenceExpression(Object.class, "data"),
+								new CodePrimitiveExpression(1.0),
+								new CodePrimitiveExpression(2.0))
+						}))
+				));
 
 		String expected =
 			"package com.example;\n\n"+
@@ -881,19 +862,17 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeThisReferenceExpression(),
-							"write",
-							new CodeExpression[] {
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeUnaryOperatorExpression(
-									CodeUnaryOperatorType.POST_INCREMENT,
-									new CodeVariableReferenceExpression(Object.class, "data"))
-							}))
-				})
-			);
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeExpression[] {
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeUnaryOperatorExpression(
+								CodeUnaryOperatorType.POST_INCREMENT,
+								new CodeVariableReferenceExpression(Object.class, "data"))
+						}))
+				));
 
 		String expected =
 			"package com.example;\n\n"+
@@ -938,19 +917,17 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeThisReferenceExpression(),
-							"write",
-							new CodeExpression[] {
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeUnaryOperatorExpression(
-									CodeUnaryOperatorType.PRE_DECREMENT,
-									new CodeVariableReferenceExpression(Object.class, "data"))
-							}))
-				})
-			);
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeExpression[] {
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeUnaryOperatorExpression(
+								CodeUnaryOperatorType.PRE_DECREMENT,
+								new CodeVariableReferenceExpression(Object.class, "data"))
+						}))
+				));
 
 		String expected =
 			"package com.example;\n\n"+
@@ -995,20 +972,18 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeThisReferenceExpression(),
-							"write",
-							new CodeExpression[] {
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeBinaryOperatorExpression(
-									CodeBinaryOperatorType.MODULUS_ASSIGN,
-									new CodeVariableReferenceExpression(Object.class, "data"),
-									new CodePrimitiveExpression(5))
-							}))
-				})
-			);
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeExpression[] {
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.MODULUS_ASSIGN,
+								new CodeVariableReferenceExpression(Object.class, "data"),
+								new CodePrimitiveExpression(5))
+						}))
+				));
 
 		String expected =
 			"package com.example;\n\n"+
@@ -1053,15 +1028,12 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.ASSIGN,
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodeVariableReferenceExpression(String.class, "key")
-					))
-				})
-			);
+				new CodeExpressionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.ASSIGN,
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(String.class, "key")))
+				));
 
 		String expected =
 			"package com.example;\n\n"+
@@ -1106,15 +1078,12 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.ASSIGN,
-							new CodeVariableReferenceExpression(int.class, "count"),
-							new CodeVariableReferenceExpression(Object.class, "data")
-					))
-				})
-			);
+				new CodeExpressionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.ASSIGN,
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(Object.class, "data")))
+				));
 
 		String expected =
 			"package com.example;\n\n"+
@@ -1159,48 +1128,44 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeFieldReferenceExpression(
-								new CodeThisReferenceExpression(),
-								org.duelengine.duel.DuelView.class,
-								"view_2"),
-							"render",
-							new CodeExpression[] {
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeVariableReferenceExpression(Object.class, "data"),
-								new CodeVariableReferenceExpression(int.class, "index"),
-								new CodeVariableReferenceExpression(int.class, "count"),
-								new CodeVariableReferenceExpression(String.class, "key")
-							}))
-				}),
-			new CodeField(
-					AccessModifierType.PRIVATE,
-					org.duelengine.duel.DuelView.class,
-					"view_2",
-					null
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeFieldReferenceExpression(
+							new CodeThisReferenceExpression(),
+							org.duelengine.duel.DuelView.class,
+							"view_2"),
+						"render",
+						new CodeExpression[] {
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(Object.class, "data"),
+							new CodeVariableReferenceExpression(int.class, "index"),
+							new CodeVariableReferenceExpression(int.class, "count"),
+							new CodeVariableReferenceExpression(String.class, "key")
+						}))
 				),
+			new CodeField(
+				AccessModifierType.PRIVATE,
+				org.duelengine.duel.DuelView.class,
+				"view_2",
+				null),
 			new CodeMethod(
 				AccessModifierType.PROTECTED,
 				Void.class,
 				"init",
 				null,
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.ASSIGN,
-							new CodeFieldReferenceExpression(
-								new CodeThisReferenceExpression(),
-								org.duelengine.duel.DuelView.class,
-								"view_2"),
-							new CodeObjectCreateExpression(
-								"foo.bar.Yada",
-								new CodeExpression[] {
-									new CodeThisReferenceExpression()
-								})))
-				})
-			);
+				new CodeExpressionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.ASSIGN,
+						new CodeFieldReferenceExpression(
+							new CodeThisReferenceExpression(),
+							org.duelengine.duel.DuelView.class,
+							"view_2"),
+						new CodeObjectCreateExpression(
+							"foo.bar.Yada",
+							new CodeExpression[] {
+								new CodeThisReferenceExpression()
+							})))
+				));
 
 		String expected =
 			"package foo.bar;\n\n"+

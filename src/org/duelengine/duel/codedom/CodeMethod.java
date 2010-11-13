@@ -15,7 +15,7 @@ public class CodeMethod extends CodeMember {
 	public CodeMethod() {
 	}
 
-	public CodeMethod(AccessModifierType access, Class<?> returnType, String methodName, CodeParameterDeclarationExpression[] parameters, CodeStatement[] statements) {
+	public CodeMethod(AccessModifierType access, Class<?> returnType, String methodName, CodeParameterDeclarationExpression[] parameters, CodeStatement... statements) {
 		super(access, methodName);
 		if (returnType != null) {
 			this.returnType = returnType;
