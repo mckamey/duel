@@ -13,7 +13,7 @@ public class CodeIterationStatement extends CodeStatement {
 	public CodeIterationStatement() {
 	}
 
-	public CodeIterationStatement(CodeStatement initStatement, CodeExpression testExpression, CodeStatement incrementStatement, CodeStatement[] statements) {
+	public CodeIterationStatement(CodeStatement initStatement, CodeExpression testExpression, CodeStatement incrementStatement, CodeStatement... statements) {
 		this.initStatement = initStatement;
 		this.testExpression = testExpression;
 		this.incrementStatement = incrementStatement;

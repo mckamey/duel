@@ -365,19 +365,17 @@ public class ServerCodeGenTests {
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.POST_INCREMENT,
 							new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
-					new CodeStatement[] {
-						new CodeExpressionStatement(
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeThisReferenceExpression(),
+							"render_2",
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
 							new CodeMethodInvokeExpression(
-								new CodeThisReferenceExpression(),
-								"render_2",
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
-									"next"),
-								new CodeVariableReferenceExpression(int.class, "index_2"),
-								new CodeVariableReferenceExpression(int.class, "count_3"),
-								new CodePrimitiveExpression(null)))
-					}),
+								new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
+								"next"),
+							new CodeVariableReferenceExpression(int.class, "index_2"),
+							new CodeVariableReferenceExpression(int.class, "count_3"),
+							new CodePrimitiveExpression(null)))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
@@ -504,27 +502,25 @@ public class ServerCodeGenTests {
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.POST_INCREMENT,
 							new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
-					new CodeStatement[] {
-						new CodeVariableDeclarationStatement(
-							Map.Entry.class,
-							"entry_5",
+					new CodeVariableDeclarationStatement(
+						Map.Entry.class,
+						"entry_5",
+						new CodeMethodInvokeExpression(
+							new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
+							"next")),
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeThisReferenceExpression(),
+							"render_2",
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
-								"next")),
-						new CodeExpressionStatement(
+								new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
+								"getValue"),
+							new CodeVariableReferenceExpression(int.class, "index_2"),
+							new CodeVariableReferenceExpression(int.class, "count_3"),
 							new CodeMethodInvokeExpression(
-								new CodeThisReferenceExpression(),
-								"render_2",
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
-									"getValue"),
-								new CodeVariableReferenceExpression(int.class, "index_2"),
-								new CodeVariableReferenceExpression(int.class, "count_3"),
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
-									"getKey")))
-					}),
+								new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
+								"getKey")))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
@@ -643,17 +639,15 @@ public class ServerCodeGenTests {
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.POST_INCREMENT,
 							new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
-					new CodeStatement[] {
-						new CodeExpressionStatement(
-							new CodeMethodInvokeExpression(
-								new CodeThisReferenceExpression(),
-								"render_2",
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeVariableReferenceExpression(Object.class, "data_1"),
-								new CodeVariableReferenceExpression(int.class, "index_2"),
-								new CodeVariableReferenceExpression(int.class, "count_3"),
-								new CodePrimitiveExpression(null)))
-					}),
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeThisReferenceExpression(),
+							"render_2",
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(Object.class, "data_1"),
+							new CodeVariableReferenceExpression(int.class, "index_2"),
+							new CodeVariableReferenceExpression(int.class, "count_3"),
+							new CodePrimitiveExpression(null)))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),

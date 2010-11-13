@@ -347,10 +347,9 @@ public class SourceTranslator {
 
 	private CodeObject visitForLoop(ForLoop node) {
 		CodeIterationStatement loop = new CodeIterationStatement(
-				this.visitStatement(node.getInitializer()),
-				this.visitExpression(node.getCondition()),
-				this.visitStatement(node.getIncrement()),
-				null);
+			this.visitStatement(node.getInitializer()),
+			this.visitExpression(node.getCondition()),
+			this.visitStatement(node.getIncrement()));
 
 		CodeObject body = this.visit(node.getBody());
 		if (body instanceof CodeStatementBlock) {

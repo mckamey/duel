@@ -401,16 +401,14 @@ public class SourceTranslatorTests {
 							new CodeUnaryOperatorExpression(
 								CodeUnaryOperatorType.POST_INCREMENT,
 								new CodeVariableReferenceExpression(Object.class, "i2"))),
-						new CodeStatement[] {
-							new CodeExpressionStatement(
-								new CodeMethodInvokeExpression(
+						new CodeExpressionStatement(
+							new CodeMethodInvokeExpression(
+								new CodePropertyReferenceExpression(
 									new CodePropertyReferenceExpression(
-										new CodePropertyReferenceExpression(
-											new CodeVariableReferenceExpression(Object.class, "data"),
-											new CodeVariableReferenceExpression(Object.class, "i2")),
-										new CodePrimitiveExpression("toString")),
-									null))
-						})
+										new CodeVariableReferenceExpression(Object.class, "data"),
+										new CodeVariableReferenceExpression(Object.class, "i2")),
+									new CodePrimitiveExpression("toString")),
+								null)))
 				});
 
 		List<CodeMember> actual = new SourceTranslator().translate(input);

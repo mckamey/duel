@@ -313,17 +313,15 @@ public class CodeDOMBuilder {
 					new CodeUnaryOperatorExpression(
 						CodeUnaryOperatorType.POST_INCREMENT,
 						new CodeVariableReferenceExpression(indexDecl))),// incrementStatement
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeThisReferenceExpression(),
-							innerBind.getName(),
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
-							new CodeVariableReferenceExpression(dataDecl),
-							new CodeVariableReferenceExpression(indexDecl),
-							new CodeVariableReferenceExpression(countDecl),
-							new CodePrimitiveExpression(null)))
-				}));
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						innerBind.getName(),
+						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(dataDecl),
+						new CodeVariableReferenceExpression(indexDecl),
+						new CodeVariableReferenceExpression(countDecl),
+						new CodePrimitiveExpression(null)))));
 	}
 
 	private void buildIterationObject(CodeStatementCollection scope, CodeExpression objExpr, CodeMethod innerBind) {
@@ -393,22 +391,20 @@ public class CodeDOMBuilder {
 					new CodeUnaryOperatorExpression(
 						CodeUnaryOperatorType.POST_INCREMENT,
 						new CodeVariableReferenceExpression(indexDecl))),// incrementStatement
-				new CodeStatement[] {
-					entryDecl,
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeThisReferenceExpression(),
-							innerBind.getName(),
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(entryDecl),
-									"getValue"),
-								new CodeVariableReferenceExpression(indexDecl),
-								new CodeVariableReferenceExpression(countDecl),
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(entryDecl),
-									"getKey")))
-				}));
+				entryDecl,
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						innerBind.getName(),
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression(entryDecl),
+								"getValue"),
+							new CodeVariableReferenceExpression(indexDecl),
+							new CodeVariableReferenceExpression(countDecl),
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression(entryDecl),
+								"getKey")))));
 	}
 
 	private void buildIterationArray(CodeStatementCollection scope, CodeExpression arrayExpr, CodeMethod innerBind) {
@@ -468,19 +464,17 @@ public class CodeDOMBuilder {
 					new CodeUnaryOperatorExpression(
 						CodeUnaryOperatorType.POST_INCREMENT,
 						new CodeVariableReferenceExpression(indexDecl))),// incrementStatement
-				new CodeStatement[] {
-					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							new CodeThisReferenceExpression(),
-							innerBind.getName(),
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
-								new CodeMethodInvokeExpression(
-									new CodeVariableReferenceExpression(iteratorDecl),
-									"next"),
-								new CodeVariableReferenceExpression(indexDecl),
-								new CodeVariableReferenceExpression(countDecl),
-								new CodePrimitiveExpression(null)))
-				}));
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						innerBind.getName(),
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeMethodInvokeExpression(
+								new CodeVariableReferenceExpression(iteratorDecl),
+								"next"),
+							new CodeVariableReferenceExpression(indexDecl),
+							new CodeVariableReferenceExpression(countDecl),
+							new CodePrimitiveExpression(null)))));
 	}
 
 	private void buildConditional(XORCommandNode node)
