@@ -19,7 +19,7 @@ public class ClientCodeGenTests {
 			"var foo = duel(\"A JSON payload should be an object or array, not a string.\");\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 		
 		assertEquals(expected, actual);
@@ -38,7 +38,7 @@ public class ClientCodeGenTests {
 			"var foo = duel(\"\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\\\"\");\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 		
 		assertEquals(expected, actual);
@@ -58,7 +58,7 @@ public class ClientCodeGenTests {
 			"var foo = duel(function(data, index, count) { return (count); });\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -78,7 +78,7 @@ public class ClientCodeGenTests {
 			"var foo = duel(function(data) { return duel.raw(data); });\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -98,7 +98,7 @@ public class ClientCodeGenTests {
 			"var foo = duel(function() { return Math.PI; });\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -118,7 +118,7 @@ public class ClientCodeGenTests {
 			"var foo = duel(function(data, index) { bar(index); });\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -166,7 +166,7 @@ public class ClientCodeGenTests {
 			"\t]);\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -199,7 +199,7 @@ public class ClientCodeGenTests {
 			"\t]);\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -232,7 +232,7 @@ public class ClientCodeGenTests {
 			"\t]);\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -266,7 +266,7 @@ public class ClientCodeGenTests {
 			"\t]);\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -316,7 +316,7 @@ public class ClientCodeGenTests {
 			"\t]);\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -324,7 +324,13 @@ public class ClientCodeGenTests {
 
 	@Test
 	public void multiViewTest() throws Exception {
-		ViewRootNode[] input = new ViewRootNode[] { 
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel(\"First View\");\n\n"+
+			"var bar = duel(\"Second View\");\n";
+
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, 
 			new ViewRootNode(
 				new AttributeNode[] {
 					new AttributeNode("name", new LiteralNode("foo"))
@@ -334,16 +340,7 @@ public class ClientCodeGenTests {
 				new AttributeNode[] {
 					new AttributeNode("name", new LiteralNode("bar"))
 				},
-				new LiteralNode("Second View"))
-		};
-
-		String expected =
-			"/*global duel */\n\n"+
-			"var foo = duel(\"First View\");\n\n"+
-			"var bar = duel(\"Second View\");\n";
-
-		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, input);
+				new LiteralNode("Second View")));
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -369,7 +366,7 @@ public class ClientCodeGenTests {
 			"foo.bar.Blah = duel([\"div\"]);\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, new ViewRootNode[] { input });
+		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -377,19 +374,6 @@ public class ClientCodeGenTests {
 
 	@Test
 	public void namespaceRepeatedTest() throws Exception {
-		ViewRootNode[] input = new ViewRootNode[] { 
-			new ViewRootNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
-				},
-				new LiteralNode("First View")),
-			new ViewRootNode(
-					new AttributeNode[] {
-						new AttributeNode("name", new LiteralNode("foo.bar.Yada"))
-					},
-					new LiteralNode("Second View"))
-		};
-
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo;\n"+
@@ -403,7 +387,17 @@ public class ClientCodeGenTests {
 			"foo.bar.Yada = duel(\"Second View\");\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, input);
+		new ClientCodeGen().write(output,
+			new ViewRootNode(
+					new AttributeNode[] {
+						new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+					},
+					new LiteralNode("First View")),
+			new ViewRootNode(
+				new AttributeNode[] {
+					new AttributeNode("name", new LiteralNode("foo.bar.Yada"))
+				},
+				new LiteralNode("Second View")));
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -411,19 +405,6 @@ public class ClientCodeGenTests {
 
 	@Test
 	public void namespacesOverlappingTest() throws Exception {
-		ViewRootNode[] input = new ViewRootNode[] { 
-			new ViewRootNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("foo.bar.one.Blah"))
-				},
-				new LiteralNode("First View")),
-			new ViewRootNode(
-					new AttributeNode[] {
-						new AttributeNode("name", new LiteralNode("foo.bar.two.Yada"))
-					},
-					new LiteralNode("Second View"))
-		};
-
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo;\n"+
@@ -443,7 +424,17 @@ public class ClientCodeGenTests {
 			"foo.bar.two.Yada = duel(\"Second View\");\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, input);
+		new ClientCodeGen().write(output,
+			new ViewRootNode(
+				new AttributeNode[] {
+					new AttributeNode("name", new LiteralNode("foo.bar.one.Blah"))
+				},
+				new LiteralNode("First View")),
+			new ViewRootNode(
+				new AttributeNode[] {
+					new AttributeNode("name", new LiteralNode("foo.bar.two.Yada"))
+				},
+				new LiteralNode("Second View")));
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -451,19 +442,6 @@ public class ClientCodeGenTests {
 
 	@Test
 	public void namespacesDistinctTest() throws Exception {
-		ViewRootNode[] input = new ViewRootNode[] { 
-			new ViewRootNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
-				},
-				new LiteralNode("First View")),
-			new ViewRootNode(
-					new AttributeNode[] {
-						new AttributeNode("name", new LiteralNode("com.example.Yada"))
-					},
-					new LiteralNode("Second View"))
-		};
-
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo;\n"+
@@ -484,7 +462,17 @@ public class ClientCodeGenTests {
 			"com.example.Yada = duel(\"Second View\");\n";
 
 		StringBuilder output = new StringBuilder();
-		new ClientCodeGen().write(output, input);
+		new ClientCodeGen().write(output,
+			new ViewRootNode(
+				new AttributeNode[] {
+					new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+				},
+				new LiteralNode("First View")),
+			new ViewRootNode(
+				new AttributeNode[] {
+					new AttributeNode("name", new LiteralNode("com.example.Yada"))
+				},
+				new LiteralNode("Second View")));
 		String actual = output.toString();
 
 		assertEquals(expected, actual);

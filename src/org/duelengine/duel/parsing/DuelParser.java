@@ -16,7 +16,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public List<ViewRootNode> parse(DuelToken[] tokens)
+	public List<ViewRootNode> parse(DuelToken... tokens)
 		throws Exception {
 
 		return this.parse(tokens != null ? Arrays.asList(tokens).iterator() : null);

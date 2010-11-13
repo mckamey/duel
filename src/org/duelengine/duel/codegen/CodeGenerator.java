@@ -8,7 +8,7 @@ public interface CodeGenerator {
 
 	public String getFileExtension();
 
-	public void write(Appendable output, ViewRootNode[] views) throws IOException;
+	public void write(Appendable output, ViewRootNode... views) throws IOException;
 
 	public void write(Appendable output, Iterable<ViewRootNode> views) throws IOException;
 }

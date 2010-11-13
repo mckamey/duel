@@ -39,7 +39,7 @@ public class ServerCodeGen implements CodeGenerator {
 	 * @throws IOException 
 	 */
 	@Override
-	public void write(Appendable output, ViewRootNode[] views)
+	public void write(Appendable output, ViewRootNode... views)
 		throws IOException {
 
 		this.write(output, views != null ? Arrays.asList(views) : null);
