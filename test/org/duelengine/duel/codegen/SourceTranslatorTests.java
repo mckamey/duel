@@ -385,14 +385,13 @@ public class SourceTranslatorTests {
 				},
 				new CodeStatement[] {
 					new CodeIterationStatement(
-						new CodeVariableCompoundDeclarationStatement(new CodeVariableDeclarationStatement[] {
+						new CodeVariableCompoundDeclarationStatement(
 							new CodeVariableDeclarationStatement(Object.class, "i2",
 								new CodePrimitiveExpression(0.0)),
 							new CodeVariableDeclarationStatement(Object.class, "length4",
 								new CodePropertyReferenceExpression(
 									new CodeVariableReferenceExpression(Object.class, "data"),
-									new CodePrimitiveExpression("length4"))),
-						}),
+									new CodePrimitiveExpression("length4")))),
 						new CodeBinaryOperatorExpression(
 							CodeBinaryOperatorType.LESS_THAN,
 							new CodeVariableReferenceExpression(Object.class, "i2"),

@@ -13,7 +13,7 @@ public class CodeVariableCompoundDeclarationStatement extends CodeStatement {
 	public CodeVariableCompoundDeclarationStatement() {
 	}
 
-	public CodeVariableCompoundDeclarationStatement(CodeVariableDeclarationStatement[] vars) {
+	public CodeVariableCompoundDeclarationStatement(CodeVariableDeclarationStatement... vars) {
 		if (vars != null) {
 			for (CodeVariableDeclarationStatement var : vars) {
 				this.addVar(var);

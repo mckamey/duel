@@ -497,18 +497,16 @@ public class CodeDOMBuilderTests {
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("items")))),
 				new CodeVariableCompoundDeclarationStatement(
-					new CodeVariableDeclarationStatement[]{
-						new CodeVariableDeclarationStatement(
-							int.class,
-							"index_2",// index
-							new CodePrimitiveExpression(0)),
-						new CodeVariableDeclarationStatement(
-							int.class,
-							"count_3",// count
-							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(Collection.class, "items_1"),
-								"size")),
-					}),
+					new CodeVariableDeclarationStatement(
+						int.class,
+						"index_2",// index
+						new CodePrimitiveExpression(0)),
+					new CodeVariableDeclarationStatement(
+						int.class,
+						"count_3",// count
+						new CodeMethodInvokeExpression(
+							new CodeVariableReferenceExpression(Collection.class, "items_1"),
+							"size"))),
 				new CodeIterationStatement(
 					new CodeVariableDeclarationStatement(
 						Iterator.class,
@@ -621,18 +619,16 @@ public class CodeDOMBuilderTests {
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("foo")))),
 				new CodeVariableCompoundDeclarationStatement(
-					new CodeVariableDeclarationStatement[]{
-						new CodeVariableDeclarationStatement(
-							int.class,
-							"index_2",// index
-							new CodePrimitiveExpression(0)),
-						new CodeVariableDeclarationStatement(
-							int.class,
-							"count_3",// count
-							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(Collection.class, "items_1"),
-								"size")),
-					}),
+					new CodeVariableDeclarationStatement(
+						int.class,
+						"index_2",// index
+						new CodePrimitiveExpression(0)),
+					new CodeVariableDeclarationStatement(
+						int.class,
+						"count_3",// count
+						new CodeMethodInvokeExpression(
+							new CodeVariableReferenceExpression(Collection.class, "items_1"),
+							"size"))),
 				new CodeIterationStatement(
 					new CodeVariableDeclarationStatement(
 						Iterator.class,
@@ -752,16 +748,14 @@ public class CodeDOMBuilderTests {
 						new CodePrimitiveExpression("name"))),
 				new CodeIterationStatement(
 					new CodeVariableCompoundDeclarationStatement(
-						new CodeVariableDeclarationStatement[] {
-							new CodeVariableDeclarationStatement(
-								int.class,
-								"index_2",// index
-								new CodePrimitiveExpression(0)),
-							new CodeVariableDeclarationStatement(
-								int.class,
-								"count_3",// count
-								new CodePrimitiveExpression(4))
-						}),// initStatement
+						new CodeVariableDeclarationStatement(
+							int.class,
+							"index_2",// index
+							new CodePrimitiveExpression(0)),
+						new CodeVariableDeclarationStatement(
+							int.class,
+							"count_3",// count
+							new CodePrimitiveExpression(4))),// initStatement
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.LESS_THAN,
 						new CodeVariableReferenceExpression(int.class, "index_2"),

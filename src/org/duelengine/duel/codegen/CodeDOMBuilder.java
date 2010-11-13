@@ -295,11 +295,8 @@ public class CodeDOMBuilder {
 				count);
 
 		// the for loop init statement
-		CodeVariableCompoundDeclarationStatement initStatement = new CodeVariableCompoundDeclarationStatement(
-			new CodeVariableDeclarationStatement[] {
-				indexDecl,
-				countDecl
-			});
+		CodeVariableCompoundDeclarationStatement initStatement =
+			new CodeVariableCompoundDeclarationStatement(indexDecl, countDecl);
 
 		// the for loop block
 		scope.add(
@@ -357,10 +354,7 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(collectionDecl),
 					"size"));
 
-		scope.add(new CodeVariableCompoundDeclarationStatement(new CodeVariableDeclarationStatement[] {
-				indexDecl,
-				countDecl 	
-			}));
+		scope.add(new CodeVariableCompoundDeclarationStatement(indexDecl, countDecl));
 
 		// the iterator (embedded in for init)
 		CodeVariableDeclarationStatement iteratorDecl =
@@ -439,10 +433,7 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(collectionDecl),
 					"size"));
 
-		scope.add(new CodeVariableCompoundDeclarationStatement(new CodeVariableDeclarationStatement[] {
-				indexDecl,
-				countDecl 	
-			}));
+		scope.add(new CodeVariableCompoundDeclarationStatement(indexDecl, countDecl));
 
 		// the iterator (embedded in for init)
 		CodeVariableDeclarationStatement iteratorDecl =
