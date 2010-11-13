@@ -915,6 +915,7 @@ public class CodeDOMBuilderTests {
 				));
 
 		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(5)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -1021,9 +1022,6 @@ public class CodeDOMBuilderTests {
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
-		System.out.println(actual);
-		System.out.println(expected);
-		
 		assertEquals(expected, actual);
 	}
 }

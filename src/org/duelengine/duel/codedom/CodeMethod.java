@@ -68,6 +68,10 @@ public class CodeMethod extends CodeMember {
 		}
 
 		CodeMethod that = (CodeMethod)arg;
+		if (this.isOverride != that.isOverride) {
+			return false;
+		}
+
 		if (this.returnType == null ? that.returnType != null : !this.returnType.equals(that.returnType)) {
 			return false;
 		}
