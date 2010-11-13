@@ -166,6 +166,7 @@ public class CodeDOMBuilder {
 		}
 
 		if (viewName == null) {
+			// TODO: how to cover switcher method cases?
 			throw new IllegalArgumentException("Unexpected Call command view attribute: "+attr);
 		}
 
@@ -182,16 +183,48 @@ public class CodeDOMBuilder {
 							new CodeThisReferenceExpression()
 						}))));
 
+		CodeExpression dataExpr;
+		Node callData = node.getAttribute(CALLCommandNode.DATA);
+		if (callData instanceof CodeBlockNode) {
+			dataExpr = this.translateExpression(((CodeBlockNode)callData).getClientCode());
+		} else {
+			dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
+		}
+
+		CodeExpression indexExpr;
+		Node callIndex = node.getAttribute(CALLCommandNode.INDEX);
+		if (callIndex instanceof CodeBlockNode) {
+			indexExpr = this.translateExpression(((CodeBlockNode)callIndex).getClientCode());
+		} else {
+			indexExpr = new CodeVariableReferenceExpression(int.class, "index");
+		}
+
+		CodeExpression countExpr;
+		Node callCount = node.getAttribute(CALLCommandNode.COUNT);
+		if (callCount instanceof CodeBlockNode) {
+			countExpr = this.translateExpression(((CodeBlockNode)callCount).getClientCode());
+		} else {
+			countExpr = new CodeVariableReferenceExpression(int.class, "count");
+		}
+
+		CodeExpression keyExpr;
+		Node callKey = node.getAttribute(CALLCommandNode.KEY);
+		if (callKey instanceof CodeBlockNode) {
+			keyExpr = this.translateExpression(((CodeBlockNode)callKey).getClientCode());
+		} else {
+			keyExpr = new CodeVariableReferenceExpression(String.class, "key");
+		}
+
 		CodeStatementCollection scope = this.scopeStack.peek();
 		scope.add(new CodeMethodInvokeExpression(
-			new CodeFieldReferenceExpression( new CodeThisReferenceExpression(), field),
+			new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
 			"render",
 			new CodeExpression[] {
 				new CodeVariableReferenceExpression(Appendable.class, "output"),
-				new CodeVariableReferenceExpression(Object.class, "data"),
-				new CodeVariableReferenceExpression(int.class, "index"),
-				new CodeVariableReferenceExpression(int.class, "count"),
-				new CodeVariableReferenceExpression(String.class, "key")
+				dataExpr,
+				indexExpr,
+				countExpr,
+				keyExpr
 			}));
 	}
 
