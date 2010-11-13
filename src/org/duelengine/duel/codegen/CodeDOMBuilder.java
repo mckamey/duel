@@ -285,7 +285,7 @@ public class CodeDOMBuilder {
 			new CodeVariableDeclarationStatement(
 				int.class,
 				scope.nextIdent("index_"),
-				new CodePrimitiveExpression(0));
+				CodePrimitiveExpression.ZERO);
 
 		// the item count (embedded in for loop init statement)
 		CodeVariableDeclarationStatement countDecl =
@@ -318,7 +318,7 @@ public class CodeDOMBuilder {
 						new CodeVariableReferenceExpression(dataDecl),
 						new CodeVariableReferenceExpression(indexDecl),
 						new CodeVariableReferenceExpression(countDecl),
-						new CodePrimitiveExpression(null)))));
+						CodePrimitiveExpression.NULL))));
 	}
 
 	private void buildIterationObject(CodeStatementCollection scope, CodeExpression objExpr, CodeMethod innerBind) {
@@ -343,7 +343,7 @@ public class CodeDOMBuilder {
 			new CodeVariableDeclarationStatement(
 				int.class,
 				scope.nextIdent("index_"),
-				new CodePrimitiveExpression(0));
+				CodePrimitiveExpression.ZERO);
 
 		// the item count
 		CodeVariableDeclarationStatement countDecl =
@@ -422,7 +422,7 @@ public class CodeDOMBuilder {
 			new CodeVariableDeclarationStatement(
 				int.class,
 				scope.nextIdent("index_"),
-				new CodePrimitiveExpression(0));
+				CodePrimitiveExpression.ZERO);
 
 		// the item count
 		CodeVariableDeclarationStatement countDecl =
@@ -465,7 +465,7 @@ public class CodeDOMBuilder {
 								"next"),
 							new CodeVariableReferenceExpression(indexDecl),
 							new CodeVariableReferenceExpression(countDecl),
-							new CodePrimitiveExpression(null)))));
+							CodePrimitiveExpression.NULL))));
 	}
 
 	private void buildConditional(XORCommandNode node)

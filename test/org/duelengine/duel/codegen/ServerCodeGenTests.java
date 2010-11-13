@@ -342,7 +342,7 @@ public class ServerCodeGenTests {
 					new CodeVariableDeclarationStatement(
 						int.class,
 						"index_2",// index
-						new CodePrimitiveExpression(0)),
+						CodePrimitiveExpression.ZERO),
 					new CodeVariableDeclarationStatement(
 						int.class,
 						"count_3",// count
@@ -373,7 +373,7 @@ public class ServerCodeGenTests {
 								"next"),
 							new CodeVariableReferenceExpression(int.class, "index_2"),
 							new CodeVariableReferenceExpression(int.class, "count_3"),
-							new CodePrimitiveExpression(null)))),
+							CodePrimitiveExpression.NULL))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
@@ -477,7 +477,7 @@ public class ServerCodeGenTests {
 					new CodeVariableDeclarationStatement(
 						int.class,
 						"index_2",// index
-						new CodePrimitiveExpression(0)),
+						CodePrimitiveExpression.ZERO),
 					new CodeVariableDeclarationStatement(
 						int.class,
 						"count_3",// count
@@ -620,7 +620,7 @@ public class ServerCodeGenTests {
 						new CodeVariableDeclarationStatement(
 							int.class,
 							"index_2",// index
-							new CodePrimitiveExpression(0)),
+							CodePrimitiveExpression.ZERO),
 						new CodeVariableDeclarationStatement(
 							int.class,
 							"count_3",// count
@@ -641,7 +641,7 @@ public class ServerCodeGenTests {
 							new CodeVariableReferenceExpression(Object.class, "data_1"),
 							new CodeVariableReferenceExpression(int.class, "index_2"),
 							new CodeVariableReferenceExpression(int.class, "count_3"),
-							new CodePrimitiveExpression(null)))),
+							CodePrimitiveExpression.NULL))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
@@ -805,7 +805,7 @@ public class ServerCodeGenTests {
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
-			"\t\tthis.write(output, this.echo(this.asNumber(data), (data = (this.asNumber(data) + 1.0))));\n"+
+			"\t\tthis.write(output, this.echo(this.asNumber(data), (data = (this.asNumber(data) + 1))));\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -858,7 +858,7 @@ public class ServerCodeGenTests {
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
-			"\t\tthis.write(output, (data = (this.asNumber(data) - 1.0)));\n"+
+			"\t\tthis.write(output, (data = (this.asNumber(data) - 1)));\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -894,7 +894,7 @@ public class ServerCodeGenTests {
 						new CodeBinaryOperatorExpression(
 							CodeBinaryOperatorType.MODULUS_ASSIGN,
 							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodePrimitiveExpression(5))))
+							new CodePrimitiveExpression(5.0))))
 				));
 
 		String expected =
@@ -912,7 +912,7 @@ public class ServerCodeGenTests {
 			"\t\tsuper(view, parts);\n"+
 			"\t}\n\n"+
 			"\tprotected void render(Appendable output, Object data, int index, int count, String key) {\n"+
-			"\t\tthis.write(output, (data = (this.asNumber(data) % 5)));\n"+
+			"\t\tthis.write(output, (data = (this.asNumber(data) % 5.0)));\n"+
 			"\t}\n"+
 			"}\n";
 

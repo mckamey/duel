@@ -245,11 +245,11 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeExpression safePreIncrement(CodeExpression i) {
-		return asAssignment(CodeBinaryOperatorType.ADD, i, new CodePrimitiveExpression(1.0));
+		return asAssignment(CodeBinaryOperatorType.ADD, i, CodePrimitiveExpression.ONE);
 	}
 
 	public static CodeExpression safePreDecrement(CodeExpression i) {
-		return asAssignment(CodeBinaryOperatorType.SUBTRACT, i, new CodePrimitiveExpression(1.0));
+		return asAssignment(CodeBinaryOperatorType.SUBTRACT, i, CodePrimitiveExpression.ONE);
 	}
 
 	public static CodeExpression safePostIncrement(CodeExpression i) {
@@ -257,7 +257,7 @@ final class CodeDOMUtility {
 			new CodeThisReferenceExpression(),
 			"echo",
 			ensureNumber(i),
-			asAssignment(CodeBinaryOperatorType.ADD, i, new CodePrimitiveExpression(1.0)));
+			asAssignment(CodeBinaryOperatorType.ADD, i, CodePrimitiveExpression.ONE));
 	}
 
 	public static CodeExpression safePostDecrement(CodeExpression i) {
@@ -265,7 +265,7 @@ final class CodeDOMUtility {
 			new CodeThisReferenceExpression(),
 			"echo",
 			ensureNumber(i),
-			asAssignment(CodeBinaryOperatorType.SUBTRACT, i, new CodePrimitiveExpression(1.0)));
+			asAssignment(CodeBinaryOperatorType.SUBTRACT, i, CodePrimitiveExpression.ONE));
 	}
 
 	public static CodeExpression asAssignment(CodeBinaryOperatorType op, CodeExpression a, CodeExpression b) {

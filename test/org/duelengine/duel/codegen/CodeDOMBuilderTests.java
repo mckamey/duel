@@ -500,7 +500,7 @@ public class CodeDOMBuilderTests {
 					new CodeVariableDeclarationStatement(
 						int.class,
 						"index_2",// index
-						new CodePrimitiveExpression(0)),
+						CodePrimitiveExpression.ZERO),
 					new CodeVariableDeclarationStatement(
 						int.class,
 						"count_3",// count
@@ -531,7 +531,7 @@ public class CodeDOMBuilderTests {
 								"next"),
 							new CodeVariableReferenceExpression(int.class, "index_2"),
 							new CodeVariableReferenceExpression(int.class, "count_3"),
-							new CodePrimitiveExpression(null)))),
+							CodePrimitiveExpression.NULL))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),
@@ -622,7 +622,7 @@ public class CodeDOMBuilderTests {
 					new CodeVariableDeclarationStatement(
 						int.class,
 						"index_2",// index
-						new CodePrimitiveExpression(0)),
+						CodePrimitiveExpression.ZERO),
 					new CodeVariableDeclarationStatement(
 						int.class,
 						"count_3",// count
@@ -751,7 +751,7 @@ public class CodeDOMBuilderTests {
 						new CodeVariableDeclarationStatement(
 							int.class,
 							"index_2",// index
-							new CodePrimitiveExpression(0)),
+							CodePrimitiveExpression.ZERO),
 						new CodeVariableDeclarationStatement(
 							int.class,
 							"count_3",// count
@@ -772,7 +772,7 @@ public class CodeDOMBuilderTests {
 							new CodeVariableReferenceExpression(Object.class, "data_1"),
 							new CodeVariableReferenceExpression(int.class, "index_2"),
 							new CodeVariableReferenceExpression(int.class, "count_3"),
-							new CodePrimitiveExpression(null)))),
+							CodePrimitiveExpression.NULL))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(Appendable.class, "output"),

@@ -1,29 +1,34 @@
 package org.duelengine.duel.codedom;
 
 /**
- * A simplified primitive expression which can only hold a String literal
+ * A read-only primitive expression which may only hold a literal value
  */
 public class CodePrimitiveExpression extends CodeExpression {
 
 	public static final CodePrimitiveExpression NULL = new CodePrimitiveExpression(null);
 	public static final CodePrimitiveExpression FALSE = new CodePrimitiveExpression(false);
 	public static final CodePrimitiveExpression TRUE = new CodePrimitiveExpression(true);
-	
-	private Object value;
+	public static final CodePrimitiveExpression ZERO = new CodePrimitiveExpression(0);
+	public static final CodePrimitiveExpression ONE = new CodePrimitiveExpression(1);
 
-	public CodePrimitiveExpression() {
-	}
+	private final Object value;
 
 	public CodePrimitiveExpression(Object value) {
+		Class<?> type = (value == null) ? null : value.getClass();
+		if (type != null &&
+			!type.isPrimitive() &&
+			!Boolean.class.equals(type) &&
+			!String.class.equals(type) &&
+			!Number.class.isAssignableFrom(type)) {
+
+			throw new IllegalArgumentException("Invalid primitive value: "+type.getName());
+		}
+
 		this.value = value;
 	}
 
 	public Object getValue() {
 		return this.value;
-	}
-
-	public void setValue(Object value) {
-		this.value = value;
 	}
 
 	@Override
