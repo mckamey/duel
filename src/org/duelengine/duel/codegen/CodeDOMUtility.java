@@ -39,10 +39,15 @@ final class CodeDOMUtility {
 			AccessModifierType.PRIVATE,
 			null,
 			typeName,
-			DuelPart.class,
-			members);
+			DuelPart.class);
 
 		partType.add(createCtor(new CodeParameterDeclarationExpression(DuelView.class, "view")));
+
+		if (members != null) {
+			for (CodeMember member : members) {
+				partType.add(member);
+			}
+		}
 		
 		return partType;
 	}

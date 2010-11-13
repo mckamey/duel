@@ -970,6 +970,31 @@ public class CodeDOMBuilderTests {
 				AccessModifierType.PRIVATE,
 				org.duelengine.duel.DuelView.class,
 				"view_2"),
+			CodeDOMUtility.createPartType(
+				"part_3",
+				new CodeMethod(
+					AccessModifierType.PUBLIC,
+					String.class,
+					"getName",
+					null,
+					new CodeMethodReturnStatement(new CodePrimitiveExpression("header"))),
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							"append",
+							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
+					)),
 			new CodeMethod(
 				AccessModifierType.PROTECTED,
 				Void.class,
@@ -984,12 +1009,20 @@ public class CodeDOMBuilderTests {
 							"view_2"),
 						new CodeObjectCreateExpression(
 							"foo.bar.Yada",
-							new CodeThisReferenceExpression())))
+							new CodeThisReferenceExpression(),
+							new CodeObjectCreateExpression(
+								"part_3",
+								new CodeThisReferenceExpression()))))
 				));
+
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(5)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(6)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
 		System.out.println(actual);
+		System.out.println(expected);
 		
 		assertEquals(expected, actual);
 	}

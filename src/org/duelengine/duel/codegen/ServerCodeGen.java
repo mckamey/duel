@@ -121,6 +121,9 @@ public class ServerCodeGen implements CodeGenerator {
 			this.writeMember(output, typeName, member);
 		}
 		this.writeOutro(output);
+		if (!isNested) {
+			this.writeln(output);
+		}
 	}
 
 	private void writeMember(Appendable output, String typeName, CodeMember member)
@@ -905,7 +908,6 @@ public class ServerCodeGen implements CodeGenerator {
 		this.depth--;
 		this.writeln(output);
 		output.append('}');
-		this.writeln(output);
 	}
 
 	private void writePrimitive(Appendable output, Object value)
