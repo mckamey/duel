@@ -16,19 +16,7 @@ public class ElementNode extends ContainerNode {
 		this.isVoid = (name == null) || getVoidTags().containsKey(name);
 	}
 
-	public ElementNode(String name, AttributeNode[] attr) {
-		this(name, (attr != null) ? Arrays.asList(attr) : null, null);
-	}
-
-	public ElementNode(String name, Iterable<AttributeNode> attr) {
-		this(name, attr, null);
-	}
-
-	public ElementNode(String name, AttributeNode[] attr, Node[] children) {
-		this(name, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
-	}
-
-	public ElementNode(String name, Iterable<AttributeNode> attr, Iterable<Node> children) {
+	public ElementNode(String name, AttributeNode[] attr, Node... children) {
 		super(children);
 
 		this.tagName = name;

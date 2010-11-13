@@ -8,11 +8,7 @@ public class ContainerNode extends Node {
 	public ContainerNode() {
 	}
 
-	protected ContainerNode(Node[] children) {
-		this((children != null) ? Arrays.asList(children) : null);
-	}
-
-	protected ContainerNode(Iterable<Node> children) {
+	protected ContainerNode(Node... children) {
 		if (children != null) {
 			for (Node child : children) {
 				this.appendChild(child);
@@ -29,7 +25,7 @@ public class ContainerNode extends Node {
 	}
 
 	public List<Node> getChildren() {
-		return Collections.unmodifiableList(this.children);
+		return this.children;
 	}
 
 	public Node getFirstChild() {

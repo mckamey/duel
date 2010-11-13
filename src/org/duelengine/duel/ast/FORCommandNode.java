@@ -1,7 +1,5 @@
 package org.duelengine.duel.ast;
 
-import java.util.*;
-
 /**
  * Implements the looping command construct
  */
@@ -20,19 +18,7 @@ public class FORCommandNode extends CommandNode {
 		super(CMD, NAME, true);
 	}
 
-	public FORCommandNode(AttributeNode[] attr) {
-		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, null);
-	}
-
-	public FORCommandNode(Iterable<AttributeNode> attr) {
-		super(CMD, NAME, true, attr, null);
-	}
-
-	public FORCommandNode(AttributeNode[] attr, Node[] children) {
-		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
-	}
-
-	public FORCommandNode(Iterable<AttributeNode> attr, Iterable<Node> children) {
+	public FORCommandNode(AttributeNode[] attr, Node... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 

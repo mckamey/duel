@@ -1,7 +1,5 @@
 package org.duelengine.duel.ast;
 
-import java.util.*;
-
 /**
  * Implements the single conditional command construct
  */
@@ -16,19 +14,7 @@ public class IFCommandNode extends CommandNode {
 		super(CMD, NAME, true);
 	}
 
-	public IFCommandNode(AttributeNode[] attr) {
-		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, null);
-	}
-
-	public IFCommandNode(Iterable<AttributeNode> attr) {
-		super(CMD, NAME, true, attr, null);
-	}
-
-	public IFCommandNode(AttributeNode[] attr, Node[] children) {
-		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
-	}
-
-	public IFCommandNode(Iterable<AttributeNode> attr, Iterable<Node> children) {
+	public IFCommandNode(AttributeNode[] attr, Node... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 

@@ -1,7 +1,5 @@
 package org.duelengine.duel.ast;
 
-import java.util.*;
-
 /**
  * Implements the mutually exclusive conditional command wrapper
  */
@@ -17,19 +15,7 @@ public class XORCommandNode extends CommandNode {
 		super(CMD, NAME, true);
 	}
 
-	public XORCommandNode(AttributeNode[] attr) {
-		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, null);
-	}
-
-	public XORCommandNode(Iterable<AttributeNode> attr) {
-		super(CMD, NAME, true, attr, null);
-	}
-
-	public XORCommandNode(AttributeNode[] attr, Node[] children) {
-		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
-	}
-
-	public XORCommandNode(Iterable<AttributeNode> attr, Iterable<Node> children) {
+	public XORCommandNode(AttributeNode[] attr, Node... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 

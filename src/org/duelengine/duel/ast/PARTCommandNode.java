@@ -1,7 +1,5 @@
 package org.duelengine.duel.ast;
 
-import java.util.*;
-
 public class PARTCommandNode extends CommandNode {
 
 	public static final String EXT_NAME = "part";
@@ -12,19 +10,7 @@ public class PARTCommandNode extends CommandNode {
 		super(CMD, NAME, false);
 	}
 
-	public PARTCommandNode(AttributeNode[] attr) {
-		super(CMD, NAME, false, (attr != null) ? Arrays.asList(attr) : null, null);
-	}
-
-	public PARTCommandNode(Iterable<AttributeNode> attr) {
-		super(CMD, NAME, false, attr, null);
-	}
-
-	public PARTCommandNode(AttributeNode[] attr, Node[] children) {
-		super(CMD, NAME, false, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
-	}
-
-	public PARTCommandNode(Iterable<AttributeNode> attr, Iterable<Node> children) {
+	public PARTCommandNode(AttributeNode[] attr, Node... children) {
 		super(CMD, NAME, false, attr, children);
 	}
 

@@ -1,7 +1,5 @@
 package org.duelengine.duel.ast;
 
-import java.util.*;
-
 public class CALLCommandNode extends CommandNode {
 
 	public static final String EXT_NAME = "call";
@@ -17,19 +15,7 @@ public class CALLCommandNode extends CommandNode {
 		super(CMD, NAME, true);
 	}
 
-	public CALLCommandNode(AttributeNode[] attr) {
-		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, null);
-	}
-
-	public CALLCommandNode(Iterable<AttributeNode> attr) {
-		super(CMD, NAME, true, attr, null);
-	}
-
-	public CALLCommandNode(AttributeNode[] attr, Node[] children) {
-		super(CMD, NAME, true, (attr != null) ? Arrays.asList(attr) : null, (children != null) ? Arrays.asList(children) : null);
-	}
-
-	public CALLCommandNode(Iterable<AttributeNode> attr, Iterable<Node> children) {
+	public CALLCommandNode(AttributeNode[] attr, Node... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 

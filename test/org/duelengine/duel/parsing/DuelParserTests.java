@@ -782,8 +782,7 @@ public class DuelParserTests {
 					new AttributeNode("data", new ExpressionNode("data.detail")),
 					new AttributeNode("index", new ExpressionNode("1")),
 					new AttributeNode("count", new ExpressionNode("42"))
-				},
-				null)
+				})
 			});
 
 		Iterable<ViewRootNode> actual = new DuelParser().parse(input);
