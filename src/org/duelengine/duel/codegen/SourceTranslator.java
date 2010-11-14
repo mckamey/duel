@@ -22,7 +22,7 @@ public class SourceTranslator {
 	public SourceTranslator() {
 		this(new CodeTypeDeclaration());
 	}
-	
+
 	public SourceTranslator(IdentifierScope scope) {
 		if (scope == null) {
 			throw new NullPointerException("scope");
@@ -142,13 +142,13 @@ public class SourceTranslator {
 			case Token.EXPR_VOID:
 				ExpressionStatement voidExpr = (ExpressionStatement)node;
 				if (voidExpr.hasSideEffects()) {
-					// TODO: determine if this is valid
+					// TODO: determine when this occurs
 				}
 				// unwrap expression node
 				return this.visit(voidExpr.getExpression());
 			case Token.THIS:
-				// TODO: evaluate if will allow custom extensions
-				throw new IllegalArgumentException("'this' not supported while binding");
+				// TODO: evaluate if will allow custom extensions via 'this'
+				throw new IllegalArgumentException("'this' not legal in binding expressions");
 			default:
 				CodeBinaryOperatorType binary = this.mapBinaryOperator(tokenType);
 				if (binary != CodeBinaryOperatorType.NONE) {
@@ -180,7 +180,6 @@ public class SourceTranslator {
 	private CodeExpression visitBinaryOp(InfixExpression node, CodeBinaryOperatorType operator) {
 		CodeExpression left = this.visitExpression(node.getLeft());
 		CodeExpression right = this.visitExpression(node.getRight());
-
 		return new CodeBinaryOperatorExpression(operator, left, right);
 	}
 
@@ -271,12 +270,13 @@ public class SourceTranslator {
 		}
 
 		CodeExpression operand = this.visitExpression(node.getOperand());
-
 		return new CodeUnaryOperatorExpression(operator, (CodeExpression)operand);
 	}
 
 	private CodeUnaryOperatorType mapUnaryOperator(int tokenType) {
 		switch (tokenType) {
+			case Token.NOT:
+				return CodeUnaryOperatorType.LOGICAL_NEGATION;
 			case Token.NEG:
 				return CodeUnaryOperatorType.NEGATION;
 			case Token.POS:
@@ -284,9 +284,14 @@ public class SourceTranslator {
 			case Token.BITNOT:
 				return CodeUnaryOperatorType.BITWISE_NEGATION;
 			case Token.INC:
+				// POST_INC will be differentiated later
 				return CodeUnaryOperatorType.PRE_INCREMENT;
 			case Token.DEC:
+				// POST_DEC will be differentiated later
 				return CodeUnaryOperatorType.PRE_DECREMENT;
+			case Token.DELPROP:
+			case Token.VOID:
+			case Token.TYPEOF:
 			default:
 				return CodeUnaryOperatorType.NONE;
 		}
@@ -309,6 +314,7 @@ public class SourceTranslator {
 				throw new IllegalArgumentException("Unexpected VAR type ("+target.getClass()+")");
 			}
 
+			// TODO: can this surface result type?
 			String ident = this.scope.uniqueIdent(((CodeVariableReferenceExpression)target).getIdent());
 			CodeVariableDeclarationStatement decl = new CodeVariableDeclarationStatement(
 				Object.class, ident, this.visitExpression(init.getInitializer()));
@@ -341,7 +347,7 @@ public class SourceTranslator {
 		// map to the unique server-side identifier
 		ident = this.scope.uniqueIdent(ident);
 
-		// TODO: surface result type?
+		// TODO: can this surface result type?
 		return new CodeVariableReferenceExpression(Object.class, ident);
 	}
 

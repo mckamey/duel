@@ -575,9 +575,11 @@ public class ServerCodeGen implements CodeGenerator {
 				break;
 			case BOOLEAN_AND:
 				operator = " && ";
+				asNumber = false;
 				break;
 			case BOOLEAN_OR:
 				operator = " || ";
+				asNumber = false;
 				break;
 			case SHIFT_LEFT:
 				operator = " << ";
