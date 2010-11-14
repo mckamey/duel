@@ -179,13 +179,12 @@ public class ClientCodeGen implements CodeGenerator {
 	private void writeComment(Appendable output, CommentNode node)
 		throws IOException {
 
+		output.append(" /*");
 		String value = node.getValue();
 		if (value != null) {
-			output.append("/*");
 			output.append(value.replace("*/", "* /"));
-			output.append("*/");
 		}
-		output.append("\"\"");
+		output.append("*/");
 	}
 
 	private void writeCodeBlock(Appendable output, CodeBlockNode node)
@@ -226,7 +225,12 @@ public class ClientCodeGen implements CodeGenerator {
 
 				this.writeString(output, attr);
 				output.append(" : ");
-				this.writeNode(output, node.getAttribute(attr));
+				Node attrVal = node.getAttribute(attr);
+				if (attrVal instanceof CommentNode) {
+					output.append("\"\"");
+				} else {
+					this.writeNode(output, attrVal);
+				}
 			}
 
 			this.depth--;
@@ -238,18 +242,22 @@ public class ClientCodeGen implements CodeGenerator {
 			output.append('}');
 		}
 
+		boolean hasChildren = false;
 		for (Node child : node.getChildren()) {
 			if (child instanceof CodeCommentNode) {
 				continue;
 			}
 
-			output.append(',');
-			this.writeln(output);
+			if (!(child instanceof CommentNode)) {
+				output.append(',');
+				this.writeln(output);
+				hasChildren = true;
+			}
 			this.writeNode(output, child);
 		}
 
 		this.depth--;
-		if (node.hasChildren()) {
+		if (hasChildren) {
 			this.writeln(output);
 		}
 		output.append(']');

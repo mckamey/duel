@@ -491,8 +491,7 @@ public class ClientCodeGenTests {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo = duel([\"\",\n"+
-			"\t\"Hello world.\",\n"+
-			"\t/*Comment Here*/\"\",\n"+
+			"\t\"Hello world.\" /*Comment Here*/,\n"+
 			"\t\"Lorem ipsum.\"\n"+
 			"]);\n";
 
