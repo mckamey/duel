@@ -206,7 +206,7 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeMethod(Appendable output, CodeMethod method)
 		throws IOException {
 
-		if (method.getOverride()) {
+		if (method.isOverride()) {
 			output.append("@Override");
 			this.writeln(output);
 		}
@@ -252,7 +252,7 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeParameterDeclaration(Appendable output, CodeParameterDeclarationExpression param) throws IOException {
 
 		this.writeTypeName(output, param.getResultType());
-		if (param.getVarArgs()) {
+		if (param.isVarArgs()) {
 			output.append("... ");
 		} else {
 			output.append(' ');

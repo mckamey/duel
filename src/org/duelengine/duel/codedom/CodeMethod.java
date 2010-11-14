@@ -10,7 +10,7 @@ public class CodeMethod extends CodeMember {
 	private Class<?> returnType = Void.class;
 	private final List<CodeParameterDeclarationExpression> parameters = new ArrayList<CodeParameterDeclarationExpression>();
 	private final CodeStatementCollection statements = new CodeStatementCollection();
-	private boolean isOverride;
+	private boolean override;
 
 	public CodeMethod() {
 	}
@@ -36,12 +36,12 @@ public class CodeMethod extends CodeMember {
 		this.returnType = (value != null) ? value : Void.class;
 	}
 
-	public boolean getOverride() {
-		return this.isOverride;
+	public boolean isOverride() {
+		return this.override;
 	}
 
 	public void setOverride(boolean value) {
-		this.isOverride = value;
+		this.override = value;
 	}
 
 	public List<CodeParameterDeclarationExpression> getParameters() {
@@ -68,7 +68,7 @@ public class CodeMethod extends CodeMember {
 		}
 
 		CodeMethod that = (CodeMethod)arg;
-		if (this.isOverride != that.isOverride) {
+		if (this.override != that.override) {
 			return false;
 		}
 

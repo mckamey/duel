@@ -283,7 +283,7 @@ public abstract class DuelView {
 			// already correct type
 			return (List<?>)data;
 		}
-		
+
 		if (data instanceof Object[]) {
 			return new ArrayIterable((Object[])data);
 		}
