@@ -225,7 +225,7 @@ public abstract class DuelView {
 	}
 
 	/**
-	 * Coerces any Object to a JS Boolean
+	 * Coerces any Object to a boolean
 	 * @param data
 	 * @return
 	 */
@@ -239,7 +239,7 @@ public abstract class DuelView {
 	}
 
 	/**
-	 * Coerces any Object to a JS Number
+	 * Coerces any Object to a Number
 	 * @param data
 	 * @return
 	 */
@@ -260,7 +260,7 @@ public abstract class DuelView {
 	}
 
 	/**
-	 * Coerces any Object to a JS String 
+	 * Coerces any Object to a String 
 	 * @param data
 	 * @return
 	 */
@@ -270,7 +270,7 @@ public abstract class DuelView {
 	}
 
 	/**
-	 * Coerces any Object to a JS Array
+	 * Coerces any Object to a List
 	 * @param data
 	 * @return
 	 */
@@ -306,7 +306,7 @@ public abstract class DuelView {
 	}
 
 	/**
-	 * Coerces any Object to a JS Object
+	 * Coerces any Object to a Map
 	 * @param data
 	 * @return
 	 */
@@ -318,9 +318,8 @@ public abstract class DuelView {
 		if (data instanceof Map<?,?>) {
 			return (Map<?,?>)data;
 		}
-
-		// TODO: convert arbitrary object to Map<String, ?>
-		throw new IllegalArgumentException("TODO: convert object to map");
+		
+		return new BeanMap(data);
 	}
 
 	/**
