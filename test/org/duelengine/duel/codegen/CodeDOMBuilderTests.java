@@ -33,6 +33,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
+				new Class<?>[] {
+					IOException.class
+				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -70,6 +73,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -109,6 +115,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -150,6 +159,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -193,6 +205,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
+				new Class<?>[] {
+					IOException.class
+				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
@@ -233,6 +248,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -289,6 +307,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -382,6 +403,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
+				new Class<?>[] {
+					IOException.class
+				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -464,6 +488,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
+				new Class<?>[] {
+					IOException.class
+				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -531,6 +558,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
+				new Class<?>[] {
+					IOException.class
+				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -582,6 +612,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -658,6 +691,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
+				new Class<?>[] {
+					IOException.class
+				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -710,6 +746,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -765,6 +804,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -826,6 +868,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
+				new Class<?>[] {
+					IOException.class
+				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -863,6 +908,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -904,6 +952,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -982,6 +1033,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
+				new Class<?>[] {
+					IOException.class
+				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
@@ -1018,6 +1072,9 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count"),
 						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new Class<?>[] {
+						IOException.class
 					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
@@ -1091,6 +1148,9 @@ public class CodeDOMBuilderTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
+				new Class<?>[] {
+					IOException.class
+				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -1146,6 +1206,9 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(int.class, "count"),
 						new CodeParameterDeclarationExpression(String.class, "key")
 					},
+					new Class<?>[] {
+						IOException.class
+					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
 							new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -1185,6 +1248,9 @@ public class CodeDOMBuilderTests {
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count"),
 						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new Class<?>[] {
+						IOException.class
 					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(

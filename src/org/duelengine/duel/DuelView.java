@@ -69,7 +69,9 @@ public abstract class DuelView {
 	 * @param count
 	 * @param key
 	 */
-	protected void renderPart(String partName, DuelContext output, Object data, int index, int count, String key) {
+	protected void renderPart(String partName, DuelContext output, Object data, int index, int count, String key)
+		throws IOException {
+
 		if (this.parts == null || !this.parts.containsKey(partName)) {
 			return;
 		}
@@ -91,7 +93,9 @@ public abstract class DuelView {
 	 * @param count
 	 * @param key
 	 */
-	protected void renderView(DuelView view, DuelContext output, Object data, int index, int count, String key) {
+	protected void renderView(DuelView view, DuelContext output, Object data, int index, int count, String key)
+		throws IOException {
+
 		view.render(output, data, index, count, key);
 	}
 
@@ -99,7 +103,9 @@ public abstract class DuelView {
 	 * Renders the view to the output
 	 * @param output
 	 */
-	public void render(Appendable output){
+	public void render(Appendable output)
+		throws IOException {
+
 		this.render(new DuelContext(output), Collections.emptyMap(), 0, 1, null);
 	}
 
@@ -108,7 +114,9 @@ public abstract class DuelView {
 	 * @param output
 	 * @param data
 	 */
-	public void render(Appendable output, Object data) {
+	public void render(Appendable output, Object data)
+		throws IOException {
+
 		this.render(new DuelContext(output), data, 0, 1, null);
 	}
 
@@ -116,7 +124,9 @@ public abstract class DuelView {
 	 * Renders the view to the output
 	 * @param output
 	 */
-	public void render(DuelContext output){
+	public void render(DuelContext output)
+		throws IOException {
+
 		if (output == null) {
 			throw new NullPointerException("output");
 		}
@@ -129,7 +139,9 @@ public abstract class DuelView {
 	 * @param output
 	 * @param data
 	 */
-	public void render(DuelContext output, Object data) {
+	public void render(DuelContext output, Object data)
+		throws IOException {
+
 		if (output == null) {
 			throw new NullPointerException("output");
 		}
@@ -145,7 +157,7 @@ public abstract class DuelView {
 	 * @param count
 	 * @param key
 	 */
-	protected abstract void render(DuelContext output, Object data, int index, int count, String key);
+	protected abstract void render(DuelContext output, Object data, int index, int count, String key) throws IOException;
 
 	/**
 	 * Retrieves the property from the data object

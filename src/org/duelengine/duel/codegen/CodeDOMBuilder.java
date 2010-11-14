@@ -67,6 +67,9 @@ public class CodeDOMBuilder {
 				new CodeParameterDeclarationExpression(int.class, "index"),
 				new CodeParameterDeclarationExpression(int.class, "count"),
 				new CodeParameterDeclarationExpression(String.class, "key")
+			},
+			new Class<?>[] {
+				IOException.class
 			});
 
 		this.viewType.add(method);

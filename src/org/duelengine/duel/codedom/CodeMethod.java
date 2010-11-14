@@ -10,18 +10,31 @@ public class CodeMethod extends CodeMember {
 	private Class<?> returnType = Void.class;
 	private final List<CodeParameterDeclarationExpression> parameters = new ArrayList<CodeParameterDeclarationExpression>();
 	private final CodeStatementCollection statements = new CodeStatementCollection();
+	private final List<Class<?>> exceptions = new ArrayList<Class<?>>();
 	private boolean override;
 
 	public CodeMethod() {
 	}
 
-	public CodeMethod(AccessModifierType access, Class<?> returnType, String methodName, CodeParameterDeclarationExpression[] parameters, CodeStatement... statements) {
+	public CodeMethod(AccessModifierType access, Class<?> returnType, String methodName,
+		CodeParameterDeclarationExpression[] parameters, CodeStatement... statements) {
+
+		this(access, returnType, methodName, parameters, null, statements);
+	}
+
+	public CodeMethod(AccessModifierType access, Class<?> returnType, String methodName,
+		CodeParameterDeclarationExpression[] parameters, Class<?>[] exceptions, CodeStatement... statements) {
+
 		super(access, methodName);
+
 		if (returnType != null) {
 			this.returnType = returnType;
 		}
 		if (parameters != null) {
 			this.parameters.addAll(Arrays.asList(parameters));
+		}
+		if (exceptions != null) {
+			this.exceptions.addAll(Arrays.asList(exceptions));
 		}
 		if (statements != null) {
 			this.statements.addAll(statements);
@@ -54,6 +67,14 @@ public class CodeMethod extends CodeMember {
 
 	public void addParameter(CodeParameterDeclarationExpression parameter) {
 		this.parameters.add(parameter);
+	}
+
+	public List<Class<?>> getExceptions() {
+		return this.exceptions;
+	}
+
+	public void addException(Class<?> type) {
+		this.exceptions.add(type);
 	}
 
 	public CodeStatementCollection getStatements() {
@@ -93,6 +114,19 @@ public class CodeMethod extends CodeMember {
 			}
 		}
 
+		length = this.exceptions.size();
+		if (length != that.exceptions.size()) {
+			return false;
+		}
+
+		for (int i=0; i<length; i++) {
+			Class<?> thisEx = this.exceptions.get(i);
+			Class<?> thatEx = that.exceptions.get(i);
+			if (thisEx == null ? thatEx != null : !thisEx.equals(thatEx)) {
+				return false;
+			}
+		}
+
 		return super.equals(that);
 	}
 
@@ -100,7 +134,7 @@ public class CodeMethod extends CodeMember {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = ((super.hashCode() * HASH_PRIME) + this.parameters.hashCode()) * HASH_PRIME + this.statements.hashCode();
+		int hash = (((super.hashCode() * HASH_PRIME) + this.parameters.hashCode()) * HASH_PRIME + this.exceptions.hashCode()) * HASH_PRIME + this.statements.hashCode();
 		if (this.returnType != null) {
 			hash = hash * HASH_PRIME + this.returnType.hashCode();
 		}

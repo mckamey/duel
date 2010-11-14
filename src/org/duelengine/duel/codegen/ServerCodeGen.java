@@ -237,7 +237,18 @@ public class ServerCodeGen implements CodeGenerator {
 			}
 			this.writeParameterDeclaration(output, param);
 		}
-		output.append(") {");
+		output.append(')');
+		needsDelim = false;
+		for (Class<?> exception : method.getExceptions()) {
+			if (needsDelim) {
+				output.append(", ");
+			} else {
+				output.append(" throws ");
+				needsDelim = true;
+			}
+			this.writeTypeName(output, exception);
+		}
+		output.append(" {");
 		this.depth++;
 		for (CodeStatement statement : method.getStatements()) {
 			this.writeStatement(output, statement);
