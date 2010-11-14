@@ -1,8 +1,9 @@
 package org.duelengine.duel.codegen;
 
-import org.duelengine.duel.codedom.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.duelengine.duel.codedom.*;
+import org.duelengine.duel.DuelContext;
 
 public class CodeDOMUtilityTests {
 
@@ -14,7 +15,7 @@ public class CodeDOMUtilityTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -36,7 +37,7 @@ public class CodeDOMUtilityTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -58,7 +59,7 @@ public class CodeDOMUtilityTests {
 			Object.class,
 			"code_1",
 			new CodeParameterDeclarationExpression[] {
-				new CodeParameterDeclarationExpression(Appendable.class, "output"),
+				new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 				new CodeParameterDeclarationExpression(Object.class, "data"),
 				new CodeParameterDeclarationExpression(int.class, "index"),
 				new CodeParameterDeclarationExpression(int.class, "count"),

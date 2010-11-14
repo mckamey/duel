@@ -8,34 +8,12 @@ import java.util.*;
  */
 public abstract class DuelView {
 
-	private static final Double ZERO = Double.valueOf(0);
+	private static final Double ZERO = Double.valueOf(0.0);
 	private static final Double NaN = Double.valueOf(Double.NaN);
-	private final ClientIDStrategy clientID;
+	private static final HTMLFormatter formatter = new HTMLFormatter();
 	private Map<String, DuelPart> parts = null;
-	private HTMLFormatter formatter;
 
-	protected DuelView() {
-		this(new IncClientIDStrategy());
-	}
-
-	protected DuelView(ClientIDStrategy clientID) {
-		if (clientID == null) {
-			throw new NullPointerException("clientID");
-		}
-
-		this.clientID = clientID;
-
-		// allow view to define default parts and child views
-		this.init();
-	}
-
-	protected DuelView(DuelView view, DuelPart... parts) {
-		if (view == null) {
-			throw new NullPointerException("view");
-		}
-
-		// share the naming context
-		this.clientID = view.clientID;
+	protected DuelView(DuelPart... parts) {
 
 		// first allow view to define child views and default parts
 		this.init();
@@ -57,7 +35,7 @@ public abstract class DuelView {
 	}
 
 	/**
-	 * Allows more complex initialization of views and parts
+	 * Initialization of views and parts
 	 */
 	protected void init() {}
 
@@ -86,7 +64,7 @@ public abstract class DuelView {
 	 * @param count
 	 * @param key
 	 */
-	protected void renderPart(String partName, Appendable output, Object data, int index, int count, String key) {
+	protected void renderPart(String partName, DuelContext output, Object data, int index, int count, String key) {
 		if (this.parts == null || !this.parts.containsKey(partName)) {
 			return;
 		}
@@ -104,7 +82,7 @@ public abstract class DuelView {
 	 * @param output
 	 */
 	public void render(Appendable output){
-		this.render(output, Collections.emptyMap());
+		this.render(new DuelContext(output), Collections.emptyMap(), 0, 1, null);
 	}
 
 	/**
@@ -113,16 +91,32 @@ public abstract class DuelView {
 	 * @param data
 	 */
 	public void render(Appendable output, Object data) {
+		this.render(new DuelContext(output), data, 0, 1, null);
+	}
+
+	/**
+	 * Renders the view to the output
+	 * @param output
+	 */
+	public void render(DuelContext output){
 		if (output == null) {
 			throw new NullPointerException("output");
 		}
 
-		try {
-			this.render(output, data, 0, 1, null);
-		} finally {
-			this.formatter = null;
-			this.clientID.resetID();
+		this.render(output, Collections.emptyMap(), 0, 1, null);
+	}
+
+	/**
+	 * Binds the view to the data and renders the view to the output
+	 * @param output
+	 * @param data
+	 */
+	public void render(DuelContext output, Object data) {
+		if (output == null) {
+			throw new NullPointerException("output");
 		}
+
+		this.render(new DuelContext(output), data, 0, 1, null);
 	}
 
 	/**
@@ -133,7 +127,7 @@ public abstract class DuelView {
 	 * @param count
 	 * @param key
 	 */
-	protected abstract void render(Appendable output, Object data, int index, int count, String key);
+	protected abstract void render(DuelContext output, Object data, int index, int count, String key);
 
 	/**
 	 * Retrieves the property from the data object
@@ -180,23 +174,23 @@ public abstract class DuelView {
 
 		// attempt to coerce b to the type of a
 		Class<?> aType = a.getClass();
-		if (this.isNumber(aType)) {
+		if (isNumber(aType)) {
 			b = this.asNumber(b);
-		} else if (this.isString(aType)) {
+		} else if (isString(aType)) {
 			b = this.asString(b);
-		} else if (this.isBoolean(aType)) {
+		} else if (isBoolean(aType)) {
 			b = this.asBoolean(b);
 		}
 
 		return a.equals(b);
 	}
 
-	private boolean isBoolean(Class<?> exprType) {
+	private static boolean isBoolean(Class<?> exprType) {
 		return (boolean.class.equals(exprType) ||
 			Boolean.class.equals(exprType));
 	}
 
-	private boolean isNumber(Class<?> exprType) {
+	private static boolean isNumber(Class<?> exprType) {
 		return (Number.class.isAssignableFrom(exprType) ||
 			int.class.isAssignableFrom(exprType) ||
 			double.class.isAssignableFrom(exprType) ||
@@ -206,7 +200,7 @@ public abstract class DuelView {
 			byte.class.isAssignableFrom(exprType));
 	}
 
-	private boolean isString(Class<?> exprType) {
+	private static boolean isString(Class<?> exprType) {
 		return (String.class.equals(exprType));
 	}
 
@@ -309,7 +303,7 @@ public abstract class DuelView {
 	 * @param value
 	 * @throws IOException
 	 */
-	protected void write(Appendable output, Object value)
+	protected void write(DuelContext output, Object value)
 		throws IOException {
 
 		if (value == null) {
@@ -325,7 +319,7 @@ public abstract class DuelView {
 	 * @param value
 	 * @throws IOException
 	 */
-	protected void htmlEncode(Appendable output, Object value)
+	protected void htmlEncode(DuelContext output, Object value)
 		throws IOException {
 
 		if (value == null) {
@@ -337,11 +331,8 @@ public abstract class DuelView {
 			output.append(value.toString());
 
 		} else {
-			if (this.formatter == null) {
-				this.formatter = new HTMLFormatter(output);
-			}
-
-			this.formatter.writeLiteral(String.valueOf(value));
+			// TODO: surface ability to choose encodeNonASCII
+			formatter.writeLiteral(output, String.valueOf(value), true);
 		}
 	}
 

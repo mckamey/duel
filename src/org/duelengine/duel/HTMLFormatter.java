@@ -2,104 +2,94 @@ package org.duelengine.duel;
 
 import java.io.*;
 
+/**
+ * A simple abstraction for writing HTML.
+ * Fully thread-safe as contains no data.
+ */
 public class HTMLFormatter {
 
-	private final boolean encodeNonASCII;
-	private final Appendable output;
-
-	public HTMLFormatter(Appendable output) {
-		this(output, true);
-	}
-
-	public HTMLFormatter(Appendable output, boolean encodeNonASCII) {
-		if (output == null) {
-			throw new NullPointerException("output");
-		}
-
-		this.output = output;
-		this.encodeNonASCII = encodeNonASCII;
-	}
-
-	public Appendable getOutput() {
-		return this.output;
-	}
-
-	public void writeComment(String value)
+	public void writeComment(Appendable output, String value)
 		throws IOException {
 
-		this.output.append("<!--");
-		this.writeLiteral(value, false);
-		this.output.append("-->");
+		output.append("<!--");
+		this.writeLiteral(output, value, false, false);
+		output.append("-->");
 	}
 
-	public void writeDocType(String value)
+	public void writeDocType(Appendable output, String value)
 		throws IOException {
 
-		this.output.append("<!doctype");
-		this.output.append(value);
-		this.output.append(">");
+		output.append("<!doctype");
+		output.append(value);
+		output.append(">");
 	}
 
-	public void writeOpenElementBeginTag(String tagName)
+	public void writeOpenElementBeginTag(Appendable output, String tagName)
 		throws IOException {
 
-		this.output.append('<');
-		this.output.append(tagName);
+		output.append('<');
+		output.append(tagName);
 	}
 
-	public void writeOpenAttribute(String name)
+	public void writeOpenAttribute(Appendable output, String name)
 		throws IOException {
 
-		this.output.append(' ');
-		this.output.append(name);
-		this.output.append("=\"");
+		output.append(' ');
+		output.append(name);
+		output.append("=\"");
 	}
 
-	public void writeCloseAttribute()
+	public void writeCloseAttribute(Appendable output)
 		throws IOException {
 
-		this.output.append('"');
+		output.append('"');
 	}
 
-	public void writeAttribute(String name, String value)
+	public void writeAttribute(Appendable output, String name, String value)
 		throws IOException {
 
-		this.output.append(' ');
-		this.output.append(name);
+		output.append(' ');
+		output.append(name);
 		if (value != null) {
-			this.output.append("=\"");
-			this.writeLiteral(value, true);
-			this.output.append('"');
+			output.append("=\"");
+			this.writeLiteral(output, value, true, true);
+			output.append('"');
 		}
 	}
 
-	public void writeCloseElementBeginTag()
+	public void writeCloseElementBeginTag(Appendable output)
 		throws IOException {
 
-		this.output.append('>');
+		output.append('>');
 	}
 
-	public void writeCloseElementVoidTag()
+	public void writeCloseElementVoidTag(Appendable output)
 		throws IOException {
 
-		this.output.append(" />");
+		output.append(" />");
 	}
 
-	public void writeElementEndTag(String tagName)
+	public void writeElementEndTag(Appendable output, String tagName)
 		throws IOException {
 
-		this.output.append("</");
-		this.output.append(tagName);
-		this.output.append('>');
+		output.append("</");
+		output.append(tagName);
+		output.append('>');
 	}
 
-	public void writeLiteral(String value)
+	public void writeLiteral(Appendable output, String value)
 		throws IOException {
 
-		this.writeLiteral(value, false);
+		this.writeLiteral(output, value, false, false);
 	}
 
-	private void writeLiteral(String value, boolean isAttribute)
+	public void writeLiteral(Appendable output, String value, boolean encodeNonASCII)
+		throws IOException {
+
+		this.writeLiteral(output, value, false, encodeNonASCII);
+	}
+
+	private void writeLiteral(Appendable output, String value, boolean isAttribute, boolean encodeNonASCII)
 		throws IOException {
 
 		if (value == null) {
@@ -169,7 +159,7 @@ public class HTMLFormatter {
 				default:
 					// encode control chars and optionally all non-ASCII
 					if ((ch < ' ') ||
-						(ch >= '\u007F' && (this.encodeNonASCII || ch <= '\u0084')) ||
+						(ch >= '\u007F' && (encodeNonASCII || ch <= '\u0084')) ||
 						(ch >= '\u0086' && ch <= '\u009F') ||
 						(ch >= '\uFDD0' && ch <= '\uFDEF')) {
 
@@ -184,22 +174,22 @@ public class HTMLFormatter {
 
 			if (i > start) {
 				// emit any leading unescaped chunk
-				this.output.append(value, start, i);
+				output.append(value, start, i);
 			}
 			start = i+1;
 
 			// emit character reference
-			this.output.append(entity);
+			output.append(entity);
 		}
 
 		if (length > start) {
 			if (start == 0) {
 				// nothing escaped can write entire string directly
-				this.output.append(value);
+				output.append(value);
 
 			} else {
 				// emit any trailing unescaped chunk
-				this.output.append(value, start, length);
+				output.append(value, start, length);
 			}
 		}
 	}

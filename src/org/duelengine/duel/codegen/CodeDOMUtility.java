@@ -1,7 +1,7 @@
 package org.duelengine.duel.codegen;
 
 import java.util.*;
-import org.duelengine.duel.ClientIDStrategy;
+import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelPart;
 import org.duelengine.duel.DuelView;
 import org.duelengine.duel.codedom.*;
@@ -18,12 +18,7 @@ final class CodeDOMUtility {
 			typeName,
 			DuelView.class);
 
-		viewType.add(createCtor());
-		viewType.add(createCtor(
-			new CodeParameterDeclarationExpression(ClientIDStrategy.class, "clientID")));
-		viewType.add(createCtor(
-			new CodeParameterDeclarationExpression(DuelView.class, "view"),
-			new CodeParameterDeclarationExpression(DuelPart.class, "parts", true)));
+		viewType.add(createCtor(new CodeParameterDeclarationExpression(DuelPart.class, "parts", true)));
 
 		if (members != null) {
 			for (CodeMember member : members) {
@@ -40,8 +35,6 @@ final class CodeDOMUtility {
 			null,
 			typeName,
 			DuelPart.class);
-
-		partType.add(createCtor(new CodeParameterDeclarationExpression(DuelView.class, "view")));
 
 		if (members != null) {
 			for (CodeMember member : members) {
@@ -64,12 +57,13 @@ final class CodeDOMUtility {
 		return ctor;
 	}
 
-	public static CodeVariableDeclarationStatement nextID(IdentifierScope varGen) {
+	public static CodeVariableDeclarationStatement nextID(IdentifierScope scope) {
+		// String id_XXX = output.nextID();
 		return new CodeVariableDeclarationStatement(
 			String.class,
-			varGen.nextIdent("id_"),
+			scope.nextIdent("id_"),
 			new CodeMethodInvokeExpression(
-				new CodeThisReferenceExpression(),
+				new CodeVariableReferenceExpression(DuelContext.class, "output"),
 				"nextID"));
 	}
 
@@ -77,7 +71,7 @@ final class CodeDOMUtility {
 		// output.append("literal");
 		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(
-				new CodeVariableReferenceExpression(Appendable.class, "output"),
+				new CodeVariableReferenceExpression(DuelContext.class, "output"),
 				"append",
 				new CodePrimitiveExpression(literal)));
 	}
@@ -102,7 +96,7 @@ final class CodeDOMUtility {
 			new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
 				"htmlEncode",
-				new CodeVariableReferenceExpression(Appendable.class, "output"),
+				new CodeVariableReferenceExpression(DuelContext.class, "output"),
 				expression));
 	}
 
@@ -111,7 +105,7 @@ final class CodeDOMUtility {
 			// output.append(expression);
 			return new CodeExpressionStatement(
 				new CodeMethodInvokeExpression(
-					new CodeVariableReferenceExpression(Appendable.class, "output"),
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
 					expression));
 
@@ -122,7 +116,7 @@ final class CodeDOMUtility {
 			new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
 				"write",
-				new CodeVariableReferenceExpression(Appendable.class, "output"),
+				new CodeVariableReferenceExpression(DuelContext.class, "output"),
 				expression));
 	}
 
@@ -133,7 +127,7 @@ final class CodeDOMUtility {
 	 */
 	public static CodeExpression inlineMethod(CodeMethod method) {
 		List<CodeParameterDeclarationExpression> parameters = method.getParameters();
-		if (parameters.size() != 5 || !Appendable.class.equals(parameters.get(0).getType())) {
+		if (parameters.size() != 5 || !DuelContext.class.equals(parameters.get(0).getType())) {
 			// incompatible method signature
 			return null;
 		}

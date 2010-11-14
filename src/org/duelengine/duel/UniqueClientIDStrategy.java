@@ -15,10 +15,6 @@ public class UniqueClientIDStrategy implements ClientIDStrategy {
 	}
 
 	@Override
-	public void resetID() {
-	}
-
-	@Override
 	public String nextID() {
 		return this.prefix + UUID.randomUUID().toString();
 	}

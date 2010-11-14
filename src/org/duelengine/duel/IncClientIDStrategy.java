@@ -13,7 +13,6 @@ public class IncClientIDStrategy implements ClientIDStrategy {
 		this.prefix = prefix;
 	}
 
-	@Override
 	public void resetID() {
 		this.counter = 0;
 	}

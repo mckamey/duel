@@ -1,13 +1,13 @@
 package org.duelengine.duel.codegen;
 
-import java.io.*;
 import java.util.*;
+
+import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.codedom.*;
 import org.mozilla.javascript.ast.*;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ErrorReporter;
-import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Node;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.Token;
@@ -370,7 +370,7 @@ public class SourceTranslator {
 
 		if (node.depth() == 1) {
 			method.setReturnType(Void.class);
-			method.addParameter(Appendable.class, "output");
+			method.addParameter(DuelContext.class, "output");
 			method.addParameter(Object.class, "data");
 			method.addParameter(int.class, "index");
 			method.addParameter(int.class, "count");

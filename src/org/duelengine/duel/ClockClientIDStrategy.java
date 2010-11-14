@@ -15,10 +15,6 @@ public class ClockClientIDStrategy implements ClientIDStrategy {
 	}
 
 	@Override
-	public void resetID() {
-	}
-
-	@Override
 	public String nextID() {
 		return this.prefix + new Date().getTime();
 	}

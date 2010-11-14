@@ -1,10 +1,11 @@
 package org.duelengine.duel.codegen;
 
 import java.util.*;
-
-import org.duelengine.duel.codedom.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import org.duelengine.duel.DuelContext;
+import org.duelengine.duel.codedom.*;
 
 public class SourceTranslatorTests {
 
@@ -18,7 +19,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -42,7 +43,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -70,7 +71,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -98,7 +99,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -129,7 +130,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -156,7 +157,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -187,7 +188,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -214,7 +215,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -241,7 +242,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -271,7 +272,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -298,7 +299,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -325,7 +326,7 @@ public class SourceTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -353,7 +354,7 @@ public class SourceTranslatorTests {
 				Void.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),

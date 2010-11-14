@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 
@@ -25,7 +27,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -33,14 +35,14 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")))
 				)
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -63,7 +65,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -71,14 +73,14 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("\\&#x0008;&#x000C;\n\r\t&#x0123;&#x4567;&#x89AB;&#xCDEF;&#xABCD;&#xEF4A;\"")))
 				)
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -102,7 +104,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -112,14 +114,14 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(int.class, "count")))
 				)
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -143,7 +145,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -153,14 +155,14 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"htmlEncode",
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data")))
 				)
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -185,7 +187,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -195,14 +197,14 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data")))
 				)
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -226,7 +228,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -236,7 +238,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"htmlEncode",
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodePropertyReferenceExpression(
 							new ScriptVariableReferenceExpression("Math"),
 							new CodePrimitiveExpression("PI"))))
@@ -244,7 +246,7 @@ public class CodeDOMBuilderTests {
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -282,7 +284,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -290,7 +292,7 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div>"))),
 				new CodeConditionStatement(
@@ -301,7 +303,7 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
+								new CodeVariableReferenceExpression(DuelContext.class, "output"),
 								"append",
 								new CodePrimitiveExpression("zero")))
 					},
@@ -314,30 +316,30 @@ public class CodeDOMBuilderTests {
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression(Appendable.class, "output"),
+										new CodeVariableReferenceExpression(DuelContext.class, "output"),
 										"append",
 										new CodePrimitiveExpression("one")))
 							},
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
-										new CodeVariableReferenceExpression(Appendable.class, "output"),
+										new CodeVariableReferenceExpression(DuelContext.class, "output"),
 										"append",
 										new CodePrimitiveExpression("many")))
 							})
 					}),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
 				)
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
-		((CodeConditionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(1)).getCondition().setHasParens(true);
-		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeConditionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(1)).getCondition().setHasParens(true);
+		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -374,7 +376,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -382,7 +384,7 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div>"))),
 				new CodeConditionStatement(
@@ -393,7 +395,7 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
+								new CodeVariableReferenceExpression(DuelContext.class, "output"),
 								"append",
 								new CodePrimitiveExpression("zero")))
 					},
@@ -406,26 +408,26 @@ public class CodeDOMBuilderTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(Appendable.class, "output"),
+								new CodeVariableReferenceExpression(DuelContext.class, "output"),
 								"append",
 								new CodePrimitiveExpression("one")))
 					},
 					null),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("many"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
 				)
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -456,7 +458,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -464,7 +466,7 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div>"))),
 				new CodeVariableDeclarationStatement(
@@ -505,7 +507,7 @@ public class CodeDOMBuilderTests {
 						new CodeMethodInvokeExpression(
 							new CodeThisReferenceExpression(),
 							"render_2",
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
 								"next"),
@@ -514,7 +516,7 @@ public class CodeDOMBuilderTests {
 							CodePrimitiveExpression.NULL))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
 			),
@@ -523,7 +525,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render_2",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -531,20 +533,20 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(int.class, "index")))
 			));
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -575,7 +577,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -583,7 +585,7 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div>"))),
 				new CodeVariableDeclarationStatement(
@@ -630,7 +632,7 @@ public class CodeDOMBuilderTests {
 						new CodeMethodInvokeExpression(
 							new CodeThisReferenceExpression(),
 							"render_2",
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
 								"getValue"),
@@ -641,7 +643,7 @@ public class CodeDOMBuilderTests {
 								"getKey")))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
 			),
@@ -650,7 +652,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render_2",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -658,20 +660,20 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(int.class, "index")))
 				));
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -703,7 +705,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -711,7 +713,7 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div>"))),
 				new CodeVariableDeclarationStatement(
@@ -742,14 +744,14 @@ public class CodeDOMBuilderTests {
 						new CodeMethodInvokeExpression(
 							new CodeThisReferenceExpression(),
 							"render_2",
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							new CodeVariableReferenceExpression(Object.class, "data_1"),
 							new CodeVariableReferenceExpression(int.class, "index_2"),
 							new CodeVariableReferenceExpression(int.class, "count_3"),
 							CodePrimitiveExpression.NULL))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
 			),
@@ -758,7 +760,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render_2",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -766,20 +768,20 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(int.class, "index")))
 			));
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(4)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -818,7 +820,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -826,14 +828,14 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div class=\"foo\" style=\"color:red\"><ul class=\"bar\"><li>one</li><li>two</li><li>three</li></ul></div>")))
 				)
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -856,7 +858,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -864,13 +866,13 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div></div>")))
 				));
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -897,7 +899,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -910,7 +912,7 @@ public class CodeDOMBuilderTests {
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
 						"render",
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodePropertyReferenceExpression(
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("foo")),
@@ -934,15 +936,13 @@ public class CodeDOMBuilderTests {
 							new CodeThisReferenceExpression(),
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
-						new CodeObjectCreateExpression(
-							"foo.bar.Yada",
-							new CodeThisReferenceExpression())))
+						new CodeObjectCreateExpression("foo.bar.Yada")))
 				));
 
 		// mark override and parens
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
-		((CodeMethod)expected.getMembers().get(5)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -975,7 +975,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -988,7 +988,7 @@ public class CodeDOMBuilderTests {
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
 						"render",
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodeVariableReferenceExpression(int.class, "index"),
 						new CodeVariableReferenceExpression(int.class, "count"),
@@ -1011,7 +1011,7 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					"render",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1019,7 +1019,7 @@ public class CodeDOMBuilderTests {
 					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							"append",
 							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
 					)),
@@ -1037,17 +1037,14 @@ public class CodeDOMBuilderTests {
 							"view_2"),
 						new CodeObjectCreateExpression(
 							"foo.bar.Yada",
-							new CodeThisReferenceExpression(),
-							new CodeObjectCreateExpression(
-								"part_3",
-								new CodeThisReferenceExpression()))))
+							new CodeObjectCreateExpression("part_3"))))
 				));
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
-		((CodeMethod)expected.getMembers().get(6)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
-		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(5)).getMembers().get(1)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(5)).getMembers().get(2)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(4)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(3)).getMembers().get(0)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(3)).getMembers().get(1)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -1086,7 +1083,7 @@ public class CodeDOMBuilderTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(Appendable.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1094,7 +1091,7 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div class=\"dialog\">"))),
 				new CodeExpressionStatement(
@@ -1102,14 +1099,14 @@ public class CodeDOMBuilderTests {
 						new CodeThisReferenceExpression(),
 						"renderPart",
 						new CodePrimitiveExpression("header"),
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodeVariableReferenceExpression(int.class, "index"),
 						new CodeVariableReferenceExpression(int.class, "count"),
 						new CodeVariableReferenceExpression(String.class, "key"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<hr />"))),
 				new CodeExpressionStatement(
@@ -1117,14 +1114,14 @@ public class CodeDOMBuilderTests {
 						new CodeThisReferenceExpression(),
 						"renderPart",
 						new CodePrimitiveExpression("body"),
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodeVariableReferenceExpression(int.class, "index"),
 						new CodeVariableReferenceExpression(int.class, "count"),
 						new CodeVariableReferenceExpression(String.class, "key"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
 			),
@@ -1141,7 +1138,7 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					"render",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1149,7 +1146,7 @@ public class CodeDOMBuilderTests {
 					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							"append",
 							new CodePrimitiveExpression("<h2>Warning</h2>")))
 					)),
@@ -1162,16 +1159,12 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"addPart",
-						new CodeObjectCreateExpression(
-							"part_2",
-							new CodeThisReferenceExpression()))),
+						new CodeObjectCreateExpression("part_2"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						"addPart",
-						new CodeObjectCreateExpression(
-							"part_3",
-							new CodeThisReferenceExpression())))),
+						new CodeObjectCreateExpression("part_3")))),
 			CodeDOMUtility.createPartType(
 				"part_3",
 				new CodeMethod(
@@ -1185,7 +1178,7 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					"render",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(Appendable.class, "output"),
+						new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1193,18 +1186,18 @@ public class CodeDOMBuilderTests {
 					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							"append",
 							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
 					)));
 
 		// mark override and parens
+		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
 		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
-		((CodeMethod)expected.getMembers().get(5)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(2)).getMembers().get(0)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(2)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(4)).getMembers().get(0)).setOverride(true);
 		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(4)).getMembers().get(1)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(4)).getMembers().get(2)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(6)).getMembers().get(1)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(6)).getMembers().get(2)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 		

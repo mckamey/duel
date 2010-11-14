@@ -3,6 +3,7 @@ package org.duelengine.duel.codegen;
 import java.io.*;
 import java.util.*;
 
+import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelView;
 import org.duelengine.duel.HTMLFormatter;
 import org.duelengine.duel.ast.*;
@@ -27,7 +28,7 @@ public class CodeDOMBuilder {
 	public CodeDOMBuilder(CodeGenSettings settings) {
 		this.settings = (settings != null) ? settings : new CodeGenSettings();
 		this.buffer = new StringBuilder();
-		this.formatter = new HTMLFormatter(this.buffer, this.settings.getEncodeNonASCII());
+		this.formatter = new HTMLFormatter();
 	}
 
 	public CodeTypeDeclaration buildView(ViewRootNode viewNode) throws IOException {
@@ -61,7 +62,7 @@ public class CodeDOMBuilder {
 			Void.class,
 			this.viewType.nextIdent("render_"),
 			new CodeParameterDeclarationExpression[] {
-				new CodeParameterDeclarationExpression(Appendable.class, "output"),
+				new CodeParameterDeclarationExpression(DuelContext.class, "output"),
 				new CodeParameterDeclarationExpression(Object.class, "data"),
 				new CodeParameterDeclarationExpression(int.class, "index"),
 				new CodeParameterDeclarationExpression(int.class, "count"),
@@ -84,7 +85,7 @@ public class CodeDOMBuilder {
 	private void buildNode(Node node) throws IOException {
 		if (node instanceof LiteralNode) {
 			LiteralNode literal = (LiteralNode)node;
-			this.formatter.writeLiteral(literal.getValue());
+			this.formatter.writeLiteral(this.buffer, literal.getValue(), this.settings.getEncodeNonASCII());
 			return;
 		}
 
@@ -133,14 +134,14 @@ public class CodeDOMBuilder {
 		if (node instanceof CommentNode) {
 			// emit comment markup
 			CommentNode comment = (CommentNode)node;
-			this.formatter.writeComment(comment.getValue());
+			this.formatter.writeComment(this.buffer, comment.getValue());
 			return;
 		}
 
 		if (node instanceof DocTypeNode) {
 			// emit doctype
 			DocTypeNode doctype = (DocTypeNode)node;
-			this.formatter.writeComment(doctype.getValue());
+			this.formatter.writeDocType(this.buffer, doctype.getValue());
 			return;
 		}
 	}
@@ -169,12 +170,11 @@ public class CodeDOMBuilder {
 			throw new IllegalArgumentException("Unexpected Call command view attribute: "+attr);
 		}
 
-		CodeExpression[] ctorArgs = new CodeExpression[node.getChildren().size()+1];
-		ctorArgs[0] = new CodeThisReferenceExpression();
+		CodeExpression[] ctorArgs = new CodeExpression[node.getChildren().size()];
 
 		int i = 0;
 		for (Node child : node.getChildren()) {
-			ctorArgs[++i] = this.buildPart((PARTCommandNode)child);
+			ctorArgs[i++] = this.buildPart((PARTCommandNode)child);
 		}
 
 		// insert an initialization statement into the init method
@@ -224,11 +224,11 @@ public class CodeDOMBuilder {
 		scope.add(new CodeMethodInvokeExpression(
 			new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
 			"render",
-			new CodeVariableReferenceExpression(Appendable.class, "output"),
-				dataExpr,
-				indexExpr,
-				countExpr,
-				keyExpr));
+			new CodeVariableReferenceExpression(DuelContext.class, "output"),
+			dataExpr,
+			indexExpr,
+			countExpr,
+			keyExpr));
 	}
 
 	private CodeObjectCreateExpression buildPart(PARTCommandNode node)
@@ -257,7 +257,7 @@ public class CodeDOMBuilder {
 			this.viewType = part;
 
 			CodeMethod renderMethod = this.buildRenderMethod(node.getChildren());
-	
+
 			renderMethod.setName("render");
 			renderMethod.setAccess(AccessModifierType.PROTECTED);
 			renderMethod.setOverride(true);
@@ -266,7 +266,7 @@ public class CodeDOMBuilder {
 			this.viewType = parentView;
 		}
 
-		return new CodeObjectCreateExpression(part.getTypeName(), new CodeThisReferenceExpression());
+		return new CodeObjectCreateExpression(part.getTypeName());
 	}
 
 	private void buildPartPlaceholder(PARTCommandNode part)
@@ -290,7 +290,7 @@ public class CodeDOMBuilder {
 			new CodeThisReferenceExpression(),
 			"renderPart",
 			new CodePrimitiveExpression(part.getName()),
-			new CodeVariableReferenceExpression(Appendable.class, "output"),
+			new CodeVariableReferenceExpression(DuelContext.class, "output"),
 			new CodeVariableReferenceExpression(Object.class, "data"),
 			new CodeVariableReferenceExpression(int.class, "index"),
 			new CodeVariableReferenceExpression(int.class, "count"),
@@ -385,7 +385,7 @@ public class CodeDOMBuilder {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						innerBind.getName(),
-						new CodeVariableReferenceExpression(Appendable.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(dataDecl),
 						new CodeVariableReferenceExpression(indexDecl),
 						new CodeVariableReferenceExpression(countDecl),
@@ -461,7 +461,7 @@ public class CodeDOMBuilder {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						innerBind.getName(),
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(entryDecl),
 								"getValue"),
@@ -530,7 +530,7 @@ public class CodeDOMBuilder {
 					new CodeMethodInvokeExpression(
 						new CodeThisReferenceExpression(),
 						innerBind.getName(),
-							new CodeVariableReferenceExpression(Appendable.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							new CodeMethodInvokeExpression(
 								new CodeVariableReferenceExpression(iteratorDecl),
 								"next"),
@@ -615,7 +615,7 @@ public class CodeDOMBuilder {
 			expression = new CodeMethodInvokeExpression(
 				new CodeThisReferenceExpression(),
 					members.get(0).getName(),
-					new CodeVariableReferenceExpression(Appendable.class, "output"),
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(Object.class, "data"),
 					new CodeVariableReferenceExpression(int.class, "index"),
 					new CodeVariableReferenceExpression(int.class, "count"),
@@ -628,17 +628,17 @@ public class CodeDOMBuilder {
 		throws IOException {
 
 		String tagName = element.getTagName();
-		this.formatter.writeOpenElementBeginTag(tagName);
+		this.formatter.writeOpenElementBeginTag(this.buffer, tagName);
 
 		Map<String, CodeBlockNode> deferredAttrs = new LinkedHashMap<String, CodeBlockNode>();
 		for (String attrName : element.getAttributeNames()) {
 			Node attrVal = element.getAttribute(attrName);
 
 			if (attrVal == null) {
-				this.formatter.writeAttribute(attrName, null);
+				this.formatter.writeAttribute(this.buffer, attrName, null);
 
 			} else if (attrVal instanceof LiteralNode) {
-				this.formatter.writeAttribute(attrName, ((LiteralNode)attrVal).getValue());
+				this.formatter.writeAttribute(this.buffer, attrName, ((LiteralNode)attrVal).getValue());
 
 			} else if (attrVal instanceof CodeBlockNode) {
 				deferredAttrs.put(attrName, (CodeBlockNode)attrVal);
@@ -652,9 +652,9 @@ public class CodeDOMBuilder {
 		if (deferredAttrs.size() > 0) {
 			Node id = element.getAttribute("id");
 			if (id == null) {
-				this.formatter.writeOpenAttribute("id");
+				this.formatter.writeOpenAttribute(this.buffer, "id");
 				idVar = this.emitClientID();
-				this.formatter.writeCloseAttribute();
+				this.formatter.writeCloseAttribute(this.buffer);
 
 			} else if (id instanceof LiteralNode) {
 				idVar = ((LiteralNode)id).getValue();
@@ -667,16 +667,16 @@ public class CodeDOMBuilder {
 		}
 
 		if (element.canHaveChildren()) {
-			this.formatter.writeCloseElementBeginTag();
+			this.formatter.writeCloseElementBeginTag(this.buffer);
 
 			for (Node child : element.getChildren()) {
 				this.buildNode(child);
 			}
 
-			this.formatter.writeElementEndTag(tagName);
+			this.formatter.writeElementEndTag(this.buffer, tagName);
 
 		} else {
-			this.formatter.writeCloseElementVoidTag();
+			this.formatter.writeCloseElementVoidTag(this.buffer);
 		}
 
 		if (deferredAttrs.size() > 0) {
