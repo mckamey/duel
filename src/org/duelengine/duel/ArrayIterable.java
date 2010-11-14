@@ -3,10 +3,10 @@ package org.duelengine.duel;
 import java.util.*;
 
 /**
- * Adapts Array to Iterable interface without performing a copy.
- * Implements Collection only to provide size()
+ * Adapts Array to partially implemented List without performing a copy.
+ * Implements only iterator(), size() and get()
  */
-class ArrayIterable implements Collection<Object> {
+class ArrayIterable implements List<Object> {
 
 	private class ArrayIterator implements Iterator<Object> {
 
@@ -106,11 +106,61 @@ class ArrayIterable implements Collection<Object> {
 
 	@Override
 	public Object[] toArray() {
-		throw new UnsupportedOperationException();
+		return this.array;
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void add(int arg0, Object arg1) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean addAll(int arg0, Collection<? extends Object> arg1) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Object get(int index) {
+		return this.array[index];
+	}
+
+	@Override
+	public int indexOf(Object arg0) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int lastIndexOf(Object arg0) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ListIterator<Object> listIterator() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ListIterator<Object> listIterator(int arg0) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Object remove(int arg0) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Object set(int arg0, Object arg1) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<Object> subList(int arg0, int arg1) {
 		throw new UnsupportedOperationException();
 	}
 }

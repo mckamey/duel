@@ -399,7 +399,7 @@ public class CodeDOMBuilder {
 					new CodeThisReferenceExpression(),
 					"asObject",
 					objExpr),
-				"iterator");
+				"entrySet");
 
 		// the collection to iterate over
 		CodeVariableDeclarationStatement collectionDecl =

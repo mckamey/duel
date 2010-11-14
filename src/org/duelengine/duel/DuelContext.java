@@ -1,11 +1,12 @@
 package org.duelengine.duel;
 
-import java.io.*;
+import java.io.IOException;
 
 public class DuelContext implements Appendable, ClientIDStrategy {
 
 	private final Appendable output;
 	private final ClientIDStrategy clientID;
+	private boolean encodeNonASCII = true;
 
 	public DuelContext(Appendable output) {
 		this(output, new IncClientIDStrategy());
@@ -21,6 +22,14 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 
 		this.output = output;
 		this.clientID = clientID;
+	}
+
+	public boolean getEncodeNonASCII() {
+		return this.encodeNonASCII;
+	}
+
+	public void setEncodeNonASCII(boolean value) {
+		this.encodeNonASCII = value;
 	}
 
 	@Override

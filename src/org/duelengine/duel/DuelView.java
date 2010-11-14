@@ -23,7 +23,7 @@ public abstract class DuelView {
 		// first allow view to define child views and default parts
 		this.init();
 
-		// then allow caller to replace parts by name
+		// then allow caller to replace any parts by name
 		if (parts != null && parts.length > 0) {
 			if (this.parts == null) {
 				this.parts = new HashMap<String, DuelPart>(parts.length);
@@ -144,16 +144,26 @@ public abstract class DuelView {
 			return null;
 		}
 
-		String propertyName = property.toString();
+		if (isArray(data.getClass())) {
+			List<?> list = this.asArray(data);
 
-		if (data instanceof Map<?,?>) {
-			@SuppressWarnings("unchecked")
-			Map<Object,Object> map = (Map<Object,Object>)data;
-			return map.get(propertyName);
+			if ("length".equals(this.asString(property))) {
+				return list.size();
+			}
+
+			if (isNumber(property.getClass())) {
+				return list.get((int)this.asNumber(property));
+			}
+
+			return null;
 		}
 
-		// TODO: convert arbitrary object to Map
-		throw new IllegalArgumentException("TODO: convert object to map");
+		String key = this.asString(property);
+		Map<?,?> map = this.asObject(data);
+		if (map == null || !map.containsKey(key)) {
+			return null;
+		}
+		return map.get(key);
 	}
 
 	/**
@@ -209,6 +219,11 @@ public abstract class DuelView {
 		return (String.class.equals(exprType));
 	}
 
+	private static boolean isArray(Class<?> exprType) {
+		return (exprType.isArray() ||
+			List.class.isAssignableFrom(exprType));
+	}
+
 	/**
 	 * Coerces any Object to a JS Boolean
 	 * @param data
@@ -240,7 +255,7 @@ public abstract class DuelView {
 		if (data instanceof Character) {
 			return ((Character)data).charValue();
 		}
-		
+
 		return this.asBoolean(data) ? NaN : 0.0;
 	}
 
@@ -259,18 +274,23 @@ public abstract class DuelView {
 	 * @param data
 	 * @return
 	 */
-	protected Collection<?> asArray(Object data) {
+	protected List<?> asArray(Object data) {
 		if (data == null) {
 			return Collections.EMPTY_LIST;
 		}
 
-		if (data instanceof Collection<?>) {
-			// already is
-			return (Collection<?>)data;
+		if (data instanceof List<?>) {
+			// already correct type
+			return (List<?>)data;
 		}
-
+		
 		if (data instanceof Object[]) {
 			return new ArrayIterable((Object[])data);
+		}
+
+		if (data instanceof Collection<?>) {
+			// unfortunate but we need the size
+			return new ArrayList<Object>((Collection<?>)data);
 		}
 
 		if (data instanceof Iterable<?>) {
@@ -290,15 +310,16 @@ public abstract class DuelView {
 	 * @param data
 	 * @return
 	 */
-	protected Collection<Map.Entry<Object,Object>> asObject(Object data) {
-
-		if (data instanceof Map<?,?>) {
-			@SuppressWarnings("unchecked")
-			Map<Object,Object> map = (Map<Object,Object>)data;
-			return map.entrySet();
+	protected Map<?,?> asObject(Object data) {
+		if (data == null) {
+			return Collections.EMPTY_MAP;
 		}
 
-		// TODO: convert arbitrary object to Iterable<Map.Entry> with size()
+		if (data instanceof Map<?,?>) {
+			return (Map<?,?>)data;
+		}
+
+		// TODO: convert arbitrary object to Map<String, ?>
 		throw new IllegalArgumentException("TODO: convert object to map");
 	}
 
@@ -336,8 +357,7 @@ public abstract class DuelView {
 			output.append(value.toString());
 
 		} else {
-			// TODO: surface ability to choose encodeNonASCII
-			formatter.writeLiteral(output, String.valueOf(value), true);
+			formatter.writeLiteral(output, String.valueOf(value), output.getEncodeNonASCII());
 		}
 	}
 
