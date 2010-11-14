@@ -83,6 +83,19 @@ public abstract class DuelView {
 	}
 
 	/**
+	 * Allows one view to render another
+	 * @param view
+	 * @param output
+	 * @param data
+	 * @param index
+	 * @param count
+	 * @param key
+	 */
+	protected void renderView(DuelView view, DuelContext output, Object data, int index, int count, String key) {
+		view.render(output, data, index, count, key);
+	}
+
+	/**
 	 * Renders the view to the output
 	 * @param output
 	 */

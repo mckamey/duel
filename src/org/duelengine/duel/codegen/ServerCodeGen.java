@@ -2,7 +2,6 @@ package org.duelengine.duel.codegen;
 
 import java.io.*;
 import java.util.*;
-
 import org.duelengine.duel.*;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
@@ -14,7 +13,7 @@ public class ServerCodeGen implements CodeGenerator {
 		FORCE,
 		SUPPRESS
 	}
-	
+
 	private static final String DUEL_PACKAGE = DuelView.class.getPackage().getName();
 	private final CodeGenSettings settings;
 	private int depth;
@@ -62,26 +61,34 @@ public class ServerCodeGen implements CodeGenerator {
 			throw new NullPointerException("views");
 		}
 
+		boolean importsWritten = false;
 		for (ViewRootNode view : views) {
 			if (view != null) {
-				this.write(output, view);
+				CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).buildView(view);
+
+				this.depth = 0;
+
+				if (importsWritten) {
+					this.writeln(output);
+				} else {
+					this.writePackage(output, viewType.getNamespace());
+					importsWritten = true;
+				}
+
+				this.writeTypeDeclaration(output, viewType);
+				this.writeln(output);
 			}
 		}
-	}
-
-	public void write(Appendable output, ViewRootNode view)
-		throws IOException {
-
-		CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).buildView(view);
-
-		this.writeCode(output, viewType);
 	}
 
 	public void writeCode(Appendable output, CodeObject code)
 		throws IOException {
 
 		if (code instanceof CodeTypeDeclaration) {
-			this.writeTypeDeclaration(output, (CodeTypeDeclaration)code, false);
+			CodeTypeDeclaration viewType = (CodeTypeDeclaration)code;
+			this.writePackage(output, viewType.getNamespace());
+			this.writeTypeDeclaration(output, viewType);
+			this.writeln(output);
 
 		} else if (code instanceof CodeStatement) {
 			this.writeStatement(output, (CodeStatement)code);
@@ -107,23 +114,30 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 	}
 
-	private void writeTypeDeclaration(Appendable output, CodeTypeDeclaration type, boolean isNested)
+	private void writeTypeDeclaration(Appendable output, CodeTypeDeclaration type)
 		throws IOException {
 
-		if (!isNested) {
-			this.depth = 0;
+		// write intro
+		this.writeAccessModifier(output, type.getAccess());
+		output.append("class ").append(type.getTypeName());
+		Class<?> baseType = type.getBaseType();
+		if (baseType != null) {
+			output.append(" extends ");
+			this.writeTypeName(output, baseType);
 		}
+		output.append(" {");
+		this.depth++;
 
-		this.writeIntro(output, type.getNamespace(), type.getAccess(), type.getTypeName(), type.getBaseType(), isNested);
 		String typeName = type.getTypeName();
 		for (CodeMember member : type.getMembers()) {
 			this.writeln(output, 2);
 			this.writeMember(output, typeName, member);
 		}
-		this.writeOutro(output);
-		if (!isNested) {
-			this.writeln(output);
-		}
+
+		// write outro
+		this.depth--;
+		this.writeln(output);
+		output.append('}');
 	}
 
 	private void writeMember(Appendable output, String typeName, CodeMember member)
@@ -139,7 +153,7 @@ public class ServerCodeGen implements CodeGenerator {
 			this.writeField(output, (CodeField)member);
 
 		} else if (member instanceof CodeTypeDeclaration) {
-			this.writeTypeDeclaration(output, (CodeTypeDeclaration)member, true);
+			this.writeTypeDeclaration(output, (CodeTypeDeclaration)member);
 
 		} else if (member != null) {
 			throw new UnsupportedOperationException("Not implemented: "+member.getClass());
@@ -878,36 +892,20 @@ public class ServerCodeGen implements CodeGenerator {
 		output.append(')');
 	}
 
-	private void writeIntro(Appendable output, String ns, AccessModifierType access, String typeName, Class<?> baseType, boolean isNested)
+	private void writePackage(Appendable output, String ns)
 		throws IOException {
 
-		if (!isNested) {
-			if (ns != null && ns.length() > 0) {
-				output.append("package ").append(ns).append(";");
-				this.writeln(output, 2);
-			}
-	
-			output.append("import java.io.*;");
-			this.writeln(output);
-			output.append("import java.util.*;");
-			this.writeln(output);
-			output.append("import ").append(DUEL_PACKAGE).append(".*;");
+		if (ns != null && ns.length() > 0) {
+			output.append("package ").append(ns).append(";");
 			this.writeln(output, 2);
 		}
-		this.writeAccessModifier(output, access);
-		output.append("class ").append(typeName);
-		if (baseType != null) {
-			output.append(" extends ");
-			this.writeTypeName(output, baseType);
-		}
-		output.append(" {");
-		this.depth++;
-	}
 
-	private void writeOutro(Appendable output) throws IOException {
-		this.depth--;
+		output.append("import java.io.*;");
 		this.writeln(output);
-		output.append('}');
+		output.append("import java.util.*;");
+		this.writeln(output);
+		output.append("import ").append(DUEL_PACKAGE).append(".*;");
+		this.writeln(output, 2);
 	}
 
 	private void writePrimitive(Appendable output, Object value)

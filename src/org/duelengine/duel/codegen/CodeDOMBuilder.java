@@ -187,7 +187,7 @@ public class CodeDOMBuilder {
 					new CodeObjectCreateExpression(
 						viewName.trim(),
 						ctorArgs))));
-
+		
 		CodeExpression dataExpr;
 		Node callData = node.getAttribute(CALLCommandNode.DATA);
 		if (callData instanceof CodeBlockNode) {
@@ -222,8 +222,9 @@ public class CodeDOMBuilder {
 
 		CodeStatementCollection scope = this.scopeStack.peek();
 		scope.add(new CodeMethodInvokeExpression(
+			new CodeThisReferenceExpression(),
+			"renderView",
 			new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
-			"render",
 			new CodeVariableReferenceExpression(DuelContext.class, "output"),
 			dataExpr,
 			indexExpr,
@@ -246,7 +247,7 @@ public class CodeDOMBuilder {
 		CodeMethod getNameMethod = new CodeMethod(
 			AccessModifierType.PUBLIC,
 			String.class,
-			"getName",
+			"getPartName",
 			null,
 			new CodeMethodReturnStatement(new CodePrimitiveExpression(partName)));
 		getNameMethod.setOverride(true);

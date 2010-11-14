@@ -18,7 +18,7 @@ public class DuelCompiler {
 			return;
 		}
 
-		String filename = args[0];
+		String filename = args[0].replace('\\', '/');
 
 		List<ViewRootNode> views;
 		try {
@@ -30,11 +30,16 @@ public class DuelCompiler {
 			return;
 		}
 
+		if (views == null || views.size() < 1) {
+			System.err.println("Syntax error: no view found in: "+filename);
+			return;
+		}
+
 		CodeGenerator codegen;
 		FileWriter writer ;
 		try {
 			codegen = new ClientCodeGen();
-			writer = new FileWriter(filename+codegen.getFileExtension());
+			writer = new FileWriter(filename+codegen.getFileExtension(), false);
 			codegen.write(writer, views);
 			writer.flush();
 			writer.close();
@@ -42,14 +47,20 @@ public class DuelCompiler {
 			ex.printStackTrace();
 		}
 
-		try {
-			codegen = new ServerCodeGen();
-			writer = new FileWriter(filename+codegen.getFileExtension());
-			codegen.write(writer, views);
-			writer.flush();
-			writer.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		String outputPath = filename.substring(0, filename.lastIndexOf('/')+1);
+
+		for (ViewRootNode view : views) {
+			try {
+				codegen = new ServerCodeGen();
+				File file = new File(outputPath+view.getName().replace('.', '/')+codegen.getFileExtension());
+				file.getParentFile().mkdirs();
+				writer = new FileWriter(file, false);
+				codegen.write(writer, view);
+				writer.flush();
+				writer.close();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 }

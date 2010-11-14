@@ -56,7 +56,7 @@ public class ServerCodeGenTests {
 		StringBuilder output = new StringBuilder();
 		new ServerCodeGen().writeCode(output, input);
 		String actual = output.toString();
-		
+
 		assertEquals(expected, actual);
 	}
 
@@ -1041,11 +1041,12 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"renderView",
 						new CodeFieldReferenceExpression(
 							new CodeThisReferenceExpression(),
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
-						"render",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodeVariableReferenceExpression(int.class, "index"),
@@ -1087,7 +1088,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) {\n"+
-			"\t\tthis.view_2.render(output, data, index, count, key);\n"+
+			"\t\tthis.renderView(this.view_2, output, data, index, count, key);\n"+
 			"\t}\n\n"+
 			"\tprivate DuelView view_2;\n\n"+
 			"\tprotected void init() {\n"+
@@ -1121,11 +1122,12 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"renderView",
 						new CodeFieldReferenceExpression(
 							new CodeThisReferenceExpression(),
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
-						"render",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodeVariableReferenceExpression(int.class, "index"),
@@ -1181,7 +1183,7 @@ public class ServerCodeGenTests {
 		// mark override and parens
 		((CodeMethod)input.getMembers().get(2)).setOverride(true);
 		((CodeMethod)input.getMembers().get(5)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(2).setHasParens(true);
 		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(4)).getMembers().get(0)).setOverride(true);
 		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(4)).getMembers().get(1)).setOverride(true);
 
@@ -1198,7 +1200,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) {\n"+
-			"\t\tthis.view_2.render(output, (data), index, count, key);\n"+
+			"\t\tthis.renderView(this.view_2, output, (data), index, count, key);\n"+
 			"\t}\n\n"+
 			"\tprivate DuelView view_2;\n\n"+
 			"\tprivate class part_3 extends DuelPart {\n\n"+

@@ -907,11 +907,12 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"renderView",
 						new CodeFieldReferenceExpression(
 							new CodeThisReferenceExpression(),
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
-						"render",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodePropertyReferenceExpression(
 							new CodeVariableReferenceExpression(Object.class, "data"),
@@ -941,7 +942,7 @@ public class CodeDOMBuilderTests {
 
 		// mark override and parens
 		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(2).setHasParens(true);
 		((CodeMethod)expected.getMembers().get(4)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
@@ -983,11 +984,12 @@ public class CodeDOMBuilderTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						new CodeThisReferenceExpression(),
+						"renderView",
 						new CodeFieldReferenceExpression(
 							new CodeThisReferenceExpression(),
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
-						"render",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodeVariableReferenceExpression(int.class, "index"),
@@ -1003,7 +1005,7 @@ public class CodeDOMBuilderTests {
 				new CodeMethod(
 					AccessModifierType.PUBLIC,
 					String.class,
-					"getName",
+					"getPartName",
 					null,
 					new CodeMethodReturnStatement(new CodePrimitiveExpression("header"))),
 				new CodeMethod(
@@ -1042,7 +1044,7 @@ public class CodeDOMBuilderTests {
 		// mark override and parens
 		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
 		((CodeMethod)expected.getMembers().get(5)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(2).setHasParens(true);
 		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(4)).getMembers().get(0)).setOverride(true);
 		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(4)).getMembers().get(1)).setOverride(true);
 
@@ -1130,7 +1132,7 @@ public class CodeDOMBuilderTests {
 				new CodeMethod(
 					AccessModifierType.PUBLIC,
 					String.class,
-					"getName",
+					"getPartName",
 					null,
 					new CodeMethodReturnStatement(new CodePrimitiveExpression("header"))),
 				new CodeMethod(
@@ -1170,7 +1172,7 @@ public class CodeDOMBuilderTests {
 				new CodeMethod(
 					AccessModifierType.PUBLIC,
 					String.class,
-					"getName",
+					"getPartName",
 					null,
 					new CodeMethodReturnStatement(new CodePrimitiveExpression("body"))),
 				new CodeMethod(
