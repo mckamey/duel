@@ -100,8 +100,9 @@
 	<target name="jar" depends="compile.src" description="Package as a jar">
 		<jar destfile="${jarfile}" update="true">
 			<fileset dir="${bin.dir}" />
+			<zipfileset src="${lib.dir}/rhino/js_trunk.jar" />
 			<manifest>
-				<attribute name="Main-Class" value="org.duelengine.duelc.CommandLineRunner" />
+				<attribute name="Main-Class" value="org.duelengine.duel.DuelCompiler" />
 			</manifest>
 		</jar>
 	</target>
