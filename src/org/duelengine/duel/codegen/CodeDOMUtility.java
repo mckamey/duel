@@ -18,6 +18,7 @@ final class CodeDOMUtility {
 			typeName,
 			DuelView.class);
 
+		viewType.add(createCtor());
 		viewType.add(createCtor(new CodeParameterDeclarationExpression(DuelPart.class, "parts", true)));
 
 		if (members != null) {

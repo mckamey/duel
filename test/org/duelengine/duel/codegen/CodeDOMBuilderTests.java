@@ -42,7 +42,7 @@ public class CodeDOMBuilderTests {
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -80,7 +80,7 @@ public class CodeDOMBuilderTests {
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -120,8 +120,8 @@ public class CodeDOMBuilderTests {
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -161,8 +161,8 @@ public class CodeDOMBuilderTests {
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -203,8 +203,8 @@ public class CodeDOMBuilderTests {
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -246,7 +246,7 @@ public class CodeDOMBuilderTests {
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -337,9 +337,9 @@ public class CodeDOMBuilderTests {
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
-		((CodeConditionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(1)).getCondition().setHasParens(true);
-		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeConditionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(1)).getCondition().setHasParens(true);
+		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -427,7 +427,7 @@ public class CodeDOMBuilderTests {
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -545,8 +545,8 @@ public class CodeDOMBuilderTests {
 			));
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -672,8 +672,8 @@ public class CodeDOMBuilderTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -780,8 +780,8 @@ public class CodeDOMBuilderTests {
 			));
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(3)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -835,7 +835,7 @@ public class CodeDOMBuilderTests {
 			);
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -872,7 +872,7 @@ public class CodeDOMBuilderTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -940,9 +940,9 @@ public class CodeDOMBuilderTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)expected.getMembers().get(4)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -1040,11 +1040,11 @@ public class CodeDOMBuilderTests {
 							new CodeObjectCreateExpression("part_3"))))
 				));
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
-		((CodeMethod)expected.getMembers().get(4)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(1)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
-		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(3)).getMembers().get(0)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(3)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(5)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(4)).getMembers().get(0)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(4)).getMembers().get(1)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 
@@ -1192,12 +1192,12 @@ public class CodeDOMBuilderTests {
 					)));
 
 		// mark override and parens
-		((CodeMethod)expected.getMembers().get(1)).setOverride(true);
-		((CodeMethod)expected.getMembers().get(3)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(2)).getMembers().get(0)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(2)).getMembers().get(1)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(4)).getMembers().get(0)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(4)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(4)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(3)).getMembers().get(0)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(3)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(5)).getMembers().get(0)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)expected.getMembers().get(5)).getMembers().get(1)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 		

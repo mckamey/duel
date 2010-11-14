@@ -34,7 +34,7 @@ public class ServerCodeGenTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
 
 		String expected =
 			"package com.example;\n\n"+
@@ -42,6 +42,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
 			"\tpublic Foo(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -84,13 +86,15 @@ public class ServerCodeGenTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
 
 		String expected =
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class foo extends DuelView {\n\n"+
+			"\tpublic foo() {\n"+
+			"\t}\n\n"+
 			"\tpublic foo(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -170,9 +174,9 @@ public class ServerCodeGenTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
-		((CodeConditionStatement)((CodeMethod)input.getMembers().get(1)).getStatements().get(1)).getCondition().setHasParens(true);
-		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)input.getMembers().get(1)).getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+		((CodeConditionStatement)((CodeMethod)input.getMembers().get(2)).getStatements().get(1)).getCondition().setHasParens(true);
+		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)input.getMembers().get(2)).getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
 
 		String expected =
 			"package example;\n\n"+
@@ -180,6 +184,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class foo extends DuelView {\n\n"+
+			"\tpublic foo() {\n"+
+			"\t}\n\n"+
 			"\tpublic foo(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -263,7 +269,7 @@ public class ServerCodeGenTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
 
 		String expected =
 			"package example;\n\n"+
@@ -271,6 +277,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class foo2 extends DuelView {\n\n"+
+			"\tpublic foo2() {\n"+
+			"\t}\n\n"+
 			"\tpublic foo2(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -393,14 +401,16 @@ public class ServerCodeGenTests {
 			));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(2)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		String expected =
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class example extends DuelView {\n\n"+
+			"\tpublic example() {\n"+
+			"\t}\n\n"+
 			"\tpublic example(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -533,14 +543,16 @@ public class ServerCodeGenTests {
 			));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(2)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		String expected =
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class example extends DuelView {\n\n"+
+			"\tpublic example() {\n"+
+			"\t}\n\n"+
 			"\tpublic example(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -655,14 +667,16 @@ public class ServerCodeGenTests {
 			));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(2)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
 
 		String expected =
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class example extends DuelView {\n\n"+
+			"\tpublic example() {\n"+
+			"\t}\n\n"+
 			"\tpublic example(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -717,7 +731,7 @@ public class ServerCodeGenTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
 
 		String expected =
 			"package com.example;\n\n"+
@@ -725,6 +739,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
 			"\tpublic Foo(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -769,7 +785,7 @@ public class ServerCodeGenTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
 
 		String expected =
 			"package com.example;\n\n"+
@@ -777,6 +793,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
 			"\tpublic Foo(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -821,7 +839,7 @@ public class ServerCodeGenTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
 
 		String expected =
 			"package com.example;\n\n"+
@@ -829,6 +847,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
 			"\tpublic Foo(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -874,7 +894,7 @@ public class ServerCodeGenTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
 
 		String expected =
 			"package com.example;\n\n"+
@@ -882,6 +902,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
 			"\tpublic Foo(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -923,7 +945,7 @@ public class ServerCodeGenTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
 
 		String expected =
 			"package com.example;\n\n"+
@@ -931,6 +953,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
 			"\tpublic Foo(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -972,7 +996,7 @@ public class ServerCodeGenTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
 
 		String expected =
 			"package com.example;\n\n"+
@@ -980,6 +1004,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
 			"\tpublic Foo(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -1046,7 +1072,7 @@ public class ServerCodeGenTests {
 				));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
 
 		String expected =
 			"package foo.bar;\n\n"+
@@ -1054,6 +1080,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Blah extends DuelView {\n\n"+
+			"\tpublic Blah() {\n"+
+			"\t}\n\n"+
 			"\tpublic Blah(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -1151,11 +1179,11 @@ public class ServerCodeGenTests {
 							new CodeObjectCreateExpression("part_3"))))
 				));
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
-		((CodeMethod)input.getMembers().get(4)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(1)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(3)).getMembers().get(0)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(3)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+		((CodeMethod)input.getMembers().get(5)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(4)).getMembers().get(0)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(4)).getMembers().get(1)).setOverride(true);
 
 		String expected =
 			"package foo.bar;\n\n"+
@@ -1163,6 +1191,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Blah extends DuelView {\n\n"+
+			"\tpublic Blah() {\n"+
+			"\t}\n\n"+
 			"\tpublic Blah(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
@@ -1314,12 +1344,12 @@ public class ServerCodeGenTests {
 					)));
 
 		// mark override and parens
-		((CodeMethod)input.getMembers().get(1)).setOverride(true);
-		((CodeMethod)input.getMembers().get(3)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(2)).getMembers().get(0)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(2)).getMembers().get(1)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(4)).getMembers().get(0)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(4)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+		((CodeMethod)input.getMembers().get(4)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(3)).getMembers().get(0)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(3)).getMembers().get(1)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(5)).getMembers().get(0)).setOverride(true);
+		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(5)).getMembers().get(1)).setOverride(true);
 
 		String expected =
 			"package foo.bar;\n\n"+
@@ -1327,6 +1357,8 @@ public class ServerCodeGenTests {
 			"import java.util.*;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Blah extends DuelView {\n\n"+
+			"\tpublic Blah() {\n"+
+			"\t}\n\n"+
 			"\tpublic Blah(DuelPart... parts) {\n"+
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+

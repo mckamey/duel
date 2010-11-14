@@ -13,6 +13,11 @@ public abstract class DuelView {
 	private static final HTMLFormatter formatter = new HTMLFormatter();
 	private Map<String, DuelPart> parts = null;
 
+	protected DuelView() {
+		// allow view to define child views
+		this.init();
+	}
+
 	protected DuelView(DuelPart... parts) {
 
 		// first allow view to define child views and default parts
