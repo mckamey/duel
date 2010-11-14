@@ -127,13 +127,6 @@ public class CodeDOMBuilder {
 			return;
 		}
 
-		if (node instanceof CodeCommentNode) {
-			this.flushBuffer();
-
-			// emit comment code or suppress?
-			return;
-		}
-
 		if (node instanceof CommentNode) {
 			// emit comment markup
 			CommentNode comment = (CommentNode)node;
@@ -145,6 +138,11 @@ public class CodeDOMBuilder {
 			// emit doctype
 			DocTypeNode doctype = (DocTypeNode)node;
 			this.formatter.writeDocType(this.buffer, doctype.getValue());
+			return;
+		}
+
+		if (node instanceof CodeCommentNode) {
+			this.buildComment((CodeCommentNode)node);
 			return;
 		}
 	}
@@ -746,6 +744,13 @@ public class CodeDOMBuilder {
 		this.viewType.add(this.initMethod);
 
 		return this.initMethod;
+	}
+
+	private void buildComment(CodeCommentNode comment) {
+		this.flushBuffer();
+
+		CodeStatementCollection scope = this.scopeStack.peek();
+		scope.add(new CodeCommentStatement(comment.getValue()));
 	}
 
 	/**

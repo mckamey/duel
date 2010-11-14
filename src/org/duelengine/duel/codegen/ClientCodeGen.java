@@ -158,17 +158,34 @@ public class ClientCodeGen implements CodeGenerator {
 
 		if (node instanceof LiteralNode) {
 			this.writeString(output, ((LiteralNode)node).getValue());
-			return;
-		}
 
-		if (node instanceof ElementNode) {
+		} else if (node instanceof ElementNode) {
 			this.writeElement(output, ((ElementNode)node).getTagName(), (ElementNode)node);
-			return;
-		}
 
-		if (node instanceof CodeBlockNode) {
+		} else if (node instanceof CodeBlockNode) {
 			this.writeCodeBlock(output, (CodeBlockNode)node);
+
+		} else if (node instanceof CommentNode) {
+			this.writeComment(output, (CommentNode)node);
+
+		} else if (node instanceof CodeCommentNode) {
+			output.append("\"\"");
+
+		} else if (node != null) {
+			throw new UnsupportedOperationException("Node not yet implemented: "+node.getClass());
 		}
+	}
+
+	private void writeComment(Appendable output, CommentNode node)
+		throws IOException {
+
+		String value = node.getValue();
+		if (value != null) {
+			output.append("/*");
+			output.append(value.replace("*/", "* /"));
+			output.append("*/");
+		}
+		output.append("\"\"");
 	}
 
 	private void writeCodeBlock(Appendable output, CodeBlockNode node)
@@ -222,6 +239,10 @@ public class ClientCodeGen implements CodeGenerator {
 		}
 
 		for (Node child : node.getChildren()) {
+			if (child instanceof CodeCommentNode) {
+				continue;
+			}
+
 			output.append(',');
 			this.writeln(output);
 			this.writeNode(output, child);

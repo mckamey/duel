@@ -477,4 +477,53 @@ public class ClientCodeGenTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void commentTest() throws Exception {
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new LiteralNode("Hello world."),
+			new CommentNode("Comment Here"),
+			new LiteralNode("Lorem ipsum."));
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel([\"\",\n"+
+			"\t\"Hello world.\",\n"+
+			"\t/*Comment Here*/\"\",\n"+
+			"\t\"Lorem ipsum.\"\n"+
+			"]);\n";
+
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
+		
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void codeCommentTest() throws Exception {
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new LiteralNode("Hello world."),
+			new CodeCommentNode("Code Comment Here"),
+			new LiteralNode("Lorem ipsum."));
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel([\"\",\n"+
+			"\t\"Hello world.\",\n"+
+			"\t\"Lorem ipsum.\"\n"+
+			"]);\n";
+
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
+		
+		assertEquals(expected, actual);
+	}
 }

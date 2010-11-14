@@ -15,7 +15,7 @@ public class CodeMethodReturnStatement extends CodeStatement {
 		return expression;
 	}
 
-	public void setIdent(CodeExpression value) {
+	public void setExpression(CodeExpression value) {
 		this.expression = value;
 	}
 

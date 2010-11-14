@@ -1471,4 +1471,120 @@ public class ServerCodeGenTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void commentTest() throws IOException {
+
+		CodeTypeDeclaration input = CodeDOMUtility.createViewType(
+			"com.example",
+			"Foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"append",
+						new CodePrimitiveExpression("Hello world.<!--Comment Here-->Lorem ipsum.")))
+				));
+
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+
+		String expected =
+			"package com.example;\n\n"+
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(DuelPart... parts) {\n"+
+			"\t\tsuper(parts);\n"+
+			"\t}\n\n"+
+			"\t@Override\n"+
+			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\toutput.append(\"Hello world.<!--Comment Here-->Lorem ipsum.\");\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void codeCommentTest() throws IOException {
+
+		CodeTypeDeclaration input = CodeDOMUtility.createViewType(
+			"com.example",
+			"Foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"append",
+						new CodePrimitiveExpression("Hello world."))),
+				new CodeCommentStatement("Code Comment Here"),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"append",
+						new CodePrimitiveExpression("Lorem ipsum.")))
+				));
+
+		// mark override and parens
+		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+
+		String expected =
+			"package com.example;\n\n"+
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Foo extends DuelView {\n\n"+
+			"\tpublic Foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic Foo(DuelPart... parts) {\n"+
+			"\t\tsuper(parts);\n"+
+			"\t}\n\n"+
+			"\t@Override\n"+
+			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\toutput.append(\"Hello world.\");\n"+
+			"\t\t/*Code Comment Here*/\n"+
+			"\t\toutput.append(\"Lorem ipsum.\");\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
 }

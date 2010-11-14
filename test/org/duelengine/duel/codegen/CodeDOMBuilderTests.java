@@ -1271,4 +1271,95 @@ public class CodeDOMBuilderTests {
 		
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void commentTest() throws Exception {
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new LiteralNode("Hello world."),
+			new CommentNode("Comment Here"),
+			new LiteralNode("Lorem ipsum."));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"append",
+						new CodePrimitiveExpression("Hello world.<!--Comment Here-->Lorem ipsum.")))
+				)
+			);
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void codeCommentTest() throws Exception {
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new LiteralNode("Hello world."),
+			new CodeCommentNode("Code Comment Here"),
+			new LiteralNode("Lorem ipsum."));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"append",
+						new CodePrimitiveExpression("Hello world."))),
+				new CodeCommentStatement("Code Comment Here"),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"append",
+						new CodePrimitiveExpression("Lorem ipsum.")))
+			));
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+
+		assertEquals(expected, actual);
+	}
 }

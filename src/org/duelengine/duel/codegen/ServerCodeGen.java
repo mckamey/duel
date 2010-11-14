@@ -322,6 +322,9 @@ public class ServerCodeGen implements CodeGenerator {
 		} else if (statement instanceof CodeMethodReturnStatement) {
 			needsSemicolon = this.writeMethodReturn(output, (CodeMethodReturnStatement)statement);
 
+		} else if (statement instanceof CodeCommentStatement) {
+			needsSemicolon = this.writeComment(output, (CodeCommentStatement)statement);
+
 		} else {
 			throw new UnsupportedOperationException("Statement not yet supported: "+statement.getClass());
 		}
@@ -329,6 +332,16 @@ public class ServerCodeGen implements CodeGenerator {
 		if (needsSemicolon && !inline) {
 			output.append(';');
 		}
+	}
+
+	private boolean writeComment(Appendable output, CodeCommentStatement statement)
+		throws IOException {
+
+		String comment = statement.getValue();
+		comment = (comment != null) ? comment.replace("*/", "*\\/") : "";
+		output.append("/*").append(comment).append("*/");
+		
+		return false;
 	}
 
 	private boolean writeMethodReturn(Appendable output, CodeMethodReturnStatement statement)
