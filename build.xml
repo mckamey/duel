@@ -9,7 +9,8 @@
 		<property name="test.dir" value="${basedir}/test" />
 		<property name="bin.dir" value="${basedir}/bin" />
 		<property name="build.dir" value="${basedir}/build" />
-		<property name="jarfile" value="${build.dir}/${ant.project.name}.jar" />
+		<property name="jarfile.compiler" value="${build.dir}/duel.jar" />
+		<property name="jarfile.runtime" value="${build.dir}/duelengine.jar" />
 		<property name="reports.dir" value="${build.dir}/test" />
 		<property name="docs.dir" value="${build.dir}/docs" />
 
@@ -97,17 +98,25 @@
 			todir="${bin.dir}/org/duelengine/duel/codegen/"/>
 	</target>
 
-	<target name="jar" depends="compile.src" description="Package as a jar">
-		<jar destfile="${jarfile}" update="true">
+	<target name="jar.compiler" depends="compile.src" description="Package compiler as a jar">
+		<jar destfile="${jarfile.compiler}" update="true">
 			<fileset dir="${bin.dir}" />
 			<zipfileset src="${lib.dir}/rhino/js_trunk.jar" />
 			<manifest>
-				<attribute name="Main-Class" value="org.duelengine.duel.DuelCompiler" />
+				<attribute name="Main-Class" value="org.duelengine.duel.compiler.DuelCompiler" />
 			</manifest>
 		</jar>
 	</target>
 
-	<target name="compile.test" depends="jar" description="Compile Java tests">
+	<target name="jar.runtime" depends="compile.src" description="Package runtime as a jar">
+		<jar destfile="${jarfile.runtime}" update="true">
+			<fileset dir="${bin.dir}">
+				<include name="org/duelengine/duel/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="compile.test" depends="jar.compiler" description="Compile Java tests">
 		<javac
 			srcdir="${test.dir}"
 			destdir="${bin.dir}"
@@ -165,7 +174,7 @@
 		</javadoc>
 	</target>
 
-	<target name="all" depends="clean,test.js,test.report">
+	<target name="all" depends="clean,test.js,test.report,jar.runtime">
 		<echo message="Build completed." />
 	</target>
 
