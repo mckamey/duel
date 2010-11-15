@@ -14,9 +14,9 @@ public class DuelCompiler {
 		"\tjava -jar duel.jar <input-file> <output-folder>\n" +
 		"\tjava -jar duel.jar <input-file> <output-client-folder> <output-server-folder>\n\n"+
 		"\tinput-file: path to the DUEL input file (e.g. foo.duel)\n"+
-		"\toutput-root: path to the output folder\n"+
-		"\toutput-client-root: path to the view script folder\n"+
-		"\toutput-server-root: path to the source folder\n";
+		"\toutput-folder: path to the output folder\n"+
+		"\toutput-client-folder: path to the view scripts folder\n"+
+		"\toutput-server-folder: path to the source code folder\n";
 
 	public static void main(String[] args) {
 		File inputFile, outputClientFolder, outputServerFolder;
