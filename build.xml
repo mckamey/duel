@@ -16,9 +16,7 @@
 
 		<!-- set the classpaths for src/test including /bin and /lib -->
 		<path id="src.classpath.path">
-			<fileset dir="${lib.dir}">
-				<include name="rhino/js_trunk.jar" />
-			</fileset>
+			<fileset dir="${lib.dir}" includes="rhino/js_trunk.jar" />
 		</path>
 		<path id="test.classpath.path">
 			<pathelement location="${bin.dir}" />
@@ -110,9 +108,7 @@
 
 	<target name="jar.runtime" depends="compile.src" description="Package runtime as a jar">
 		<jar destfile="${jarfile.runtime}" update="true">
-			<fileset dir="${bin.dir}">
-				<include name="org/duelengine/duel/*.class"/>
-			</fileset>
+			<fileset dir="${bin.dir}" includes="org/duelengine/duel/*.class" />
 		</jar>
 	</target>
 
@@ -130,10 +126,8 @@
 		<mkdir dir="${reports.dir}" />
 
 		<junit fork="yes" printsummary="yes" haltonfailure="no" haltonerror="no">
-			<batchtest fork="yes" todir="${reports.dir}" >
-				<fileset dir="${bin.dir}">
-					<include name="**/*Tests.class" />
-				</fileset>
+			<batchtest fork="yes" todir="${reports.dir}">
+				<fileset dir="${bin.dir}" includes="**/*Tests.class" />
 			</batchtest>
 			<formatter type="xml" />
 			<classpath refid="test.classpath.path" />
