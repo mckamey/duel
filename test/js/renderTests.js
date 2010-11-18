@@ -218,6 +218,7 @@ test("doctype node", function() {
 		["",
 		 	["!doctype",
 		 	 	"html"],
+	 	 	"\n",
 			["html",
 			 	["body",
 			 	 	"Lorem ipsum."]
@@ -227,7 +228,7 @@ test("doctype node", function() {
 	var actual = view().toString();
 
 	var expected = 
-		'<!doctype html>'+
+		'<!doctype html>\n'+
 		'<html>'+
 		'<body>'+
 		'Lorem ipsum.'+

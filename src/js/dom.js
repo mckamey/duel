@@ -408,11 +408,20 @@
 			var child = node[i];
 			switch (getType(child)) {
 				case ARY:
+					// build child element
+					var childTag = child[0];
+					child = patchDOM(createElement(childTag), child);
+
+					if (childTag === "html") {
+						// unwrap HTML root, to simplify insertion
+						return child;
+					}
+
 					// append child element
-					appendDOM(elem, patchDOM(createElement(child[0]), child));
+					appendDOM(elem, child);
 					break;
 				case VAL:
-					// append child value
+					// append child value as text
 					appendDOM(elem, document.createTextNode(""+child));
 					break;
 				case OBJ:

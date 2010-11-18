@@ -179,12 +179,13 @@ test("comment nodes", function() {
 	same(toHTML(actual), toHTML(expected), "");
 });
 
-test("doctype node", function() {
+test("ignore doctype node", function() {
 
 	var view = duel(
 		["",
 		 	["!doctype",
 		 	 	"html"],
+	 	 	"\n",
 			["html",
 			 	["body",
 			 	 	"Lorem ipsum."]
@@ -193,15 +194,10 @@ test("doctype node", function() {
 
 	var actual = view().toDOM();
 
-	var expected = document.createDocumentFragment();
-
-	expected.appendChild(document.createComment("doctype html"));
-
-	var temp1 = document.createElement("html");
-	var temp2 = document.createElement("body");
-	temp2.appendChild(document.createTextNode("Lorem ipsum."));
-	temp1.appendChild(temp2);
-	expected.appendChild(temp1);
+	var expected = document.createElement("html");
+	var temp = document.createElement("body");
+	temp.appendChild(document.createTextNode("Lorem ipsum."));
+	expected.appendChild(temp);
 
 	same(toHTML(actual), toHTML(expected), "");
 });
