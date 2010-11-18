@@ -20,8 +20,10 @@ public class HTMLFormatter {
 		throws IOException {
 
 		output.append("<!doctype");
-		output.append(value);
-		output.append(">");
+		if (value != null && value.length() > 0) {
+			output.append(' ').append(value);
+		}
+		output.append('>');
 	}
 
 	public void writeOpenElementBeginTag(Appendable output, String tagName)

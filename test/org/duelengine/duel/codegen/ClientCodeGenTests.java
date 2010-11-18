@@ -534,7 +534,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void documentRootTest() throws Exception {
+	public void docTypeTest() throws Exception {
 		ViewRootNode input = new ViewRootNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))

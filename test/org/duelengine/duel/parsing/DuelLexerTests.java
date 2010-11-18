@@ -828,7 +828,7 @@ public class DuelLexerTests {
 		String input = "<!doctype html>\r\n<html></html>";
 
 		Object[] expected = {
-				DuelToken.block(new BlockValue("<!doctype", ">", " html")),
+				DuelToken.block(new BlockValue("<!doctype", ">", "html")),
 				DuelToken.literal("\n"),
 				DuelToken.elemBegin("html"),
 				DuelToken.elemEnd("html")
@@ -846,7 +846,7 @@ public class DuelLexerTests {
 			"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" />";
 
 		Object[] expected = {
-				DuelToken.block(new BlockValue("<!doctype", ">", " html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
+				DuelToken.block(new BlockValue("<!doctype", ">", "html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
 				DuelToken.literal("\n"),
 				DuelToken.elemBegin("html"),
 				DuelToken.attrName("xmlns"),

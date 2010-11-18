@@ -1362,4 +1362,53 @@ public class CodeDOMBuilderTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void docTypeTest() throws Exception {
+		ViewRootNode input = new ViewRootNode(
+				new AttributeNode[] {
+					new AttributeNode("name", new LiteralNode("foo"))
+				},
+				new DocTypeNode("html"),
+				new ElementNode("html", null,
+					new ElementNode("head", null,
+						new ElementNode("title", null,
+							new LiteralNode("The head."))),
+					new ElementNode("body", null,
+						new ElementNode("h1", null,
+							new LiteralNode("The body."))))
+				);
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"append",
+						new CodePrimitiveExpression("<!doctype html><html><head><title>The head.</title></head><body><h1>The body.</h1></body></html>")))
+				)
+			);
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+
+		assertEquals(expected, actual);
+	}
 }

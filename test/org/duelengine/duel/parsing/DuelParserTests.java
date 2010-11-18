@@ -220,7 +220,7 @@ public class DuelParserTests {
 
 		ViewRootNode expected =
 			new ViewRootNode(null,
-				new DocTypeNode(" html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\""),
+				new DocTypeNode("html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\""),
 				new LiteralNode("\n"),
 				new ElementNode("html",
 					new AttributeNode[] {
@@ -234,7 +234,7 @@ public class DuelParserTests {
 
 		Iterable<ViewRootNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
-			DuelToken.block(new BlockValue("<!doctype", ">", " html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
+			DuelToken.block(new BlockValue("<!doctype", ">", "html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
 			DuelToken.literal("\n"),
 			DuelToken.elemBegin("html"),
 			DuelToken.attrName("xmlns"),
