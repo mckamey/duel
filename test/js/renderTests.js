@@ -190,6 +190,52 @@ test("falsey attribute values", function() {
 	same(actual, expected, "");
 });
 
+test("comment nodes", function() {
+
+	var view = duel(
+		["div",
+		 	["!",
+		 	 	"Comment before"],
+		 	"Lorem ipsum",
+		 	["!",
+		 	 	"Comment after"]
+		]);
+
+	var actual = view().toString();
+
+	var expected = 
+		'<div>'+
+		'<!--Comment before-->'+
+		'Lorem ipsum'+
+		'<!--Comment after-->'+
+		'</div>';
+	same(actual, expected, "");
+});
+
+test("doctype node", function() {
+
+	var view = duel(
+		["",
+		 	["!doctype",
+		 	 	"html"],
+			["html",
+			 	["body",
+			 	 	"Lorem ipsum."]
+			]
+	 	]);
+
+	var actual = view().toString();
+
+	var expected = 
+		'<!doctype html>'+
+		'<html>'+
+		'<body>'+
+		'Lorem ipsum.'+
+		'</body>'+
+		'</html>';
+	same(actual, expected, "");
+});
+
 } catch (ex) {
 	alert(ex);
 }

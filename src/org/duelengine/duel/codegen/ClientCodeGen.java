@@ -166,21 +166,23 @@ public class ClientCodeGen implements CodeGenerator {
 			this.writeCodeBlock(output, (CodeBlockNode)node);
 
 		} else if (node instanceof CommentNode) {
-			this.writeComment(output, (CommentNode)node);
+			this.writeSpecialElement(output, "!", ((CommentNode)node).getValue());
 
 		} else if (node instanceof CodeCommentNode) {
-			output.append("\"\"");
+			this.writeComment(output, ((CodeCommentNode)node).getValue());
+
+		} else if (node instanceof DocTypeNode) {
+			this.writeSpecialElement(output, "!doctype", ((DocTypeNode)node).getValue());
 
 		} else if (node != null) {
 			throw new UnsupportedOperationException("Node not yet implemented: "+node.getClass());
 		}
 	}
 
-	private void writeComment(Appendable output, CommentNode node)
+	private void writeComment(Appendable output, String value)
 		throws IOException {
 
 		output.append(" /*");
-		String value = node.getValue();
 		if (value != null) {
 			output.append(value.replace("*/", "* /"));
 		}
@@ -191,6 +193,28 @@ public class ClientCodeGen implements CodeGenerator {
 		throws IOException {
 
 		output.append(node.getClientCode());
+	}
+
+	private void writeSpecialElement(Appendable output, String name, String value)
+		throws IOException {
+
+		output.append('[');
+		this.depth++;
+
+		this.writeString(output, name);
+
+		boolean hasValue = (value != null) && (value.length() > 0);
+		if (hasValue) {
+			output.append(',');
+			this.writeln(output);
+			this.writeString(output, value);
+		}
+
+		this.depth--;
+		if (hasValue) {
+			this.writeln(output);
+		}
+		output.append(']');
 	}
 
 	private void writeElement(Appendable output, String tagName, ElementNode node)
@@ -244,11 +268,7 @@ public class ClientCodeGen implements CodeGenerator {
 
 		boolean hasChildren = false;
 		for (Node child : node.getChildren()) {
-			if (child instanceof CodeCommentNode) {
-				continue;
-			}
-
-			if (!(child instanceof CommentNode)) {
+			if (!(child instanceof CodeCommentNode)) {
 				output.append(',');
 				this.writeln(output);
 				hasChildren = true;

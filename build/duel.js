@@ -888,7 +888,24 @@
 	}
 
 	/**
-	 * Renders the result as a string
+	 * Renders the comment as a string
+	 * 
+	 * @private
+	 * @param {Buffer} buffer The output buffer
+	 * @param {Array} node The result tree
+	 */
+	function renderComment(buffer, node) {
+		if (node[0] === '!doctype') {
+			// emit doctype
+			buffer.append('<!doctype ', node[1], '>');
+		} else {
+			// emit HTML comment
+			buffer.append('<!--', node[1], '-->');
+		}
+	}
+
+	/**
+	 * Renders the element as a string
 	 * 
 	 * @private
 	 * @param {Buffer} buffer The output buffer
@@ -896,11 +913,15 @@
 	 */
 	function renderElem(buffer, node) {
 
-		var tag = node[0],
+		var tag = node[0] || "",
 			length = node.length,
 			i = 1,
 			child;
 
+		if (tag.charAt(0) === '!') {
+			renderComment(buffer, node);
+			return;
+		}
 		if (tag) {
 			// emit open tag
 			buffer.append('<', tag);
@@ -1075,6 +1096,9 @@
 			}
 
 			tag = "";
+
+		} else if (tag.charAt(0) === '!') {
+			return document.createComment(tag === "!" ? "" : tag.substr(1)+' ');
 		}
 
 		if (tag.toLowerCase() === "style" && document.createStyleSheet) {
@@ -1094,7 +1118,12 @@
 	 */
 	function appendDOM(elem, child) {
 		if (child) {
-			if (elem.tagName && elem.tagName.toLowerCase() === "table" && elem.tBodies) {
+			var tag = (elem.tagName||"").toLowerCase();
+			if (elem.nodeType === 8) { // comment
+				if (child.nodeType === 3) { // text node
+					elem.nodeValue += child.nodeValue;
+				}
+			} else if (tag === "table" && elem.tBodies) {
 				if (!child.tagName) {
 					// must unwrap documentFragment for tables
 					if (child.nodeType === 11) {
@@ -1119,14 +1148,14 @@
 					elem.appendChild(child);
 				}
 
-			} else if (elem.tagName && elem.tagName.toLowerCase() === "style" && document.createStyleSheet) {
+			} else if (tag === "style" && document.createStyleSheet) {
 				// IE requires this interface for styles
 				elem.cssText = child;
 
 			} else if (elem.canHaveChildren !== false) {
 				elem.appendChild(child);
 
-			} else if (elem.tagName && elem.tagName.toLowerCase() === "object" &&
+			} else if (tag === "object" &&
 				child.tagName && child.tagName.toLowerCase() === "param") {
 					// IE-only path
 					try {

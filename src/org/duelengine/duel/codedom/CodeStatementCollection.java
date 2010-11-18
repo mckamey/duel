@@ -5,9 +5,9 @@ import java.util.*;
 /**
  * Represents a sequence of statements
  */
+@SuppressWarnings("serial")
 public class CodeStatementCollection extends ArrayList<CodeStatement> implements IdentifierScope {
 
-	private static final long serialVersionUID = 1L;
 	private Map<String, String> identMap;
 	private int nextID;
 

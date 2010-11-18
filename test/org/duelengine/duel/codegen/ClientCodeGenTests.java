@@ -491,14 +491,19 @@ public class ClientCodeGenTests {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo = duel([\"\",\n"+
-			"\t\"Hello world.\" /*Comment Here*/,\n"+
+			"\t\"Hello world.\",\n"+
+			"\t[\"!\",\n"+
+			"\t\t\"Comment Here\"\n"+
+			"\t],\n"+
 			"\t\"Lorem ipsum.\"\n"+
 			"]);\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
-		
+
+		System.out.println(actual);
+
 		assertEquals(expected, actual);
 	}
 
@@ -515,14 +520,59 @@ public class ClientCodeGenTests {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo = duel([\"\",\n"+
-			"\t\"Hello world.\",\n"+
+			"\t\"Hello world.\" /*Code Comment Here*/,\n"+
 			"\t\"Lorem ipsum.\"\n"+
 			"]);\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
+
+		System.out.println(actual);
 		
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void documentRootTest() throws Exception {
+		ViewRootNode input = new ViewRootNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new DocTypeNode("html"),
+			new ElementNode("html", null,
+				new ElementNode("head", null,
+					new ElementNode("title", null,
+						new LiteralNode("The head."))),
+				new ElementNode("body", null,
+					new ElementNode("h1", null,
+						new LiteralNode("The body."))))
+			);
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel([\"\",\n"+
+			"\t[\"!doctype\",\n"+
+			"\t\t\"html\"\n"+
+			"\t],\n"+
+			"\t[\"html\",\n"+
+			"\t\t[\"head\",\n"+
+			"\t\t\t[\"title\",\n"+
+			"\t\t\t\t\"The head.\"\n"+
+			"\t\t\t]\n"+
+			"\t\t],\n"+
+			"\t\t[\"body\",\n"+
+			"\t\t\t[\"h1\",\n"+
+			"\t\t\t\t\"The body.\"\n"+
+			"\t\t\t]\n"+
+			"\t\t]\n"+
+			"\t]\n"+
+			"]);\n";
+
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
+
 		assertEquals(expected, actual);
 	}
 }

@@ -167,7 +167,24 @@
 	}
 
 	/**
-	 * Renders the result as a string
+	 * Renders the comment as a string
+	 * 
+	 * @private
+	 * @param {Buffer} buffer The output buffer
+	 * @param {Array} node The result tree
+	 */
+	function renderComment(buffer, node) {
+		if (node[0] === '!doctype') {
+			// emit doctype
+			buffer.append('<!doctype ', node[1], '>');
+		} else {
+			// emit HTML comment
+			buffer.append('<!--', node[1], '-->');
+		}
+	}
+
+	/**
+	 * Renders the element as a string
 	 * 
 	 * @private
 	 * @param {Buffer} buffer The output buffer
@@ -175,11 +192,15 @@
 	 */
 	function renderElem(buffer, node) {
 
-		var tag = node[0],
+		var tag = node[0] || "",
 			length = node.length,
 			i = 1,
 			child;
 
+		if (tag.charAt(0) === '!') {
+			renderComment(buffer, node);
+			return;
+		}
 		if (tag) {
 			// emit open tag
 			buffer.append('<', tag);

@@ -158,6 +158,54 @@ test("falsey attribute values", function() {
 	same(toHTML(actual), toHTML(expected), "");
 });
 
+test("comment nodes", function() {
+
+	var view = duel(
+		["div",
+		 	["!",
+		 	 	"Comment before"],
+		 	"Lorem ipsum",
+		 	["!",
+		 	 	"Comment after"]
+		]);
+
+	var actual = view().toDOM();
+
+	var expected = document.createElement("div");
+	expected.appendChild(document.createComment("Comment before"));
+	expected.appendChild(document.createTextNode("Lorem ipsum"));
+	expected.appendChild(document.createComment("Comment after"));
+
+	same(toHTML(actual), toHTML(expected), "");
+});
+
+test("doctype node", function() {
+
+	var view = duel(
+		["",
+		 	["!doctype",
+		 	 	"html"],
+			["html",
+			 	["body",
+			 	 	"Lorem ipsum."]
+			]
+	 	]);
+
+	var actual = view().toDOM();
+
+	var expected = document.createDocumentFragment();
+
+	expected.appendChild(document.createComment("doctype html"));
+
+	var temp1 = document.createElement("html");
+	var temp2 = document.createElement("body");
+	temp2.appendChild(document.createTextNode("Lorem ipsum."));
+	temp1.appendChild(temp2);
+	expected.appendChild(temp1);
+
+	same(toHTML(actual), toHTML(expected), "");
+});
+
 } catch (ex) {
 	alert(ex);
 }
