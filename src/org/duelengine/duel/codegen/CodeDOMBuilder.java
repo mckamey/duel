@@ -20,6 +20,7 @@ public class CodeDOMBuilder {
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
 	private CodeTypeDeclaration viewType;
 	private CodeMethod initMethod;
+	private boolean suspendMode;
 
 	public CodeDOMBuilder() {
 		this(null);
@@ -88,7 +89,11 @@ public class CodeDOMBuilder {
 	private void buildNode(Node node) throws IOException {
 		if (node instanceof LiteralNode) {
 			LiteralNode literal = (LiteralNode)node;
-			this.formatter.writeLiteral(this.buffer, literal.getValue(), this.settings.getEncodeNonASCII());
+			if (this.suspendMode) {
+				this.buffer.append(literal.getValue());
+			} else {
+				this.formatter.writeLiteral(this.buffer, literal.getValue(), this.settings.getEncodeNonASCII());
+			}
 			return;
 		}
 
@@ -671,8 +676,14 @@ public class CodeDOMBuilder {
 		if (element.canHaveChildren()) {
 			this.formatter.writeCloseElementBeginTag(this.buffer);
 
-			for (Node child : element.getChildren()) {
-				this.buildNode(child);
+			boolean prevMode = this.suspendMode;
+			this.suspendMode = ("script".equals(tagName) || "style".equals(tagName));
+			try {
+				for (Node child : element.getChildren()) {
+					this.buildNode(child);
+				}
+			} finally {
+				this.suspendMode = prevMode;
 			}
 
 			this.formatter.writeElementEndTag(this.buffer, tagName);

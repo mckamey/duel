@@ -888,6 +888,59 @@ public class CodeDOMBuilderTests {
 	}
 
 	@Test
+	public void suspendModeTest() throws IOException {
+
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div",
+				new AttributeNode[] {
+					new AttributeNode("foo", new LiteralNode("&<>\""))
+				},
+				new LiteralNode("&<>\""),
+				new ElementNode("script",
+					new AttributeNode[] {
+						new AttributeNode("type", new LiteralNode("text/javascript"))
+					},
+					new LiteralNode("&<>\"")),
+				new LiteralNode("&<>\"")
+			));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"append",
+						new CodePrimitiveExpression("<div foo=\"&amp;&lt;&gt;&quot;\">&amp;&lt;&gt;\"<script type=\"text/javascript\">&<>\"</script>&amp;&lt;&gt;\"</div>")))
+				)
+			);
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void namespaceTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {

@@ -427,7 +427,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 		this.token = isEndTag ? DuelToken.elemEnd(this.lastTag) : DuelToken.elemBegin(this.lastTag);
 
 		// tags with unparsed content enter suspendMode
-		this.suspendMode = !isEndTag && ((lastTag.equals("script")) || (lastTag.equals("style")));
+		this.suspendMode = !isEndTag && (("script".equals(lastTag)) || ("style".equals(lastTag)));
 		return true;
 	}
 
