@@ -49,6 +49,7 @@ public class ContainerNode extends Node {
 		for (int i=0, length=this.children.size(); i<length; i++) {
 			Node child = this.children.get(i);
 			if (child == oldChild) {
+				this.children.remove(i);
 				child.setParent(null);
 				return true;
 			}

@@ -30,7 +30,7 @@ public class ClientCodeGen implements CodeGenerator {
 	 * @throws IOException
 	 */
 	@Override
-	public void write(Appendable output, ViewRootNode... views)
+	public void write(Appendable output, VIEWCommandNode... views)
 		throws IOException {
 
 		this.write(output, views != null ? Arrays.asList(views) : null);
@@ -43,7 +43,7 @@ public class ClientCodeGen implements CodeGenerator {
 	 * @throws IOException 
 	 */
 	@Override
-	public void write(Appendable output, Iterable<ViewRootNode> views)
+	public void write(Appendable output, Iterable<VIEWCommandNode> views)
 		throws IOException {
 
 		if (output == null) {
@@ -57,7 +57,7 @@ public class ClientCodeGen implements CodeGenerator {
 		this.writeln(output);
 
 		this.namespaces = JSUtility.cloneBrowserObjects();
-		for (ViewRootNode view : views) {
+		for (VIEWCommandNode view : views) {
 			if (view == null) {
 				continue;
 			}
@@ -67,7 +67,7 @@ public class ClientCodeGen implements CodeGenerator {
 		this.namespaces = null;
 	}
 
-	private void writeNamespaces(Appendable output, ViewRootNode view)
+	private void writeNamespaces(Appendable output, VIEWCommandNode view)
 		throws IOException {
 
 		String ident = view.getName();
@@ -120,7 +120,7 @@ public class ClientCodeGen implements CodeGenerator {
 		}
 	}
 
-	private void writeView(Appendable output, ViewRootNode view)
+	private void writeView(Appendable output, VIEWCommandNode view)
 		throws IOException {
 
 		this.depth = 0;

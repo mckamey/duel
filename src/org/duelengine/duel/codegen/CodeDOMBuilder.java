@@ -31,7 +31,7 @@ public class CodeDOMBuilder {
 		this.formatter = new HTMLFormatter();
 	}
 
-	public CodeTypeDeclaration buildView(ViewRootNode viewNode) throws IOException {
+	public CodeTypeDeclaration buildView(VIEWCommandNode viewNode) throws IOException {
 		try {
 			String fullName = viewNode.getName();
 			int lastDot = fullName.lastIndexOf('.');

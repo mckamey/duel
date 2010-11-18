@@ -8,7 +8,7 @@ public class ClientCodeGenTests {
 
 	@Test
 	public void stringSimpleTest() throws Exception {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -27,7 +27,7 @@ public class ClientCodeGenTests {
 
 	@Test
 	public void stringEscapeTest() throws Exception {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -47,7 +47,7 @@ public class ClientCodeGenTests {
 	@Test
 	public void expressionCountTest() throws Exception {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -67,7 +67,7 @@ public class ClientCodeGenTests {
 	@Test
 	public void markupExpressionDataTest() throws Exception {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -87,7 +87,7 @@ public class ClientCodeGenTests {
 	@Test
 	public void statementNoneTest() throws Exception {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -107,7 +107,7 @@ public class ClientCodeGenTests {
 	@Test
 	public void statementIndexTest() throws Exception {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -127,7 +127,7 @@ public class ClientCodeGenTests {
 	@Test
 	public void conditionalBlockTest() throws Exception {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -175,7 +175,7 @@ public class ClientCodeGenTests {
 	@Test
 	public void loopArrayTest() throws Exception {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -208,7 +208,7 @@ public class ClientCodeGenTests {
 	@Test
 	public void loopPropertiesTest() throws Exception {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -241,7 +241,7 @@ public class ClientCodeGenTests {
 	@Test
 	public void loopCountTest() throws Exception {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -275,7 +275,7 @@ public class ClientCodeGenTests {
 	@Test
 	public void attributesTest() throws Exception {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -331,12 +331,12 @@ public class ClientCodeGenTests {
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, 
-			new ViewRootNode(
+			new VIEWCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("name", new LiteralNode("foo"))
 				},
 				new LiteralNode("First View")),
-			new ViewRootNode(
+			new VIEWCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("name", new LiteralNode("bar"))
 				},
@@ -348,7 +348,7 @@ public class ClientCodeGenTests {
 
 	@Test
 	public void namespaceTest() throws Exception {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 			},
@@ -388,12 +388,12 @@ public class ClientCodeGenTests {
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output,
-			new ViewRootNode(
+			new VIEWCommandNode(
 					new AttributeNode[] {
 						new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 					},
 					new LiteralNode("First View")),
-			new ViewRootNode(
+			new VIEWCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("name", new LiteralNode("foo.bar.Yada"))
 				},
@@ -425,12 +425,12 @@ public class ClientCodeGenTests {
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output,
-			new ViewRootNode(
+			new VIEWCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("name", new LiteralNode("foo.bar.one.Blah"))
 				},
 				new LiteralNode("First View")),
-			new ViewRootNode(
+			new VIEWCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("name", new LiteralNode("foo.bar.two.Yada"))
 				},
@@ -463,12 +463,12 @@ public class ClientCodeGenTests {
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output,
-			new ViewRootNode(
+			new VIEWCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 				},
 				new LiteralNode("First View")),
-			new ViewRootNode(
+			new VIEWCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("name", new LiteralNode("com.example.Yada"))
 				},
@@ -480,7 +480,7 @@ public class ClientCodeGenTests {
 
 	@Test
 	public void commentTest() throws Exception {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -509,7 +509,7 @@ public class ClientCodeGenTests {
 
 	@Test
 	public void codeCommentTest() throws Exception {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -535,7 +535,7 @@ public class ClientCodeGenTests {
 
 	@Test
 	public void docTypeTest() throws Exception {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},

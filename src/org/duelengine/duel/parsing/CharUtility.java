@@ -5,6 +5,20 @@ package org.duelengine.duel.parsing;
  */
 final class CharUtility {
 
+	public static boolean isNullOrWhiteSpace(String value) {
+		if (value == null) {
+			return true;
+		}
+
+		for (int i=0, length=value.length(); i<length; i++) {
+			if (!isWhiteSpace(value.charAt(i))) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 	public static boolean isWhiteSpace(int ch) {
 		switch (ch) {
 			case ' ':		// Space

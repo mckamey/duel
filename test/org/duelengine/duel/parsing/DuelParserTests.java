@@ -11,15 +11,20 @@ public class DuelParserTests {
 	@Test
 	public void literalSingleTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
 			new LiteralNode("This is just literal text."));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.literal("This is just literal text.")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -28,17 +33,68 @@ public class DuelParserTests {
 	@Test
 	public void literalFoldingTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
 			new LiteralNode("This is literal text\nwhich can all be folded."));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.literal("This is literal text"),
 			DuelToken.literal("\n"),
 			DuelToken.literal("which can all be folded.")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
+	}
+
+	@Test
+	public void leadingWhitespaceTest() throws Exception {
+
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new ElementNode("br"));
+
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
+			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
+			DuelToken.literal("\n\n"),
+			DuelToken.elemBegin("br")
+		);
+
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
+	}
+
+	@Test
+	public void trailingWhitespaceTest() throws Exception {
+
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new ElementNode("br"));
+
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
+			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
+			DuelToken.elemBegin("br"),
+			DuelToken.literal("\n\n")
+		);
+
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -47,15 +103,20 @@ public class DuelParserTests {
 	@Test
 	public void elemBeginTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
 			new ElementNode("div"));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -64,16 +125,21 @@ public class DuelParserTests {
 	@Test
 	public void elemBeginEndTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
 			new ElementNode("div"));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemEnd("div")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -82,21 +148,25 @@ public class DuelParserTests {
 	@Test
 	public void elemAttribTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(null,
-				new ElementNode("div",
-					new AttributeNode[] {
-						new AttributeNode("class", new LiteralNode("foo"))
-					}));
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div",
+				new AttributeNode[] {
+					new AttributeNode("class", new LiteralNode("foo"))
+				}));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div"),
 			DuelToken.attrName("class"),
 			DuelToken.attrValue("foo")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -105,14 +175,19 @@ public class DuelParserTests {
 	@Test
 	public void elemNestedTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
 			new ElementNode("div", null,
 				new ElementNode("span", null,
 					new ElementNode("img"))
 			));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("span"),
 			DuelToken.elemBegin("img"),
@@ -120,7 +195,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -129,7 +204,10 @@ public class DuelParserTests {
 	@Test
 	public void elemListTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
 			new ElementNode(
 				"ul",
 				new AttributeNode[] {
@@ -143,8 +221,10 @@ public class DuelParserTests {
 					new LiteralNode("two")),
 				new LiteralNode("\n")));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("ul"),
 			DuelToken.attrName("class"),
 			DuelToken.attrValue("foo"),
@@ -160,7 +240,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("ul")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -169,20 +249,24 @@ public class DuelParserTests {
 	@Test
 	public void elemOverlapTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(null,
-				new ElementNode("div", null,
-					new ElementNode("span")));
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div", null,
+				new ElementNode("span")));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("span"),
 			DuelToken.elemEnd("div"),
 			DuelToken.elemEnd("span")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -191,15 +275,19 @@ public class DuelParserTests {
 	@Test
 	public void elemAutoBalanceTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(null,
-				new ElementNode("div", null,
-					new ElementNode("img"),
-					new ElementNode("span", null,
-						new LiteralNode("plain text"))));
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div", null,
+				new ElementNode("img"),
+				new ElementNode("span", null,
+					new LiteralNode("plain text"))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("img"),
 			DuelToken.elemBegin("span"),
@@ -209,7 +297,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("span")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -218,22 +306,26 @@ public class DuelParserTests {
 	@Test
 	public void doctypeTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(null,
-				new DocTypeNode("html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\""),
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new DocTypeNode("html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\""),
+			new LiteralNode("\n"),
+			new ElementNode("html",
+				new AttributeNode[] {
+					new AttributeNode("xmlns", new LiteralNode("http://www.w3.org/1999/xhtml")),
+					new AttributeNode("xml:lang", new LiteralNode("en"))
+				},
 				new LiteralNode("\n"),
-				new ElementNode("html",
-					new AttributeNode[] {
-						new AttributeNode("xmlns", new LiteralNode("http://www.w3.org/1999/xhtml")),
-						new AttributeNode("xml:lang", new LiteralNode("en"))
-					},
-					new LiteralNode("\n"),
-					new ElementNode("body", null,
-						new LiteralNode("Lorem ipsum dolor sit amet")),
-					new LiteralNode("\n")));
+				new ElementNode("body", null,
+					new LiteralNode("Lorem ipsum dolor sit amet")),
+				new LiteralNode("\n")));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.block(new BlockValue("<!doctype", ">", "html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
 			DuelToken.literal("\n"),
 			DuelToken.elemBegin("html"),
@@ -249,7 +341,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("html")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -258,7 +350,10 @@ public class DuelParserTests {
 	@Test
 	public void loopArrayTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
 			new ElementNode("ul", null,
 				new FORCommandNode(
 					new AttributeNode[] {
@@ -269,8 +364,10 @@ public class DuelParserTests {
 						new LiteralNode("item here")),
 					new LiteralNode("\n"))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("ul"),
 			DuelToken.elemBegin("for"),
 			DuelToken.attrName("each"),
@@ -284,7 +381,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("ul")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -293,7 +390,10 @@ public class DuelParserTests {
 	@Test
 	public void loopPropertiesTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
 			new ElementNode("ul", null,
 				new FORCommandNode(
 					new AttributeNode[] {
@@ -304,8 +404,10 @@ public class DuelParserTests {
 						new LiteralNode("key-value here")),
 					new LiteralNode("\n"))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("ul"),
 			DuelToken.elemBegin("for"),
 			DuelToken.attrName("in"),
@@ -319,7 +421,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("ul")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -328,7 +430,10 @@ public class DuelParserTests {
 	@Test
 	public void loopCountTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
 			new ElementNode("ul", null,
 				new FORCommandNode(
 					new AttributeNode[] {
@@ -340,8 +445,10 @@ public class DuelParserTests {
 						new LiteralNode("item here")),
 					new LiteralNode("\n"))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("ul"),
 			DuelToken.elemBegin("for"),
 			DuelToken.attrName("count"),
@@ -357,7 +464,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("ul")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -366,25 +473,29 @@ public class DuelParserTests {
 	@Test
 	public void conditionalBlockTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(null,
-				new ElementNode("div", null,
-					new XORCommandNode(null,
-						new IFCommandNode(
-							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("data == 0"))
-							},
-							new LiteralNode("\n\tzero\n")),
-						new IFCommandNode(
-							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("data == 1"))
-							},
-							new LiteralNode("\n\tone\n")),
-						new IFCommandNode(null,
-							new LiteralNode("\n\tmany\n")))));
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div", null,
+				new XORCommandNode(null,
+					new IFCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("test", new ExpressionNode("data == 0"))
+						},
+						new LiteralNode("\n\tzero\n")),
+					new IFCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("test", new ExpressionNode("data == 1"))
+						},
+						new LiteralNode("\n\tone\n")),
+					new IFCommandNode(null,
+						new LiteralNode("\n\tmany\n")))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("if"),
 			DuelToken.attrName("test"),
@@ -400,7 +511,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -409,25 +520,29 @@ public class DuelParserTests {
 	@Test
 	public void conditionalBlockVoidElseTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(null,
-				new ElementNode("div", null,
-					new XORCommandNode(null,
-						new IFCommandNode(
-							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("data===0"))
-							},
-							new LiteralNode("zero")),
-						new IFCommandNode(
-							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("data===1"))
-							},
-							new LiteralNode("one")),
-						new IFCommandNode(null,
-							new LiteralNode("many")))));
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div", null,
+				new XORCommandNode(null,
+					new IFCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("test", new ExpressionNode("data===0"))
+						},
+						new LiteralNode("zero")),
+					new IFCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("test", new ExpressionNode("data===1"))
+						},
+						new LiteralNode("one")),
+					new IFCommandNode(null,
+						new LiteralNode("many")))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("if"),
 			DuelToken.attrName("test"),
@@ -445,7 +560,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -454,27 +569,31 @@ public class DuelParserTests {
 	@Test
 	public void conditionalSinglesTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(null,
-				new ElementNode("div", null,
-					new XORCommandNode(null,
-						new IFCommandNode(
-							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("data == 0"))
-							},
-							new LiteralNode("\n\tzero\n"))),
-					new XORCommandNode(null,
-						new IFCommandNode(
-							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("data == 1"))
-							},
-							new LiteralNode("\n\tone\n"))),
-					new XORCommandNode(null,
-						new IFCommandNode(null,
-							new LiteralNode("\n\tmany\n")))));
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div", null,
+				new XORCommandNode(null,
+					new IFCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("test", new ExpressionNode("data == 0"))
+						},
+						new LiteralNode("\n\tzero\n"))),
+				new XORCommandNode(null,
+					new IFCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("test", new ExpressionNode("data == 1"))
+						},
+						new LiteralNode("\n\tone\n"))),
+				new XORCommandNode(null,
+					new IFCommandNode(null,
+						new LiteralNode("\n\tmany\n")))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("if"),
 			DuelToken.attrName("test"),
@@ -492,7 +611,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -501,25 +620,29 @@ public class DuelParserTests {
 	@Test
 	public void conditionalAliasesTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(null,
-				new ElementNode("div", null,
-					new XORCommandNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div", null,
+				new XORCommandNode(null,
+					new IFCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("test", new ExpressionNode("data == 0"))
+						},
+						new LiteralNode("\n\tzero\n")),
 						new IFCommandNode(
 							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("data == 0"))
+								new AttributeNode("test", new ExpressionNode("data == 1"))
 							},
-							new LiteralNode("\n\tzero\n")),
-							new IFCommandNode(
-								new AttributeNode[] {
-									new AttributeNode("test", new ExpressionNode("data == 1"))
-								},
-								new LiteralNode("\n\tone\n")),
-							new IFCommandNode(null,
-								new LiteralNode("\n\tmany\n")))));
+							new LiteralNode("\n\tone\n")),
+						new IFCommandNode(null,
+							new LiteralNode("\n\tmany\n")))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("if"),
 			DuelToken.attrName("if"),
@@ -535,7 +658,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -544,18 +667,22 @@ public class DuelParserTests {
 	@Test
 	public void conditionalAttrTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(null,
-				new ElementNode("div", null,
-					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data == 0"))
-						},
-						new ElementNode("p", null,
-							new LiteralNode("no items found")))));
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div", null,
+				new IFCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("test", new ExpressionNode("data == 0"))
+					},
+					new ElementNode("p", null,
+						new LiteralNode("no items found")))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("p"),
 			DuelToken.attrName("if"),
@@ -565,7 +692,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -574,7 +701,10 @@ public class DuelParserTests {
 	@Test
 	public void conditionalAttrUnclosedTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
 			new ElementNode("div", null,
 				new IFCommandNode(
 					new AttributeNode[] {
@@ -583,8 +713,10 @@ public class DuelParserTests {
 					new ElementNode("p", null,
 						new LiteralNode("no items found")))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("div"),
 			DuelToken.elemBegin("p"),
 			DuelToken.attrName("if"),
@@ -593,7 +725,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -602,7 +734,10 @@ public class DuelParserTests {
 	@Test
 	public void conditionalAttrVoidTagTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(null,
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
 			new IFCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("test", new ExpressionNode("data.showHR"))
@@ -610,15 +745,17 @@ public class DuelParserTests {
 				new ElementNode("hr")),
 			new LiteralNode("always shown"));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("hr"),
 			DuelToken.attrName("if"),
 			DuelToken.attrValue("data.showHR"),
 			DuelToken.literal("always shown")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -627,18 +764,22 @@ public class DuelParserTests {
 	@Test
 	public void callTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(null,
-				new CALLCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("view", new ExpressionNode("Foo.Other")),
-						new AttributeNode("data", new ExpressionNode("data.detail")),
-						new AttributeNode("index", new ExpressionNode("1")),
-						new AttributeNode("count", new ExpressionNode("42"))
-					}));
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new CALLCommandNode(
+				new AttributeNode[] {
+					new AttributeNode("view", new ExpressionNode("Foo.Other")),
+					new AttributeNode("data", new ExpressionNode("data.detail")),
+					new AttributeNode("index", new ExpressionNode("1")),
+					new AttributeNode("count", new ExpressionNode("42"))
+				}));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("call"),
 			DuelToken.attrName("view"),
 			DuelToken.attrValue("Foo.Other"),
@@ -651,7 +792,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("call")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -660,28 +801,32 @@ public class DuelParserTests {
 	@Test
 	public void callPartTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(null,
-				new CALLCommandNode(
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new CALLCommandNode(
+				new AttributeNode[] {
+					new AttributeNode("view", new ExpressionNode("Foo.Other")),
+					new AttributeNode("data", new ExpressionNode("data.detail")),
+					new AttributeNode("index", new ExpressionNode("1")),
+					new AttributeNode("count", new ExpressionNode("42"))
+				},
+				new PARTCommandNode(
 					new AttributeNode[] {
-						new AttributeNode("view", new ExpressionNode("Foo.Other")),
-						new AttributeNode("data", new ExpressionNode("data.detail")),
-						new AttributeNode("index", new ExpressionNode("1")),
-						new AttributeNode("count", new ExpressionNode("42"))
+							new AttributeNode("name", new LiteralNode("title-area"))
 					},
-					new PARTCommandNode(
-						new AttributeNode[] {
-								new AttributeNode("name", new LiteralNode("title-area"))
-						},
-						new LiteralNode("And this would be the title.")),
-					new PARTCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("name", new LiteralNode("content-area"))
-						},
-						new LiteralNode("Content goes here!"))));
+					new LiteralNode("And this would be the title.")),
+				new PARTCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("name", new LiteralNode("content-area"))
+					},
+					new LiteralNode("Content goes here!"))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
 			DuelToken.elemBegin("call"),
 			DuelToken.attrName("view"),
 			DuelToken.attrValue("Foo.Other"),
@@ -704,7 +849,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("call")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -713,7 +858,7 @@ public class DuelParserTests {
 	@Test
 	public void viewPartTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(
+		VIEWCommandNode expected = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("Foo.Other"))
 			},
@@ -740,7 +885,7 @@ public class DuelParserTests {
 						},
 						new LiteralNode("Placeholder content.")))));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
 			DuelToken.attrName("name"),
 			DuelToken.attrValue("Foo.Other"),
@@ -768,7 +913,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -777,14 +922,13 @@ public class DuelParserTests {
 	@Test
 	public void viewMetadataUnclosedTest() throws Exception {
 
-		ViewRootNode expected =
-			new ViewRootNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("Foo.Other"))
-				},
-				new ElementNode("div"));
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("Foo.Other"))
+			},
+			new ElementNode("div"));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
 			DuelToken.attrName("name"),
 			DuelToken.attrValue("Foo.Other"),
@@ -792,7 +936,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("div")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -801,13 +945,13 @@ public class DuelParserTests {
 	@Test
 	public void viewMetadataCloseTagTest() throws Exception {
 
-		ViewRootNode expected = new ViewRootNode(
+		VIEWCommandNode expected = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.myView"))
 			},
 			new ElementNode("div"));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
 			DuelToken.attrName("name"),
 			DuelToken.attrValue("foo.myView"),
@@ -816,7 +960,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("view")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected, iterator.next());
 		assertFalse(iterator.hasNext());
@@ -825,19 +969,19 @@ public class DuelParserTests {
 	@Test
 	public void muliviewMetadataTest() throws Exception {
 
-		ViewRootNode expected1 = new ViewRootNode(
+		VIEWCommandNode expected1 = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.myView"))
 			},
 			new ElementNode("div"));
 
-		ViewRootNode expected2 = new ViewRootNode(
+		VIEWCommandNode expected2 = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.myOtherView"))
 			},
 			new ElementNode("p"));
 
-		Iterable<ViewRootNode> actual = new DuelParser().parse(
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
 			DuelToken.attrName("name"),
 			DuelToken.attrValue("foo.myView"),
@@ -853,7 +997,7 @@ public class DuelParserTests {
 			DuelToken.elemEnd("view")
 		);
 
-		Iterator<ViewRootNode> iterator = actual.iterator();
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
 		assertTrue(iterator.hasNext());
 		assertEquals(expected1, iterator.next());
 		assertTrue(iterator.hasNext());

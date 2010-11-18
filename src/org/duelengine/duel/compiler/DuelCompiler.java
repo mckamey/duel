@@ -55,7 +55,7 @@ public class DuelCompiler {
 			return;
 		}
 
-		List<ViewRootNode> views;
+		List<VIEWCommandNode> views;
 		try {
 			FileReader reader = new FileReader(inputFile);
 			views = new DuelParser().parse(new DuelLexer(reader));
@@ -87,7 +87,7 @@ public class DuelCompiler {
 		}
 
 		codegen = new ServerCodeGen();
-		for (ViewRootNode view : views) {
+		for (VIEWCommandNode view : views) {
 			try {
 				File outputFile = new File(outputServerFolder, view.getName().replace('.', '/')+codegen.getFileExtension());
 				outputFile.getParentFile().mkdirs();

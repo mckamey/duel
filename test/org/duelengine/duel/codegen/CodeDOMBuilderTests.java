@@ -13,7 +13,7 @@ public class CodeDOMBuilderTests {
 
 	@Test
 	public void stringSimpleTest() throws IOException {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -54,7 +54,7 @@ public class CodeDOMBuilderTests {
 
 	@Test
 	public void stringEscapeTest() throws IOException {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -96,7 +96,7 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void expressionCountTest() throws IOException {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -140,7 +140,7 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void expressionDataTest() throws IOException {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -184,7 +184,7 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void markupExpressionDataTest() throws IOException {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -229,7 +229,7 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void statementNoneTest() throws IOException {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -274,7 +274,7 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void conditionalBlockTest() throws IOException {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("example.foo"))
 			},
@@ -370,7 +370,7 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void conditionalSinglesTest() throws IOException {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("example.foo2"))
 			},
@@ -461,7 +461,7 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void iterationArrayTest() throws IOException {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("example"))
 			},
@@ -586,7 +586,7 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void iterationObjectTest() throws IOException {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("example"))
 			},
@@ -719,7 +719,7 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void iterationCountTest() throws IOException {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("example"))
 			},
@@ -833,7 +833,7 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void attributesTest() throws IOException {
 
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -889,7 +889,7 @@ public class CodeDOMBuilderTests {
 
 	@Test
 	public void namespaceTest() throws IOException {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 			},
@@ -929,7 +929,7 @@ public class CodeDOMBuilderTests {
 
 	@Test
 	public void callViewTest() throws IOException {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 			},
@@ -1003,7 +1003,7 @@ public class CodeDOMBuilderTests {
 
 	@Test
 	public void callWrapperTest() throws IOException {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 			},
@@ -1112,7 +1112,7 @@ public class CodeDOMBuilderTests {
 
 	@Test
 	public void wrapperViewTest() throws IOException {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
 			},
@@ -1274,7 +1274,7 @@ public class CodeDOMBuilderTests {
 
 	@Test
 	public void commentTest() throws Exception {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -1317,7 +1317,7 @@ public class CodeDOMBuilderTests {
 
 	@Test
 	public void codeCommentTest() throws Exception {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
 			},
@@ -1365,7 +1365,7 @@ public class CodeDOMBuilderTests {
 
 	@Test
 	public void docTypeTest() throws Exception {
-		ViewRootNode input = new ViewRootNode(
+		VIEWCommandNode input = new VIEWCommandNode(
 				new AttributeNode[] {
 					new AttributeNode("name", new LiteralNode("foo"))
 				},

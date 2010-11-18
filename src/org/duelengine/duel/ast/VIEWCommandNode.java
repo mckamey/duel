@@ -1,19 +1,17 @@
 package org.duelengine.duel.ast;
 
-import java.util.*;
-
-public class ViewRootNode extends CommandNode {
+public class VIEWCommandNode extends CommandNode {
 
 	public static final String EXT_NAME = "view";
 	private static final String NAME = "$view";
 	private static final CommandName CMD = CommandName.VIEW;
 	private String name;
 
-	public ViewRootNode() {
+	public VIEWCommandNode() {
 		super(CMD, NAME, false);
 	}
 
-	public ViewRootNode(AttributeNode[] attr, Node... children) {
+	public VIEWCommandNode(AttributeNode[] attr, Node... children) {
 		super(CMD, NAME, false, attr, children);
 	}
 
@@ -24,7 +22,7 @@ public class ViewRootNode extends CommandNode {
 	public void setName(String value) {
 		this.name = value;
 	}
-	
+
 	@Override
 	public boolean isSelf(String tag) {
 		return EXT_NAME.equalsIgnoreCase(tag) || NAME.equalsIgnoreCase(tag);

@@ -16,7 +16,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public List<ViewRootNode> parse(DuelToken... tokens)
+	public List<VIEWCommandNode> parse(DuelToken... tokens)
 		throws Exception {
 
 		return this.parse(tokens != null ? Arrays.asList(tokens).iterator() : null);
@@ -27,7 +27,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public List<ViewRootNode> parse(Iterable<DuelToken> tokens)
+	public List<VIEWCommandNode> parse(Iterable<DuelToken> tokens)
 		throws Exception {
 
 		return this.parse(tokens != null ? tokens.iterator() : null);
@@ -38,7 +38,7 @@ public class DuelParser {
 	 * @param tokens
 	 * @return
 	 */
-	public List<ViewRootNode> parse(Iterator<DuelToken> tokens)
+	public List<VIEWCommandNode> parse(Iterator<DuelToken> tokens)
 		throws Exception {
 
 		if (tokens == null) {
@@ -53,14 +53,22 @@ public class DuelParser {
 				this.parseNext(document);
 			}
 
-			List<ViewRootNode> views = new ArrayList<ViewRootNode>(1);
+			List<VIEWCommandNode> views = new ArrayList<VIEWCommandNode>(1);
 			for (Node node : document.getChildren()) {
-				if (node instanceof ViewRootNode) {
-					views.add((ViewRootNode)node);
+				if (node instanceof VIEWCommandNode) {
+					views.add(scrubView((VIEWCommandNode)node));
 					continue;
 				}
 
-				// TODO: syntax error unless is literal whitespace 
+				if (node instanceof LiteralNode) {
+					String text = ((LiteralNode)node).getValue();
+					if (text == null || text.trim().length() == 0) {
+						continue;
+					}
+				}
+
+				// syntax error unless is literal whitespace
+				throw new IllegalArgumentException("Content must sit within a named view.");
 			}
 
 			return views;
@@ -263,6 +271,33 @@ public class DuelParser {
 		conditional.appendChild(elem);
 	}
 
+	private VIEWCommandNode scrubView(VIEWCommandNode node) {
+		if (node.getName() == null || node.getName().length() == 0) {
+			// syntax error unless is literal whitespace
+			throw new IllegalArgumentException("View is missing name attribute");
+		}
+
+		// remove leading and trailing pure whitespace nodes
+		
+		Node child = node.getLastChild();
+		if (child instanceof LiteralNode) {
+			String text = ((LiteralNode)child).getValue();
+			if (CharUtility.isNullOrWhiteSpace(text)) {
+				node.removeChild(child);
+			}
+		}
+
+		child = node.getFirstChild();
+		if (child instanceof LiteralNode) {
+			String text = ((LiteralNode)child).getValue();
+			if (CharUtility.isNullOrWhiteSpace(text)) {
+				node.removeChild(child);
+			}
+		}
+		
+		return node;
+	}
+
 	/**
 	 * Ensures the next node is ready
 	 * @return
@@ -307,8 +342,8 @@ public class DuelParser {
 			return new PARTCommandNode();
 		}
 
-		if (tagName.equalsIgnoreCase(ViewRootNode.EXT_NAME)) {
-			return new ViewRootNode();
+		if (tagName.equalsIgnoreCase(VIEWCommandNode.EXT_NAME)) {
+			return new VIEWCommandNode();
 		}
 
 		return new ElementNode(tagName.toLowerCase());

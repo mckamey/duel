@@ -38,7 +38,7 @@ public class ServerCodeGen implements CodeGenerator {
 	 * @throws IOException 
 	 */
 	@Override
-	public void write(Appendable output, ViewRootNode... views)
+	public void write(Appendable output, VIEWCommandNode... views)
 		throws IOException {
 
 		this.write(output, views != null ? Arrays.asList(views) : null);
@@ -51,7 +51,7 @@ public class ServerCodeGen implements CodeGenerator {
 	 * @throws IOException
 	 */
 	@Override
-	public void write(Appendable output, Iterable<ViewRootNode> views)
+	public void write(Appendable output, Iterable<VIEWCommandNode> views)
 		throws IOException {
 
 		if (output == null) {
@@ -62,7 +62,7 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 
 		boolean importsWritten = false;
-		for (ViewRootNode view : views) {
+		for (VIEWCommandNode view : views) {
 			if (view != null) {
 				CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).buildView(view);
 
