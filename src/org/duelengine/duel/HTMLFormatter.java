@@ -11,9 +11,27 @@ public class HTMLFormatter {
 	public void writeComment(Appendable output, String value)
 		throws IOException {
 
-		output.append("<!--");
-		this.writeLiteral(output, value, false, false);
-		output.append("-->");
+		final String OPEN = "<!--"; 
+		final String CLOSE = "-->"; 
+
+		output.append(OPEN);
+		if (value != null) {
+			int start = 0,
+				length = value.length();
+
+			int close = value.indexOf(CLOSE);
+			while (close >= 0) {
+				output.append(value, start, close+2);
+				output.append("&gt;");
+				start = close+3;
+				close = value.indexOf(CLOSE, start);
+			}
+
+			if (start < length) {
+				output.append(value, start, length);
+			}
+		}
+		output.append(CLOSE);
 	}
 
 	public void writeDocType(Appendable output, String value)

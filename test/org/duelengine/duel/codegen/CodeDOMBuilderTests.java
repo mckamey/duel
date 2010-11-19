@@ -1369,6 +1369,49 @@ public class CodeDOMBuilderTests {
 	}
 
 	@Test
+	public void commentMarkupTest() throws Exception {
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo"))
+			},
+			new LiteralNode("Hello world."),
+			new CommentNode("Comment<br>with<hr>some-->markup"),
+			new LiteralNode("Lorem ipsum."));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"append",
+						new CodePrimitiveExpression("Hello world.<!--Comment<br>with<hr>some--&gt;markup-->Lorem ipsum.")))
+				)
+			);
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void codeCommentTest() throws Exception {
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
