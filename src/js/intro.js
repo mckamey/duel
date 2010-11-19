@@ -10,9 +10,15 @@
  */
 
 /**
- * @param {Window} window Window reference
+ * @public
+ * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
+ * @return {function(*)}
  */
-(function(window) {
+var duel = (
+	/**
+	 * @param {Window} window Window reference
+	 */
+	function(window) {
 
 	"use strict";
 

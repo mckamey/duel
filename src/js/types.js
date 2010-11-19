@@ -81,7 +81,7 @@
 	function getType(val) {
 		switch (typeof val) {
 			case "object":
-				return !val ? NUL : ((val instanceof Array) ? ARY : ((val instanceof Markup) ? RAW : OBJ));
+				return !val ? NUL : ((val instanceof Array) ? ARY : ((val instanceof Markup) ? RAW : ((val instanceof Date) ? VAL : OBJ)));
 			case "function":
 				return FUN;
 			case "undefined":

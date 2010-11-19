@@ -32,6 +32,7 @@ test("simple expressions", function() {
 	        name: "Foo.js",
 	        url: "http://example.com/foo.js",
 	        size: 5.87,
+	        datestamp: new Date(),
 	        details: "Lorem ipsum dolor sit amet"
 	    };
 
@@ -50,6 +51,10 @@ test("simple expressions", function() {
 			 	function(data, index, count) { return data.size ;},
 			 	"KB)"
 		 	],
+			["p",
+			 	"DateStamp: ",
+			 	function(data, index, count) { return data.datestamp; }
+			],
 			["p",
 			 	"Description: ",
 			 	function(data, index, count) { return data.details; }
@@ -70,6 +75,9 @@ test("simple expressions", function() {
 		 		],
 			 	" (5.87KB)"
 		 	],
+			["p",
+			 	"DateStamp: "+data.datestamp
+			],
 			["p",
 			 	"Description: Lorem ipsum dolor sit amet"
 			]

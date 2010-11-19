@@ -10,9 +10,15 @@
  */
 
 /**
- * @param {Window} window Window reference
+ * @public
+ * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
+ * @return {function(*)}
  */
-(function(window) {
+var duel = (
+	/**
+	 * @param {Window} window Window reference
+	 */
+	function(window) {
 
 	"use strict";
 
@@ -104,7 +110,7 @@
 	function getType(val) {
 		switch (typeof val) {
 			case "object":
-				return !val ? NUL : ((val instanceof Array) ? ARY : ((val instanceof Markup) ? RAW : OBJ));
+				return !val ? NUL : ((val instanceof Array) ? ARY : ((val instanceof Markup) ? RAW : ((val instanceof Date) ? VAL : OBJ)));
 			case "function":
 				return FUN;
 			case "undefined":
@@ -715,7 +721,7 @@
 	 * @param {string} value Markup text
 	 * @return {Markup}
 	 */
-	duel[RAW_EXTERN] = duel.raw = function(/*string*/ value) {
+	duel[RAW_EXTERN] = duel.raw = function(value) {
 		return new Markup(value);
 	};
 
@@ -1468,5 +1474,7 @@
 			return onErrorDOM(ex);
 		}
 	};
+
+	return duel;
 
 })(window);

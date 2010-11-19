@@ -84,7 +84,7 @@
 	 * @param {string} value Markup text
 	 * @return {Markup}
 	 */
-	duel[RAW_EXTERN] = duel.raw = function(/*string*/ value) {
+	duel[RAW_EXTERN] = duel.raw = function(value) {
 		return new Markup(value);
 	};
 
