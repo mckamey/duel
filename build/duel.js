@@ -333,7 +333,7 @@ var duel = (
 	 * @private
 	 * @param {Array} node The template subtree root
 	 * @param {*} data The data item being bound
-	 * @param {number|string} index The index of the current data item
+	 * @param {number} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {string|null} key The current property name
 	 * @param {Object=} parts Named replacement partial views
@@ -364,7 +364,7 @@ var duel = (
 	 * @private
 	 * @param {Array|Object|string|number|function(*,number,number):*} node The template subtree root
 	 * @param {*} data The data item being bound
-	 * @param {number|string} index The index of the current data item
+	 * @param {number} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {string|null} key The current property name
 	 * @param {Object=} parts Named replacement partial views
@@ -459,7 +459,7 @@ var duel = (
 	 * @private
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} node The template subtree root
 	 * @param {*} data The data item being bound
-	 * @param {number|string} index The index of the current data item
+	 * @param {number} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {string|null} key The current property name
 	 * @param {Object=} parts Named replacement partial views
@@ -496,7 +496,7 @@ var duel = (
 	 * @private
 	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} node The template subtree root
 	 * @param {*} data The data item being bound
-	 * @param {number|string} index The index of the current data item
+	 * @param {number} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {string|null} key The current property name
 	 * @return {Array|Object|string|number}
@@ -509,27 +509,25 @@ var duel = (
 
 		// evaluate the arguments
 		var v = bind(args[VIEW], data, index, count, key),
-			d = bind(args[DATA], data, index, count, key),
-			// Closure Compiler type cast
-			i = /** @type {number|string} */ (bind(args[INDEX], data, index, count, key)),
-			// Closure Compiler type cast
-			c = /** @type {number} */ (bind(args[COUNT], data, index, count, key)),
-			// Closure Compiler type cast
-			k = /** @type {string} */ (bind(args[KEY], data, index, count, key)),
+			d = args.hasOwnProperty(DATA) ? bind(args[DATA], data, index, count, key) : data,
+			i = args.hasOwnProperty(INDEX) ? bind(args[INDEX], data, index, count, key) : index,
+			c = args.hasOwnProperty(COUNT) ? bind(args[COUNT], data, index, count, key) : count,
+			k = args.hasOwnProperty(KEY) ? bind(args[KEY], data, index, count, key) : key,
 			p = {};
 
 		// check for view parts
-		for (var j=2, length=node.length; j<length; j++) {
+		for (var j=node.length-1; j>=2; j--) {
 			var block = node[j];
-				args = block[1] || {};
 
+			args = block[1] || {};
 			if (args && args[NAME]) {
 				p[args[NAME]] = block;
 			}
 		}
 
 		return (v && isFunction(v.getView)) ?
-			bind(v.getView(), d, i, c, k, p) : null;
+			// Closure Compiler type cast
+			bind(v.getView(), d, /** @type {number} */i, /** @type {number} */c, /** @type {String} */k, p) : null;
 	}
 
 	/**
@@ -538,7 +536,7 @@ var duel = (
 	 * @private
 	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} node The template subtree root
 	 * @param {*} data The data item being bound
-	 * @param {number|string} index The index of the current data item
+	 * @param {number} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {string|null} key The current property name
 	 * @param {Object=} parts Named replacement partial views
@@ -548,11 +546,7 @@ var duel = (
 		var args = node[1] || {},
 			block = args[NAME];
 
-		if (!parts || !parts[block]) {
-			block = node;
-		} else {
-			block = parts[block];
-		}
+		block = parts && parts.hasOwnProperty(block) ? parts[block] : node;
 
 		return bindContent(block, data, index, count, key);
 	}
@@ -563,24 +557,19 @@ var duel = (
 	 * @private
 	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} node The template subtree root
 	 * @param {*} data The data item being bound
-	 * @param {number|string} index The index of the current data item
+	 * @param {number} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {string|null} key The current property name
 	 * @param {Object=} parts Named replacement partial views
 	 * @return {Array|Object|string|number}
 	 */
 	bind = function(node, data, index, count, key, parts) {
-		/**
-		 * @type {Array|Object|string|number}
-		 */
-		var result;
-	
+
 		switch (getType(node)) {
 			case FUN:
 				// execute code block
 				// Closure Compiler type cast
-				result = (/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key);
-				break;
+				return (/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key);
 
 			case ARY:
 				// inspect element name for template commands
@@ -590,49 +579,43 @@ var duel = (
 				var tag = node[0] || "";
 				switch (tag) {
 					case FOR:
-						result = loop(node, data, index, count, key, parts);
-						break;
+						return loop(node, data, index, count, key, parts);
+
 					case XOR:
-						result = xor(node, data, index, count, key, parts);
-						break;
+						return xor(node, data, index, count, key, parts);
+
 					case IF:
-						result = xor([XOR, node], data, index, count, key, parts);
-						break;
+						return xor([XOR, node], data, index, count, key, parts);
+
 					case CALL:
 						// parts not needed when calling another view
-						result = call(node, data, index, count, key);
-						break;
+						return call(node, data, index, count, key);
+
 					case PART:
-						result = part(node, data, index, count, key, parts);
-						break;
-					default:
-						// element array, first item is name
-						result = [tag];
-	
-						for (var i=1, length=node.length; i<length; i++) {
-							append(result, bind(node[i], data, index, count, key, parts));
-						}
-						break;
+						return part(node, data, index, count, key, parts);
 				}
-				break;
+
+				// element array, first item is name
+				var elem = [tag];
+				for (var i=1, length=node.length; i<length; i++) {
+					append(elem, bind(node[i], data, index, count, key, parts));
+				}
+				return elem;
 
 			case OBJ:
 				// attribute map
-				result = {};
+				var attr = {};
 				for (var k in node) {
 					if (node.hasOwnProperty(k)) {
 						// parts not needed when binding attributes
-						result[k] = bind(node[k], data, index, count, key);
+						attr[k] = bind(node[k], data, index, count, key);
 					}
 				}
-				break;
-
-			default:
-				result = node;
-				break;
+				return attr;
 		}
 
-		return result;
+		// literal values
+		return node;
 	};
 
 	/* factory.js --------------------*/

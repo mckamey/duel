@@ -1,5 +1,7 @@
 package org.duelengine.duel.codegen;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.duelengine.duel.ast.*;
@@ -7,7 +9,7 @@ import org.duelengine.duel.ast.*;
 public class ClientCodeGenTests {
 
 	@Test
-	public void stringSimpleTest() throws Exception {
+	public void stringSimpleTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
@@ -26,7 +28,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void stringEscapeTest() throws Exception {
+	public void stringEscapeTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
@@ -45,7 +47,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void expressionCountTest() throws Exception {
+	public void expressionCountTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
@@ -65,7 +67,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void markupExpressionDataTest() throws Exception {
+	public void markupExpressionDataTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
@@ -85,7 +87,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void statementNoneTest() throws Exception {
+	public void statementNoneTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
@@ -105,7 +107,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void statementIndexTest() throws Exception {
+	public void statementIndexTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
@@ -125,7 +127,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void conditionalBlockTest() throws Exception {
+	public void conditionalBlockTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
@@ -173,7 +175,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void loopArrayTest() throws Exception {
+	public void loopArrayTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
@@ -206,7 +208,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void loopPropertiesTest() throws Exception {
+	public void loopPropertiesTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
@@ -239,7 +241,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void loopCountTest() throws Exception {
+	public void loopCountTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
@@ -273,7 +275,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void attributesTest() throws Exception {
+	public void attributesTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
@@ -323,7 +325,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void multiViewTest() throws Exception {
+	public void multiViewTest() throws IOException {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo = duel(\"First View\");\n\n"+
@@ -347,7 +349,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void namespaceTest() throws Exception {
+	public void namespaceTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
@@ -373,7 +375,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void namespaceRepeatedTest() throws Exception {
+	public void namespaceRepeatedTest() throws IOException {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo;\n"+
@@ -404,7 +406,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void namespacesOverlappingTest() throws Exception {
+	public void namespacesOverlappingTest() throws IOException {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo;\n"+
@@ -441,7 +443,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void namespacesDistinctTest() throws Exception {
+	public void namespacesDistinctTest() throws IOException {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo;\n"+
@@ -479,7 +481,7 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void commentTest() throws Exception {
+	public void commentTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
@@ -502,13 +504,11 @@ public class ClientCodeGenTests {
 		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
-		System.out.println(actual);
-
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void codeCommentTest() throws Exception {
+	public void codeCommentTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
@@ -528,13 +528,11 @@ public class ClientCodeGenTests {
 		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
 
-		System.out.println(actual);
-		
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void docTypeTest() throws Exception {
+	public void docTypeTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributeNode[] {
 				new AttributeNode("name", new LiteralNode("foo"))
@@ -568,6 +566,140 @@ public class ClientCodeGenTests {
 			"\t\t]\n"+
 			"\t]\n"+
 			"]);\n";
+
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void callViewTest() throws IOException {
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			},
+			new CALLCommandNode(
+				new AttributeNode[] {
+					new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
+					new AttributeNode("data", new ExpressionNode("data.foo"))
+				}));
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo;\n"+
+			"if (typeof foo === \"undefined\") {\n"+
+			"\tfoo = {};\n"+
+			"}\n"+
+			"if (typeof foo.bar === \"undefined\") {\n"+
+			"\tfoo.bar = {};\n"+
+			"}\n\n"+
+			"foo.bar.Blah = duel([\"$call\", {\n"+
+			"\t\t\"view\" : function() { return (foo.bar.Yada); },\n"+
+			"\t\t\"data\" : function(data) { return (data.foo); }\n"+
+			"\t}]);\n";
+
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void callWrapperTest() throws IOException {
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			},
+			new CALLCommandNode(
+				new AttributeNode[] {
+					new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
+					new AttributeNode("data", new ExpressionNode("data"))
+				},
+				new PARTCommandNode(
+					new AttributeNode[] {
+						new AttributeNode("name", new LiteralNode("header"))
+					},
+					new ElementNode("div", null,
+						new LiteralNode("Lorem ipsum.")))));
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo;\n"+
+			"if (typeof foo === \"undefined\") {\n"+
+			"\tfoo = {};\n"+
+			"}\n"+
+			"if (typeof foo.bar === \"undefined\") {\n"+
+			"\tfoo.bar = {};\n"+
+			"}\n\n"+
+			"foo.bar.Blah = duel(\n"+
+			"\t[\"$call\", {\n"+
+			"\t\t\t\"view\" : function() { return (foo.bar.Yada); },\n"+
+			"\t\t\t\"data\" : function(data) { return (data); }\n"+
+			"\t\t},\n"+
+			"\t\t[\"$part\", { \"name\" : \"header\" },\n"+
+			"\t\t\t[\"div\",\n"+
+			"\t\t\t\t\"Lorem ipsum.\"\n"+
+			"\t\t\t]\n"+
+			"\t\t]\n"+
+			"\t]);\n";
+
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void wrapperViewTest() throws IOException {
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributeNode[] {
+				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			},
+			new ElementNode("div",
+				new AttributeNode[] {
+					new AttributeNode("class", new LiteralNode("dialog"))
+				},
+				new PARTCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("name", new LiteralNode("header"))
+						},
+						new ElementNode("h2", null,
+							new LiteralNode("Warning"))),
+				new ElementNode("hr"),
+				new PARTCommandNode(
+						new AttributeNode[] {
+							new AttributeNode("name", new LiteralNode("body"))
+						},
+						new ElementNode("div", null,
+							new LiteralNode("Lorem ipsum.")))));
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo;\n"+
+			"if (typeof foo === \"undefined\") {\n"+
+			"\tfoo = {};\n"+
+			"}\n"+
+			"if (typeof foo.bar === \"undefined\") {\n"+
+			"\tfoo.bar = {};\n"+
+			"}\n\n"+
+			"foo.bar.Blah = duel(\n"+
+			"\t[\"div\", { \"class\" : \"dialog\" },\n"+
+			"\t\t[\"$part\", { \"name\" : \"header\" },\n"+
+			"\t\t\t[\"h2\",\n"+
+			"\t\t\t\t\"Warning\"\n"+
+			"\t\t\t]\n"+
+			"\t\t],\n"+
+			"\t\t[\"hr\"],\n"+
+			"\t\t[\"$part\", { \"name\" : \"body\" },\n"+
+			"\t\t\t[\"div\",\n"+
+			"\t\t\t\t\"Lorem ipsum.\"\n"+
+			"\t\t\t]\n"+
+			"\t\t]\n"+
+			"\t]);\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);

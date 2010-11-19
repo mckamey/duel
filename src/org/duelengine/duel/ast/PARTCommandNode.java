@@ -21,8 +21,14 @@ public class PARTCommandNode extends CommandNode {
 
 	public void setName(String value) {
 		this.name = value;
+
+		if (name == null) {
+			super.removeAttribute("name");
+		} else {
+			super.setAttribute("name", new LiteralNode(value));
+		}
 	}
-	
+
 	@Override
 	public boolean isSelf(String tag) {
 		return EXT_NAME.equalsIgnoreCase(tag) || NAME.equalsIgnoreCase(tag);
@@ -53,6 +59,6 @@ public class PARTCommandNode extends CommandNode {
 			throw new IllegalArgumentException("PART name must be a string literal: "+value.getClass());
 		}
 
-		this.name = (value == null ? null : ((LiteralNode)value).getValue());
+		this.setName(value == null ? null : ((LiteralNode)value).getValue());
 	}
 }

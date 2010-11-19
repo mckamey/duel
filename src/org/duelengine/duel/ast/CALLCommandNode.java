@@ -56,7 +56,7 @@ public class CALLCommandNode extends CommandNode {
 	@Override
 	public void appendChild(Node child) {
 		if (!(child instanceof PARTCommandNode)) {
-			// TODO: Syntax error
+			// TODO: add a default part which contains anything else
 			return;
 		}
 
