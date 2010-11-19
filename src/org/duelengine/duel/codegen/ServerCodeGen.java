@@ -454,6 +454,7 @@ public class ServerCodeGen implements CodeGenerator {
 		throws IOException {
 
 		boolean asNumber = true,
+			asBoolean = false,
 			isAssign = false;
 
 		String operator;
@@ -494,6 +495,7 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " + ";
 				// TODO: sort out ambiguous expressions
 				asNumber = !CodeDOMUtility.isNumber(expression.getLeft());
+				asBoolean = false;
 				break;
 			case ADD_ASSIGN:
 				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
@@ -576,10 +578,12 @@ public class ServerCodeGen implements CodeGenerator {
 			case BOOLEAN_AND:
 				operator = " && ";
 				asNumber = false;
+				asBoolean = true;
 				break;
 			case BOOLEAN_OR:
 				operator = " || ";
 				asNumber = false;
+				asBoolean = true;
 				break;
 			case SHIFT_LEFT:
 				operator = " << ";
@@ -617,6 +621,8 @@ public class ServerCodeGen implements CodeGenerator {
 
 		if (asNumber && !isAssign) {
 			this.writeExpression(output, CodeDOMUtility.ensureNumber(expression.getLeft()));
+		} else if (asBoolean && !isAssign) {
+			this.writeExpression(output, CodeDOMUtility.ensureBoolean(expression.getLeft()));
 		} else {
 			this.writeExpression(output, expression.getLeft());
 		}
@@ -627,6 +633,8 @@ public class ServerCodeGen implements CodeGenerator {
 			this.writeExpression(output, CodeDOMUtility.ensureType(expression.getLeft().getResultType(), expression.getRight()));
 		} else if (asNumber) {
 			this.writeExpression(output, CodeDOMUtility.ensureNumber(expression.getRight()));
+		} else if (asBoolean) {
+			this.writeExpression(output, CodeDOMUtility.ensureBoolean(expression.getRight()));
 		} else {
 			this.writeExpression(output, expression.getRight());
 		}
