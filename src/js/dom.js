@@ -90,6 +90,24 @@
 	};
 
 	/**
+	 * Leading SGML line ending pattern
+	 * 
+	 * @private
+	 * @constant
+	 * @type {RegExp}
+	 */
+	var LEADING = /^[\n\r]+/;
+
+	/**
+	 * Trailing SGML line ending pattern
+	 * 
+	 * @private
+	 * @constant
+	 * @type {RegExp}
+	 */
+	var TRAILING = /[\n\r]+$/;
+
+	/**
 	 * Creates a DOM element 
 	 * 
 	 * @private
@@ -283,6 +301,18 @@
 	function isWhitespace(node) {
 		return !!node && (node.nodeType === 3) && (!node.nodeValue || !/\S/.exec(node.nodeValue));
 	}
+	
+	/**
+	 * Trims whitespace pattern from the text node
+	 * 
+	 * @private
+	 * @param {Node} node The node
+	 */
+	function trimPattern(node, pattern) {
+		if (!!node && (node.nodeType === 3) && pattern.exec(node.nodeValue)) {
+			node.nodeValue = node.nodeValue.replace(pattern, "");
+		}
+	}
 
 	/**
 	 * Removes leading and trailing whitespace nodes
@@ -296,10 +326,14 @@
 				// trim leading whitespace text nodes
 				elem.removeChild(elem.firstChild);
 			}
+			// trim leading whitespace text
+			trimPattern(elem.firstChild, LEADING);
 			while (isWhitespace(elem.lastChild)) {
 				// trim trailing whitespace text nodes
 				elem.removeChild(elem.lastChild);
 			}
+			// trim trailing whitespace text
+			trimPattern(elem.lastChild, TRAILING);
 		}
 	}
 
@@ -373,14 +407,14 @@
 		if (!elem) {
 			return;
 		}
-	
+
 		// execute and remove oninit method
 		var method = popCallback(elem, INIT);
 		if (method) {
 			// execute in context of element
 			method.call(elem);
 		}
-	
+
 		// execute and remove onload method
 		method = popCallback(elem, LOAD);
 		if (method) {
@@ -404,7 +438,7 @@
 	 * @return {Node}
 	 */
 	function patchDOM(elem, node) {
-		for (var i=1; i<node.length; i++) {
+		for (var i=1, length=node.length; i<length; i++) {
 			var child = node[i];
 			switch (getType(child)) {
 				case ARY:
@@ -413,6 +447,12 @@
 					child = patchDOM(createElement(childTag), child);
 
 					if (childTag === "html") {
+						// trim extraneous whitespace
+						trimWhitespace(child);
+
+						// trigger callbacks
+						onInit(child);
+
 						// unwrap HTML root, to simplify insertion
 						return child;
 					}
@@ -421,8 +461,10 @@
 					appendDOM(elem, child);
 					break;
 				case VAL:
-					// append child value as text
-					appendDOM(elem, document.createTextNode(""+child));
+					if (child !== "") {
+						// append child value as text
+						appendDOM(elem, document.createTextNode(""+child));
+					}
 					break;
 				case OBJ:
 					if (elem.nodeType === 1) {

@@ -139,12 +139,12 @@
 				break;
 
 			case VAL:
-				var last = parent.length - 1;
+				var last = parent.length-1;
 				if (last > 0 && getType(parent[last]) === VAL) {
 					// combine string literals
 					parent[last] = "" + parent[last] + child;
-				} else {
-					// append and convert primitive to string literal
+				} else if (child !== "") {
+					// convert primitive to string literal and append
 					parent.push("" + child);
 				}
 				break;

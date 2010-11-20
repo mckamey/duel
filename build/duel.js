@@ -16,16 +16,11 @@
  */
 var duel = (
 	/**
-	 * @param {Window} window Window reference
+	 * @param {Document} document Document reference
 	 */
-	function(window) {
+	function(document) {
 
 	"use strict";
-
-	/**
-	 * @type {Document} document Document reference
-	 */
-	var document = window.document;
 
 	/* types.js --------------------*/
 
@@ -306,12 +301,12 @@ var duel = (
 				break;
 
 			case VAL:
-				var last = parent.length - 1;
+				var last = parent.length-1;
 				if (last > 0 && getType(parent[last]) === VAL) {
 					// combine string literals
 					parent[last] = "" + parent[last] + child;
-				} else {
-					// append and convert primitive to string literal
+				} else if (child !== "") {
+					// convert primitive to string literal and append
 					parent.push("" + child);
 				}
 				break;
@@ -693,9 +688,9 @@ var duel = (
 	/**
 	 * @public
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
-	 * @return {function(*)}
+	 * @return {Array|Object|string|number}
 	 */
-	var duel = window[DUEL_EXTERN] = function(view) {
+	var duel = /*window[DUEL_EXTERN] = */function(view) {
 		return (isFunction(view) && isFunction(view.getView)) ? view : factory(view);
 	};
 
@@ -1071,6 +1066,24 @@ var duel = (
 	};
 
 	/**
+	 * Leading SGML line ending pattern
+	 * 
+	 * @private
+	 * @constant
+	 * @type {RegExp}
+	 */
+	var LEADING = /^[\n\r]+/;
+
+	/**
+	 * Trailing SGML line ending pattern
+	 * 
+	 * @private
+	 * @constant
+	 * @type {RegExp}
+	 */
+	var TRAILING = /[\n\r]+$/;
+
+	/**
 	 * Creates a DOM element 
 	 * 
 	 * @private
@@ -1264,6 +1277,18 @@ var duel = (
 	function isWhitespace(node) {
 		return !!node && (node.nodeType === 3) && (!node.nodeValue || !/\S/.exec(node.nodeValue));
 	}
+	
+	/**
+	 * Trims whitespace pattern from the text node
+	 * 
+	 * @private
+	 * @param {Node} node The node
+	 */
+	function trimPattern(node, pattern) {
+		if (!!node && (node.nodeType === 3) && pattern.exec(node.nodeValue)) {
+			node.nodeValue = node.nodeValue.replace(pattern, "");
+		}
+	}
 
 	/**
 	 * Removes leading and trailing whitespace nodes
@@ -1277,10 +1302,14 @@ var duel = (
 				// trim leading whitespace text nodes
 				elem.removeChild(elem.firstChild);
 			}
+			// trim leading whitespace text
+			trimPattern(elem.firstChild, LEADING);
 			while (isWhitespace(elem.lastChild)) {
 				// trim trailing whitespace text nodes
 				elem.removeChild(elem.lastChild);
 			}
+			// trim trailing whitespace text
+			trimPattern(elem.lastChild, TRAILING);
 		}
 	}
 
@@ -1354,14 +1383,14 @@ var duel = (
 		if (!elem) {
 			return;
 		}
-	
+
 		// execute and remove oninit method
 		var method = popCallback(elem, INIT);
 		if (method) {
 			// execute in context of element
 			method.call(elem);
 		}
-	
+
 		// execute and remove onload method
 		method = popCallback(elem, LOAD);
 		if (method) {
@@ -1385,7 +1414,7 @@ var duel = (
 	 * @return {Node}
 	 */
 	function patchDOM(elem, node) {
-		for (var i=1; i<node.length; i++) {
+		for (var i=1, length=node.length; i<length; i++) {
 			var child = node[i];
 			switch (getType(child)) {
 				case ARY:
@@ -1394,6 +1423,12 @@ var duel = (
 					child = patchDOM(createElement(childTag), child);
 
 					if (childTag === "html") {
+						// trim extraneous whitespace
+						trimWhitespace(child);
+
+						// trigger callbacks
+						onInit(child);
+
 						// unwrap HTML root, to simplify insertion
 						return child;
 					}
@@ -1402,8 +1437,10 @@ var duel = (
 					appendDOM(elem, child);
 					break;
 				case VAL:
-					// append child value as text
-					appendDOM(elem, document.createTextNode(""+child));
+					if (child !== "") {
+						// append child value as text
+						appendDOM(elem, document.createTextNode(""+child));
+					}
 					break;
 				case OBJ:
 					if (elem.nodeType === 1) {
@@ -1460,4 +1497,4 @@ var duel = (
 
 	return duel;
 
-})(window);
+})(document);
