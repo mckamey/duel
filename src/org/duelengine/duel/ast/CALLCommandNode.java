@@ -10,6 +10,7 @@ public class CALLCommandNode extends CommandNode {
 	public static final String INDEX = "index";
 	public static final String COUNT = "count";
 	public static final String KEY = "key";
+	private PARTCommandNode defaultPart;
 
 	public CALLCommandNode() {
 		super(CMD, NAME, true);
@@ -55,11 +56,46 @@ public class CALLCommandNode extends CommandNode {
 
 	@Override
 	public void appendChild(Node child) {
-		if (!(child instanceof PARTCommandNode)) {
-			// TODO: add a default part which contains anything else
+		if (child instanceof PARTCommandNode) {
+			super.appendChild(child);
 			return;
 		}
 
-		super.appendChild(child);
+		// add a default part which contains anything else
+		if (this.defaultPart == null) {
+			// ignore inter-element whitespace nodes if
+			// no other inter-element content has been added
+			if (child instanceof LiteralNode &&
+				isNullOrWhiteSpace(((LiteralNode)child).getValue())) {
+				return;
+			}
+
+			// unnamed part contains the extra nodes
+			this.defaultPart = new PARTCommandNode();
+			super.appendChild(this.defaultPart);
+		}
+
+		this.defaultPart.appendChild(child);
+	}
+
+	public static boolean isNullOrWhiteSpace(String value) {
+		if (value == null) {
+			return true;
+		}
+
+		for (int i=0, length=value.length(); i<length; i++) {
+			switch (value.charAt(i)) {
+				case ' ':		// Space
+				case '\t':		// Tab
+				case '\n':		// LF
+				case '\r':		// CR
+				case '\u000C':	// FF
+					continue;
+				default:
+					return false;
+			}
+		}
+		
+		return true;
 	}
 }

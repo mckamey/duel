@@ -5,14 +5,21 @@ public class PARTCommandNode extends CommandNode {
 	public static final String EXT_NAME = "part";
 	private static final String NAME = "$part";
 	private static final CommandName CMD = CommandName.PART;
+	private static final String DEFAULT_NAME = "";
 	private String name;
 
 	public PARTCommandNode() {
 		super(CMD, NAME, false);
+
+		this.setName(DEFAULT_NAME);
 	}
 
 	public PARTCommandNode(AttributeNode[] attr, Node... children) {
 		super(CMD, NAME, false, attr, children);
+
+		if (this.name == null) {
+			this.setName(DEFAULT_NAME);
+		}
 	}
 
 	public String getName() {
@@ -20,13 +27,11 @@ public class PARTCommandNode extends CommandNode {
 	}
 
 	public void setName(String value) {
-		this.name = value;
-
-		if (name == null) {
-			super.removeAttribute("name");
-		} else {
-			super.setAttribute("name", new LiteralNode(value));
+		if (value == null) {
+			value = DEFAULT_NAME;
 		}
+		this.name = value;
+		super.setAttribute("name", new LiteralNode(value));
 	}
 
 	@Override
@@ -59,6 +64,6 @@ public class PARTCommandNode extends CommandNode {
 			throw new IllegalArgumentException("PART name must be a string literal: "+value.getClass());
 		}
 
-		this.setName(value == null ? null : ((LiteralNode)value).getValue());
+		this.setName(value == null ? DEFAULT_NAME : ((LiteralNode)value).getValue());
 	}
 }

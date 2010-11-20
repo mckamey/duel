@@ -335,8 +335,8 @@
 	 * @return {Array|Object|string|number}
 	 */
 	function call(node, data, index, count, key) {
-		var args = node[1];
-		if (!args || !args[VIEW]) {
+		var args = node[1] || {};
+		if (!args[VIEW]) {
 			return null;
 		}
 
@@ -353,7 +353,7 @@
 			var block = node[j];
 
 			args = block[1] || {};
-			if (args && args[NAME]) {
+			if (args.hasOwnProperty(NAME)) {
 				p[args[NAME]] = block;
 			}
 		}
@@ -377,7 +377,7 @@
 	 */
 	function part(node, data, index, count, key, parts) {
 		var args = node[1] || {},
-			block = args[NAME];
+			block = args[NAME] || "";
 
 		block = parts && parts.hasOwnProperty(block) ? parts[block] : node;
 
