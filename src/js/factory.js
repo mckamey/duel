@@ -73,7 +73,7 @@
 	/**
 	 * @public
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
-	 * @return {function(*)}
+	 * @return {Array|Object|string|number}
 	 */
 	var duel = window[DUEL_EXTERN] = function(view) {
 		return (isFunction(view) && isFunction(view.getView)) ? view : factory(view);

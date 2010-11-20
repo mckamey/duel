@@ -16,11 +16,16 @@
  */
 var duel = (
 	/**
-	 * @param {Document} document Document reference
+	 * @param {Window} window Window reference
 	 */
-	function(document) {
+	function(window) {
 
 	"use strict";
+
+	/**
+	 * @type {Document} document Document reference
+	 */
+	var document = window.document;
 
 	/* types.js --------------------*/
 
@@ -690,7 +695,7 @@ var duel = (
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
 	 * @return {Array|Object|string|number}
 	 */
-	var duel = /*window[DUEL_EXTERN] = */function(view) {
+	var duel = window[DUEL_EXTERN] = function(view) {
 		return (isFunction(view) && isFunction(view.getView)) ? view : factory(view);
 	};
 
@@ -1497,4 +1502,4 @@ var duel = (
 
 	return duel;
 
-})(document);
+})(window);
