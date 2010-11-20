@@ -84,6 +84,9 @@ public class DuelCompiler {
 			settings.setNewline(System.getProperty("line.separator"));
 			settings.setConvertLineEndings(true);
 
+			// compact client-side
+			settings.setNormalizeWhitespace(true);
+
 			CodeGenerator codegen = new ClientCodeGen(settings);
 			try {
 				File outputFile = new File(outputClientFolder, inputFile.getName()+codegen.getFileExtension());
@@ -99,6 +102,9 @@ public class DuelCompiler {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+
+			// directly emit server-side
+			settings.setNormalizeWhitespace(false);
 
 			codegen = new ServerCodeGen(settings);
 			for (VIEWCommandNode view : views) {

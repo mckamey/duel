@@ -966,7 +966,12 @@ public class ServerCodeGen implements CodeGenerator {
 
 		if (this.settings.getConvertLineEndings()) {
 			// not very efficient but allows simple normalization
-			value = value.replace("\t", this.settings.getIndent()).replace("\n", this.settings.getNewline());
+			if (!"\t".equals(this.settings.getIndent())) {
+				value = value.replace("\t", this.settings.getIndent());
+			}
+			if (!"\n".equals(this.settings.getNewline())) {
+				value = value.replace("\n", this.settings.getNewline());
+			}
 		}
 
 		int start = 0,

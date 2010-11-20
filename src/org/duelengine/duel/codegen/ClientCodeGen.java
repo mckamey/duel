@@ -9,6 +9,7 @@ public class ClientCodeGen implements CodeGenerator {
 	private List<String> namespaces;
 	private int depth;
 	private final CodeGenSettings settings;
+	private boolean preMode;
 
 	public ClientCodeGen() {
 		this(null);
@@ -220,67 +221,85 @@ public class ClientCodeGen implements CodeGenerator {
 	private void writeElement(Appendable output, String tagName, ElementNode node)
 		throws IOException {
 
-		output.append('[');
-		this.depth++;
-
-		this.writeString(output, tagName);
-
-		if (node.hasAttributes()) {
-			Set<String> attrs = node.getAttributeNames();
-			boolean singleAttr = (attrs.size() == 1);
-
-			output.append(", {");
+		boolean prevPreMode = this.preMode;
+		this.preMode = this.preMode || "pre".equalsIgnoreCase(tagName);
+		try {
+			output.append('[');
 			this.depth++;
 
-			boolean needsDelim = false;
-			for (String attr : attrs) {
-				// property delimiter
-				if (needsDelim) {
-					output.append(',');
-				} else {
-					needsDelim = true;
+			this.writeString(output, tagName);
+
+			if (node.hasAttributes()) {
+				Set<String> attrs = node.getAttributeNames();
+				boolean singleAttr = (attrs.size() == 1);
+
+				output.append(", {");
+				this.depth++;
+
+				boolean needsDelim = false;
+				for (String attr : attrs) {
+					// property delimiter
+					if (needsDelim) {
+						output.append(',');
+					} else {
+						needsDelim = true;
+					}
+
+					if (singleAttr) {
+						output.append(' ');
+					} else {
+						this.writeln(output);
+					}
+
+					this.writeString(output, attr);
+					output.append(" : ");
+					Node attrVal = node.getAttribute(attr);
+					if (attrVal instanceof CommentNode) {
+						output.append("\"\"");
+					} else {
+						this.writeNode(output, attrVal);
+					}
 				}
 
+				this.depth--;
 				if (singleAttr) {
 					output.append(' ');
 				} else {
 					this.writeln(output);
 				}
+				output.append('}');
+			}
 
-				this.writeString(output, attr);
-				output.append(" : ");
-				Node attrVal = node.getAttribute(attr);
-				if (attrVal instanceof CommentNode) {
-					output.append("\"\"");
-				} else {
-					this.writeNode(output, attrVal);
+			boolean hasChildren = false;
+			for (Node child : node.getChildren()) {
+				if (this.settings.getNormalizeWhitespace() &&
+					!this.preMode &&
+					child instanceof LiteralNode &&
+					(child == node.getFirstChild() || child == node.getLastChild())) {
+
+					String lit = ((LiteralNode)child).getValue();
+					if (lit == null || lit.matches("^[\\r\\n]*$")) {
+						// skip literals which will be normalized away 
+						continue;
+					}
 				}
+				if (!(child instanceof CodeCommentNode)) {
+					output.append(',');
+					this.writeln(output);
+					hasChildren = true;
+				}
+				this.writeNode(output, child);
 			}
 
 			this.depth--;
-			if (singleAttr) {
-				output.append(' ');
-			} else {
+			if (hasChildren) {
 				this.writeln(output);
 			}
-			output.append('}');
-		}
+			output.append(']');
 
-		boolean hasChildren = false;
-		for (Node child : node.getChildren()) {
-			if (!(child instanceof CodeCommentNode)) {
-				output.append(',');
-				this.writeln(output);
-				hasChildren = true;
-			}
-			this.writeNode(output, child);
+		} finally {
+			this.preMode = prevPreMode;
 		}
-
-		this.depth--;
-		if (hasChildren) {
-			this.writeln(output);
-		}
-		output.append(']');
 	}
 
 	private void writeString(Appendable output, String value)
@@ -291,9 +310,21 @@ public class ClientCodeGen implements CodeGenerator {
 			return;
 		}
 
-		if (this.settings.getConvertLineEndings()) {
+		if (!this.preMode && this.settings.getNormalizeWhitespace() && value.length() > 0) {
 			// not very efficient but allows simple normalization
-			value = value.replace("\t", this.settings.getIndent()).replace("\n", this.settings.getNewline());
+			value = value.replaceAll("^[\\r\\n]+", "").replaceAll("[\\r\\n]+$", "").replaceAll("\\s+", " ");
+			if (value.length() == 0) {
+				value = " ";
+			}
+
+		} else if (this.settings.getConvertLineEndings()) {
+			// not very efficient but allows simple normalization
+			if (!"\t".equals(this.settings.getIndent())) {
+				value = value.replace("\t", this.settings.getIndent());
+			}
+			if (!"\n".equals(this.settings.getNewline())) {
+				value = value.replace("\n", this.settings.getNewline());
+			}
 		}
 
 		int start = 0,

@@ -14,13 +14,19 @@ import org.duelengine.duel.codedom.*;
  */
 public class CodeDOMBuilder {
 
+	private enum TagMode {
+		None,
+		PreMode,
+		SuspendMode
+	}
+
 	private final CodeGenSettings settings;
 	private final HTMLFormatter formatter;
 	private final StringBuilder buffer;
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
 	private CodeTypeDeclaration viewType;
 	private CodeMethod initMethod;
-	private boolean suspendMode;
+	private TagMode tagMode = TagMode.None;
 
 	public CodeDOMBuilder() {
 		this(null);
@@ -88,11 +94,23 @@ public class CodeDOMBuilder {
 
 	private void buildNode(Node node) throws IOException {
 		if (node instanceof LiteralNode) {
-			LiteralNode literal = (LiteralNode)node;
-			if (this.suspendMode) {
-				this.buffer.append(literal.getValue());
+			String literal = ((LiteralNode)node).getValue();
+			if (this.tagMode == TagMode.SuspendMode) {
+				this.buffer.append(literal);
 			} else {
-				this.formatter.writeLiteral(this.buffer, literal.getValue(), this.settings.getEncodeNonASCII());
+				if (literal != null &&
+					literal.length() > 0 &&
+					this.tagMode != TagMode.PreMode &&
+					this.settings.getNormalizeWhitespace()) {
+
+					// not very efficient but allows simple normalization
+					literal = literal.replaceAll("^[\\r\\n]+", "").replaceAll("[\\r\\n]+$", "").replaceAll("\\s+", " ");
+					if (literal.length() == 0) {
+						literal = " ";
+					}
+				}
+
+				this.formatter.writeLiteral(this.buffer, literal, this.settings.getEncodeNonASCII());
 			}
 			return;
 		}
@@ -676,14 +694,29 @@ public class CodeDOMBuilder {
 		if (element.canHaveChildren()) {
 			this.formatter.writeCloseElementBeginTag(this.buffer);
 
-			boolean prevMode = this.suspendMode;
-			this.suspendMode = ("script".equals(tagName) || "style".equals(tagName));
+			TagMode prevMode = this.tagMode;
+			if ("script".equalsIgnoreCase(tagName) || "style".equalsIgnoreCase(tagName)) {
+				this.tagMode = TagMode.SuspendMode;
+			} else if ("pre".equalsIgnoreCase(tagName)) {
+				this.tagMode = TagMode.PreMode;
+			}
 			try {
 				for (Node child : element.getChildren()) {
+					if (this.settings.getNormalizeWhitespace() &&
+						this.tagMode == TagMode.None &&
+						child instanceof LiteralNode &&
+						(child == element.getFirstChild() || child == element.getLastChild())) {
+
+						String lit = ((LiteralNode)child).getValue();
+						if (lit == null || lit.matches("^[\\r\\n]*$")) {
+							// skip literals which will be normalized away 
+							continue;
+						}
+					}
 					this.buildNode(child);
 				}
 			} finally {
-				this.suspendMode = prevMode;
+				this.tagMode = prevMode;
 			}
 
 			this.formatter.writeElementEndTag(this.buffer, tagName);

@@ -7,7 +7,8 @@ public class CodeGenSettings {
 
 	private String indent = "\t";
 	private String newline = "\n";
-	private boolean convertLineEndings = false;
+	private boolean convertLineEndings;
+	private boolean normalizeWhitespace;
 	private boolean encodeNonASCII = true;
 
 	/**
@@ -74,5 +75,21 @@ public class CodeGenSettings {
 	 */
 	public void setEncodeNonASCII(boolean value) {
 		this.encodeNonASCII = value;
+	}
+
+	/**
+	 * Gets if all whitespace literals should be normalized (replaced by single space)
+	 * @return
+	 */
+	public boolean getNormalizeWhitespace() {
+		return this.normalizeWhitespace;
+	}
+
+	/**
+	 * Sets if all whitespace literals should be normalized (replaced by single space)
+	 * @param value
+	 */
+	public void setNormalizeWhitespace(boolean value) {
+		this.normalizeWhitespace = value;
 	}
 }
