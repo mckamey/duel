@@ -78,8 +78,13 @@ public class DuelCompiler {
 				System.err.println("Syntax error: no view found in: "+inputFile.getAbsolutePath());
 				return;
 			}
-	
-			CodeGenerator codegen = new ClientCodeGen();
+
+			// TODO: allow setting properties from args
+			CodeGenSettings settings = new CodeGenSettings();
+			settings.setNewline(System.getProperty("line.separator"));
+			settings.setConvertLineEndings(true);
+
+			CodeGenerator codegen = new ClientCodeGen(settings);
 			try {
 				File outputFile = new File(outputClientFolder, inputFile.getName()+codegen.getFileExtension());
 				outputFile.getParentFile().mkdirs();
@@ -94,8 +99,8 @@ public class DuelCompiler {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-	
-			codegen = new ServerCodeGen();
+
+			codegen = new ServerCodeGen(settings);
 			for (VIEWCommandNode view : views) {
 				try {
 					File outputFile = new File(outputServerFolder, view.getName().replace('.', '/')+codegen.getFileExtension());

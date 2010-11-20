@@ -96,7 +96,7 @@
 	 * @constant
 	 * @type {RegExp}
 	 */
-	var LEADING = /^[\n\r]+/;
+	var LEADING = /^[\r\n]+/;
 
 	/**
 	 * Trailing SGML line ending pattern
@@ -105,7 +105,7 @@
 	 * @constant
 	 * @type {RegExp}
 	 */
-	var TRAILING = /[\n\r]+$/;
+	var TRAILING = /[\r\n]+$/;
 
 	/**
 	 * Creates a DOM element 
@@ -301,7 +301,7 @@
 	function isWhitespace(node) {
 		return !!node && (node.nodeType === 3) && (!node.nodeValue || !/\S/.exec(node.nodeValue));
 	}
-	
+
 	/**
 	 * Trims whitespace pattern from the text node
 	 * 

@@ -964,6 +964,11 @@ public class ServerCodeGen implements CodeGenerator {
 			return;
 		}
 
+		if (this.settings.getConvertLineEndings()) {
+			// not very efficient but allows simple normalization
+			value = value.replace("\t", this.settings.getIndent()).replace("\n", this.settings.getNewline());
+		}
+
 		int start = 0,
 			length = value.length();
 
@@ -980,14 +985,16 @@ public class ServerCodeGen implements CodeGenerator {
 				case '\\':
 					escape = "\\\\";
 					break;
+				case '\t':
+					escape = "\\t";
+					break;
 				case '\n':
 					escape = "\\n";
 					break;
 				case '\r':
+					// if the source came via the DuelLexer then CRLF have been
+					// compressed to single LF and these will not be present
 					escape = "\\r";
-					break;
-				case '\t':
-					escape = "\\t";
 					break;
 				case '\f':
 					escape = "\\f";
