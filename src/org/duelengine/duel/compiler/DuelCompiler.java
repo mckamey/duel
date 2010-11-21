@@ -82,9 +82,9 @@ public class DuelCompiler {
 			// TODO: allow setting properties from args
 			CodeGenSettings settings = new CodeGenSettings();
 			settings.setNewline(System.getProperty("line.separator"));
-			settings.setConvertLineEndings(true);
 
 			// compact client-side
+			settings.setConvertLineEndings(false);
 			settings.setNormalizeWhitespace(true);
 
 			CodeGenerator codegen = new ClientCodeGen(settings);
@@ -104,6 +104,7 @@ public class DuelCompiler {
 			}
 
 			// directly emit server-side
+			settings.setConvertLineEndings(true);
 			settings.setNormalizeWhitespace(false);
 
 			codegen = new ServerCodeGen(settings);
