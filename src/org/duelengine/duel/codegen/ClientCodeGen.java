@@ -222,7 +222,7 @@ public class ClientCodeGen implements CodeGenerator {
 		throws IOException {
 
 		boolean prevPreMode = this.preMode;
-		this.preMode = this.preMode || "pre".equalsIgnoreCase(tagName);
+		this.preMode = prevPreMode || "pre".equalsIgnoreCase(tagName) || "script".equalsIgnoreCase(tagName);
 		try {
 			output.append('[');
 			this.depth++;
