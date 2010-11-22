@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0"?>
 <project basedir="." default="all">
-	<taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask" classpath="lib/closure/compiler.jar" />
+	<taskdef name="closure" classname="com.google.javascript.jscomp.ant.CompileTask" classpath="lib/closure/compiler.jar" />
 
 	<target name="init">
 		<echo message="Building..." />
@@ -50,11 +50,11 @@
 	</target>
 
 	<target name="compile.js" depends="jslint" description="Compile JS">
-		<jscomp compilationLevel="simple" warning="verbose" debug="false" output="${build.dir}/duel.min.js">
+		<closure compilationLevel="simple" warning="verbose" debug="false" output="${build.dir}/duel.min.js">
 			<sources dir="${build.dir}">
 				<file name="duel.js"/>
 			</sources>
-		</jscomp>
+		</closure>
 	</target>
 
 	<target name="test.js" depends="compile.js" description="Test JS">

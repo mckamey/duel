@@ -9,6 +9,7 @@ import org.duelengine.duel.HTMLFormatter;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 import org.duelengine.duel.parsing.InvalidNodeException;
+import org.duelengine.duel.parsing.SyntaxException;
 
 /**
  * Translates the view AST to CodeDOM tree
@@ -642,10 +643,19 @@ public class CodeDOMBuilder {
 			}
 			return expression;
 
+		} catch (ScriptTranslationException ex) {
+
+			// TODO: differentiate client-side deferred execution from syntax errors
+			throw ex.adjustErrorStatistics(node);
+
 		} catch (Exception ex) {
 
 			// TODO: differentiate client-side deferred execution from syntax errors
-			throw new ScriptTranslationException(ex.getMessage(), node, ex);
+			String message = ex.getMessage();
+			if (message == null) {
+				message = ex.toString();
+			}
+			throw new InvalidNodeException(message, node, ex);
 		}
 	}
 

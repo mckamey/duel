@@ -2,7 +2,6 @@ package org.duelengine.duel.compiler;
 
 import java.io.*;
 import java.util.*;
-
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codegen.*;
 import org.duelengine.duel.parsing.*;
@@ -21,45 +20,88 @@ public class DuelCompiler {
 		"\toutput-server-folder: path to the source code folder\n";
 
 	public static void main(String[] args) {
-		File inputPath, outputClientFolder, outputServerFolder;
-
-		if (args.length > 0) {
-			inputPath = new File(args[0].replace('\\', '/'));
-
-			if (args.length > 1) {
-				outputClientFolder = new File(args[1].replace('\\', '/'));
-
-				if (args.length > 2) {
-					outputServerFolder = new File(args[2].replace('\\', '/'));
-				} else {
-					outputServerFolder = outputClientFolder;
-				}
-			} else {
-				outputServerFolder = outputClientFolder = inputPath.getParentFile();
-			}
-		} else {
+		if (args.length < 1) {
 			System.out.println(HELP);
 			return;
 		}
 
-		compile(inputPath, outputClientFolder, outputServerFolder);
+		DuelCompiler compiler = new DuelCompiler();
+		compiler.setInputRoot(new File(args[0].replace('\\', '/')));
+
+		if (args.length > 1) {
+			compiler.setOutputClientFolder(new File(args[1].replace('\\', '/')));
+
+			if (args.length > 2) {
+				compiler.setOutputServerFolder(new File(args[2].replace('\\', '/')));
+			}
+		}
+
+		try {
+			compiler.execute();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private boolean verbose;
+	private File inputRoot;
+	private File outputClientFolder;
+	private File outputServerFolder;
+
+	public File getInputRoot() {
+		return this.inputRoot;
+	}
+
+	public void setInputRoot(File value) {
+		this.inputRoot = value;
+	}
+
+	public File getOutputClientFolder() {
+		return this.outputClientFolder;
+	}
+
+	public void setOutputClientFolder(File value) {
+		this.outputClientFolder = value;
+	}
+
+	public File getOutputServerFolder() {
+		return this.outputServerFolder;
+	}
+
+	public void setOutputServerFolder(File value) {
+		this.outputServerFolder = value;
+	}
+
+	private boolean ensureSettings() {
+		if (this.inputRoot == null || !this.inputRoot.exists()) {
+			System.err.println("Error: no input files found: "+this.inputRoot);
+			return false;
+		}
+
+		if (this.outputClientFolder == null) {
+			this.outputClientFolder = this.inputRoot.getParentFile();
+		}
+
+		if (this.outputServerFolder == null) {
+			this.outputServerFolder = this.inputRoot.getParentFile();
+		}
+
+		return true;
 	}
 
 	/**
-	 * Compiles a view file
-	 * @param inputRoot
-	 * @param outputClientFolder
-	 * @param outputServerFolder
+	 * Compiles view files
+	 * @throws IOException 
 	 */
-	public static void compile(File inputRoot, File outputClientFolder, File outputServerFolder) {
-		if (!inputRoot.exists()) {
-			System.err.println("Error: input not found: "+inputRoot.getAbsolutePath());
+	public void execute() throws IOException {
+		if (!this.ensureSettings()) {
 			return;
 		}
 
-		List<File> inputFiles = findFiles(inputRoot);
+		List<File> inputFiles = findFiles(this.inputRoot);
 		if (inputFiles.size() < 1) {
-			System.err.println("Error: no input files found: "+inputRoot.getAbsolutePath());
+			System.err.println("this.inputRoot.getAbsolutePath(): Error: no input files found");
 			return;
 		}
 
@@ -68,14 +110,14 @@ public class DuelCompiler {
 			try {
 				FileReader reader = new FileReader(inputFile);
 				views = new DuelParser().parse(new DuelLexer(reader));
-	
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				return;
+
+			} catch (SyntaxException ex) {
+				this.reportSyntaxError(inputFile, ex);
+				continue;
 			}
-	
+
 			if (views == null || views.size() < 1) {
-				System.err.println("Syntax error: no view found in: "+inputFile.getAbsolutePath());
+				System.err.println(inputFile.getAbsolutePath()+": Syntax error: no view found");
 				return;
 			}
 
@@ -89,9 +131,9 @@ public class DuelCompiler {
 
 			CodeGenerator codegen = new ClientCodeGen(settings);
 			try {
-				File outputFile = new File(outputClientFolder, inputFile.getName()+codegen.getFileExtension());
+				File outputFile = new File(this.outputClientFolder, inputFile.getName()+codegen.getFileExtension());
 				outputFile.getParentFile().mkdirs();
-	
+
 				FileWriter writer = new FileWriter(outputFile, false);
 				try {
 					codegen.write(writer, views);
@@ -99,8 +141,9 @@ public class DuelCompiler {
 					writer.flush();
 					writer.close();
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
+
+			} catch (SyntaxException ex) {
+				this.reportSyntaxError(inputFile, ex);
 			}
 
 			// directly emit server-side
@@ -110,9 +153,9 @@ public class DuelCompiler {
 			codegen = new ServerCodeGen(settings);
 			for (VIEWCommandNode view : views) {
 				try {
-					File outputFile = new File(outputServerFolder, view.getName().replace('.', '/')+codegen.getFileExtension());
+					File outputFile = new File(this.outputServerFolder, view.getName().replace('.', '/')+codegen.getFileExtension());
 					outputFile.getParentFile().mkdirs();
-	
+
 					FileWriter writer = new FileWriter(outputFile, false);
 					try {
 						codegen.write(writer, view);
@@ -120,9 +163,56 @@ public class DuelCompiler {
 						writer.flush();
 						writer.close();
 					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
+
+				} catch (SyntaxException ex) {
+					this.reportSyntaxError(inputFile, ex);
 				}
+			}
+		}
+	}
+
+	private void reportSyntaxError(File inputFile, SyntaxException ex) {
+		try {
+			String message = ex.getMessage();
+			if (message == null) {
+				if (ex.getCause() != null) {
+					message = ex.getCause().getMessage();
+				} else {
+					message = "Error";
+				}
+			}
+
+			System.err.println(String.format(
+				"%s:%d: %s",
+				inputFile.getAbsolutePath(),
+				ex.getLine(),
+				message));
+
+			int col = ex.getColumn(),
+				line=ex.getLine();
+
+			LineNumberReader reader = new LineNumberReader(new FileReader(inputFile));
+			String text = "";
+			for (int i=-1; i<line; i++) {
+				text = reader.readLine();
+			}
+
+			System.err.println(text);
+			if (col > 0) {
+				System.err.println(String.format("%"+col+"s", "^"));
+			} else {
+				System.err.println("^");
+			}
+
+			if (this.verbose) {
+				ex.printStackTrace();
+			}
+
+		} catch (Exception ex2) {
+			ex.printStackTrace();
+
+			if (this.verbose) {
+				ex2.printStackTrace();
 			}
 		}
 	}

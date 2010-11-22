@@ -1,16 +1,16 @@
 package org.duelengine.duel.codegen;
 
 import java.util.*;
-
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.codedom.*;
-import org.mozilla.javascript.ast.*;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ErrorReporter;
+import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Node;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.Token;
+import org.mozilla.javascript.ast.*;
 
 /**
  * Translates JavaScript source code into CodeDOM
@@ -49,8 +49,14 @@ public class ScriptTranslator {
 		AstRoot root = null;
 		try {
 			root = parser.parse(jsSource, jsFilename, 1);
-//		} catch (EvaluatorException ex) {
-//			ex.printStackTrace();
+
+		} catch (EvaluatorException ex) {
+			String message = ex.getMessage();
+			if (message == null) {
+				message = ex.toString();
+			}
+			throw new ScriptTranslationException(message, ex);
+
 		} finally {
 			Context.exit();
 		}
@@ -69,7 +75,7 @@ public class ScriptTranslator {
 			return ((CodeExpressionStatement)value).getExpression();
 
 		} else if (value != null && !(value instanceof CodeExpression)) {
-			throw new IllegalArgumentException("Expected an expression: "+value.getClass());
+			throw new ScriptTranslationException("Expected an expression: "+value.getClass(), node);
 		}
 
 		return (CodeExpression)value;
@@ -83,7 +89,7 @@ public class ScriptTranslator {
 			return new CodeExpressionStatement((CodeExpression)value);
 
 		} else if (value != null && !(value instanceof CodeStatement)) {
-			throw new IllegalArgumentException("Expected a statement: "+value.getClass());
+			throw new ScriptTranslationException("Expected a statement: "+value.getClass(), node);
 		}
 
 		return (CodeStatement)value;
@@ -106,7 +112,7 @@ public class ScriptTranslator {
 					return this.visitScope((Scope)node);
 				}
 
-				throw new IllegalArgumentException("Unexpected block token ("+node.getClass()+"):\n"+(node.debugPrint()));
+				throw new ScriptTranslationException("Unexpected block token ("+node.getClass()+"):\n"+(node.debugPrint()), node);
 			case Token.GETPROP:
 				return this.visitProperty((PropertyGet)node);
 			case Token.GETELEM:
@@ -148,7 +154,7 @@ public class ScriptTranslator {
 				return this.visit(voidExpr.getExpression());
 			case Token.THIS:
 				// TODO: evaluate if will allow custom extensions via 'this'
-				throw new IllegalArgumentException("'this' not legal in binding expressions");
+				throw new ScriptTranslationException("'this' not legal in binding expressions", node);
 			default:
 				CodeBinaryOperatorType binary = this.mapBinaryOperator(tokenType);
 				if (binary != CodeBinaryOperatorType.NONE) {
@@ -159,7 +165,7 @@ public class ScriptTranslator {
 					return this.visitUnaryOp((UnaryExpression)node, unary);
 				}
 
-				throw new IllegalArgumentException("Token not yet supported ("+node.getClass()+"):\n"+(node.debugPrint()));
+				throw new ScriptTranslationException("Token not yet supported ("+node.getClass()+"):\n"+(node.debugPrint()), node);
 		}
 	}
 
@@ -311,7 +317,7 @@ public class ScriptTranslator {
 		for (VariableInitializer init : node.getVariables()) {
 			CodeObject target = this.visit(init.getTarget());
 			if (!(target instanceof CodeVariableReferenceExpression)) {
-				throw new IllegalArgumentException("Unexpected VAR type ("+target.getClass()+")");
+				throw new ScriptTranslationException("Unexpected VAR type ("+target.getClass()+")", node);
 			}
 
 			// TODO: can this surface result type?
@@ -361,7 +367,7 @@ public class ScriptTranslator {
 		if (body instanceof CodeStatementBlock) {
 			loop.getStatements().addAll((CodeStatementBlock)body);
 		} else {
-			throw new IllegalArgumentException("Expected statement block ("+body.getClass()+")");
+			throw new ScriptTranslationException("Expected statement block ("+body.getClass()+")", node.getBody());
 		}
 
 		return loop;
@@ -384,7 +390,7 @@ public class ScriptTranslator {
 
 		} else {
 			// TODO: extract parameter names / types
-			throw new IllegalArgumentException("Nested functions not yet supported.");
+			throw new ScriptTranslationException("Nested functions not yet supported.", node);
 		}
 
 		CodeObject body = this.visit(node.getBody());
@@ -398,7 +404,7 @@ public class ScriptTranslator {
 			method.getStatements().add((CodeExpression)body);
 
 		} else if (body != null) {
-			throw new IllegalArgumentException("Unexpected function body: "+body.getClass());
+			throw new ScriptTranslationException("Unexpected function body: "+body.getClass(), node.getBody());
 		}
 
 		for (CodeStatement statement : method.getStatements()) {
@@ -447,7 +453,7 @@ public class ScriptTranslator {
             	statements.addAll((CodeStatementBlock)value);
 
             } else {
-        		throw new IllegalArgumentException("Unexpected statement value: "+value.getClass());
+        		throw new ScriptTranslationException("Unexpected statement value: "+value.getClass(), (AstNode)node);
             }
         }
         return statements;
@@ -471,7 +477,7 @@ public class ScriptTranslator {
             	statements.addAll((CodeStatementBlock)value);
 
             } else {
-        		throw new IllegalArgumentException("Unexpected statement value: "+value.getClass());
+        		throw new ScriptTranslationException("Unexpected statement value: "+value.getClass(), (AstNode)node);
             }
         }
         return statements;
@@ -489,7 +495,7 @@ public class ScriptTranslator {
             	members.add((CodeMember)member);
 
             } else {
-        		throw new IllegalArgumentException("Unexpected member: "+member.getClass());
+        		throw new ScriptTranslationException("Unexpected member: "+member.getClass(), (AstNode)node);
             }
         }
         return members;

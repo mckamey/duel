@@ -1,6 +1,7 @@
 package org.duelengine.duel.parsing;
 
 import java.util.*;
+import java.io.IOException;
 import org.duelengine.duel.ast.*;
 
 /**
@@ -39,7 +40,7 @@ public class DuelParser {
 	 * @return
 	 */
 	public List<VIEWCommandNode> parse(Iterator<DuelToken> tokens)
-		throws Exception {
+		throws IOException {
 
 		if (tokens == null) {
 			throw new NullPointerException("tokens");
@@ -85,7 +86,7 @@ public class DuelParser {
 	 * @throws Exception
 	 */
 	private void parseNext(ContainerNode parent)
-		throws Exception {
+		throws IOException {
 		switch (this.next.getToken()) {
 			case LITERAL:
 				this.parseLiteral(parent);
@@ -152,7 +153,7 @@ public class DuelParser {
 	 * @param parent
 	 */
 	private void parseElem(ContainerNode parent)
-		throws Exception {
+		throws IOException {
 
 		String tagName = this.next.getValue();
 		ElementNode elem = createElement(tagName, this.next.getIndex(), this.next.getLine(), this.next.getColumn());

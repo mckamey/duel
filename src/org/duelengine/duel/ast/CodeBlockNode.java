@@ -61,6 +61,6 @@ public abstract class CodeBlockNode extends BlockNode {
 				return "";
 		}
 	}
-	
+
 	public abstract String getClientCode();
 }
