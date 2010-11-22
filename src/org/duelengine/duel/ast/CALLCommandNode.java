@@ -12,11 +12,11 @@ public class CALLCommandNode extends CommandNode {
 	public static final String KEY = "key";
 	private PARTCommandNode defaultPart;
 
-	public CALLCommandNode() {
-		super(CMD, NAME, true);
+	public CALLCommandNode(int index, int line, int column) {
+		super(CMD, NAME, true, index, line, column);
 	}
 
-	public CALLCommandNode(AttributeNode[] attr, Node... children) {
+	public CALLCommandNode(AttributePair[] attr, Node... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 
@@ -26,7 +26,7 @@ public class CALLCommandNode extends CommandNode {
 	}
 
 	@Override
-	public void addAttribute(AttributeNode attr)
+	public void addAttribute(AttributePair attr)
 		throws NullPointerException {
 
 		if (attr == null) {
@@ -71,7 +71,7 @@ public class CALLCommandNode extends CommandNode {
 			}
 
 			// unnamed part contains the extra nodes
-			this.defaultPart = new PARTCommandNode();
+			this.defaultPart = new PARTCommandNode(this.getIndex(), this.getLine(), this.getColumn());
 			super.appendChild(this.defaultPart);
 		}
 

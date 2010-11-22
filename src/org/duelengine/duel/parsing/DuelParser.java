@@ -48,7 +48,7 @@ public class DuelParser {
 		this.tokens = tokens;
 		try {
 
-			ContainerNode document = new ContainerNode();
+			ContainerNode document = new ContainerNode(0, 0, 0);
 			while (this.hasNext()) {
 				this.parseNext(document);
 			}
@@ -141,7 +141,7 @@ public class DuelParser {
 			lastLit.setValue(lastLit.getValue() + this.next.getValue());
 		} else {
 			// add directly to output
-			parent.appendChild(new LiteralNode(this.next.getValue()));
+			parent.appendChild(new LiteralNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 		}
 
 		// consume next
@@ -156,7 +156,7 @@ public class DuelParser {
 		throws Exception {
 
 		String tagName = this.next.getValue();
-		ElementNode elem = createElement(tagName);
+		ElementNode elem = createElement(tagName, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 		parent.appendChild(elem);
 
 		// consume next
@@ -183,9 +183,9 @@ public class DuelParser {
 					BlockValue block = this.next.getBlock();
 					Node attrVal;
 					if (block != null) {
-						attrVal = this.createBlock(block);
+						attrVal = this.createBlock(block, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 					} else {
-						attrVal = new LiteralNode(this.next.getValue());
+						attrVal = new LiteralNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 					}
 					elem.setAttribute(attrName, attrVal);
 					attrName = null;
@@ -239,7 +239,7 @@ public class DuelParser {
 		BlockValue block = this.next.getBlock();
 
 		if (block != null) {
-			Node node = this.createBlock(block);
+			Node node = this.createBlock(block, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 			if (node != null) {
 				parent.appendChild(node);
 			}
@@ -263,7 +263,7 @@ public class DuelParser {
 
 		// create a conditional wrapper and
 		// move attr over to the conditional
-		IFCommandNode conditional = new IFCommandNode();
+		IFCommandNode conditional = new IFCommandNode(attr.getIndex(), attr.getLine(), attr.getColumn());
 		conditional.setAttribute("test", attr);
 
 		// wrap element in parent
@@ -316,37 +316,37 @@ public class DuelParser {
 	 * @param name
 	 * @return
 	 */
-	public static ElementNode createElement(String tagName) {
+	public static ElementNode createElement(String tagName, int index, int line, int column) {
 
 		if (tagName == null) {
 			return null;
 		}
 
 		if (tagName.equalsIgnoreCase(FORCommandNode.EXT_NAME)) {
-			return new FORCommandNode();
+			return new FORCommandNode(index, line, column);
 		}
 
 		if (tagName.equalsIgnoreCase(XORCommandNode.EXT_NAME)) {
-			return new XORCommandNode();
+			return new XORCommandNode(index, line, column);
 		}
 
 		if (tagName.equalsIgnoreCase(IFCommandNode.EXT_NAME)) {
-			return new IFCommandNode();
+			return new IFCommandNode(index, line, column);
 		}
 
 		if (tagName.equalsIgnoreCase(CALLCommandNode.EXT_NAME)) {
-			return new CALLCommandNode();
+			return new CALLCommandNode(index, line, column);
 		}
 
 		if (tagName.equalsIgnoreCase(PARTCommandNode.EXT_NAME)) {
-			return new PARTCommandNode();
+			return new PARTCommandNode(index, line, column);
 		}
 
 		if (tagName.equalsIgnoreCase(VIEWCommandNode.EXT_NAME)) {
-			return new VIEWCommandNode();
+			return new VIEWCommandNode(index, line, column);
 		}
 
-		return new ElementNode(tagName.toLowerCase());
+		return new ElementNode(tagName.toLowerCase(), index, line, column);
 	}
 
 	/**
@@ -354,7 +354,7 @@ public class DuelParser {
 	 * @param block
 	 * @return
 	 */
-	private Node createBlock(BlockValue block) {
+	private Node createBlock(BlockValue block, int index, int line, int column) {
 
 		String begin = block.getBegin();
 		if (begin == null) {
@@ -364,27 +364,27 @@ public class DuelParser {
 		String value = block.getValue();
 
 		if (begin.equals(ExpressionNode.BEGIN)) {
-			return new ExpressionNode(value);
+			return new ExpressionNode(value, index, line, column);
 		}
 
 		if (begin.equals(StatementNode.BEGIN)) {
-			return new StatementNode(value);
+			return new StatementNode(value, index, line, column);
 		}
 
 		if (begin.equals(MarkupExpressionNode.BEGIN)) {
-			return new MarkupExpressionNode(value);
+			return new MarkupExpressionNode(value, index, line, column);
 		}
 
 		if (begin.equalsIgnoreCase(DocTypeNode.BEGIN)) {
-			return new DocTypeNode(block.getValue());
+			return new DocTypeNode(block.getValue(), index, line, column);
 		}
 
 		if (begin.equalsIgnoreCase(CommentNode.BEGIN)) {
-			return new CommentNode(block.getValue());
+			return new CommentNode(block.getValue(), index, line, column);
 		}
 
 		if (begin.equalsIgnoreCase(CodeCommentNode.BEGIN)) {
-			return new CodeCommentNode(block.getValue());
+			return new CodeCommentNode(block.getValue(), index, line, column);
 		}
 
 		// others are dropped

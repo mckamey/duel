@@ -10,11 +10,11 @@ public class IFCommandNode extends CommandNode {
 	private static final CommandName CMD = CommandName.IF;
 	private static final String TEST = "test";
 
-	public IFCommandNode() {
-		super(CMD, NAME, true);
+	public IFCommandNode(int index, int line, int column) {
+		super(CMD, NAME, true, index, line, column);
 	}
 
-	public IFCommandNode(AttributeNode[] attr, Node... children) {
+	public IFCommandNode(AttributePair[] attr, Node... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 
@@ -28,7 +28,7 @@ public class IFCommandNode extends CommandNode {
 	}
 
 	@Override
-	public void addAttribute(AttributeNode attr)
+	public void addAttribute(AttributePair attr)
 		throws NullPointerException {
 
 		if (attr == null) {

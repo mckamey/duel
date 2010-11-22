@@ -10,6 +10,10 @@ public abstract class CodeBlockNode extends BlockNode {
 		KEY
 	}
 
+	protected CodeBlockNode(String begin, String end, String value, int index, int line, int column) {
+		super(begin, end, value, index, line, column);
+	}
+
 	protected CodeBlockNode(String begin, String end, String value) {
 		super(begin, end, value);
 	}

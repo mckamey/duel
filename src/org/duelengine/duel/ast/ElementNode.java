@@ -11,19 +11,26 @@ public class ElementNode extends ContainerNode {
 	private final boolean isVoid;
 	private final Map<String, Node> attributes = new LinkedHashMap<String, Node>();
 
+	public ElementNode(String name, int index, int line, int column) {
+		super(index, line, column);
+
+		this.tagName = name;
+		this.isVoid = (name == null) || getVoidTags().containsKey(name);
+	}
+
 	public ElementNode(String name) {
 		this.tagName = name;
 		this.isVoid = (name == null) || getVoidTags().containsKey(name);
 	}
 
-	public ElementNode(String name, AttributeNode[] attr, Node... children) {
+	public ElementNode(String name, AttributePair[] attr, Node... children) {
 		super(children);
 
 		this.tagName = name;
 		this.isVoid = (name == null) ? true : getVoidTags().containsKey(name);
 
 		if (attr != null) {
-			for (AttributeNode a : attr) {
+			for (AttributePair a : attr) {
 				this.attributes.put(a.getName(), a.getValue());
 			}
 		}
@@ -45,7 +52,7 @@ public class ElementNode extends ContainerNode {
 		return this.attributes.keySet();
 	}
 
-	public void addAttribute(AttributeNode attr)
+	public void addAttribute(AttributePair attr)
 		throws NullPointerException {
 		if (attr == null) {
 			throw new NullPointerException("attr");

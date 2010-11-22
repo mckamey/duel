@@ -8,8 +8,12 @@ public class StatementNode extends CodeBlockNode {
 	private static final String INTRO2 = ") { ";
 	private static final String OUTRO = " }";
 
-	public StatementNode(String expression) {
-		super(BEGIN, END, expression);
+	public StatementNode(String statement, int index, int line, int column) {
+		super(BEGIN, END, statement, index, line, column);
+	}
+
+	public StatementNode(String statement) {
+		super(BEGIN, END, statement);
 	}
 
 	@Override

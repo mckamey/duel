@@ -5,21 +5,21 @@ public abstract class CommandNode extends ElementNode {
 	private final boolean codeAttrs;
 	private final CommandName command;
 
-	protected CommandNode(CommandName cmd, String name, boolean codeAttrs) {
-		super(name);
+	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, int index, int line, int column) {
+		super(name, index, line, column);
 
 		this.command = cmd;
 		this.codeAttrs = codeAttrs;
 	}
 
-	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, AttributeNode[] attr, Node... children) {
+	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, AttributePair[] attr, Node... children) {
 		super(name, null, children);
 
 		this.command = cmd;
 		this.codeAttrs = codeAttrs;
 
 		if (attr != null) {
-			for (AttributeNode a : attr) {
+			for (AttributePair a : attr) {
 				this.setAttribute(a.getName(), a.getValue());
 			}
 		}
@@ -30,7 +30,7 @@ public abstract class CommandNode extends ElementNode {
 	}
 
 	@Override
-	public void addAttribute(AttributeNode attr)
+	public void addAttribute(AttributePair attr)
 		throws NullPointerException {
 
 		if (attr == null) {
@@ -45,7 +45,7 @@ public abstract class CommandNode extends ElementNode {
 
 		// ensure all command attributes are code blocks
 		if (this.codeAttrs && value instanceof LiteralNode) {
-			value = new ExpressionNode(((LiteralNode)value).getValue());
+			value = new ExpressionNode(((LiteralNode)value).getValue(), value.getIndex(), value.getLine(), value.getColumn());
 		}
 
 		super.setAttribute(name != null ? name.toLowerCase() : null, value);

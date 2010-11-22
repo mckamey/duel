@@ -12,8 +12,8 @@ public class DuelParserTests {
 	public void literalSingleTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new LiteralNode("This is just literal text."));
 
@@ -34,8 +34,8 @@ public class DuelParserTests {
 	public void literalFoldingTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new LiteralNode("This is literal text\nwhich can all be folded."));
 
@@ -58,8 +58,8 @@ public class DuelParserTests {
 	public void leadingWhitespaceTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("br"));
 
@@ -81,8 +81,8 @@ public class DuelParserTests {
 	public void trailingWhitespaceTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("br"));
 
@@ -104,8 +104,8 @@ public class DuelParserTests {
 	public void elemBeginTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div"));
 
@@ -126,8 +126,8 @@ public class DuelParserTests {
 	public void elemBeginEndTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div"));
 
@@ -149,12 +149,12 @@ public class DuelParserTests {
 	public void elemAttribTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div",
-				new AttributeNode[] {
-					new AttributeNode("class", new LiteralNode("foo"))
+				new AttributePair[] {
+					new AttributePair("class", new LiteralNode("foo"))
 				}));
 
 		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
@@ -176,8 +176,8 @@ public class DuelParserTests {
 	public void elemNestedTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new ElementNode("span", null,
@@ -205,13 +205,13 @@ public class DuelParserTests {
 	public void elemListTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode(
 				"ul",
-				new AttributeNode[] {
-					new AttributeNode("class", new LiteralNode("foo"))
+				new AttributePair[] {
+					new AttributePair("class", new LiteralNode("foo"))
 				},
 				new LiteralNode("\n\t"),
 				new ElementNode("li", null,
@@ -250,8 +250,8 @@ public class DuelParserTests {
 	public void elemOverlapTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new ElementNode("span")));
@@ -276,8 +276,8 @@ public class DuelParserTests {
 	public void elemAutoBalanceTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new ElementNode("img"),
@@ -307,15 +307,15 @@ public class DuelParserTests {
 	public void doctypeTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new DocTypeNode("html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\""),
 			new LiteralNode("\n"),
 			new ElementNode("html",
-				new AttributeNode[] {
-					new AttributeNode("xmlns", new LiteralNode("http://www.w3.org/1999/xhtml")),
-					new AttributeNode("xml:lang", new LiteralNode("en"))
+				new AttributePair[] {
+					new AttributePair("xmlns", new LiteralNode("http://www.w3.org/1999/xhtml")),
+					new AttributePair("xml:lang", new LiteralNode("en"))
 				},
 				new LiteralNode("\n"),
 				new ElementNode("body", null,
@@ -351,13 +351,13 @@ public class DuelParserTests {
 	public void loopArrayTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("ul", null,
 				new FORCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("each", new ExpressionNode("data.items"))
+					new AttributePair[] {
+						new AttributePair("each", new ExpressionNode("data.items"))
 					},
 					new LiteralNode("\n\t"),
 					new ElementNode("li", null,
@@ -391,13 +391,13 @@ public class DuelParserTests {
 	public void loopPropertiesTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("ul", null,
 				new FORCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("in", new ExpressionNode("data"))
+					new AttributePair[] {
+						new AttributePair("in", new ExpressionNode("data"))
 					},
 					new LiteralNode("\n\t"),
 					new ElementNode("li", null,
@@ -431,14 +431,14 @@ public class DuelParserTests {
 	public void loopCountTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("ul", null,
 				new FORCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("count", new ExpressionNode("4")),
-						new AttributeNode("data", new ExpressionNode("data.name"))
+					new AttributePair[] {
+						new AttributePair("count", new ExpressionNode("4")),
+						new AttributePair("data", new ExpressionNode("data.name"))
 					},
 					new LiteralNode("\n\t"),
 					new ElementNode("li", null,
@@ -474,19 +474,19 @@ public class DuelParserTests {
 	public void conditionalBlockTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new XORCommandNode(null,
 					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data == 0"))
+						new AttributePair[] {
+							new AttributePair("test", new ExpressionNode("data == 0"))
 						},
 						new LiteralNode("\n\tzero\n")),
 					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data == 1"))
+						new AttributePair[] {
+							new AttributePair("test", new ExpressionNode("data == 1"))
 						},
 						new LiteralNode("\n\tone\n")),
 					new IFCommandNode(null,
@@ -521,19 +521,19 @@ public class DuelParserTests {
 	public void conditionalBlockVoidElseTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new XORCommandNode(null,
 					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data===0"))
+						new AttributePair[] {
+							new AttributePair("test", new ExpressionNode("data===0"))
 						},
 						new LiteralNode("zero")),
 					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data===1"))
+						new AttributePair[] {
+							new AttributePair("test", new ExpressionNode("data===1"))
 						},
 						new LiteralNode("one")),
 					new IFCommandNode(null,
@@ -570,20 +570,20 @@ public class DuelParserTests {
 	public void conditionalSinglesTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new XORCommandNode(null,
 					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data == 0"))
+						new AttributePair[] {
+							new AttributePair("test", new ExpressionNode("data == 0"))
 						},
 						new LiteralNode("\n\tzero\n"))),
 				new XORCommandNode(null,
 					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data == 1"))
+						new AttributePair[] {
+							new AttributePair("test", new ExpressionNode("data == 1"))
 						},
 						new LiteralNode("\n\tone\n"))),
 				new XORCommandNode(null,
@@ -621,19 +621,19 @@ public class DuelParserTests {
 	public void conditionalAliasesTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new XORCommandNode(null,
 					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data == 0"))
+						new AttributePair[] {
+							new AttributePair("test", new ExpressionNode("data == 0"))
 						},
 						new LiteralNode("\n\tzero\n")),
 						new IFCommandNode(
-							new AttributeNode[] {
-								new AttributeNode("test", new ExpressionNode("data == 1"))
+							new AttributePair[] {
+								new AttributePair("test", new ExpressionNode("data == 1"))
 							},
 							new LiteralNode("\n\tone\n")),
 						new IFCommandNode(null,
@@ -668,13 +668,13 @@ public class DuelParserTests {
 	public void conditionalAttrTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new IFCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("test", new ExpressionNode("data == 0"))
+					new AttributePair[] {
+						new AttributePair("test", new ExpressionNode("data == 0"))
 					},
 					new ElementNode("p", null,
 						new LiteralNode("no items found")))));
@@ -702,13 +702,13 @@ public class DuelParserTests {
 	public void conditionalAttrUnclosedTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new IFCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("test", new ExpressionNode("data == 0"))
+					new AttributePair[] {
+						new AttributePair("test", new ExpressionNode("data == 0"))
 					},
 					new ElementNode("p", null,
 						new LiteralNode("no items found")))));
@@ -735,12 +735,12 @@ public class DuelParserTests {
 	public void conditionalAttrVoidTagTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new IFCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("test", new ExpressionNode("data.showHR"))
+				new AttributePair[] {
+					new AttributePair("test", new ExpressionNode("data.showHR"))
 				},
 				new ElementNode("hr")),
 			new LiteralNode("always shown"));
@@ -765,15 +765,15 @@ public class DuelParserTests {
 	public void callTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new CALLCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("view", new ExpressionNode("Foo.Other")),
-					new AttributeNode("data", new ExpressionNode("data.detail")),
-					new AttributeNode("index", new ExpressionNode("1")),
-					new AttributeNode("count", new ExpressionNode("42"))
+				new AttributePair[] {
+					new AttributePair("view", new ExpressionNode("Foo.Other")),
+					new AttributePair("data", new ExpressionNode("data.detail")),
+					new AttributePair("index", new ExpressionNode("1")),
+					new AttributePair("count", new ExpressionNode("42"))
 				}));
 
 		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
@@ -802,24 +802,24 @@ public class DuelParserTests {
 	public void callPartTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new CALLCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("view", new ExpressionNode("Foo.Other")),
-					new AttributeNode("data", new ExpressionNode("data.detail")),
-					new AttributeNode("index", new ExpressionNode("1")),
-					new AttributeNode("count", new ExpressionNode("42"))
+				new AttributePair[] {
+					new AttributePair("view", new ExpressionNode("Foo.Other")),
+					new AttributePair("data", new ExpressionNode("data.detail")),
+					new AttributePair("index", new ExpressionNode("1")),
+					new AttributePair("count", new ExpressionNode("42"))
 				},
 				new PARTCommandNode(
-					new AttributeNode[] {
-							new AttributeNode("name", new LiteralNode("title-area"))
+					new AttributePair[] {
+							new AttributePair("name", new LiteralNode("title-area"))
 					},
 					new LiteralNode("And this would be the title.")),
 				new PARTCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("name", new LiteralNode("content-area"))
+					new AttributePair[] {
+						new AttributePair("name", new LiteralNode("content-area"))
 					},
 					new LiteralNode("Content goes here!"))));
 
@@ -859,29 +859,29 @@ public class DuelParserTests {
 	public void viewPartTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("Foo.Other"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("Foo.Other"))
 			},
 			new ElementNode("div",
-				new AttributeNode[] {
-					new AttributeNode("class", new LiteralNode("foo"))
+				new AttributePair[] {
+					new AttributePair("class", new LiteralNode("foo"))
 				},
 				new ElementNode("h3",
-					new AttributeNode[] {
-						new AttributeNode("class", new LiteralNode("head"))
+					new AttributePair[] {
+						new AttributePair("class", new LiteralNode("head"))
 					},
 					new PARTCommandNode(
-						new AttributeNode[] {
-								new AttributeNode("name", new LiteralNode("title-area"))
+						new AttributePair[] {
+								new AttributePair("name", new LiteralNode("title-area"))
 						},
 						new LiteralNode("Placeholder title."))),
 				new ElementNode("p",
-					new AttributeNode[] {
-						new AttributeNode("class", new LiteralNode("body"))
+					new AttributePair[] {
+						new AttributePair("class", new LiteralNode("body"))
 					},
 					new PARTCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("name", new LiteralNode("content-area"))
+						new AttributePair[] {
+							new AttributePair("name", new LiteralNode("content-area"))
 						},
 						new LiteralNode("Placeholder content.")))));
 
@@ -923,8 +923,8 @@ public class DuelParserTests {
 	public void viewMetadataUnclosedTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("Foo.Other"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("Foo.Other"))
 			},
 			new ElementNode("div"));
 
@@ -946,8 +946,8 @@ public class DuelParserTests {
 	public void viewMetadataCloseTagTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.myView"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.myView"))
 			},
 			new ElementNode("div"));
 
@@ -970,14 +970,14 @@ public class DuelParserTests {
 	public void muliviewMetadataTest() throws Exception {
 
 		VIEWCommandNode expected1 = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.myView"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.myView"))
 			},
 			new ElementNode("div"));
 
 		VIEWCommandNode expected2 = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.myOtherView"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.myOtherView"))
 			},
 			new ElementNode("p"));
 

@@ -8,6 +8,10 @@ public class ExpressionNode extends CodeBlockNode {
 	private static final String INTRO2 = ") { return (";
 	private static final String OUTRO = "); }";
 
+	public ExpressionNode(String expression, int index, int line, int column) {
+		super(BEGIN, END, expression, index, line, column);
+	}
+
 	public ExpressionNode(String expression) {
 		super(BEGIN, END, expression);
 	}

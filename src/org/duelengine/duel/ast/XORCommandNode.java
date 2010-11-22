@@ -11,17 +11,17 @@ public class XORCommandNode extends CommandNode {
 
 	private IFCommandNode lastCase;
 
-	public XORCommandNode() {
-		super(CMD, NAME, true);
+	public XORCommandNode(int index, int line, int column) {
+		super(CMD, NAME, true, index, line, column);
 	}
 
-	public XORCommandNode(AttributeNode[] attr, Node... children) {
+	public XORCommandNode(AttributePair[] attr, Node... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 
 	private IFCommandNode getLastCase() {
 		if (this.lastCase == null) {
-			this.lastCase = new IFCommandNode();
+			this.lastCase = new IFCommandNode(this.getIndex(), this.getLine(), this.getColumn());
 			super.appendChild(this.lastCase);
 		}
 
@@ -34,7 +34,7 @@ public class XORCommandNode extends CommandNode {
 	}
 
 	@Override
-	public void addAttribute(AttributeNode attr) {
+	public void addAttribute(AttributePair attr) {
 		// attributes all reside on IF commands
 		this.getLastCase().addAttribute(attr);
 	}

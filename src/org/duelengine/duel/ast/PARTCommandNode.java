@@ -8,30 +8,22 @@ public class PARTCommandNode extends CommandNode {
 	private static final String DEFAULT_NAME = "";
 	private String name;
 
-	public PARTCommandNode() {
-		super(CMD, NAME, false);
+	public PARTCommandNode(int index, int line, int column) {
+		super(CMD, NAME, false, index, line, column);
 
-		this.setName(DEFAULT_NAME);
+		this.setAttribute("name", null);
 	}
 
-	public PARTCommandNode(AttributeNode[] attr, Node... children) {
+	public PARTCommandNode(AttributePair[] attr, Node... children) {
 		super(CMD, NAME, false, attr, children);
 
 		if (this.name == null) {
-			this.setName(DEFAULT_NAME);
+			this.setAttribute("name", null);
 		}
 	}
 
 	public String getName() {
 		return this.name;
-	}
-
-	public void setName(String value) {
-		if (value == null) {
-			value = DEFAULT_NAME;
-		}
-		this.name = value;
-		super.setAttribute("name", new LiteralNode(value));
 	}
 
 	@Override
@@ -40,7 +32,7 @@ public class PARTCommandNode extends CommandNode {
 	}
 
 	@Override
-	public void addAttribute(AttributeNode attr)
+	public void addAttribute(AttributePair attr)
 		throws NullPointerException {
 
 		if (attr == null) {
@@ -64,6 +56,17 @@ public class PARTCommandNode extends CommandNode {
 			throw new IllegalArgumentException("PART name must be a string literal: "+value.getClass());
 		}
 
-		this.setName(value == null ? DEFAULT_NAME : ((LiteralNode)value).getValue());
+		if (value == null) {
+			value = new LiteralNode(DEFAULT_NAME, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		String partName = ((LiteralNode)value).getValue();
+		if (partName == null) {
+			((LiteralNode)value).setValue(DEFAULT_NAME);
+			partName = DEFAULT_NAME;
+		}
+
+		this.name = partName;
+		super.setAttribute("name", value);
 	}
 }

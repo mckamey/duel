@@ -755,7 +755,7 @@ public class CodeDOMBuilder {
 		boolean htmlEncode = true;
 		if (block instanceof MarkupExpressionNode) {
 			htmlEncode = false;
-			block = new ExpressionNode(block.getValue());
+			block = new ExpressionNode(block.getValue(), block.getIndex(), block.getLine(), block.getColumn());
 		}
 
 		String script = block.getClientCode();

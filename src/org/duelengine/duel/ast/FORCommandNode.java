@@ -14,11 +14,11 @@ public class FORCommandNode extends CommandNode {
 	public static final String COUNT = "count";
 	public static final String DATA = "data";
 
-	public FORCommandNode() {
-		super(CMD, NAME, true);
+	public FORCommandNode(int index, int line, int column) {
+		super(CMD, NAME, true, index, line, column);
 	}
 
-	public FORCommandNode(AttributeNode[] attr, Node... children) {
+	public FORCommandNode(AttributePair[] attr, Node... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 
@@ -28,7 +28,7 @@ public class FORCommandNode extends CommandNode {
 	}
 
 	@Override
-	public void addAttribute(AttributeNode attr)
+	public void addAttribute(AttributePair attr)
 		throws NullPointerException {
 
 		if (attr == null) {

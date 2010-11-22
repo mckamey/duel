@@ -4,6 +4,12 @@ public class LiteralNode extends Node {
 
 	private String value;
 
+	public LiteralNode(String value, int index, int line, int column) {
+		super(index, line, column);
+
+		this.value = value;
+	}
+
 	public LiteralNode(String value) {
 		this.value = value;
 	}

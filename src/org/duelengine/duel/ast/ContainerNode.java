@@ -5,7 +5,8 @@ import java.util.*;
 public class ContainerNode extends Node {
 	private final List<Node> children = new ArrayList<Node>();
 
-	public ContainerNode() {
+	public ContainerNode(int index, int line, int column) {
+		super(index, line, column);
 	}
 
 	protected ContainerNode(Node... children) {

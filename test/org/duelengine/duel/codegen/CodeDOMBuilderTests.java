@@ -14,8 +14,8 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void stringSimpleTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new LiteralNode("A JSON payload should be an object or array, not a string."));
 
@@ -55,8 +55,8 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void stringEscapeTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new LiteralNode("\\\b\f\n\r\t\u0123\u4567\u89AB\uCDEF\uabcd\uef4A\""));
 
@@ -97,8 +97,8 @@ public class CodeDOMBuilderTests {
 	public void expressionCountTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ExpressionNode("count"));
 
@@ -141,8 +141,8 @@ public class CodeDOMBuilderTests {
 	public void expressionDataTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ExpressionNode("data"));
 
@@ -185,8 +185,8 @@ public class CodeDOMBuilderTests {
 	public void markupExpressionDataTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new MarkupExpressionNode("data"));
 
@@ -230,8 +230,8 @@ public class CodeDOMBuilderTests {
 	public void statementNoneTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new StatementNode("return Math.PI;"));
 
@@ -275,19 +275,19 @@ public class CodeDOMBuilderTests {
 	public void conditionalBlockTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("example.foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("example.foo"))
 			},
 			new ElementNode("div", null,
 				new XORCommandNode(null,
 					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data === 0"))
+						new AttributePair[] {
+							new AttributePair("test", new ExpressionNode("data === 0"))
 						},
 						new LiteralNode("zero")),
 					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data === 1"))
+						new AttributePair[] {
+							new AttributePair("test", new ExpressionNode("data === 1"))
 						},
 						new LiteralNode("one")),
 					new IFCommandNode(null,
@@ -371,18 +371,18 @@ public class CodeDOMBuilderTests {
 	public void conditionalSinglesTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("example.foo2"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("example.foo2"))
 			},
 			new ElementNode("div", null,
 				new IFCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("test", new StatementNode("return data == 0;"))
+					new AttributePair[] {
+						new AttributePair("test", new StatementNode("return data == 0;"))
 					},
 					new LiteralNode("zero")),
 				new IFCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("test", new StatementNode("return data == 1;"))
+					new AttributePair[] {
+						new AttributePair("test", new StatementNode("return data == 1;"))
 					},
 					new LiteralNode("one")),
 				new IFCommandNode(null,
@@ -462,13 +462,13 @@ public class CodeDOMBuilderTests {
 	public void iterationArrayTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("example"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("example"))
 			},
 			new ElementNode("div", null,
 				new FORCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("each", new ExpressionNode("data.items"))
+					new AttributePair[] {
+						new AttributePair("each", new ExpressionNode("data.items"))
 					},
 					new LiteralNode("item "),
 					new ExpressionNode("index"))
@@ -587,13 +587,13 @@ public class CodeDOMBuilderTests {
 	public void iterationObjectTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("example"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("example"))
 			},
 			new ElementNode("div", null,
 				new FORCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("in", new ExpressionNode("data.foo"))
+					new AttributePair[] {
+						new AttributePair("in", new ExpressionNode("data.foo"))
 					},
 					new LiteralNode("item "),
 					new ExpressionNode("index"))
@@ -720,14 +720,14 @@ public class CodeDOMBuilderTests {
 	public void iterationCountTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("example"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("example"))
 			},
 			new ElementNode("div", null,
 				new FORCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("count", new ExpressionNode("4")),
-						new AttributeNode("data", new ExpressionNode("data.name")),
+					new AttributePair[] {
+						new AttributePair("count", new ExpressionNode("4")),
+						new AttributePair("data", new ExpressionNode("data.name")),
 					},
 					new LiteralNode("item "),
 					new ExpressionNode("index"))
@@ -834,17 +834,17 @@ public class CodeDOMBuilderTests {
 	public void attributesTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div",
-				new AttributeNode[] {
-					new AttributeNode("class", new LiteralNode("foo")),
-					new AttributeNode("style", new LiteralNode("color:red"))
+				new AttributePair[] {
+					new AttributePair("class", new LiteralNode("foo")),
+					new AttributePair("style", new LiteralNode("color:red"))
 				},
 				new ElementNode("ul",
-					new AttributeNode[] {
-						new AttributeNode("class", new LiteralNode("bar"))
+					new AttributePair[] {
+						new AttributePair("class", new LiteralNode("bar"))
 					},
 					new ElementNode("li", null,
 						new LiteralNode("one")),
@@ -891,17 +891,17 @@ public class CodeDOMBuilderTests {
 	public void suspendModeTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div",
-				new AttributeNode[] {
-					new AttributeNode("foo", new LiteralNode("&<>\""))
+				new AttributePair[] {
+					new AttributePair("foo", new LiteralNode("&<>\""))
 				},
 				new LiteralNode("&<>\""),
 				new ElementNode("script",
-					new AttributeNode[] {
-						new AttributeNode("type", new LiteralNode("text/javascript"))
+					new AttributePair[] {
+						new AttributePair("type", new LiteralNode("text/javascript"))
 					},
 					new LiteralNode("&<>\"")),
 				new LiteralNode("&<>\"")
@@ -943,8 +943,8 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void namespaceTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 			},
 			new ElementNode("div"));
 
@@ -983,13 +983,13 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void callViewTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 			},
 			new CALLCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
-					new AttributeNode("data", new ExpressionNode("data.foo"))
+				new AttributePair[] {
+					new AttributePair("view", new LiteralNode("foo.bar.Yada")),
+					new AttributePair("data", new ExpressionNode("data.foo"))
 				}));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
@@ -1057,17 +1057,17 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void callWrapperTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 			},
 			new CALLCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
-					new AttributeNode("data", new ExpressionNode("data"))
+				new AttributePair[] {
+					new AttributePair("view", new LiteralNode("foo.bar.Yada")),
+					new AttributePair("data", new ExpressionNode("data"))
 				},
 				new PARTCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("name", new LiteralNode("header"))
+					new AttributePair[] {
+						new AttributePair("name", new LiteralNode("header"))
 					},
 					new ElementNode("div", null,
 						new LiteralNode("Lorem ipsum.")))));
@@ -1166,23 +1166,23 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void wrapperViewTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 			},
 			new ElementNode("div",
-				new AttributeNode[] {
-					new AttributeNode("class", new LiteralNode("dialog"))
+				new AttributePair[] {
+					new AttributePair("class", new LiteralNode("dialog"))
 				},
 				new PARTCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("name", new LiteralNode("header"))
+						new AttributePair[] {
+							new AttributePair("name", new LiteralNode("header"))
 						},
 						new ElementNode("h2", null,
 							new LiteralNode("Warning"))),
 				new ElementNode("hr"),
 				new PARTCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("name", new LiteralNode("body"))
+						new AttributePair[] {
+							new AttributePair("name", new LiteralNode("body"))
 						},
 						new ElementNode("div", null,
 							new LiteralNode("Lorem ipsum.")))));
@@ -1328,8 +1328,8 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void commentTest() throws Exception {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new LiteralNode("Hello world."),
 			new CommentNode("Comment Here"),
@@ -1371,8 +1371,8 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void commentMarkupTest() throws Exception {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new LiteralNode("Hello world."),
 			new CommentNode("Comment<br>with<hr>some-->markup"),
@@ -1414,8 +1414,8 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void codeCommentTest() throws Exception {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new LiteralNode("Hello world."),
 			new CodeCommentNode("Code Comment Here"),
@@ -1462,8 +1462,8 @@ public class CodeDOMBuilderTests {
 	@Test
 	public void docTypeTest() throws Exception {
 		VIEWCommandNode input = new VIEWCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("foo"))
+				new AttributePair[] {
+					new AttributePair("name", new LiteralNode("foo"))
 				},
 				new DocTypeNode("html"),
 				new ElementNode("html", null,

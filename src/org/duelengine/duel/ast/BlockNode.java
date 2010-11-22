@@ -6,12 +6,20 @@ public abstract class BlockNode extends Node {
 	private final String end;
 	private String value;
 
+	protected BlockNode(String begin, String end, String value, int index, int line, int column) {
+		super(index, line, column);
+		
+		this.begin = begin;
+		this.end = end;
+		this.value = value;
+	}
+
 	protected BlockNode(String begin, String end, String value) {
 		this.begin = begin;
 		this.end = end;
 		this.value = value;
 	}
-	
+
 	public String getBegin() {
 		return this.begin;
 	}

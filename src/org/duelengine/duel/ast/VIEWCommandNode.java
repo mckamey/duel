@@ -7,11 +7,11 @@ public class VIEWCommandNode extends CommandNode {
 	private static final CommandName CMD = CommandName.VIEW;
 	private String name;
 
-	public VIEWCommandNode() {
-		super(CMD, NAME, false);
+	public VIEWCommandNode(int index, int line, int column) {
+		super(CMD, NAME, false, index, line, column);
 	}
 
-	public VIEWCommandNode(AttributeNode[] attr, Node... children) {
+	public VIEWCommandNode(AttributePair[] attr, Node... children) {
 		super(CMD, NAME, false, attr, children);
 	}
 
@@ -29,7 +29,7 @@ public class VIEWCommandNode extends CommandNode {
 	}
 
 	@Override
-	public void addAttribute(AttributeNode attr)
+	public void addAttribute(AttributePair attr)
 		throws NullPointerException {
 
 		if (attr == null) {

@@ -11,8 +11,8 @@ public class ClientCodeGenTests {
 	@Test
 	public void stringSimpleTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new LiteralNode("A JSON payload should be an object or array, not a string."));
 
@@ -30,8 +30,8 @@ public class ClientCodeGenTests {
 	@Test
 	public void stringEscapeTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new LiteralNode("\\\b\f\n\r\t\u0123\u4567\u89AB\uCDEF\uabcd\uef4A\""));
 
@@ -50,8 +50,8 @@ public class ClientCodeGenTests {
 	public void expressionCountTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ExpressionNode("count"));
 
@@ -70,8 +70,8 @@ public class ClientCodeGenTests {
 	public void markupExpressionDataTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new MarkupExpressionNode("data"));
 
@@ -90,8 +90,8 @@ public class ClientCodeGenTests {
 	public void statementNoneTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new StatementNode("return Math.PI;"));
 
@@ -110,8 +110,8 @@ public class ClientCodeGenTests {
 	public void statementIndexTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new StatementNode("bar(index);"));
 
@@ -130,19 +130,19 @@ public class ClientCodeGenTests {
 	public void conditionalBlockTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new XORCommandNode(null,
 					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data === 0"))
+						new AttributePair[] {
+							new AttributePair("test", new ExpressionNode("data === 0"))
 						},
 						new LiteralNode("zero")),
 					new IFCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("test", new ExpressionNode("data === 1"))
+						new AttributePair[] {
+							new AttributePair("test", new ExpressionNode("data === 1"))
 						},
 						new LiteralNode("one")),
 					new IFCommandNode(
@@ -178,13 +178,13 @@ public class ClientCodeGenTests {
 	public void loopArrayTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new FORCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("each", new ExpressionNode("data.items"))
+					new AttributePair[] {
+						new AttributePair("each", new ExpressionNode("data.items"))
 					},
 					new LiteralNode("item "),
 					new ExpressionNode("index"))
@@ -211,13 +211,13 @@ public class ClientCodeGenTests {
 	public void loopPropertiesTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new FORCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("in", new ExpressionNode("data"))
+					new AttributePair[] {
+						new AttributePair("in", new ExpressionNode("data"))
 					},
 					new LiteralNode("property "),
 					new ExpressionNode("index"))
@@ -244,14 +244,14 @@ public class ClientCodeGenTests {
 	public void loopCountTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div", null,
 				new FORCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("count", new ExpressionNode("4")),
-						new AttributeNode("data", new ExpressionNode("data"))
+					new AttributePair[] {
+						new AttributePair("count", new ExpressionNode("4")),
+						new AttributePair("data", new ExpressionNode("data"))
 					},
 					new LiteralNode("item "),
 					new ExpressionNode("index"))
@@ -278,17 +278,17 @@ public class ClientCodeGenTests {
 	public void attributesTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new ElementNode("div",
-				new AttributeNode[] {
-					new AttributeNode("class", new LiteralNode("foo")),
-					new AttributeNode("style", new LiteralNode("color:red"))
+				new AttributePair[] {
+					new AttributePair("class", new LiteralNode("foo")),
+					new AttributePair("style", new LiteralNode("color:red"))
 				},
 			new ElementNode("ul",
-				new AttributeNode[] {
-					new AttributeNode("class", new LiteralNode("foo"))
+				new AttributePair[] {
+					new AttributePair("class", new LiteralNode("foo"))
 				},
 				new ElementNode("li", null,
 					new LiteralNode("one")),
@@ -334,13 +334,13 @@ public class ClientCodeGenTests {
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, 
 			new VIEWCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("foo"))
+				new AttributePair[] {
+					new AttributePair("name", new LiteralNode("foo"))
 				},
 				new LiteralNode("First View")),
 			new VIEWCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("bar"))
+				new AttributePair[] {
+					new AttributePair("name", new LiteralNode("bar"))
 				},
 				new LiteralNode("Second View")));
 		String actual = output.toString();
@@ -351,8 +351,8 @@ public class ClientCodeGenTests {
 	@Test
 	public void namespaceTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 			},
 			new ElementNode("div"));
 
@@ -391,13 +391,13 @@ public class ClientCodeGenTests {
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output,
 			new VIEWCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+					new AttributePair[] {
+						new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 					},
 					new LiteralNode("First View")),
 			new VIEWCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("foo.bar.Yada"))
+				new AttributePair[] {
+					new AttributePair("name", new LiteralNode("foo.bar.Yada"))
 				},
 				new LiteralNode("Second View")));
 		String actual = output.toString();
@@ -428,13 +428,13 @@ public class ClientCodeGenTests {
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output,
 			new VIEWCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("foo.bar.one.Blah"))
+				new AttributePair[] {
+					new AttributePair("name", new LiteralNode("foo.bar.one.Blah"))
 				},
 				new LiteralNode("First View")),
 			new VIEWCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("foo.bar.two.Yada"))
+				new AttributePair[] {
+					new AttributePair("name", new LiteralNode("foo.bar.two.Yada"))
 				},
 				new LiteralNode("Second View")));
 		String actual = output.toString();
@@ -466,13 +466,13 @@ public class ClientCodeGenTests {
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output,
 			new VIEWCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+				new AttributePair[] {
+					new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 				},
 				new LiteralNode("First View")),
 			new VIEWCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("name", new LiteralNode("com.example.Yada"))
+				new AttributePair[] {
+					new AttributePair("name", new LiteralNode("com.example.Yada"))
 				},
 				new LiteralNode("Second View")));
 		String actual = output.toString();
@@ -483,8 +483,8 @@ public class ClientCodeGenTests {
 	@Test
 	public void commentTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new LiteralNode("Hello world."),
 			new CommentNode("Comment Here"),
@@ -510,8 +510,8 @@ public class ClientCodeGenTests {
 	@Test
 	public void codeCommentTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new LiteralNode("Hello world."),
 			new CodeCommentNode("Code Comment Here"),
@@ -534,8 +534,8 @@ public class ClientCodeGenTests {
 	@Test
 	public void docTypeTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
 			},
 			new DocTypeNode("html"),
 			new ElementNode("html", null,
@@ -577,13 +577,13 @@ public class ClientCodeGenTests {
 	@Test
 	public void callViewTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 			},
 			new CALLCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
-					new AttributeNode("data", new ExpressionNode("data.foo"))
+				new AttributePair[] {
+					new AttributePair("view", new LiteralNode("foo.bar.Yada")),
+					new AttributePair("data", new ExpressionNode("data.foo"))
 				}));
 
 		String expected =
@@ -610,17 +610,17 @@ public class ClientCodeGenTests {
 	@Test
 	public void callWrapperTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 			},
 			new CALLCommandNode(
-				new AttributeNode[] {
-					new AttributeNode("view", new LiteralNode("foo.bar.Yada")),
-					new AttributeNode("data", new ExpressionNode("data"))
+				new AttributePair[] {
+					new AttributePair("view", new LiteralNode("foo.bar.Yada")),
+					new AttributePair("data", new ExpressionNode("data"))
 				},
 				new PARTCommandNode(
-					new AttributeNode[] {
-						new AttributeNode("name", new LiteralNode("header"))
+					new AttributePair[] {
+						new AttributePair("name", new LiteralNode("header"))
 					},
 					new ElementNode("div", null,
 						new LiteralNode("Lorem ipsum.")))));
@@ -656,23 +656,23 @@ public class ClientCodeGenTests {
 	@Test
 	public void wrapperViewTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributeNode[] {
-				new AttributeNode("name", new LiteralNode("foo.bar.Blah"))
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 			},
 			new ElementNode("div",
-				new AttributeNode[] {
-					new AttributeNode("class", new LiteralNode("dialog"))
+				new AttributePair[] {
+					new AttributePair("class", new LiteralNode("dialog"))
 				},
 				new PARTCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("name", new LiteralNode("header"))
+						new AttributePair[] {
+							new AttributePair("name", new LiteralNode("header"))
 						},
 						new ElementNode("h2", null,
 							new LiteralNode("Warning"))),
 				new ElementNode("hr"),
 				new PARTCommandNode(
-						new AttributeNode[] {
-							new AttributeNode("name", new LiteralNode("body"))
+						new AttributePair[] {
+							new AttributePair("name", new LiteralNode("body"))
 						},
 						new ElementNode("div", null,
 							new LiteralNode("Lorem ipsum.")))));

@@ -8,6 +8,10 @@ public class MarkupExpressionNode extends CodeBlockNode {
 	private static final String INTRO2 = ") { return duel.raw(";
 	private static final String OUTRO = "); }";
 
+	public MarkupExpressionNode(String expression, int index, int line, int column) {
+		super(BEGIN, END, expression, index, line, column);
+	}
+
 	public MarkupExpressionNode(String expression) {
 		super(BEGIN, END, expression);
 	}

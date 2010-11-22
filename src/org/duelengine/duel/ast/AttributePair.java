@@ -1,14 +1,11 @@
 package org.duelengine.duel.ast;
 
-public class AttributeNode {
+public class AttributePair {
 
 	private String name;
 	private Node value;
 
-	public AttributeNode() {
-	}
-
-	public AttributeNode(String name, Node value) {
+	public AttributePair(String name, Node value) {
 		this.name = name;
 		this.value = value;
 	}
@@ -39,12 +36,12 @@ public class AttributeNode {
 
 	@Override
 	public boolean equals(Object arg) {
-		if (!(arg instanceof AttributeNode)) {
+		if (!(arg instanceof AttributePair)) {
 			// includes null
 			return false;
 		}
 
-		AttributeNode that = (AttributeNode)arg;
+		AttributePair that = (AttributePair)arg;
 		return (this.name == null ? that.name == null : this.name.equals(that.name)) &&
 			(this.value == null ? that.value == null : this.value.equals(that.value));
 	}

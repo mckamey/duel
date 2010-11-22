@@ -22,6 +22,9 @@ public class DuelLexer implements Iterator<DuelToken> {
 	private int index = -1;
 	private int column = -1;
 	private int line = -1;
+	private int token_index = -1;
+	private int token_column = -1;
+	private int token_line = -1;
 	private int mark_ch;
 	private int mark_index = -1;
 	private int mark_column = -1;
@@ -49,7 +52,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 		} catch (IOException ex) {
 			this.lastError = ex;
-			this.token = DuelToken.error(ex.getMessage());
+			this.token = DuelToken.error(ex.getMessage(), this.token_index, this.token_line, this.token_column);
 		}
 	}
 
@@ -138,6 +141,10 @@ public class DuelLexer implements Iterator<DuelToken> {
 			return this.token;
 		}
 
+		this.token_index = this.index;
+		this.token_line = this.line;
+		this.token_column = this.column;
+		
 		try {
 			while (true) {
 				switch (this.token.getToken()) {
@@ -166,7 +173,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 							case DuelGrammar.OP_ELEM_CLOSE:
 								if (this.nextChar() == DuelGrammar.OP_ELEM_END) {
 									// immediately close the last tag
-									return (this.token = DuelToken.elemEnd(this.lastTag));
+									return (this.token = DuelToken.elemEnd(this.lastTag, this.token_index, this.token_line, this.token_column));
 								}
 								break;
 
@@ -205,7 +212,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 						}
 
 						// no value, reset to elem state
-						this.token = DuelToken.elemBegin(this.lastTag);
+						this.token = DuelToken.elemBegin(this.lastTag, this.token_index, this.token_line, this.token_column);
 						continue;
 
 					case ELEM_END:
@@ -232,7 +239,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 		} catch (IOException ex) {
 			this.lastError = ex;
-			return (this.token = DuelToken.error(ex.getMessage()));
+			return (this.token = DuelToken.error(ex.getMessage(), this.token_index, this.token_line, this.token_column));
 
 		} finally {
 			this.hasToken = true;
@@ -255,7 +262,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 				case DuelGrammar.OP_ELEM_BEGIN:
 					if (this.buffer.length() != 0) {
 						// flush the buffer
-						return (this.token = DuelToken.literal(this.buffer.toString()));
+						return (this.token = DuelToken.literal(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 					}
 
 					this.buffer.append((char)this.ch);
@@ -269,7 +276,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 				case EOF:
 					// flush the buffer
-					return (this.token = DuelToken.literal(this.buffer.toString()));
+					return (this.token = DuelToken.literal(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 
 				default:
 					// consume until reach a special char
@@ -424,7 +431,9 @@ public class DuelLexer implements Iterator<DuelToken> {
 		}
 
 		this.lastTag = tagName;
-		this.token = isEndTag ? DuelToken.elemEnd(this.lastTag) : DuelToken.elemBegin(this.lastTag);
+		this.token = isEndTag ?
+			DuelToken.elemEnd(this.lastTag, this.token_index, this.token_line, this.token_column) :
+			DuelToken.elemBegin(this.lastTag, this.token_index, this.token_line, this.token_column);
 
 		// tags with unparsed content enter suspendMode
 		this.suspendMode = !isEndTag && (("script".equals(lastTag)) || ("style".equals(lastTag)));
@@ -458,7 +467,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 			return false;
 		}
 
-		this.token = DuelToken.attrName(this.buffer.toString());
+		this.token = DuelToken.attrName(this.buffer.toString(), this.token_index, this.token_line, this.token_column);
 		return true;
 	}
 
@@ -522,7 +531,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 			switch (this.ch) {
 				case EOF:
 					// flush the buffer
-					return (this.token = DuelToken.attrValue(this.buffer.toString()));
+					return (this.token = DuelToken.attrValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 
 				case DuelGrammar.OP_ENTITY_BEGIN:
 					// attempt to decode entities
@@ -532,7 +541,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 				default:
 					if (this.ch == delim || this.ch == altDelim) {
 						// flush the buffer
-						return (this.token = DuelToken.attrValue(this.buffer.toString()));
+						return (this.token = DuelToken.attrValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 					}
 
 					// consume until reach a special char
@@ -605,7 +614,9 @@ public class DuelLexer implements Iterator<DuelToken> {
 							}
 
 							// always unwrap CDATA as plain literal text
-							this.token = asAttr ? DuelToken.attrValue(value) : DuelToken.literal(value);
+							this.token = asAttr ?
+								DuelToken.attrValue(value, this.token_index, this.token_line, this.token_column) :
+								DuelToken.literal(value, this.token_index, this.token_line, this.token_column);
 							return true;
 						}
 						break;
@@ -678,12 +689,14 @@ public class DuelLexer implements Iterator<DuelToken> {
 		if (this.suspendMode && !asAttr && (begin.equals(DuelGrammar.OP_COMMENT))) {
 
 			// always unwrap commented content of suspend-mode elements
-			this.token = DuelToken.literal(value);
+			this.token = DuelToken.literal(value, this.token_index, this.token_line, this.token_column);
 			return true;
 		}
 
 		BlockValue block = new BlockValue(begin, end, value);
-		this.token = asAttr ? DuelToken.attrValue(block) : DuelToken.block(block);
+		this.token = asAttr ?
+			DuelToken.attrValue(block, this.token_index, this.token_line, this.token_column) :
+			DuelToken.block(block, this.token_index, this.token_line, this.token_column);
 		return true;
 	}
 
