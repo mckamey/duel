@@ -1,6 +1,6 @@
 package org.duelengine.duel.ast;
 
-public class LiteralNode extends Node {
+public class LiteralNode extends DuelNode {
 
 	private String value;
 

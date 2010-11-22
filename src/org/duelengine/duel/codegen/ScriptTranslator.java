@@ -15,15 +15,15 @@ import org.mozilla.javascript.Token;
 /**
  * Translates JavaScript source code into CodeDOM
  */
-public class SourceTranslator {
+public class ScriptTranslator {
 
 	private final IdentifierScope scope;
 
-	public SourceTranslator() {
+	public ScriptTranslator() {
 		this(new CodeTypeDeclaration());
 	}
 
-	public SourceTranslator(IdentifierScope scope) {
+	public ScriptTranslator(IdentifierScope scope) {
 		if (scope == null) {
 			throw new NullPointerException("scope");
 		}
@@ -142,7 +142,7 @@ public class SourceTranslator {
 			case Token.EXPR_VOID:
 				ExpressionStatement voidExpr = (ExpressionStatement)node;
 				if (voidExpr.hasSideEffects()) {
-					// TODO: determine when this occurs
+					// TODO: determine when this could occur
 				}
 				// unwrap expression node
 				return this.visit(voidExpr.getExpression());

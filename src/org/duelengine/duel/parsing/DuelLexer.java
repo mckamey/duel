@@ -29,7 +29,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	private int mark_index = -1;
 	private int mark_column = -1;
 	private int mark_line = -1;
-	private Exception lastError;
+	private Throwable lastError;
 
 	/**
 	 * Ctor
@@ -83,7 +83,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	/**
 	 * Returns the last exception encountered
 	 */
-	public Exception getLastError() {
+	public Throwable getLastError() {
 		return this.lastError;
 	}
 

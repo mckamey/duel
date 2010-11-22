@@ -1,19 +1,19 @@
 package org.duelengine.duel.ast;
 
-public abstract class Node {
+public abstract class DuelNode {
 
 	private final int index;
 	private final int line;
 	private final int column;
 	private ContainerNode parent;
 
-	protected Node() {
+	protected DuelNode() {
 		this.index = -1;
 		this.line = -1;
 		this.column = -1;
 	}
 
-	protected Node(int index, int line, int column) {
+	protected DuelNode(int index, int line, int column) {
 		this.index = index;
 		this.line = line;
 		this.column = column;

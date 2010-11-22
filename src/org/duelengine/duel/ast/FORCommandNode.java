@@ -1,5 +1,7 @@
 package org.duelengine.duel.ast;
 
+import org.duelengine.duel.parsing.InvalidNodeException;
+
 /**
  * Implements the looping command construct
  */
@@ -18,7 +20,7 @@ public class FORCommandNode extends CommandNode {
 		super(CMD, NAME, true, index, line, column);
 	}
 
-	public FORCommandNode(AttributePair[] attr, Node... children) {
+	public FORCommandNode(AttributePair[] attr, DuelNode... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 
@@ -39,7 +41,7 @@ public class FORCommandNode extends CommandNode {
 	}
 
 	@Override
-	public void setAttribute(String name, Node value) {
+	public void setAttribute(String name, DuelNode value) {
 		if (name == null || name.length() == 0) {
 			throw new NullPointerException("name");
 		}
@@ -47,8 +49,8 @@ public class FORCommandNode extends CommandNode {
 			!name.equalsIgnoreCase(IN) &&
 			!name.equalsIgnoreCase(COUNT) &&
 			!name.equalsIgnoreCase(DATA)) {
-			// Syntax error
-			throw new IllegalArgumentException("Attribute invalid on FOR command: "+name);
+
+			throw new InvalidNodeException("Invalid attribute on FOR command: "+name, value);
 		}
 
 		super.setAttribute(name, value);

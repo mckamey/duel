@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.codedom.*;
 
-public class SourceTranslatorTests {
+public class ScriptTranslatorTests {
 
 	@Test
 	public void translateVarRefTest() {
@@ -27,7 +27,7 @@ public class SourceTranslatorTests {
 				},
 				new CodeMethodReturnStatement(new CodeVariableReferenceExpression(Object.class, "data")));
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -55,7 +55,7 @@ public class SourceTranslatorTests {
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodePrimitiveExpression("Lorem ipsum"))));
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -83,7 +83,7 @@ public class SourceTranslatorTests {
 						new CodePrimitiveExpression("Lorem ipsum"),
 						new CodeVariableReferenceExpression(Object.class, "data"))));
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -114,7 +114,7 @@ public class SourceTranslatorTests {
 		// need to signal that a parens was absorbed
 		((CodeMethodReturnStatement)expected.getStatements().getLastStatement()).getExpression().setHasParens(true);
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -141,7 +141,7 @@ public class SourceTranslatorTests {
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodePrimitiveExpression("foo"))));
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -172,7 +172,7 @@ public class SourceTranslatorTests {
 							new CodePrimitiveExpression(5.0),
 							new CodePrimitiveExpression(2.0))));
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -199,7 +199,7 @@ public class SourceTranslatorTests {
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodePrimitiveExpression("foo"))));
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -226,7 +226,7 @@ public class SourceTranslatorTests {
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodePrimitiveExpression(3.0))));
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -256,7 +256,7 @@ public class SourceTranslatorTests {
 		// need to signal that a parens was absorbed
 		((CodeUnaryOperatorExpression)((CodeMethodReturnStatement)expected.getStatements().getLastStatement()).getExpression()).getExpression().setHasParens(true);
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -283,7 +283,7 @@ public class SourceTranslatorTests {
 						CodeUnaryOperatorType.POST_DECREMENT,
 						new CodeVariableReferenceExpression(Object.class, "data"))));
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -310,7 +310,7 @@ public class SourceTranslatorTests {
 						CodeUnaryOperatorType.PRE_INCREMENT,
 						new CodeVariableReferenceExpression(Object.class, "data"))));
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -338,7 +338,7 @@ public class SourceTranslatorTests {
 						new CodePrimitiveExpression(1.0),
 						new CodePrimitiveExpression(2.0))));
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
@@ -385,7 +385,7 @@ public class SourceTranslatorTests {
 								new CodePrimitiveExpression("toString")),
 							null))));
 
-		List<CodeMember> actual = new SourceTranslator().translate(input);
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));

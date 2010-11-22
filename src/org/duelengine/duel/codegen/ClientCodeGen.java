@@ -3,6 +3,7 @@ package org.duelengine.duel.codegen;
 import java.io.*;
 import java.util.*;
 import org.duelengine.duel.ast.*;
+import org.duelengine.duel.parsing.InvalidNodeException;
 
 public class ClientCodeGen implements CodeGenerator {
 
@@ -73,8 +74,7 @@ public class ClientCodeGen implements CodeGenerator {
 
 		String ident = view.getName();
 		if (!JSUtility.isValidIdentifier(ident, true)) {
-			// TODO: syntax error
-			throw new IllegalArgumentException("Invalid view name: "+ident);
+			throw new InvalidNodeException("Invalid view name: "+ident, view.getAttribute("name"));
 		}
 
 		boolean nsEmitted = false;
@@ -135,7 +135,7 @@ public class ClientCodeGen implements CodeGenerator {
 		output.append(" = duel(");
 
 		if (view.childCount() == 1) {
-			Node child = view.getFirstChild();
+			DuelNode child = view.getFirstChild();
 			if (child instanceof ElementNode &&
 				((ElementNode)child).hasChildren()) {
 				this.depth++;
@@ -154,7 +154,7 @@ public class ClientCodeGen implements CodeGenerator {
 		this.writeln(output);
 	}
 
-	private void writeNode(Appendable output, Node node)
+	private void writeNode(Appendable output, DuelNode node)
 		throws IOException {
 
 		if (node instanceof LiteralNode) {
@@ -253,7 +253,7 @@ public class ClientCodeGen implements CodeGenerator {
 
 					this.writeString(output, attr);
 					output.append(" : ");
-					Node attrVal = node.getAttribute(attr);
+					DuelNode attrVal = node.getAttribute(attr);
 					if (attrVal instanceof CommentNode) {
 						output.append("\"\"");
 					} else {
@@ -271,7 +271,7 @@ public class ClientCodeGen implements CodeGenerator {
 			}
 
 			boolean hasChildren = false;
-			for (Node child : node.getChildren()) {
+			for (DuelNode child : node.getChildren()) {
 				if (this.settings.getNormalizeWhitespace() &&
 					!this.preMode &&
 					child instanceof LiteralNode &&

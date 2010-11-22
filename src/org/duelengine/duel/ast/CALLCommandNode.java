@@ -1,5 +1,7 @@
 package org.duelengine.duel.ast;
 
+import org.duelengine.duel.parsing.InvalidNodeException;
+
 public class CALLCommandNode extends CommandNode {
 
 	public static final String EXT_NAME = "call";
@@ -16,7 +18,7 @@ public class CALLCommandNode extends CommandNode {
 		super(CMD, NAME, true, index, line, column);
 	}
 
-	public CALLCommandNode(AttributePair[] attr, Node... children) {
+	public CALLCommandNode(AttributePair[] attr, DuelNode... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 
@@ -37,7 +39,7 @@ public class CALLCommandNode extends CommandNode {
 	}
 
 	@Override
-	public void setAttribute(String name, Node value) {
+	public void setAttribute(String name, DuelNode value) {
 		if (name == null || name.length() == 0) {
 			throw new NullPointerException("name");
 		}
@@ -47,15 +49,14 @@ public class CALLCommandNode extends CommandNode {
 			!name.equalsIgnoreCase(COUNT) &&
 			!name.equalsIgnoreCase(KEY)) {
 
-			// Syntax error
-			throw new IllegalArgumentException("Attribute invalid on CALL command: "+name);
+			throw new InvalidNodeException("Attribute invalid on CALL command: "+name, value);
 		}
 
 		super.setAttribute(name, value);
 	}
 
 	@Override
-	public void appendChild(Node child) {
+	public void appendChild(DuelNode child) {
 		if (child instanceof PARTCommandNode) {
 			super.appendChild(child);
 			return;

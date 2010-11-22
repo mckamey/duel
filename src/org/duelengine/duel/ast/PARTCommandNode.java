@@ -1,5 +1,7 @@
 package org.duelengine.duel.ast;
 
+import org.duelengine.duel.parsing.InvalidNodeException;
+
 public class PARTCommandNode extends CommandNode {
 
 	public static final String EXT_NAME = "part";
@@ -14,7 +16,7 @@ public class PARTCommandNode extends CommandNode {
 		this.setAttribute("name", null);
 	}
 
-	public PARTCommandNode(AttributePair[] attr, Node... children) {
+	public PARTCommandNode(AttributePair[] attr, DuelNode... children) {
 		super(CMD, NAME, false, attr, children);
 
 		if (this.name == null) {
@@ -43,17 +45,15 @@ public class PARTCommandNode extends CommandNode {
 	}
 
 	@Override
-	public void setAttribute(String name, Node value) {
+	public void setAttribute(String name, DuelNode value) {
 		if (name == null || name.length() == 0) {
 			throw new NullPointerException("name");
 		}
 		if (!name.equalsIgnoreCase("name")) {
-			// Syntax error
-			throw new IllegalArgumentException("Attribute invalid on PART declaration: "+name);
+			throw new InvalidNodeException("Attribute invalid on PART declaration: "+name, value);
 		}
 		if (value != null && !(value instanceof LiteralNode)) {
-			// Syntax error
-			throw new IllegalArgumentException("PART name must be a string literal: "+value.getClass());
+			throw new InvalidNodeException("PART name must be a string literal: "+value.getClass(), value);
 		}
 
 		if (value == null) {

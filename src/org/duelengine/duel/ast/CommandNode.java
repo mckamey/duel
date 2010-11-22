@@ -12,7 +12,7 @@ public abstract class CommandNode extends ElementNode {
 		this.codeAttrs = codeAttrs;
 	}
 
-	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, AttributePair[] attr, Node... children) {
+	protected CommandNode(CommandName cmd, String name, boolean codeAttrs, AttributePair[] attr, DuelNode... children) {
 		super(name, null, children);
 
 		this.command = cmd;
@@ -41,7 +41,7 @@ public abstract class CommandNode extends ElementNode {
 	}
 
 	@Override
-	public void setAttribute(String name, Node value) {
+	public void setAttribute(String name, DuelNode value) {
 
 		// ensure all command attributes are code blocks
 		if (this.codeAttrs && value instanceof LiteralNode) {

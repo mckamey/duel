@@ -109,7 +109,7 @@ public class ServerCodeGen implements CodeGenerator {
 			this.writeln(output);
 			output.append('}');
 
-		} else {
+		} else if (code != null) {
 			throw new UnsupportedOperationException("Not implemented: "+code.getClass());
 		}
 	}
@@ -421,9 +421,9 @@ public class ServerCodeGen implements CodeGenerator {
 			} else if (expression instanceof CodeObjectCreateExpression) {
 				this.writeObjectCreate(output, (CodeObjectCreateExpression)expression);
 
-			} else {
-				// TODO: build client-side deferred execution
-				
+			} else if (expression != null) {
+				// TODO: build client-side deferred execution here
+
 				throw new UnsupportedOperationException("Expression not yet supported: "+expression.getClass());
 			}
 		} finally {

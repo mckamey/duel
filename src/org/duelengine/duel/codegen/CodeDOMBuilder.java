@@ -8,6 +8,7 @@ import org.duelengine.duel.DuelView;
 import org.duelengine.duel.HTMLFormatter;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
+import org.duelengine.duel.parsing.InvalidNodeException;
 
 /**
  * Translates the view AST to CodeDOM tree
@@ -61,7 +62,7 @@ public class CodeDOMBuilder {
 		}
 	}
 
-	private CodeMethod buildRenderMethod(List<Node> content)
+	private CodeMethod buildRenderMethod(List<DuelNode> content)
 		throws IOException {
 
 		CodeMethod method = new CodeMethod(
@@ -83,7 +84,7 @@ public class CodeDOMBuilder {
 
 		this.flushBuffer();
 		this.scopeStack.push(method.getStatements());
-		for (Node node : content) {
+		for (DuelNode node : content) {
 			this.buildNode(node);
 		}
 		this.flushBuffer();
@@ -92,7 +93,7 @@ public class CodeDOMBuilder {
 		return method;
 	}
 
-	private void buildNode(Node node) throws IOException {
+	private void buildNode(DuelNode node) throws IOException {
 		if (node instanceof LiteralNode) {
 			String literal = ((LiteralNode)node).getValue();
 			if (this.tagMode == TagMode.SuspendMode) {
@@ -134,7 +135,7 @@ public class CodeDOMBuilder {
 					this.buildPartPlaceholder((PARTCommandNode)node);
 					return;
 				default:
-					throw new IllegalStateException("Invalid command node type: "+command.getCommand());
+					throw new InvalidNodeException("Invalid command node type: "+command.getCommand(), command);
 			}
 		}
 
@@ -182,7 +183,7 @@ public class CodeDOMBuilder {
 
 		// determine the name of the template
 		String viewName = null;
-		Node attr = node.getAttribute(CALLCommandNode.VIEW);
+		DuelNode attr = node.getAttribute(CALLCommandNode.VIEW);
 		if (attr instanceof LiteralNode) {
 			viewName = ((LiteralNode)attr).getValue();
 		} else if (attr instanceof ExpressionNode) {
@@ -191,13 +192,13 @@ public class CodeDOMBuilder {
 
 		if (viewName == null) {
 			// TODO: how to cover switcher method cases?
-			throw new IllegalArgumentException("Unexpected Call command view attribute: "+attr);
+			throw new InvalidNodeException("Unexpected Call command view attribute: "+attr, attr);
 		}
 
 		CodeExpression[] ctorArgs = new CodeExpression[node.getChildren().size()];
 
 		int i = 0;
-		for (Node child : node.getChildren()) {
+		for (DuelNode child : node.getChildren()) {
 			ctorArgs[i++] = this.buildPart((PARTCommandNode)child);
 		}
 
@@ -213,33 +214,33 @@ public class CodeDOMBuilder {
 						ctorArgs))));
 		
 		CodeExpression dataExpr;
-		Node callData = node.getAttribute(CALLCommandNode.DATA);
+		DuelNode callData = node.getAttribute(CALLCommandNode.DATA);
 		if (callData instanceof CodeBlockNode) {
-			dataExpr = this.translateExpression(((CodeBlockNode)callData).getClientCode());
+			dataExpr = this.translateExpression((CodeBlockNode)callData);
 		} else {
 			dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
 		}
 
 		CodeExpression indexExpr;
-		Node callIndex = node.getAttribute(CALLCommandNode.INDEX);
+		DuelNode callIndex = node.getAttribute(CALLCommandNode.INDEX);
 		if (callIndex instanceof CodeBlockNode) {
-			indexExpr = this.translateExpression(((CodeBlockNode)callIndex).getClientCode());
+			indexExpr = this.translateExpression((CodeBlockNode)callIndex);
 		} else {
 			indexExpr = new CodeVariableReferenceExpression(int.class, "index");
 		}
 
 		CodeExpression countExpr;
-		Node callCount = node.getAttribute(CALLCommandNode.COUNT);
+		DuelNode callCount = node.getAttribute(CALLCommandNode.COUNT);
 		if (callCount instanceof CodeBlockNode) {
-			countExpr = this.translateExpression(((CodeBlockNode)callCount).getClientCode());
+			countExpr = this.translateExpression((CodeBlockNode)callCount);
 		} else {
 			countExpr = new CodeVariableReferenceExpression(int.class, "count");
 		}
 
 		CodeExpression keyExpr;
-		Node callKey = node.getAttribute(CALLCommandNode.KEY);
+		DuelNode callKey = node.getAttribute(CALLCommandNode.KEY);
 		if (callKey instanceof CodeBlockNode) {
-			keyExpr = this.translateExpression(((CodeBlockNode)callKey).getClientCode());
+			keyExpr = this.translateExpression((CodeBlockNode)callKey);
 		} else {
 			keyExpr = new CodeVariableReferenceExpression(String.class, "key");
 		}
@@ -265,7 +266,7 @@ public class CodeDOMBuilder {
 
 		String partName = node.getName();
 		if (partName == null) {
-			throw new IllegalArgumentException("PART command is missing name");
+			throw new InvalidNodeException("PART command is missing name", node);
 		}
 
 		CodeMethod getNameMethod = new CodeMethod(
@@ -335,13 +336,13 @@ public class CodeDOMBuilder {
 		CodeMethod innerBind = this.buildRenderMethod(node.getChildren());
 
 		CodeExpression dataExpr;
-		Node loopCount = node.getAttribute(FORCommandNode.COUNT);
+		DuelNode loopCount = node.getAttribute(FORCommandNode.COUNT);
 		if (loopCount instanceof CodeBlockNode) {
-			CodeExpression countExpr = this.translateExpression(((CodeBlockNode)loopCount).getClientCode());
+			CodeExpression countExpr = this.translateExpression((CodeBlockNode)loopCount);
 
-			Node loopData = node.getAttribute(FORCommandNode.DATA);
+			DuelNode loopData = node.getAttribute(FORCommandNode.DATA);
 			if (loopData instanceof CodeBlockNode) {
-				dataExpr = this.translateExpression(((CodeBlockNode)loopData).getClientCode());
+				dataExpr = this.translateExpression((CodeBlockNode)loopData);
 			} else {
 				dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
 			}
@@ -349,18 +350,18 @@ public class CodeDOMBuilder {
 			this.buildIterationCount(scope, countExpr, dataExpr, innerBind);
 
 		} else {
-			Node loopObj = node.getAttribute(FORCommandNode.IN);
+			DuelNode loopObj = node.getAttribute(FORCommandNode.IN);
 			if (loopObj instanceof CodeBlockNode) {
-				CodeExpression objExpr = this.translateExpression(((CodeBlockNode)loopObj).getClientCode());
+				CodeExpression objExpr = this.translateExpression((CodeBlockNode)loopObj);
 				this.buildIterationObject(scope, objExpr, innerBind);
 
 			} else {
-				Node loopArray = node.getAttribute(FORCommandNode.EACH);
+				DuelNode loopArray = node.getAttribute(FORCommandNode.EACH);
 				if (!(loopArray instanceof CodeBlockNode)) {
-					throw new IllegalArgumentException("FOR loop missing arguments");
+					throw new InvalidNodeException("FOR loop missing arguments", loopArray);
 				}
 
-				CodeExpression arrayExpr = this.translateExpression(((CodeBlockNode)loopArray).getClientCode());
+				CodeExpression arrayExpr = this.translateExpression((CodeBlockNode)loopArray);
 				this.buildIterationArray(scope, arrayExpr, innerBind);
 			}
 		}
@@ -569,7 +570,7 @@ public class CodeDOMBuilder {
 
 		CodeStatementCollection scope = this.scopeStack.peek();
 
-		for (Node conditional : node.getChildren()) {
+		for (DuelNode conditional : node.getChildren()) {
 			if (conditional instanceof IFCommandNode) {
 				scope = this.buildConditional((IFCommandNode)conditional, scope);
 			}
@@ -581,21 +582,13 @@ public class CodeDOMBuilder {
 
 		this.flushBuffer();
 
-		String test = null;
-		Node testNode = node.getTest();
-		if (testNode instanceof CodeBlockNode) {
-			test = ((CodeBlockNode)testNode).getClientCode();
-		} else if (testNode instanceof LiteralNode) {
-			test = ((LiteralNode)testNode).getValue();
-		} else if (testNode != null) {
-			throw new IllegalArgumentException("Unexpected conditional test attribute: "+testNode.getClass());
-		}
+		CodeBlockNode testNode = node.getTest();
 
-		if (test == null || test.length() == 0) {
+		if (testNode == null) {
 			// no condition block needed
 			if (node.hasChildren()) {
 				this.scopeStack.push(scope);
-				for (Node child : node.getChildren()) {
+				for (DuelNode child : node.getChildren()) {
 					this.buildNode(child);
 				}
 				this.flushBuffer();
@@ -607,11 +600,11 @@ public class CodeDOMBuilder {
 		CodeConditionStatement condition = new CodeConditionStatement();
 		scope.add(condition);
 
-		condition.setCondition(this.translateExpression(test));
+		condition.setCondition(this.translateExpression(testNode));
 
 		if (node.hasChildren()) {
 			this.scopeStack.push(condition.getTrueStatements());
-			for (Node child : node.getChildren()) {
+			for (DuelNode child : node.getChildren()) {
 				this.buildNode(child);
 			}
 			this.flushBuffer();
@@ -621,32 +614,39 @@ public class CodeDOMBuilder {
 		return condition.getFalseStatements();
 	}
 
-	private CodeExpression translateExpression(String script) {
+	private CodeExpression translateExpression(CodeBlockNode node) {
 
-		// convert from JavaScript source to CodeDOM
-		List<CodeMember> members = new SourceTranslator(this.viewType).translate(script);
+		try {
+			// convert from JavaScript source to CodeDOM
+			List<CodeMember> members = new ScriptTranslator(this.viewType).translate(node.getClientCode());
 
-		CodeExpression expression = null;
-		if (members.size() == 1 && members.get(0) instanceof CodeMethod) {
-			// first attempt to extract single expression (inlines the return)
-			expression = CodeDOMUtility.inlineMethod((CodeMethod)members.get(0));
+			CodeExpression expression = null;
+			if (members.size() == 1 && members.get(0) instanceof CodeMethod) {
+				// first attempt to extract single expression (inlines the return)
+				expression = CodeDOMUtility.inlineMethod((CodeMethod)members.get(0));
+			}
+
+			if (expression == null && (members.size() > 0)) {
+				// add all CodeDOM members to viewType
+				this.viewType.addAll(members);
+
+				// have the expression be a method invocation
+				expression = new CodeMethodInvokeExpression(
+					new CodeThisReferenceExpression(),
+						members.get(0).getName(),
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key"));
+			}
+			return expression;
+
+		} catch (Exception ex) {
+
+			// TODO: differentiate client-side deferred execution from syntax errors
+			throw new ScriptTranslationException(ex.getMessage(), node, ex);
 		}
-
-		if (expression == null && (members.size() > 0)) {
-			// add all CodeDOM members to viewType
-			this.viewType.addAll(members);
-
-			// have the expression be a method invocation
-			expression = new CodeMethodInvokeExpression(
-				new CodeThisReferenceExpression(),
-					members.get(0).getName(),
-					new CodeVariableReferenceExpression(DuelContext.class, "output"),
-					new CodeVariableReferenceExpression(Object.class, "data"),
-					new CodeVariableReferenceExpression(int.class, "index"),
-					new CodeVariableReferenceExpression(int.class, "count"),
-					new CodeVariableReferenceExpression(String.class, "key"));
-		}
-		return expression;
 	}
 
 	private void buildElement(ElementNode element)
@@ -657,7 +657,7 @@ public class CodeDOMBuilder {
 
 		Map<String, CodeBlockNode> deferredAttrs = new LinkedHashMap<String, CodeBlockNode>();
 		for (String attrName : element.getAttributeNames()) {
-			Node attrVal = element.getAttribute(attrName);
+			DuelNode attrVal = element.getAttribute(attrName);
 
 			if (attrVal == null) {
 				this.formatter.writeAttribute(this.buffer, attrName, null);
@@ -669,13 +669,13 @@ public class CodeDOMBuilder {
 				deferredAttrs.put(attrName, (CodeBlockNode)attrVal);
 
 			} else {
-				throw new IllegalStateException("Invalid attribute node type: "+attrVal.getClass());
+				throw new InvalidNodeException("Invalid attribute node type: "+attrVal.getClass(), attrVal);
 			}
 		}
 
 		String idVar;
 		if (deferredAttrs.size() > 0) {
-			Node id = element.getAttribute("id");
+			DuelNode id = element.getAttribute("id");
 			if (id == null) {
 				this.formatter.writeOpenAttribute(this.buffer, "id");
 				idVar = this.emitClientID();
@@ -701,7 +701,7 @@ public class CodeDOMBuilder {
 				this.tagMode = TagMode.PreMode;
 			}
 			try {
-				for (Node child : element.getChildren()) {
+				for (DuelNode child : element.getChildren()) {
 					if (this.settings.getNormalizeWhitespace() &&
 						this.tagMode == TagMode.None &&
 						child instanceof LiteralNode &&
@@ -758,8 +758,7 @@ public class CodeDOMBuilder {
 			block = new ExpressionNode(block.getValue(), block.getIndex(), block.getLine(), block.getColumn());
 		}
 
-		String script = block.getClientCode();
-		CodeExpression codeExpr = this.translateExpression(script);
+		CodeExpression codeExpr = this.translateExpression(block);
 		if (codeExpr == null) {
 			return;
 		}

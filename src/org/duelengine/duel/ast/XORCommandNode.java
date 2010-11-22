@@ -15,7 +15,7 @@ public class XORCommandNode extends CommandNode {
 		super(CMD, NAME, true, index, line, column);
 	}
 
-	public XORCommandNode(AttributePair[] attr, Node... children) {
+	public XORCommandNode(AttributePair[] attr, DuelNode... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 
@@ -40,13 +40,13 @@ public class XORCommandNode extends CommandNode {
 	}
 
 	@Override
-	public void setAttribute(String name, Node value) {
+	public void setAttribute(String name, DuelNode value) {
 		// attributes all reside on IF commands
 		this.getLastCase().setAttribute(name, value);
 	}
 
 	@Override
-	public void appendChild(Node child) {
+	public void appendChild(DuelNode child) {
 		if (child instanceof IFCommandNode) {
 			this.lastCase = (IFCommandNode)child;
 			super.appendChild(child);

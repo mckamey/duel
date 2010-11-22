@@ -54,7 +54,7 @@ public class DuelParser {
 			}
 
 			List<VIEWCommandNode> views = new ArrayList<VIEWCommandNode>(1);
-			for (Node node : document.getChildren()) {
+			for (DuelNode node : document.getChildren()) {
 				if (node instanceof VIEWCommandNode) {
 					views.add(scrubView((VIEWCommandNode)node));
 					continue;
@@ -68,7 +68,7 @@ public class DuelParser {
 				}
 
 				// syntax error unless is literal whitespace
-				throw new IllegalArgumentException("Content must sit within a named view.");
+				throw new InvalidNodeException("Content must sit within a named view.", node);
 			}
 
 			return views;
@@ -114,16 +114,15 @@ public class DuelParser {
 				break;
 
 			case ERROR:
-				// TODO: back with interface
+				// TODO: back with interface?
 				if (this.tokens instanceof DuelLexer) {
-					throw ((DuelLexer)this.tokens).getLastError();
+					throw new InvalidTokenException("Syntax error: "+this.next.getValue(), this.next, ((DuelLexer)this.tokens).getLastError());
 				}
 
-				throw new Exception(this.next.getValue());
+				throw new InvalidTokenException("Syntax error: "+this.next.getValue(), this.next);
 
 			default:
-				// TODO: syntax error
-				throw new Exception("Invalid next token: "+this.next);
+				throw new InvalidTokenException("Invalid token: "+this.next, this.next);
 		}
 	}
 
@@ -132,7 +131,7 @@ public class DuelParser {
 	 * @param parent
 	 */
 	private void parseLiteral(ContainerNode parent) {
-		Node last = parent.getLastChild();
+		DuelNode last = parent.getLastChild();
 
 		if (last instanceof LiteralNode) {
 			LiteralNode lastLit = ((LiteralNode)last);
@@ -176,12 +175,11 @@ public class DuelParser {
 
 				case ATTR_VALUE:
 					if (attrName == null) {
-						// TODO: syntax error
-						continue;
+						throw new InvalidTokenException("Attribute name was missing", this.next);
 					}
 
 					BlockValue block = this.next.getBlock();
-					Node attrVal;
+					DuelNode attrVal;
 					if (block != null) {
 						attrVal = this.createBlock(block, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 					} else {
@@ -239,7 +237,7 @@ public class DuelParser {
 		BlockValue block = this.next.getBlock();
 
 		if (block != null) {
-			Node node = this.createBlock(block, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+			DuelNode node = this.createBlock(block, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 			if (node != null) {
 				parent.appendChild(node);
 			}
@@ -255,7 +253,7 @@ public class DuelParser {
 			return;
 		}
 
-		Node attr = elem.removeAttribute("if");
+		DuelNode attr = elem.removeAttribute("if");
 		if (attr == null) {
 			// nothing to do
 			return;
@@ -273,13 +271,13 @@ public class DuelParser {
 
 	private VIEWCommandNode scrubView(VIEWCommandNode node) {
 		if (node.getName() == null || node.getName().length() == 0) {
-			// syntax error unless is literal whitespace
-			throw new IllegalArgumentException("View is missing name attribute");
+			// syntax error
+			throw new InvalidNodeException("View is missing name attribute", node);
 		}
 
 		// remove leading and trailing pure whitespace nodes
 		
-		Node child = node.getLastChild();
+		DuelNode child = node.getLastChild();
 		if (child instanceof LiteralNode) {
 			String text = ((LiteralNode)child).getValue();
 			if (CharUtility.isNullOrWhiteSpace(text)) {
@@ -354,7 +352,7 @@ public class DuelParser {
 	 * @param block
 	 * @return
 	 */
-	private Node createBlock(BlockValue block, int index, int line, int column) {
+	private DuelNode createBlock(BlockValue block, int index, int line, int column) {
 
 		String begin = block.getBegin();
 		if (begin == null) {

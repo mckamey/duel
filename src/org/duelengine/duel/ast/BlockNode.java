@@ -1,6 +1,6 @@
 package org.duelengine.duel.ast;
 
-public abstract class BlockNode extends Node {
+public abstract class BlockNode extends DuelNode {
 
 	private final String begin;
 	private final String end;

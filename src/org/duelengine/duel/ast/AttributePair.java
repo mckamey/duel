@@ -3,9 +3,9 @@ package org.duelengine.duel.ast;
 public class AttributePair {
 
 	private String name;
-	private Node value;
+	private DuelNode value;
 
-	public AttributePair(String name, Node value) {
+	public AttributePair(String name, DuelNode value) {
 		this.name = name;
 		this.value = value;
 	}
@@ -18,11 +18,11 @@ public class AttributePair {
 		return this.name;
 	}
 
-	public void setValue(Node value) {
+	public void setValue(DuelNode value) {
 		this.value = value;
 	}
 
-	public Node getValue() {
+	public DuelNode getValue() {
 		return this.value;
 	}
 

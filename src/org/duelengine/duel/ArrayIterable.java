@@ -27,7 +27,9 @@ class ArrayIterable implements List<Object> {
 		@Override
 		public Object next() {
 			if (this.index >= this.last) {
-				throw new NoSuchElementException("Passed end of array.");
+//				throw new NoSuchElementException("Passed end of array.");
+				// JavaScript style out of bounds
+				return null;
 			}
 
 			return this.array[++this.index];

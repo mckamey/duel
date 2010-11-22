@@ -9,7 +9,7 @@ public class ElementNode extends ContainerNode {
 
 	private final String tagName;
 	private final boolean isVoid;
-	private final Map<String, Node> attributes = new LinkedHashMap<String, Node>();
+	private final Map<String, DuelNode> attributes = new LinkedHashMap<String, DuelNode>();
 
 	public ElementNode(String name, int index, int line, int column) {
 		super(index, line, column);
@@ -23,7 +23,7 @@ public class ElementNode extends ContainerNode {
 		this.isVoid = (name == null) || getVoidTags().containsKey(name);
 	}
 
-	public ElementNode(String name, AttributePair[] attr, Node... children) {
+	public ElementNode(String name, AttributePair[] attr, DuelNode... children) {
 		super(children);
 
 		this.tagName = name;
@@ -60,23 +60,23 @@ public class ElementNode extends ContainerNode {
 		this.attributes.put(attr.getName(), attr.getValue());
 	}
 
-	public Node getAttribute(String name) {
+	public DuelNode getAttribute(String name) {
 		if (!this.attributes.containsKey(name)) {
 			return null;
 		}
 		return this.attributes.get(name);
 	}
 
-	public void setAttribute(String name, Node value) {
+	public void setAttribute(String name, DuelNode value) {
 		this.attributes.put(name, value);
 	}
 
-	public Node removeAttribute(String name) {
+	public DuelNode removeAttribute(String name) {
 		if (!this.attributes.containsKey(name)) {
 			return null;
 		}
 
-		Node attr = this.attributes.get(name);;
+		DuelNode attr = this.attributes.get(name);;
 		this.attributes.remove(name);
 		return attr;
 	}
@@ -166,8 +166,8 @@ public class ElementNode extends ContainerNode {
 				return false;
 			}
 
-			Node thisValue = this.getAttribute(name);
-			Node thatValue = that.getAttribute(name);
+			DuelNode thisValue = this.getAttribute(name);
+			DuelNode thatValue = that.getAttribute(name);
 
 			if (thisValue == null ? thatValue != null : !thisValue.equals(thatValue)) {
 				return false;

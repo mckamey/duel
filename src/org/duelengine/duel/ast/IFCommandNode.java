@@ -1,5 +1,7 @@
 package org.duelengine.duel.ast;
 
+import org.duelengine.duel.parsing.InvalidNodeException;
+
 /**
  * Implements the single conditional command construct
  */
@@ -14,12 +16,17 @@ public class IFCommandNode extends CommandNode {
 		super(CMD, NAME, true, index, line, column);
 	}
 
-	public IFCommandNode(AttributePair[] attr, Node... children) {
+	public IFCommandNode(AttributePair[] attr, DuelNode... children) {
 		super(CMD, NAME, true, attr, children);
 	}
 
-	public Node getTest() {
-		return this.getAttribute(TEST);
+	public CodeBlockNode getTest() {
+		DuelNode node = this.getAttribute(TEST);
+		if (node instanceof CodeBlockNode || node == null) {
+			return (CodeBlockNode)node;
+		}
+
+		throw new InvalidNodeException("Unexpected conditional test attribute: "+node.getClass(), node);
 	}
 	
 	@Override
@@ -39,14 +46,14 @@ public class IFCommandNode extends CommandNode {
 	}
 
 	@Override
-	public void setAttribute(String name, Node value) {
+	public void setAttribute(String name, DuelNode value) {
 		if (name == null || name.length() == 0) {
 			throw new NullPointerException("name");
 		}
 		if (!name.equalsIgnoreCase(TEST) &&
 			!name.equalsIgnoreCase("if")) {
-			// Syntax error
-			throw new IllegalArgumentException("Attribute invalid on IF/ELSE command: "+name);
+
+			throw new InvalidNodeException("Attribute invalid on IF/ELSE command: "+name, value);
 		}
 
 		// normalize the attribute to test
