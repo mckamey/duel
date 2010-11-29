@@ -390,4 +390,141 @@ public class ScriptTranslatorTests {
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
 	}
+
+	@Test
+	public void translateArrayLiteralEmptyTest() {
+		String input = "function(data) { return []; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodeArrayCreateExpression()));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateArrayLiteralMixedTest() {
+		String input = "function(data) { return [\"a\", 42, data, null, true]; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodeArrayCreateExpression(
+						Object.class,
+						new CodePrimitiveExpression("a"),
+						new CodePrimitiveExpression(42.0),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression(null),
+						new CodePrimitiveExpression(true))));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateArrayCtorEmptyTest() {
+		String input = "function(data) { return new Array(); }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodeArrayCreateExpression()));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateArrayCtorSizeTest() {
+		String input = "function(data) { return new Array(42); }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodeArrayCreateExpression(Object.class, 42)));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateArrayCtorMixedTest() {
+		String input = "function(data) { return new Array(\"a\", 42, data, null, true); }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodeArrayCreateExpression(
+						Object.class,
+						new CodePrimitiveExpression("a"),
+						new CodePrimitiveExpression(42.0),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression(null),
+						new CodePrimitiveExpression(true))));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
 }

@@ -68,6 +68,19 @@ public class ScriptTranslator {
 		return this.visitRoot(root);
 	}
 
+	private CodeStatement visitStatement(AstNode node) {
+		CodeObject value = this.visit(node);
+
+		if (value instanceof CodeExpression) {
+			return new CodeExpressionStatement((CodeExpression)value);
+
+		} else if (value != null && !(value instanceof CodeStatement)) {
+			throw new ScriptTranslationException("Expected a statement: "+value.getClass(), node);
+		}
+
+		return (CodeStatement)value;
+	}
+
 	private CodeExpression visitExpression(AstNode node) {
 		CodeObject value = this.visit(node);
 
@@ -81,18 +94,17 @@ public class ScriptTranslator {
 		return (CodeExpression)value;
 	}
 
-	private CodeStatement visitStatement(AstNode node) {
-		CodeObject value = this.visit(node);
-
-		if (value instanceof CodeExpression) {
-			
-			return new CodeExpressionStatement((CodeExpression)value);
-
-		} else if (value != null && !(value instanceof CodeStatement)) {
-			throw new ScriptTranslationException("Expected a statement: "+value.getClass(), node);
+	private CodeExpression[] visitExpressionList(List<AstNode> nodes) {
+		int length = nodes.size();
+		if (length < 1) {
+			return null;
 		}
 
-		return (CodeStatement)value;
+		CodeExpression[] expressions = new CodeExpression[length];
+		for (int i=0; i<length; i++) {
+			expressions[i] = this.visitExpression(nodes.get(i));
+		}
+		return expressions;
 	}
 
 	private CodeObject visit(AstNode node) throws IllegalArgumentException {
@@ -141,10 +153,14 @@ public class ScriptTranslator {
 				return this.visitForLoop((ForLoop)node);
 			case Token.VAR:
 				return this.visitVarDecl((VariableDeclaration)node);
+			case Token.ARRAYLIT:
+				return this.visitArrayLiteral((ArrayLiteral)node);
 			case Token.CALL:
 				return this.visitFunctionCall((FunctionCall)node);
 			case Token.HOOK:
 				return this.visitTernary((ConditionalExpression)node);
+			case Token.NEW:
+				return this.visitNew((NewExpression)node);
 			case Token.EXPR_VOID:
 				ExpressionStatement voidExpr = (ExpressionStatement)node;
 				if (voidExpr.hasSideEffects()) {
@@ -426,13 +442,45 @@ public class ScriptTranslator {
 	}
 
 	private CodeObject visitFunctionCall(FunctionCall node) {
-		List<AstNode> argNodes = node.getArguments();
-		CodeExpression[] args = new CodeExpression[argNodes.size()];
-		for (int i=0, length=args.length; i<length; i++) {
-			args[i] = this.visitExpression(argNodes.get(i));
-		}
+		CodeExpression[] args = this.visitExpressionList(node.getArguments());
 
 		return new CodeMethodInvokeExpression(this.visitExpression(node.getTarget()), null, args);
+	}
+
+	private CodeObject visitNew(NewExpression node) {
+		AstNode target = node.getTarget();
+		if (target instanceof Name) {
+			String ident = ((Name)target).getIdentifier();
+			if ("Array".equals(ident)) {
+				return this.visitArrayCtor(node);
+			}
+
+			// TODO: add all language types 
+		}
+
+		throw new ScriptTranslationException("Create object type not yet supported ("+node.getClass()+"):\n"+(node.debugPrint()), node);
+	}
+
+	private CodeObject visitArrayLiteral(ArrayLiteral node) {
+		CodeExpression[] initializers = this.visitExpressionList(node.getElements());
+
+		return new CodeArrayCreateExpression(Object.class, initializers);
+	}
+
+	private CodeObject visitArrayCtor(NewExpression node) {
+		CodeExpression[] initializers = this.visitExpressionList(node.getArguments());
+		if (initializers != null &&
+			(initializers.length == 1) &&
+			(initializers[0] instanceof CodePrimitiveExpression)) {
+
+			CodePrimitiveExpression arg = (CodePrimitiveExpression)initializers[0];
+			if (CodeDOMUtility.isNumber(arg)) {
+				double size = (Double)arg.getValue();
+				return new CodeArrayCreateExpression(Object.class, (int)size);
+			}
+		}
+
+		return new CodeArrayCreateExpression(Object.class, initializers);
 	}
 
 	private CodeObject visitScope(Scope scope) {

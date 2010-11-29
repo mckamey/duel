@@ -8,7 +8,7 @@ import java.util.*;
 public class CodeObjectCreateExpression extends CodeExpression {
 
 	private String typeName;
-	private List<CodeExpression> arguments = new ArrayList<CodeExpression>();
+	private final List<CodeExpression> arguments = new ArrayList<CodeExpression>();
 
 	public CodeObjectCreateExpression() {
 	}

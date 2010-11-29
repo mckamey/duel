@@ -406,6 +406,9 @@ public class ServerCodeGen implements CodeGenerator {
 			} else if (expression instanceof CodeTernaryOperatorExpression) {
 				this.writeTernaryOperator(output, (CodeTernaryOperatorExpression)expression);
 
+			} else if (expression instanceof CodeArrayCreateExpression) {
+				this.writeArrayCreate(output, (CodeArrayCreateExpression)expression);
+
 			} else if (expression instanceof CodeMethodInvokeExpression) {
 				this.writeMethodInvoke(output, (CodeMethodInvokeExpression)expression);
 
@@ -906,6 +909,30 @@ public class ServerCodeGen implements CodeGenerator {
 				output.append("public ");
 				break;
 		}
+	}
+
+	private void writeArrayCreate(Appendable output, CodeArrayCreateExpression expression)
+		throws IOException {
+
+		output.append("new ");
+		this.writeTypeName(output, expression.getType());
+		List<CodeExpression> args = expression.getInitializers();
+		if (args.size() < 1) {
+			output.append("[0]");
+			return;
+		}
+		output.append("[] {");
+		boolean needsDelim = false;
+		boolean singleArg = (args.size() == 1);
+		for (CodeExpression arg : args) {
+			if (needsDelim) {
+				output.append(", ");
+			} else {
+				needsDelim = true;
+			}
+			this.writeExpression(output, arg, singleArg ? ParensSetting.SUPPRESS : ParensSetting.AUTO);
+		}
+		output.append("}");
 	}
 
 	private void writeObjectCreate(Appendable output, CodeObjectCreateExpression expression)
