@@ -407,6 +407,28 @@ test("markup data", function() {
 	same(actual, expected, "");
 });
 
+test("array result", function() {
+
+	var data = {};
+
+	var view = duel(
+		["p",
+			/* http://stackoverflow.com/questions/4170978 */
+			"Should render \"fuel\" => \"",
+			function() { return ( (![]+[])[+[]]+(!![]+[])[+!+[]+!+[]]+(!![]+[])[+!+[]+!+[]+!+[]]+(![]+[])[!+[]+!+[]] ); },
+			"\""
+		]);
+
+	var actual = view(data).value;
+
+	var expected = 
+		["p",
+		 	"Should render \"fuel\" => \"fuel\""
+		];
+
+	same(actual, expected, "");
+});
+
 test("call view", function() {
 
 	var data = {
