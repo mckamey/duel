@@ -424,14 +424,34 @@ public abstract class DuelView {
 	 */
 	protected Map<?,?> asObject(Object data) {
 		if (data == null) {
-			return Collections.EMPTY_MAP;
+			return null;//Collections.EMPTY_MAP;
 		}
 
 		if (data instanceof Map<?,?>) {
 			return (Map<?,?>)data;
 		}
-		
+
 		return new BeanMap(data);
+	}
+
+	/**
+	 * Builds a Map from an interlaced sequence of key-value pairs
+	 * @param data
+	 * @return
+	 */
+	protected Map<String,Object> asMap(Object... items) {
+		if (items == null) {
+			return new LinkedHashMap<String, Object>(0);
+		}
+
+		int length = items.length/2;
+		Map<String, Object> map = new LinkedHashMap<String, Object>(length+2);
+		for (int i=0; i<length; i++) {
+			String key = this.asString(items[2*i]);
+			Object value = items[2*i+1];
+			map.put(key, value);
+		}
+		return map;
 	}
 
 	/**

@@ -155,6 +155,8 @@ public class ScriptTranslator implements ErrorReporter {
 				return this.visitVarDecl((VariableDeclaration)node);
 			case Token.ARRAYLIT:
 				return this.visitArrayLiteral((ArrayLiteral)node);
+			case Token.OBJECTLIT:
+				return this.visitObjectLiteral((ObjectLiteral)node);
 			case Token.CALL:
 				return this.visitFunctionCall((FunctionCall)node);
 			case Token.HOOK:
@@ -455,10 +457,32 @@ public class ScriptTranslator implements ErrorReporter {
 				return this.visitArrayCtor(node);
 			}
 
-			// TODO: add all language types 
+			// TODO: add other JS types 
 		}
 
 		throw new ScriptTranslationException("Create object type not yet supported ("+node.getClass()+"):\n"+(node.debugPrint()), node);
+	}
+
+	private CodeObject visitObjectLiteral(ObjectLiteral node) {
+		List<ObjectProperty> properties = node.getElements();
+		int length = properties.size();
+		CodeExpression[] initializers = new CodeExpression[length*2];
+		for (int i=0; i<length; i++) {
+			ObjectProperty property = properties.get(i);
+
+			AstNode key = property.getLeft();
+			initializers[i*2] = (key.getType() == Token.NAME) ?
+				new CodePrimitiveExpression(((Name)key).getIdentifier()) :
+				this.visitExpression(key);
+
+			initializers[i*2+1] = this.visitExpression(property.getRight());
+		}
+		
+		return new CodeMethodInvokeExpression(
+				Map.class,
+				new CodeThisReferenceExpression(),
+				"asMap",
+				initializers);
 	}
 
 	private CodeObject visitArrayLiteral(ArrayLiteral node) {

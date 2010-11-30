@@ -1,12 +1,8 @@
 package org.duelengine.duel.codegen;
 
 import java.util.*;
-
-import junit.framework.AssertionFailedError;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
-
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.codedom.*;
 
@@ -397,6 +393,67 @@ public class ScriptTranslatorTests {
 	}
 
 	@Test
+	public void translateObjectLiteralEmptyTest() {
+		String input = "function(data) { return {}; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodeMethodInvokeExpression(
+						Map.class,
+						new CodeThisReferenceExpression(),
+						"asMap")));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateObjectLiteralMixedTest() {
+		String input = "function(data, index, count) { return { 'a': -2, count: data, \"\": null, $: false }; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodeMethodInvokeExpression(
+						Map.class,
+						new CodeThisReferenceExpression(),
+						"asMap",
+						new CodePrimitiveExpression("a"), new CodeUnaryOperatorExpression(CodeUnaryOperatorType.NEGATION, new CodePrimitiveExpression(2.0)),
+						new CodePrimitiveExpression("count"), new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression(""), new CodePrimitiveExpression(null),
+						new CodePrimitiveExpression("$"), new CodePrimitiveExpression(false))));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
 	public void translateArrayLiteralEmptyTest() {
 		String input = "function(data) { return []; }";
 
@@ -540,7 +597,7 @@ public class ScriptTranslatorTests {
 		try {
 			new ScriptTranslator().translate(input);
 
-			throw new AssertionFailedError("Expected a ScriptTranslationException");
+			fail("Expected to throw a ScriptTranslationException");
 
 		} catch (ScriptTranslationException ex) {
 		
