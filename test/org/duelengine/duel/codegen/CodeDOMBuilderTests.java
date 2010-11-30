@@ -327,7 +327,7 @@ public class CodeDOMBuilderTests {
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.IDENTITY_EQUALITY,
 						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodePrimitiveExpression(0.0)),
+						new CodePrimitiveExpression(0)),
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
@@ -341,7 +341,7 @@ public class CodeDOMBuilderTests {
 							new CodeBinaryOperatorExpression(
 								CodeBinaryOperatorType.IDENTITY_EQUALITY,
 								new CodeVariableReferenceExpression(Object.class, "data"),
-								new CodePrimitiveExpression(1.0)),
+								new CodePrimitiveExpression(1)),
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
@@ -427,7 +427,7 @@ public class CodeDOMBuilderTests {
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.VALUE_EQUALITY,
 						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodePrimitiveExpression(0.0)),
+						new CodePrimitiveExpression(0)),
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
@@ -441,7 +441,7 @@ public class CodeDOMBuilderTests {
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.VALUE_EQUALITY,
 						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodePrimitiveExpression(1.0)),
+						new CodePrimitiveExpression(1)),
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(

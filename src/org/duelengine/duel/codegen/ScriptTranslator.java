@@ -32,7 +32,7 @@ public class ScriptTranslator implements ErrorReporter {
 
 	/**
 	 * @param jsSource JavaScript source code
-	 * @return Equivalent translated Java source code
+	 * @return Equivalent translated CodeDOM
 	 */
 	public List<CodeMember> translate(String jsSource) {
 
@@ -142,7 +142,15 @@ public class ScriptTranslator implements ErrorReporter {
 			case Token.STRING:
 				return new CodePrimitiveExpression(((StringLiteral)node).getValue());
 			case Token.NUMBER:
-				return new CodePrimitiveExpression(((NumberLiteral)node).getNumber());
+				// attempt to preserve intent of number literal
+				double number = ((NumberLiteral)node).getNumber();
+				if (number == ((double)((int)number))) {
+					return new CodePrimitiveExpression((int)number);
+				}
+				if (number == ((double)((long)number))) {
+					return new CodePrimitiveExpression((long)number);
+				}
+				return new CodePrimitiveExpression(number);
 			case Token.FALSE:
 				return CodePrimitiveExpression.FALSE;
 			case Token.TRUE:
@@ -171,8 +179,12 @@ public class ScriptTranslator implements ErrorReporter {
 				// unwrap expression node
 				return this.visit(voidExpr.getExpression());
 			case Token.THIS:
-				// TODO: evaluate if will allow custom extensions via 'this'
+			case Token.THISFN:
+				// TODO: evaluate if should allow custom extensions via 'this'
 				throw new ScriptTranslationException("'this' not legal in binding expressions", node);
+		    case Token.ENTERWITH :
+		    case Token.LEAVEWITH :
+				throw new ScriptTranslationException("'with' not legal in binding expressions", node);
 			default:
 				CodeBinaryOperatorType binary = this.mapBinaryOperator(tokenType);
 				if (binary != CodeBinaryOperatorType.NONE) {
@@ -353,6 +365,15 @@ public class ScriptTranslator implements ErrorReporter {
 		String ident = node.getIdentifier();
 
 		if (JSUtility.isGlobalIdent(ident)) {
+			if ("undefined".equals(ident)) {
+				return new CodePrimitiveExpression(null);
+			}
+			if ("NaN".equals(ident)) {
+				return new CodePrimitiveExpression(Double.NaN);
+			}
+			if ("Infinity".equals(ident)) {
+				return new CodePrimitiveExpression(Double.POSITIVE_INFINITY);
+			}
 			return new ScriptVariableReferenceExpression(ident);
 		}
 
@@ -499,8 +520,8 @@ public class ScriptTranslator implements ErrorReporter {
 
 			CodePrimitiveExpression arg = (CodePrimitiveExpression)initializers[0];
 			if (CodeDOMUtility.isNumber(arg)) {
-				double size = (Double)arg.getValue();
-				return new CodeArrayCreateExpression(Object.class, (int)size);
+				int size = ((Number)arg.getValue()).intValue();
+				return new CodeArrayCreateExpression(Object.class, size);
 			}
 		}
 

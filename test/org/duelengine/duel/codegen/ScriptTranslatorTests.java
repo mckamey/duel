@@ -108,7 +108,7 @@ public class ScriptTranslatorTests {
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.GREATER_THAN_OR_EQUAL,
 						new CodeVariableReferenceExpression(int.class, "count"),
-						new CodePrimitiveExpression(1.0))));
+						new CodePrimitiveExpression(1))));
 
 		// need to signal that a parens was absorbed
 		((CodeMethodReturnStatement)expected.getStatements().getLastStatement()).getExpression().setHasParens(true);
@@ -169,8 +169,8 @@ public class ScriptTranslatorTests {
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("substr")),
 							null,
-							new CodePrimitiveExpression(5.0),
-							new CodePrimitiveExpression(2.0))));
+							new CodePrimitiveExpression(5),
+							new CodePrimitiveExpression(2))));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
@@ -224,7 +224,7 @@ public class ScriptTranslatorTests {
 				new CodeMethodReturnStatement(
 					new CodePropertyReferenceExpression(
 						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodePrimitiveExpression(3.0))));
+						new CodePrimitiveExpression(3))));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
@@ -251,7 +251,7 @@ public class ScriptTranslatorTests {
 				new CodeMethodReturnStatement(
 					new CodeUnaryOperatorExpression(
 						CodeUnaryOperatorType.NEGATION,
-						new CodePrimitiveExpression(42.0))));
+						new CodePrimitiveExpression(42))));
 
 		// need to signal that a parens was absorbed
 		((CodeUnaryOperatorExpression)((CodeMethodReturnStatement)expected.getStatements().getLastStatement()).getExpression()).getExpression().setHasParens(true);
@@ -335,8 +335,8 @@ public class ScriptTranslatorTests {
 				new CodeMethodReturnStatement(
 					new CodeTernaryOperatorExpression(
 						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodePrimitiveExpression(1.0),
-						new CodePrimitiveExpression(2.0))));
+						new CodePrimitiveExpression(1),
+						new CodePrimitiveExpression(2))));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
@@ -441,7 +441,7 @@ public class ScriptTranslatorTests {
 						Map.class,
 						new CodeThisReferenceExpression(),
 						"asMap",
-						new CodePrimitiveExpression("a"), new CodeUnaryOperatorExpression(CodeUnaryOperatorType.NEGATION, new CodePrimitiveExpression(2.0)),
+						new CodePrimitiveExpression("a"), new CodeUnaryOperatorExpression(CodeUnaryOperatorType.NEGATION, new CodePrimitiveExpression(2)),
 						new CodePrimitiveExpression("count"), new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodePrimitiveExpression(""), new CodePrimitiveExpression(null),
 						new CodePrimitiveExpression("$"), new CodePrimitiveExpression(false))));
@@ -498,7 +498,7 @@ public class ScriptTranslatorTests {
 					new CodeArrayCreateExpression(
 						Object.class,
 						new CodePrimitiveExpression("a"),
-						new CodePrimitiveExpression(42.0),
+						new CodePrimitiveExpression(42),
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodePrimitiveExpression(null),
 						new CodePrimitiveExpression(true))));
@@ -579,10 +579,85 @@ public class ScriptTranslatorTests {
 					new CodeArrayCreateExpression(
 						Object.class,
 						new CodePrimitiveExpression("a"),
-						new CodePrimitiveExpression(42.0),
+						new CodePrimitiveExpression(42),
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodePrimitiveExpression(null),
 						new CodePrimitiveExpression(true))));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateUndefinedTest() {
+		String input = "function(data) { return undefined; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodePrimitiveExpression(null)));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateNaNTest() {
+		String input = "function(data) { return NaN; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodePrimitiveExpression(Double.NaN)));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateNegInfinityTest() {
+		String input = "function(data) { return -Infinity; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodeUnaryOperatorExpression(CodeUnaryOperatorType.NEGATION, new CodePrimitiveExpression(Double.POSITIVE_INFINITY))));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);

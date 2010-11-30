@@ -1012,6 +1012,16 @@ public class ServerCodeGen implements CodeGenerator {
 		} else if (value instanceof String) {
 			this.writeString(output, (String)value);
 
+		} else if (CodeDOMUtility.isNumber(value.getClass())) {
+			double number = ((Number)value).doubleValue();
+			if (Double.isNaN(number)) {
+				output.append("Double.NaN");
+			} else if (Double.isInfinite(number)) {
+				output.append("Double.POSITIVE_INFINITY");
+			} else {
+				output.append(String.valueOf(value));
+			}
+
 		} else {
 			output.append(String.valueOf(value));
 		}
