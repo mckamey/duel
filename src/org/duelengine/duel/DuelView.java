@@ -169,21 +169,37 @@ public abstract class DuelView {
 			return null;
 		}
 
-		if (isArray(data.getClass())) {
+		Class<?> dataType = data.getClass(); 
+		String key = this.asString(property);
+
+		if (isArray(dataType)) {
 			List<?> list = this.asArray(data);
 
-			if ("length".equals(this.asString(property))) {
+			if ("length".equals(key)) {
 				return list.size();
 			}
 
 			if (isNumber(property.getClass())) {
-				return list.get((int)this.asNumber(property));
+				return list.get(((Number)this.asNumber(property)).intValue());
 			}
 
 			return null;
 		}
 
-		String key = this.asString(property);
+		if (isString(dataType)) {
+			String str = this.asString(data);
+
+			if ("length".equals(key)) {
+				return str.length();
+			}
+
+			if (isNumber(property.getClass())) {
+				return str.charAt(((Number)this.asNumber(property)).intValue());
+			}
+
+			return null;
+		}
+
 		Map<?,?> map = this.asObject(data);
 		if (map == null || !map.containsKey(key)) {
 			return null;
@@ -230,6 +246,10 @@ public abstract class DuelView {
 			Boolean.class.equals(exprType));
 	}
 
+	private static boolean isDate(Class<?> exprType) {
+		return Date.class.equals(exprType);
+	}
+
 	private static boolean isNumber(Class<?> exprType) {
 		return (Number.class.isAssignableFrom(exprType) ||
 			int.class.isAssignableFrom(exprType) ||
@@ -269,19 +289,15 @@ public abstract class DuelView {
 	 * @return
 	 */
 	protected double asNumber(Object data) {
-		if (data == null) {
-			return 0.0;
-		}
-
 		if (data instanceof Number) {
 			return ((Number)data).doubleValue();
 		}
 
-		if (data instanceof Character) {
-			return ((Character)data).charValue();
+		if (data instanceof Boolean) {
+			return ((Boolean)data).booleanValue() ? 1.0 : 0.0;
 		}
 
-		return this.asBoolean(data) ? NaN : 0.0;
+		return this.asBoolean(data) ? Double.NaN : 0.0;
 	}
 
 	/**
@@ -290,8 +306,65 @@ public abstract class DuelView {
 	 * @return
 	 */
 	protected String asString(Object data) {
-		// TODO: check special values like NaN and +/-Infinity
-		return (data == null) ? "" : data.toString();
+		if (data == null) {
+			return "";
+		}
+
+		Class<?> dataType = data.getClass();
+
+		if (String.class.equals(dataType)) {
+			return (String)data;
+		}
+
+		if (isDate(dataType)) {
+			// TODO: format as JavaScript-style Date
+			return data.toString();
+		}
+
+		if (dataType.isArray()) {
+			// JavaScript-style array toString
+			StringBuffer buffer = new StringBuffer();
+			boolean needsDelim = false;
+			for (Object item : (Object[])data) {
+				if (needsDelim) {
+					buffer.append(',');
+				} else {
+					needsDelim = true;
+				}
+				buffer.append(this.asString(item));
+			}
+			return buffer.toString();
+		}
+
+		if (List.class.isAssignableFrom(dataType)) {
+			// JavaScript-style array toString
+			StringBuffer buffer = new StringBuffer();
+			boolean needsDelim = false;
+			for (Object item : (Iterable<?>)data) {
+				if (needsDelim) {
+					buffer.append(',');
+				} else {
+					needsDelim = true;
+				}
+				buffer.append(this.asString(item));
+			}
+			return buffer.toString();
+		}
+
+		if (isNumber(dataType)) {
+			// format like JavaScript
+			double number = ((Number)data).doubleValue();
+
+			// integers formatted without trailing decimals
+			if (number == (double)((long)number)) {
+				return Long.toString((long)number);
+			}
+
+			// correctly prints NaN, Infinity, -Infinity
+			return Double.toString(number);
+		}
+
+		return data.toString();
 	}
 
 	/**
@@ -360,7 +433,7 @@ public abstract class DuelView {
 			return;
 		}
 
-		output.append(value.toString());
+		output.append(this.asString(value));
 	}
 
 	/**
@@ -378,10 +451,10 @@ public abstract class DuelView {
 
 		if (value instanceof Boolean || value instanceof Number) {
 			// no need to encode non-text primitives
-			output.append(value.toString());
+			output.append(this.asString(value));
 
 		} else {
-			formatter.writeLiteral(output, String.valueOf(value), output.getEncodeNonASCII());
+			formatter.writeLiteral(output, this.asString(value), output.getEncodeNonASCII());
 		}
 	}
 

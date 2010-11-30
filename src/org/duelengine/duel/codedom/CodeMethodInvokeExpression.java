@@ -7,14 +7,17 @@ import java.util.*;
  */
 public class CodeMethodInvokeExpression extends CodeExpression {
 
+	private Class<?> resultType;
 	private CodeExpression target;
 	private String methodName;
 	private List<CodeExpression> arguments = new ArrayList<CodeExpression>();
 
 	public CodeMethodInvokeExpression() {
+		this.setResultType(null);
 	}
 
-	public CodeMethodInvokeExpression(CodeExpression target, String methodName, CodeExpression... args) {
+	public CodeMethodInvokeExpression(Class<?> returnType, CodeExpression target, String methodName, CodeExpression... args) {
+		this.setResultType(returnType);
 		this.target = target;
 		this.methodName = methodName;
 		if (args != null) {
@@ -44,7 +47,11 @@ public class CodeMethodInvokeExpression extends CodeExpression {
 
 	@Override
 	public Class<?> getResultType() {
-		return Object.class;
+		return this.resultType;
+	}
+
+	public void setResultType(Class<?> value) {
+		this.resultType = (value != null) ? value : Object.class;
 	}
 
 	@Override
@@ -55,6 +62,10 @@ public class CodeMethodInvokeExpression extends CodeExpression {
 		}
 
 		CodeMethodInvokeExpression that = (CodeMethodInvokeExpression)arg;
+		if (this.resultType == null ? that.resultType != null : !this.resultType.equals(that.resultType)) {
+			return false;
+		}
+
 		if (this.target == null ? that.target != null : !this.target.equals(that.target)) {
 			return false;
 		}
@@ -84,6 +95,9 @@ public class CodeMethodInvokeExpression extends CodeExpression {
 		final int HASH_PRIME = 1000003;
 
 		int hash = super.hashCode() * HASH_PRIME + this.arguments.hashCode();
+		if (this.resultType != null) {
+			hash = hash * HASH_PRIME + this.resultType.hashCode();
+		}
 		if (this.target != null) {
 			hash = hash * HASH_PRIME + this.target.hashCode();
 		}

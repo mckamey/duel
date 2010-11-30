@@ -248,6 +248,7 @@ public class CodeDOMBuilder {
 
 		CodeStatementCollection scope = this.scopeStack.peek();
 		scope.add(new CodeMethodInvokeExpression(
+			Void.class,
 			new CodeThisReferenceExpression(),
 			"renderView",
 			new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
@@ -306,6 +307,7 @@ public class CodeDOMBuilder {
 		initMethod.getStatements().add(
 			new CodeExpressionStatement(
 				new CodeMethodInvokeExpression(
+					Void.class,
 					new CodeThisReferenceExpression(),
 					"addPart",
 					createPart)));
@@ -314,6 +316,7 @@ public class CodeDOMBuilder {
 		CodeStatementCollection scope = this.scopeStack.peek();
 
 		scope.add(new CodeMethodInvokeExpression(
+			Void.class,
 			new CodeThisReferenceExpression(),
 			"renderPart",
 			new CodePrimitiveExpression(part.getName()),
@@ -410,6 +413,7 @@ public class CodeDOMBuilder {
 						new CodeVariableReferenceExpression(indexDecl))),// incrementStatement
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						innerBind.getName(),
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -422,7 +426,9 @@ public class CodeDOMBuilder {
 	private void buildIterationObject(CodeStatementCollection scope, CodeExpression objExpr, CodeMethod innerBind) {
 		CodeExpression data =
 			new CodeMethodInvokeExpression(
+				Set.class,
 				new CodeMethodInvokeExpression(
+					Map.class,
 					new CodeThisReferenceExpression(),
 					"asObject",
 					objExpr),
@@ -449,6 +455,7 @@ public class CodeDOMBuilder {
 				int.class,
 				scope.nextIdent("count_"),
 				new CodeMethodInvokeExpression(
+					int.class,
 					new CodeVariableReferenceExpression(collectionDecl),
 					"size"));
 
@@ -460,6 +467,7 @@ public class CodeDOMBuilder {
 				Iterator.class,
 				scope.nextIdent("iterator_"),
 				new CodeMethodInvokeExpression(
+					Iterator.class,
 					new CodeVariableReferenceExpression(collectionDecl),
 					"iterator"));
 
@@ -469,6 +477,7 @@ public class CodeDOMBuilder {
 				Map.Entry.class,
 				scope.nextIdent("entry_"),
 				new CodeMethodInvokeExpression(
+					Map.Entry.class,
 					new CodeVariableReferenceExpression(iteratorDecl),
 					"next"));
 		
@@ -477,6 +486,7 @@ public class CodeDOMBuilder {
 			new CodeIterationStatement(
 				iteratorDecl,// initStatement
 				new CodeMethodInvokeExpression(
+					boolean.class,
 					new CodeVariableReferenceExpression(iteratorDecl),
 					"hasNext"),// testExpression
 				new CodeExpressionStatement(
@@ -486,23 +496,27 @@ public class CodeDOMBuilder {
 				entryDecl,
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						innerBind.getReturnType(),
 						new CodeThisReferenceExpression(),
 						innerBind.getName(),
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
-							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(entryDecl),
-								"getValue"),
-							new CodeVariableReferenceExpression(indexDecl),
-							new CodeVariableReferenceExpression(countDecl),
-							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(entryDecl),
-								"getKey")))));
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeMethodInvokeExpression(
+							Object.class,
+							new CodeVariableReferenceExpression(entryDecl),
+							"getValue"),
+						new CodeVariableReferenceExpression(indexDecl),
+						new CodeVariableReferenceExpression(countDecl),
+						new CodeMethodInvokeExpression(
+							String.class,
+							new CodeVariableReferenceExpression(entryDecl),
+							"getKey")))));
 	}
 
 	private void buildIterationArray(CodeStatementCollection scope, CodeExpression arrayExpr, CodeMethod innerBind) {
 
 		CodeExpression items = 
 			new CodeMethodInvokeExpression(
+				List.class,
 				new CodeThisReferenceExpression(),
 				"asArray",
 				arrayExpr);
@@ -528,6 +542,7 @@ public class CodeDOMBuilder {
 				int.class,
 				scope.nextIdent("count_"),
 				new CodeMethodInvokeExpression(
+					int.class,
 					new CodeVariableReferenceExpression(collectionDecl),
 					"size"));
 
@@ -539,6 +554,7 @@ public class CodeDOMBuilder {
 				Iterator.class,
 				scope.nextIdent("iterator_"),
 				new CodeMethodInvokeExpression(
+					Iterator.class,
 					new CodeVariableReferenceExpression(collectionDecl),
 					"iterator"));
 
@@ -547,6 +563,7 @@ public class CodeDOMBuilder {
 			new CodeIterationStatement(
 				iteratorDecl,// initStatement
 				new CodeMethodInvokeExpression(
+					boolean.class,
 					new CodeVariableReferenceExpression(iteratorDecl),
 					"hasNext"),// testExpression
 				new CodeExpressionStatement(
@@ -555,15 +572,17 @@ public class CodeDOMBuilder {
 						new CodeVariableReferenceExpression(indexDecl))),// incrementStatement
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						innerBind.getReturnType(),
 						new CodeThisReferenceExpression(),
 						innerBind.getName(),
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
-							new CodeMethodInvokeExpression(
-								new CodeVariableReferenceExpression(iteratorDecl),
-								"next"),
-							new CodeVariableReferenceExpression(indexDecl),
-							new CodeVariableReferenceExpression(countDecl),
-							CodePrimitiveExpression.NULL))));
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeMethodInvokeExpression(
+							Map.Entry.class,
+							new CodeVariableReferenceExpression(iteratorDecl),
+							"next"),
+						new CodeVariableReferenceExpression(indexDecl),
+						new CodeVariableReferenceExpression(countDecl),
+						CodePrimitiveExpression.NULL))));
 	}
 
 	private void buildConditional(XORCommandNode node)
@@ -633,7 +652,8 @@ public class CodeDOMBuilder {
 
 				// have the expression be a method invocation
 				expression = new CodeMethodInvokeExpression(
-					new CodeThisReferenceExpression(),
+					Void.class,
+						new CodeThisReferenceExpression(),
 						members.get(0).getName(),
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data"),

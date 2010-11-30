@@ -15,7 +15,7 @@ import org.mozilla.javascript.ast.*;
 /**
  * Translates JavaScript source code into CodeDOM
  */
-public class ScriptTranslator {
+public class ScriptTranslator implements ErrorReporter {
 
 	private final IdentifierScope scope;
 
@@ -37,7 +37,7 @@ public class ScriptTranslator {
 	public List<CodeMember> translate(String jsSource) {
 
 		String jsFilename = "anonymous.js";
-		ErrorReporter errorReporter = null;
+		ErrorReporter errorReporter = this;
 
 		Context cx = Context.enter();
 		cx.setLanguageVersion(Context.VERSION_1_5);
@@ -444,7 +444,7 @@ public class ScriptTranslator {
 	private CodeObject visitFunctionCall(FunctionCall node) {
 		CodeExpression[] args = this.visitExpressionList(node.getArguments());
 
-		return new CodeMethodInvokeExpression(this.visitExpression(node.getTarget()), null, args);
+		return new CodeMethodInvokeExpression(Object.class, this.visitExpression(node.getTarget()), null, args);
 	}
 
 	private CodeObject visitNew(NewExpression node) {
@@ -547,5 +547,20 @@ public class ScriptTranslator {
             }
         }
         return members;
+	}
+
+	@Override
+	public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
+		// do nothing with warnings for now
+	}
+
+	@Override
+	public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
+		throw this.runtimeError(message, sourceName, line, lineSource, lineOffset);
+	}
+
+	@Override
+	public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
+        return new EvaluatorException(message, sourceName, line, lineSource, lineOffset);
 	}
 }

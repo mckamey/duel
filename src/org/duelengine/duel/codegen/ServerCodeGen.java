@@ -458,25 +458,25 @@ public class ServerCodeGen implements CodeGenerator {
 
 		boolean asNumber = true,
 			asBoolean = false,
+			asString = false,
 			isAssign = false;
+
+		CodeExpression left = expression.getLeft();
+		CodeExpression right = expression.getRight();
 
 		String operator;
 		switch (expression.getOperator()) {
 			case IDENTITY_EQUALITY:
-				this.writeExpression(output, CodeDOMUtility.equal(
-					expression.getLeft(), expression.getRight()));
+				this.writeExpression(output, CodeDOMUtility.equal(left, right));
 				return;
 			case VALUE_EQUALITY:
-				this.writeExpression(output, CodeDOMUtility.coerceEqual(
-					expression.getLeft(), expression.getRight()));
+				this.writeExpression(output, CodeDOMUtility.coerceEqual(left, right));
 				return;
 			case IDENTITY_INEQUALITY:
-				this.writeExpression(output, CodeDOMUtility.notEqual(
-					expression.getLeft(), expression.getRight()));
+				this.writeExpression(output, CodeDOMUtility.notEqual(left, right));
 				return;
 			case VALUE_INEQUALITY:
-				this.writeExpression(output, CodeDOMUtility.coerceNotEqual(
-					expression.getLeft(), expression.getRight()));
+				this.writeExpression(output, CodeDOMUtility.coerceNotEqual(left, right));
 				return;
 			case GREATER_THAN:
 				operator = " > ";
@@ -496,87 +496,104 @@ public class ServerCodeGen implements CodeGenerator {
 				break;
 			case ADD:
 				operator = " + ";
-				// TODO: sort out ambiguous expressions
-				asNumber = !CodeDOMUtility.isNumber(expression.getLeft());
+				Class<?> leftType = CodeDOMUtility.toPrimitive(left.getResultType());
+				Class<?> rightType = CodeDOMUtility.toPrimitive(right.getResultType());
+
+				// asString trumps asNumber
+				asString = CodeDOMUtility.isString(leftType) || CodeDOMUtility.isString(rightType);
+				asNumber = !asString;
 				asBoolean = false;
 				break;
 			case ADD_ASSIGN:
-				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
-					// TODO: sort out ambiguous expressions
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.ADD, expression.getLeft(), expression.getRight()));
-					return;
-				}
-				operator = " += ";
-				break;
+				// asString trumps asNumber
+				asString = CodeDOMUtility.isString(CodeDOMUtility.toPrimitive(left.getResultType()));
+				this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.ADD, left,
+					asString ? CodeDOMUtility.ensureString(left) : CodeDOMUtility.ensureNumber(left),
+					asString ? CodeDOMUtility.ensureString(right) : CodeDOMUtility.ensureNumber(right)));
+				return;
 			case SUBTRACT:
 				operator = " - ";
 				break;
 			case SUBTRACT_ASSIGN:
-				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SUBTRACT, expression.getLeft(), expression.getRight()));
+				if (!CodeDOMUtility.isNumber(left)) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MULTIPLY,
+						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
 				operator = " -= ";
+				isAssign = true;
 				break;
 			case MULTIPLY:
 				operator = " * ";
 				break;
 			case MULTIPLY_ASSIGN:
-				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MULTIPLY, expression.getLeft(), expression.getRight()));
+				if (!CodeDOMUtility.isNumber(left)) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MULTIPLY,
+						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
 				operator = " *= ";
+				isAssign = true;
 				break;
 			case DIVIDE:
 				operator = " / ";
 				break;
 			case DIVIDE_ASSIGN:
-				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.DIVIDE, expression.getLeft(), expression.getRight()));
+				if (!CodeDOMUtility.isNumber(left)) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.DIVIDE,
+						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
 				operator = " /= ";
+				isAssign = true;
 				break;
 			case MODULUS:
 				operator = " % ";
 				break;
 			case MODULUS_ASSIGN:
-				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MODULUS, expression.getLeft(), expression.getRight()));
+				if (!CodeDOMUtility.isNumber(left)) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MODULUS,
+						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
 				operator = " %= ";
+				isAssign = true;
 				break;
 			case BITWISE_AND:
 				operator = " & ";
 				break;
 			case BITWISE_AND_ASSIGN:
-				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_AND, expression.getLeft(), expression.getRight()));
+				if (!CodeDOMUtility.isNumber(left)) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_AND,
+						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
 				operator = " &= ";
+				isAssign = true;
 				break;
 			case BITWISE_OR:
 				operator = " | ";
 				break;
 			case BITWISE_OR_ASSIGN:
-				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_OR, expression.getLeft(), expression.getRight()));
+				if (!CodeDOMUtility.isNumber(left)) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_OR,
+						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
 				operator = " |= ";
+				isAssign = true;
 				break;
 			case BITWISE_XOR:
 				operator = " ^ ";
 				break;
 			case BITWISE_XOR_ASSIGN:
-				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_XOR, expression.getLeft(), expression.getRight()));
+				if (!CodeDOMUtility.isNumber(left)) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_XOR,
+						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
 				operator = " ^= ";
+				isAssign = true;
 				break;
 			case BOOLEAN_AND:
 				operator = " && ";
@@ -592,54 +609,66 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " << ";
 				break;
 			case SHIFT_LEFT_ASSIGN:
-				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_LEFT, expression.getLeft(), expression.getRight()));
+				if (!CodeDOMUtility.isNumber(left)) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_LEFT,
+						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
 				operator = " <<= ";
+				isAssign = true;
 				break;
 			case SHIFT_RIGHT:
 				operator = " >> ";
 				break;
 			case SHIFT_RIGHT_ASSIGN:
-				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_RIGHT, expression.getLeft(), expression.getRight()));
+				if (!CodeDOMUtility.isNumber(left)) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_RIGHT,
+						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
 				operator = " >>= ";
+				isAssign = true;
 				break;
 			case USHIFT_RIGHT:
 				operator = " >>> ";
 				break;
 			case USHIFT_RIGHT_ASSIGN:
-				if (!CodeDOMUtility.isNumber(expression.getLeft())) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.USHIFT_RIGHT, expression.getLeft(), expression.getRight()));
+				if (!CodeDOMUtility.isNumber(left)) {
+					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.USHIFT_RIGHT,
+						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
 				operator = " >>>= ";
+				isAssign = true;
 				break;
 			default:
 				throw new UnsupportedOperationException("Unknown binary operator: "+expression.getOperator());
 		}
 
-		if (asNumber && !isAssign) {
-			this.writeExpression(output, CodeDOMUtility.ensureNumber(expression.getLeft()));
-		} else if (asBoolean && !isAssign) {
-			this.writeExpression(output, CodeDOMUtility.ensureBoolean(expression.getLeft()));
+		if (isAssign) {
+			this.writeExpression(output, left);
+		} else if (asString) {
+			this.writeExpression(output, CodeDOMUtility.ensureString(left));
+		} else if (asNumber) {
+			this.writeExpression(output, CodeDOMUtility.ensureNumber(left));
+		} else if (asBoolean) {
+			this.writeExpression(output, CodeDOMUtility.ensureBoolean(left));
 		} else {
-			this.writeExpression(output, expression.getLeft());
+			this.writeExpression(output, left);
 		}
 
 		output.append(operator);
 
 		if (isAssign) {
-			this.writeExpression(output, CodeDOMUtility.ensureType(expression.getLeft().getResultType(), expression.getRight()));
+			this.writeExpression(output, CodeDOMUtility.ensureType(left.getResultType(), right));
+		} else if (asString) {
+			this.writeExpression(output, CodeDOMUtility.ensureString(right));
 		} else if (asNumber) {
-			this.writeExpression(output, CodeDOMUtility.ensureNumber(expression.getRight()));
+			this.writeExpression(output, CodeDOMUtility.ensureNumber(right));
 		} else if (asBoolean) {
-			this.writeExpression(output, CodeDOMUtility.ensureBoolean(expression.getRight()));
+			this.writeExpression(output, CodeDOMUtility.ensureBoolean(right));
 		} else {
-			this.writeExpression(output, expression.getRight());
+			this.writeExpression(output, right);
 		}
 	}
 
@@ -914,14 +943,19 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeArrayCreate(Appendable output, CodeArrayCreateExpression expression)
 		throws IOException {
 
-		output.append("new ");
-		this.writeTypeName(output, expression.getType());
 		List<CodeExpression> args = expression.getInitializers();
 		if (args.size() < 1) {
-			output.append("[0]");
+			output.append("new ArrayList<");
+			this.writeTypeName(output, expression.getType());
+			output.append(">(");
+			if (expression.getSize() > 0) {
+				output.append(Integer.toString(expression.getSize()));
+			}
+			output.append(")");
 			return;
 		}
-		output.append("[] {");
+
+		output.append("Arrays.asList(");
 		boolean needsDelim = false;
 		boolean singleArg = (args.size() == 1);
 		for (CodeExpression arg : args) {
@@ -932,7 +966,7 @@ public class ServerCodeGen implements CodeGenerator {
 			}
 			this.writeExpression(output, arg, singleArg ? ParensSetting.SUPPRESS : ParensSetting.AUTO);
 		}
-		output.append("}");
+		output.append(")");
 	}
 
 	private void writeObjectCreate(Appendable output, CodeObjectCreateExpression expression)

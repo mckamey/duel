@@ -31,6 +31,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")))
@@ -85,6 +86,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -139,6 +141,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div>"))),
@@ -150,6 +153,7 @@ public class ServerCodeGenTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
+								Void.class,
 								new CodeVariableReferenceExpression(DuelContext.class, "output"),
 								"append",
 								new CodePrimitiveExpression("zero")))
@@ -163,6 +167,7 @@ public class ServerCodeGenTests {
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
+										Void.class,
 										new CodeVariableReferenceExpression(DuelContext.class, "output"),
 										"append",
 										new CodePrimitiveExpression("one")))
@@ -170,6 +175,7 @@ public class ServerCodeGenTests {
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
+										Void.class,
 										new CodeVariableReferenceExpression(DuelContext.class, "output"),
 										"append",
 										new CodePrimitiveExpression("many")))
@@ -177,6 +183,7 @@ public class ServerCodeGenTests {
 					}),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
@@ -241,6 +248,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div>"))),
@@ -252,6 +260,7 @@ public class ServerCodeGenTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
+								Void.class,
 								new CodeVariableReferenceExpression(DuelContext.class, "output"),
 								"append",
 								new CodePrimitiveExpression("zero")))
@@ -264,17 +273,20 @@ public class ServerCodeGenTests {
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
+								Void.class,
 								new CodeVariableReferenceExpression(DuelContext.class, "output"),
 								"append",
 								new CodePrimitiveExpression("one")))
 					}),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("many"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
@@ -337,6 +349,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div>"))),
@@ -344,6 +357,7 @@ public class ServerCodeGenTests {
 					Collection.class,
 					"items_1",// collection
 					new CodeMethodInvokeExpression(
+						List.class,
 						new CodeThisReferenceExpression(),
 						"asArray",
 						new CodePropertyReferenceExpression(
@@ -358,6 +372,7 @@ public class ServerCodeGenTests {
 						int.class,
 						"count_3",// count
 						new CodeMethodInvokeExpression(
+							int.class,
 							new CodeVariableReferenceExpression(Collection.class, "items_1"),
 							"size"))),
 				new CodeIterationStatement(
@@ -365,9 +380,11 @@ public class ServerCodeGenTests {
 						Iterator.class,
 						"iterator_4",
 						new CodeMethodInvokeExpression(
+							Iterator.class,
 							new CodeVariableReferenceExpression(Collection.class, "items_1"),
 							"iterator")),// initStatement
 					new CodeMethodInvokeExpression(
+						boolean.class,
 						new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
 						"hasNext"),// testExpression
 					new CodeExpressionStatement(
@@ -376,10 +393,12 @@ public class ServerCodeGenTests {
 							new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
+							Void.class,
 							new CodeThisReferenceExpression(),
 							"render_2",
 							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							new CodeMethodInvokeExpression(
+								Map.Entry.class,
 								new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
 								"next"),
 							new CodeVariableReferenceExpression(int.class, "index_2"),
@@ -387,6 +406,7 @@ public class ServerCodeGenTests {
 							CodePrimitiveExpression.NULL))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
@@ -407,11 +427,13 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -477,6 +499,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div>"))),
@@ -484,6 +507,7 @@ public class ServerCodeGenTests {
 					Collection.class,
 					"items_1",// collection
 					new CodeMethodInvokeExpression(
+						Map.class,
 						new CodeThisReferenceExpression(),
 						"asObject",
 						new CodePropertyReferenceExpression(
@@ -498,6 +522,7 @@ public class ServerCodeGenTests {
 						int.class,
 						"count_3",// count
 						new CodeMethodInvokeExpression(
+							int.class,
 							new CodeVariableReferenceExpression(Collection.class, "items_1"),
 							"size"))),
 				new CodeIterationStatement(
@@ -505,9 +530,11 @@ public class ServerCodeGenTests {
 						Iterator.class,
 						"iterator_4",
 						new CodeMethodInvokeExpression(
+							Iterator.class,
 							new CodeVariableReferenceExpression(Collection.class, "items_1"),
 							"iterator")),// initStatement
 					new CodeMethodInvokeExpression(
+						boolean.class,
 						new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
 						"hasNext"),// testExpression
 					new CodeExpressionStatement(
@@ -518,23 +545,28 @@ public class ServerCodeGenTests {
 						Map.Entry.class,
 						"entry_5",
 						new CodeMethodInvokeExpression(
+							Map.Entry.class,
 							new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
 							"next")),
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
+							Void.class,
 							new CodeThisReferenceExpression(),
 							"render_2",
 							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							new CodeMethodInvokeExpression(
+								Object.class,
 								new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
 								"getValue"),
 							new CodeVariableReferenceExpression(int.class, "index_2"),
 							new CodeVariableReferenceExpression(int.class, "count_3"),
 							new CodeMethodInvokeExpression(
+								String.class,
 								new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
 								"getKey")))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
@@ -555,11 +587,13 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -627,6 +661,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div>"))),
@@ -656,6 +691,7 @@ public class ServerCodeGenTests {
 							new CodeVariableReferenceExpression(int.class, "index_2"))),// incrementStatement
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
+							Void.class,
 							new CodeThisReferenceExpression(),
 							"render_2",
 							new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -665,6 +701,7 @@ public class ServerCodeGenTests {
 							CodePrimitiveExpression.NULL))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
@@ -685,11 +722,13 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -754,6 +793,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -812,6 +852,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -869,6 +910,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -926,6 +968,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -1092,6 +1135,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"renderView",
 						new CodeFieldReferenceExpression(
@@ -1176,6 +1220,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"renderView",
 						new CodeFieldReferenceExpression(
@@ -1216,6 +1261,7 @@ public class ServerCodeGenTests {
 					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
+							Void.class,
 							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							"append",
 							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
@@ -1305,11 +1351,13 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<div class=\"dialog\">"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"renderPart",
 						new CodePrimitiveExpression("header"),
@@ -1320,11 +1368,13 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(String.class, "key"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("<hr />"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"renderPart",
 						new CodePrimitiveExpression("body"),
@@ -1335,6 +1385,7 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(String.class, "key"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
@@ -1363,6 +1414,7 @@ public class ServerCodeGenTests {
 					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
+							Void.class,
 							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							"append",
 							new CodePrimitiveExpression("<h2>Warning</h2>")))
@@ -1374,11 +1426,13 @@ public class ServerCodeGenTests {
 				null,
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"addPart",
 						new CodeObjectCreateExpression("part_2"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeThisReferenceExpression(),
 						"addPart",
 						new CodeObjectCreateExpression("part_3")))),
@@ -1406,6 +1460,7 @@ public class ServerCodeGenTests {
 					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
+							Void.class,
 							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							"append",
 							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
@@ -1494,6 +1549,7 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("Hello world.<!--Comment Here-->Lorem ipsum.")))
@@ -1548,12 +1604,14 @@ public class ServerCodeGenTests {
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("Hello world."))),
 				new CodeCommentStatement("Code Comment Here"),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
+						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("Lorem ipsum.")))

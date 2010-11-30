@@ -64,6 +64,7 @@ final class CodeDOMUtility {
 			String.class,
 			scope.nextIdent("id_"),
 			new CodeMethodInvokeExpression(
+				String.class,
 				new CodeVariableReferenceExpression(DuelContext.class, "output"),
 				"nextID"));
 	}
@@ -72,6 +73,7 @@ final class CodeDOMUtility {
 		// output.append("literal");
 		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(
+				Void.class,
 				new CodeVariableReferenceExpression(DuelContext.class, "output"),
 				"append",
 				new CodePrimitiveExpression(literal)));
@@ -95,6 +97,7 @@ final class CodeDOMUtility {
 		// this.htmlEncode(output, expression);
 		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(
+				Void.class,
 				new CodeThisReferenceExpression(),
 				"htmlEncode",
 				new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -106,6 +109,7 @@ final class CodeDOMUtility {
 			// output.append(expression);
 			return new CodeExpressionStatement(
 				new CodeMethodInvokeExpression(
+					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
 					expression));
@@ -115,6 +119,7 @@ final class CodeDOMUtility {
 		// this.write(output, expression);
 		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(
+				Void.class,
 				new CodeThisReferenceExpression(),
 				"write",
 				new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -152,8 +157,8 @@ final class CodeDOMUtility {
 	}
 
 	public static boolean isBoolean(Class<?> exprType) {
-		return (boolean.class.equals(exprType) ||
-			Boolean.class.equals(exprType));
+		return (Boolean.class.equals(exprType) ||
+				boolean.class.equals(exprType));
 	}
 
 	public static boolean isNumber(CodeExpression expression) {
@@ -162,12 +167,12 @@ final class CodeDOMUtility {
 
 	public static boolean isNumber(Class<?> exprType) {
 		return (Number.class.isAssignableFrom(exprType) ||
-			int.class.isAssignableFrom(exprType) ||
-			double.class.isAssignableFrom(exprType) ||
-			float.class.isAssignableFrom(exprType) ||
-			long.class.isAssignableFrom(exprType) ||
-			short.class.isAssignableFrom(exprType) ||
-			byte.class.isAssignableFrom(exprType));
+				int.class.equals(exprType) ||
+				double.class.equals(exprType) ||
+				float.class.equals(exprType) ||
+				long.class.equals(exprType) ||
+				short.class.equals(exprType) ||
+				byte.class.equals(exprType));
 	}
 
 	public static boolean isString(CodeExpression expression) {
@@ -185,6 +190,7 @@ final class CodeDOMUtility {
 
 		// this.asBoolean(expression);
 		return new CodeMethodInvokeExpression(
+			boolean.class,
 			new CodeThisReferenceExpression(),
 			"asBoolean",
 			expression);
@@ -197,6 +203,7 @@ final class CodeDOMUtility {
 
 		// this.asNumber(expression);
 		return new CodeMethodInvokeExpression(
+			double.class,
 			new CodeThisReferenceExpression(),
 			"asNumber",
 			expression);
@@ -209,6 +216,7 @@ final class CodeDOMUtility {
 
 		// this.asString(expression);
 		return new CodeMethodInvokeExpression(
+			String.class,
 			new CodeThisReferenceExpression(),
 			"asString",
 			expression);
@@ -216,6 +224,7 @@ final class CodeDOMUtility {
 
 	public static CodeExpression equal(CodeExpression a, CodeExpression b) {
 		return new CodeMethodInvokeExpression(
+			boolean.class,
 			new CodeThisReferenceExpression(),
 			"equal",
 			a,
@@ -230,6 +239,7 @@ final class CodeDOMUtility {
 
 	public static CodeExpression coerceEqual(CodeExpression a, CodeExpression b) {
 		return new CodeMethodInvokeExpression(
+			boolean.class,
 			new CodeThisReferenceExpression(),
 			"coerceEqual",
 			a,
@@ -243,34 +253,36 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeExpression safePreIncrement(CodeExpression i) {
-		return asAssignment(CodeBinaryOperatorType.ADD, i, CodePrimitiveExpression.ONE);
+		return asAssignment(CodeBinaryOperatorType.ADD, i, ensureNumber(i), CodePrimitiveExpression.ONE);
 	}
 
 	public static CodeExpression safePreDecrement(CodeExpression i) {
-		return asAssignment(CodeBinaryOperatorType.SUBTRACT, i, CodePrimitiveExpression.ONE);
+		return asAssignment(CodeBinaryOperatorType.SUBTRACT, i, ensureNumber(i), CodePrimitiveExpression.ONE);
 	}
 
 	public static CodeExpression safePostIncrement(CodeExpression i) {
 		return new CodeMethodInvokeExpression(
+			double.class,
 			new CodeThisReferenceExpression(),
 			"echo",
 			ensureNumber(i),
-			asAssignment(CodeBinaryOperatorType.ADD, i, CodePrimitiveExpression.ONE));
+			asAssignment(CodeBinaryOperatorType.ADD, i, ensureNumber(i), CodePrimitiveExpression.ONE));
 	}
 
 	public static CodeExpression safePostDecrement(CodeExpression i) {
 		return new CodeMethodInvokeExpression(
+			double.class,
 			new CodeThisReferenceExpression(),
 			"echo",
 			ensureNumber(i),
-			asAssignment(CodeBinaryOperatorType.SUBTRACT, i, CodePrimitiveExpression.ONE));
+			asAssignment(CodeBinaryOperatorType.SUBTRACT, i, ensureNumber(i), CodePrimitiveExpression.ONE));
 	}
 
-	public static CodeExpression asAssignment(CodeBinaryOperatorType op, CodeExpression a, CodeExpression b) {
-		CodeBinaryOperatorExpression expr = new CodeBinaryOperatorExpression(op, a, b);
+	public static CodeExpression asAssignment(CodeBinaryOperatorType op, CodeExpression assign, CodeExpression left, CodeExpression right) {
+		CodeBinaryOperatorExpression expr = new CodeBinaryOperatorExpression(op, left, right);
 		expr.setHasParens(true);
 
-		expr = new CodeBinaryOperatorExpression(CodeBinaryOperatorType.ASSIGN, a, expr);
+		expr = new CodeBinaryOperatorExpression(CodeBinaryOperatorType.ASSIGN, assign, expr);
 		expr.setHasParens(true);
 		return expr;
 	}
@@ -290,5 +302,19 @@ final class CodeDOMUtility {
 			return ensureBoolean(expr);
 		}
 		return expr;
+	}
+
+	/**
+	 * A simplified version of ECMA-262 ToPrimitive definition (Section 9.1)
+	 * @param exprType
+	 * @return
+	 */
+	public static Class<?> toPrimitive(Class<?> exprType) {
+		if (exprType.isPrimitive() || Number.class.isAssignableFrom(exprType) || Boolean.class.isAssignableFrom(exprType)) {
+			return exprType;
+		}
+
+		// generalize others get coerced to String
+		return String.class;
 	}
 }

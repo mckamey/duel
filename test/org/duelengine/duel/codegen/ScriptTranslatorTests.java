@@ -1,6 +1,9 @@
 package org.duelengine.duel.codegen;
 
 import java.util.*;
+
+import junit.framework.AssertionFailedError;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -165,6 +168,7 @@ public class ScriptTranslatorTests {
 				},
 				new CodeMethodReturnStatement(
 					new CodeMethodInvokeExpression(
+						Object.class,
 						new CodePropertyReferenceExpression(
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("substr")),
@@ -378,6 +382,7 @@ public class ScriptTranslatorTests {
 							new CodeVariableReferenceExpression(Object.class, "i2"))),
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
+							Object.class,
 							new CodePropertyReferenceExpression(
 								new CodePropertyReferenceExpression(
 									new CodeVariableReferenceExpression(Object.class, "data"),
@@ -526,5 +531,20 @@ public class ScriptTranslatorTests {
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateEmptyTest() {
+		String input = "function(data) { return ( /*...*/ ); }";
+
+		try {
+			new ScriptTranslator().translate(input);
+
+			throw new AssertionFailedError("Expected a ScriptTranslationException");
+
+		} catch (ScriptTranslationException ex) {
+		
+			assertEquals(35, ex.getColumn());
+		}
 	}
 }
