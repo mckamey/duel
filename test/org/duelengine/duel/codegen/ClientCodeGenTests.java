@@ -528,7 +528,7 @@ public class ClientCodeGenTests {
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
-System.out.println(actual);
+
 		assertEquals(expected, actual);
 	}
 
@@ -553,7 +553,7 @@ System.out.println(actual);
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
-System.out.println(actual);
+
 		assertEquals(expected, actual);
 	}
 
@@ -578,7 +578,7 @@ System.out.println(actual);
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
-System.out.println(actual);
+
 		assertEquals(expected, actual);
 	}
 
@@ -603,7 +603,7 @@ System.out.println(actual);
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
-System.out.println(actual);
+
 		assertEquals(expected, actual);
 	}
 
