@@ -183,9 +183,9 @@ public class ClientCodeGen implements CodeGenerator {
 	private void writeComment(Appendable output, String value)
 		throws IOException {
 
-		output.append(" /*");
+		output.append("/*");
 		if (value != null) {
-			output.append(value.replace("*/", "* /"));
+			output.append(value.replace("*/", "*\\/"));
 		}
 		output.append("*/");
 	}
@@ -271,7 +271,20 @@ public class ClientCodeGen implements CodeGenerator {
 			}
 
 			boolean hasChildren = false;
-			for (DuelNode child : node.getChildren()) {
+			boolean needsDelim = false;
+			List<DuelNode> children = node.getChildren();
+			int length=children.size();
+
+			// less efficient but allows better comma placement
+			for (int j=0; j<length; j++) {
+				if (!(children.get(j) instanceof CodeCommentNode)) {
+					needsDelim = true;
+					break;
+				}
+			}
+
+			for (int i=0; i<length; i++) {
+				DuelNode child = children.get(i);
 				if (this.settings.getNormalizeWhitespace() &&
 					!this.preMode &&
 					child instanceof LiteralNode &&
@@ -283,12 +296,26 @@ public class ClientCodeGen implements CodeGenerator {
 						continue;
 					}
 				}
-				if (!(child instanceof CodeCommentNode)) {
+
+				if (needsDelim) {
 					output.append(',');
-					this.writeln(output);
-					hasChildren = true;
 				}
+				needsDelim = false;
+				hasChildren = true;
+
+				this.writeln(output);
 				this.writeNode(output, child);
+
+				// less efficient but allows better comma placement
+				if (!(child instanceof CodeCommentNode)) {
+					// check if delimiter needed
+					for (int j=i+1; j<length; j++) {
+						if (!(children.get(j) instanceof CodeCommentNode)) {
+							needsDelim = true;
+							break;
+						}
+					}
+				}
 			}
 
 			this.depth--;

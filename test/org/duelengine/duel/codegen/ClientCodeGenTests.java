@@ -508,7 +508,32 @@ public class ClientCodeGenTests {
 	}
 
 	@Test
-	public void codeCommentTest() throws IOException {
+	public void codeCommentFirstTest() throws IOException {
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new CodeCommentNode("Code Comment Here"),
+			new LiteralNode("Hello world."),
+			new LiteralNode("Lorem ipsum."));
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel([\"\",\n"+
+			"\t/*Code Comment Here*/\n"+
+			"\t\"Hello world.\",\n"+
+			"\t\"Lorem ipsum.\"\n"+
+			"]);\n";
+
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
+System.out.println(actual);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void codeCommentMiddleTest() throws IOException {
 		VIEWCommandNode input = new VIEWCommandNode(
 			new AttributePair[] {
 				new AttributePair("name", new LiteralNode("foo"))
@@ -520,14 +545,65 @@ public class ClientCodeGenTests {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo = duel([\"\",\n"+
-			"\t\"Hello world.\" /*Code Comment Here*/,\n"+
+			"\t\"Hello world.\",\n"+
+			"\t/*Code Comment Here*/\n"+
 			"\t\"Lorem ipsum.\"\n"+
 			"]);\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
+System.out.println(actual);
+		assertEquals(expected, actual);
+	}
 
+	@Test
+	public void codeCommentLastTest() throws IOException {
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new LiteralNode("Hello world."),
+			new LiteralNode("Lorem ipsum."),
+			new CodeCommentNode("Code Comment Here"));
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel([\"\",\n"+
+			"\t\"Hello world.\",\n"+
+			"\t\"Lorem ipsum.\"\n"+
+			"\t/*Code Comment Here*/\n"+
+			"]);\n";
+
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
+System.out.println(actual);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void codeCommentOnlyTest() throws IOException {
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new CodeCommentNode("Code Comment Here"),
+			new CodeCommentNode("And Here"),
+			new CodeCommentNode("Also Here"));
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel([\"\"\n"+
+			"\t/*Code Comment Here*/\n"+
+			"\t/*And Here*/\n"+
+			"\t/*Also Here*/\n"+
+			"]);\n";
+
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
+System.out.println(actual);
 		assertEquals(expected, actual);
 	}
 
