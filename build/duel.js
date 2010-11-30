@@ -569,7 +569,17 @@ var duel = (
 			case FUN:
 				// execute code block
 				// Closure Compiler type cast
-				return (/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key);
+				var val = (/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key);
+				switch (getType(val)) {
+					case ARY:
+					case OBJ:
+						val = ""+val;
+						break;
+					case NUL:
+						val = "";
+						break;
+				}
+				return val;
 
 			case ARY:
 				// inspect element name for template commands
