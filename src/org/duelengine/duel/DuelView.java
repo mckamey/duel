@@ -166,6 +166,7 @@ public abstract class DuelView {
 	 */
 	protected Object getProperty(Object data, Object property) {
 		if (data == null || property == null) {
+			// technically "undefined" or error
 			return null;
 		}
 
@@ -180,9 +181,15 @@ public abstract class DuelView {
 			}
 
 			if (isNumber(property.getClass())) {
-				return list.get(((Number)this.asNumber(property)).intValue());
+				int index = ((Number)this.asNumber(property)).intValue();
+				if ((index < 0) || (index >= list.size())) {
+					// technically "undefined"
+					return null;
+				}
+				return list.get(index);
 			}
 
+			// technically "undefined" or error
 			return null;
 		}
 
@@ -194,14 +201,21 @@ public abstract class DuelView {
 			}
 
 			if (isNumber(property.getClass())) {
-				return str.charAt(((Number)this.asNumber(property)).intValue());
+				int index = ((Number)this.asNumber(property)).intValue();
+				if ((index < 0) || (index >= str.length())) {
+					// technically "undefined"
+					return null;
+				}
+				return str.charAt(index);
 			}
 
+			// technically "undefined" or error
 			return null;
 		}
 
 		Map<?,?> map = this.asObject(data);
 		if (map == null || !map.containsKey(key)) {
+			// technically "undefined"
 			return null;
 		}
 		return map.get(key);
