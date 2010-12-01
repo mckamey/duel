@@ -260,10 +260,6 @@ public abstract class DuelView {
 			Boolean.class.equals(exprType));
 	}
 
-	private static boolean isDate(Class<?> exprType) {
-		return Date.class.equals(exprType);
-	}
-
 	private static boolean isNumber(Class<?> exprType) {
 		return (Number.class.isAssignableFrom(exprType) ||
 			int.class.isAssignableFrom(exprType) ||
@@ -330,9 +326,10 @@ public abstract class DuelView {
 			return (String)data;
 		}
 
-		if (isDate(dataType)) {
-			// TODO: format as JavaScript-style Date
-			return data.toString();
+		if (Date.class.equals(dataType)) {
+			// YYYY-MM-DD HH:mm:ss Z
+			//return String.format("%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tLZ", data);
+			return String.format("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS Z", data);
 		}
 
 		if (isNumber(dataType)) {
@@ -395,7 +392,7 @@ public abstract class DuelView {
 				Map.Entry<?,?> entry = (Map.Entry<?,?>)iterator.next();
 				buffer
 					.append(this.asString(entry.getKey()))
-					.append(':')
+					.append('=')
 					.append(this.asString(entry.getValue()));
 			}
 

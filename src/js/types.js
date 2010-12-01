@@ -197,6 +197,10 @@
 			this.value.join("");
 	};
 
+	function digits(n) {
+        return (n < 10) ? '0'+n : n;
+    }
+
 	/**
 	 * Formats the value as a string
 	 * 
@@ -208,6 +212,15 @@
 		var buffer, needsDelim;
 		switch (getType(val)) {
 			case VAL:
+				if (val instanceof Date) {
+					// YYYY-MM-DD HH:mm:ss Z
+					return val.getUTCFullYear()+'-'+
+						digits(val.getUTCMonth()+1)+'-'+
+						digits(val.getUTCDate())+' '+
+						digits(val.getUTCHours())+':'+
+						digits(val.getUTCMinutes())+':'+
+						digits(val.getUTCSeconds())+" Z";
+				}
 				return ""+val;
 			case NUL:
 				return "";
@@ -234,7 +247,7 @@
 						} else {
 							needsDelim = true;
 						}
-						buffer.append(key, ':', asString(val[key]));
+						buffer.append(key, '=', asString(val[key]));
 					}
 				}
 				buffer.append('}');
