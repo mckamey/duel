@@ -72,6 +72,13 @@ var duel = (
 	var RAW = 5;
 
 	/**
+	 * @private
+	 * @constant
+	 * @type {string}
+	 */
+	var MSIE = "ScriptEngineMajorVersion";
+
+	/**
 	 * Wraps a data value to maintain as raw markup in output
 	 * 
 	 * @private
@@ -142,6 +149,131 @@ var duel = (
 		return (typeof val === "function");
 	}
 
+	/**
+	 * String buffer
+	 * 
+	 * @private
+	 * @this {Buffer}
+	 * @constructor
+	 */
+	function Buffer() {
+		/**
+		 * @type {Array|string}
+		 * @private
+		 */
+		this.value = Buffer.FAST ? "" : [];
+	}
+
+	/**
+	 * @private
+	 * @constant
+	 * @type {boolean}
+	 */
+	Buffer.FAST = !window[MSIE];
+
+	/**
+	 * Appends to the internal value
+	 * 
+	 * @public
+	 * @this {Buffer}
+	 * @param {string} v1
+	 * @param {string} v2
+	 * @param {string} v3
+	 */
+	Buffer.prototype.append = function(v1, v2, v3) {
+		if (Buffer.FAST) {
+			this.value += v1;
+
+			/*jslint eqeqeq: false */
+			if (v2 != null) {
+				this.value += v2;
+
+				if (v3 != null) {
+					this.value += v3;
+				}
+			}
+			/*jslint eqeqeq: true */
+		} else {
+			this.value.push.apply(
+				// Closure Compiler type cast
+				/** @type{Array} */(this.value),
+				arguments);
+		}
+	};
+
+	/**
+	 * Clears the internal value
+	 * 
+	 * @public
+	 * @this {Buffer}
+	 */
+	Buffer.prototype.clear = function() {
+		this.value = Buffer.FAST ? "" : [];
+	};
+
+	/**
+	 * Renders the value
+	 * 
+	 * @public
+	 * @override
+	 * @this {Buffer}
+	 * @return {string} value
+	 */
+	Buffer.prototype.toString = function() {
+		return Buffer.FAST ?
+			// Closure Compiler type cast
+			/** @type{string} */(this.value) :
+			this.value.join("");
+	};
+
+	/**
+	 * Formats the value as a string
+	 * 
+	 * @private
+	 * @param {*} val the object being tested
+	 * @return {string|null}
+	 */
+	function asString(val) {
+		var buffer, needsDelim;
+		switch (getType(val)) {
+			case VAL:
+				return ""+val;
+			case NUL:
+				return "";
+			case ARY:
+				// flatten into simple list
+				buffer = new Buffer();
+				for (var i=0, length=val.length; i<length; i++) {
+					if (needsDelim) {
+						buffer.append(", ");
+					} else {
+						needsDelim = true;
+					}
+					buffer.append(asString(val[i]));
+				}
+				return buffer.toString();
+			case OBJ:
+				// format JSON-like
+				buffer = new Buffer();
+				buffer.append('{');
+				for (var key in val) {
+					if (val.hasOwnProperty(key)) {
+						if (needsDelim) {
+							buffer.append(", ");
+						} else {
+							needsDelim = true;
+						}
+						buffer.append(key, ':', asString(val[key]));
+					}
+				}
+				buffer.append('}');
+				return buffer.toString();
+		}
+
+		// Closure Compiler type cast
+		return /** @type{string} */(val);
+	}
+	
 	/**
 	 * Wraps a binding result with rendering methods
 	 * 
@@ -527,7 +659,7 @@ var duel = (
 
 		return (v && isFunction(v.getView)) ?
 			// Closure Compiler type cast
-			bind(v.getView(), d, /** @type {number} */i, /** @type {number} */c, /** @type {String} */k, p) : null;
+			bind(v.getView(), d, /** @type {number} */i, /** @type {number} */c, /** @type {string} */k, p) : null;
 	}
 
 	/**
@@ -569,17 +701,7 @@ var duel = (
 			case FUN:
 				// execute code block
 				// Closure Compiler type cast
-				var val = (/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key);
-				switch (getType(val)) {
-					case ARY:
-					case OBJ:
-						val = ""+val;
-						break;
-					case NUL:
-						val = "";
-						break;
-				}
-				return val;
+				return asString((/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key));
 
 			case ARY:
 				// inspect element name for template commands
@@ -744,90 +866,6 @@ var duel = (
 		"param" : true,
 		"source" : true,
 		"wbr" : true
-	};
-
-	/**
-	 * @private
-	 * @constant
-	 * @type {string}
-	 */
-	var MSIE = "ScriptEngineMajorVersion";
-	
-	/**
-	 * String buffer
-	 * 
-	 * @private
-	 * @this {Buffer}
-	 * @constructor
-	 */
-	function Buffer() {
-		/**
-		 * @type {Array|string}
-		 * @private
-		 */
-		this.value = Buffer.FAST ? "" : [];
-	}
-
-	/**
-	 * @private
-	 * @constant
-	 * @type {boolean}
-	 */
-	Buffer.FAST = !window[MSIE];
-
-	/**
-	 * Appends to the internal value
-	 * 
-	 * @public
-	 * @this {Buffer}
-	 * @param {string} v1
-	 * @param {string} v2
-	 * @param {string} v3
-	 */
-	Buffer.prototype.append = function(v1, v2, v3) {
-		if (Buffer.FAST) {
-			this.value += v1;
-
-			/*jslint eqeqeq: false */
-			if (v2 != null) {
-				this.value += v2;
-
-				if (v3 != null) {
-					this.value += v3;
-				}
-			}
-			/*jslint eqeqeq: true */
-		} else {
-			this.value.push.apply(
-				// Closure Compiler type cast
-				/** @type{Array} */(this.value),
-				arguments);
-		}
-	};
-
-	/**
-	 * Clears the internal value
-	 * 
-	 * @public
-	 * @this {Buffer}
-	 */
-	Buffer.prototype.clear = function() {
-		this.value = Buffer.FAST ? "" : [];
-	};
-
-	/**
-	 * Renders the value
-	 * 
-	 * @public
-	 * @override
-	 * @this {Buffer}
-	 * @return {string} value
-	 */
-	Buffer.prototype.toString = function() {
-		return Buffer.FAST ?
-			// Closure Compiler type cast
-			/** @type{string} */(this.value) :
-			this.value.join("");
 	};
 
 	/**

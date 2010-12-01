@@ -360,7 +360,7 @@
 
 		return (v && isFunction(v.getView)) ?
 			// Closure Compiler type cast
-			bind(v.getView(), d, /** @type {number} */i, /** @type {number} */c, /** @type {String} */k, p) : null;
+			bind(v.getView(), d, /** @type {number} */i, /** @type {number} */c, /** @type {string} */k, p) : null;
 	}
 
 	/**
@@ -402,17 +402,7 @@
 			case FUN:
 				// execute code block
 				// Closure Compiler type cast
-				var val = (/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key);
-				switch (getType(val)) {
-					case ARY:
-					case OBJ:
-						val = ""+val;
-						break;
-					case NUL:
-						val = "";
-						break;
-				}
-				return val;
+				return asString((/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key));
 
 			case ARY:
 				// inspect element name for template commands

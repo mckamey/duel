@@ -335,36 +335,6 @@ public abstract class DuelView {
 			return data.toString();
 		}
 
-		if (dataType.isArray()) {
-			// JavaScript-style array toString
-			StringBuffer buffer = new StringBuffer();
-			boolean needsDelim = false;
-			for (Object item : (Object[])data) {
-				if (needsDelim) {
-					buffer.append(',');
-				} else {
-					needsDelim = true;
-				}
-				buffer.append(this.asString(item));
-			}
-			return buffer.toString();
-		}
-
-		if (List.class.isAssignableFrom(dataType)) {
-			// JavaScript-style array toString
-			StringBuffer buffer = new StringBuffer();
-			boolean needsDelim = false;
-			for (Object item : (Iterable<?>)data) {
-				if (needsDelim) {
-					buffer.append(',');
-				} else {
-					needsDelim = true;
-				}
-				buffer.append(this.asString(item));
-			}
-			return buffer.toString();
-		}
-
 		if (isNumber(dataType)) {
 			// format like JavaScript
 			double number = ((Number)data).doubleValue();
@@ -376,6 +346,60 @@ public abstract class DuelView {
 
 			// correctly prints NaN, Infinity, -Infinity
 			return Double.toString(number);
+		}
+
+		if (dataType.isArray()) {
+			// flatten into simple list
+			StringBuilder buffer = new StringBuilder();
+			boolean needsDelim = false;
+			for (Object item : (Object[])data) {
+				if (needsDelim) {
+					buffer.append(", ");
+				} else {
+					needsDelim = true;
+				}
+				buffer.append(this.asString(item));
+			}
+			return buffer.toString();
+		}
+
+		if (List.class.isAssignableFrom(dataType)) {
+			// flatten into simple list
+			StringBuilder buffer = new StringBuilder();
+			boolean needsDelim = false;
+			for (Object item : (Iterable<?>)data) {
+				if (needsDelim) {
+					buffer.append(", ");
+				} else {
+					needsDelim = true;
+				}
+				buffer.append(this.asString(item));
+			}
+			return buffer.toString();
+		}
+
+		if (Map.class.isAssignableFrom(dataType)) {
+			// format JSON-like
+			Map<?,?> map = (Map<?,?>)data;
+			Iterator<?> iterator = map.entrySet().iterator();
+			StringBuilder buffer = new StringBuilder().append('{');
+
+			boolean needsDelim = false;
+			while (iterator.hasNext()) {
+				if (needsDelim) {
+					buffer.append(", ");
+				} else {
+					needsDelim = true;
+				}
+
+				Map.Entry<?,?> entry = (Map.Entry<?,?>)iterator.next();
+				buffer
+					.append(this.asString(entry.getKey()))
+					.append(':')
+					.append(this.asString(entry.getValue()));
+			}
+
+			return buffer.append('}').toString();
 		}
 
 		return data.toString();
