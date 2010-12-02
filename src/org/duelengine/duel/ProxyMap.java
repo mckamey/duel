@@ -6,11 +6,10 @@ import java.util.*;
 
 class ProxyMap extends AbstractMap<String, Object> {
 
-	private final boolean readonly;
 	private final Object value;
-	private BeanInfo beanInfo;
-	private final Map<String, Method> getters = new HashMap<String, Method>();
-	private final Map<String, Method> setters = new HashMap<String, Method>();
+	private final Map<String, Method> getters;
+	private final Map<String, Method> setters;
+	private boolean inited;
 
 	public ProxyMap(Object value) {
 		this(value, true);
@@ -22,62 +21,76 @@ class ProxyMap extends AbstractMap<String, Object> {
 		}
 
 		this.value = value;
-		this.readonly = readonly;
-
-		try {
-			this.beanInfo = Introspector.getBeanInfo(value.getClass());
-
-		} catch (IntrospectionException ex) {
-			this.beanInfo = null;
-			ex.printStackTrace();
-		}
-
-		// TODO: perform this lazily
-		this.ensureProperties();
+		this.getters = new HashMap<String, Method>();
+		this.setters = readonly ? null : new HashMap<String, Method>();
 	}
 
 	/**
 	 * Initializes all property getters/setters
 	 */
 	private void ensureProperties() {
-		if (this.beanInfo == null) {
+		if (this.inited) {
 			return;
 		}
 
-		PropertyDescriptor[] properties = this.beanInfo.getPropertyDescriptors();
-        if (properties != null) {
-            for (PropertyDescriptor property : properties) {
-                if (property == null) {
-                	continue;
-                }
+		try {
+			BeanInfo info = Introspector.getBeanInfo(this.value.getClass());
 
-                String name = property.getName();
-                Method readMethod = property.getReadMethod();
-                if (readMethod != null) {
-                	this.getters.put(name, readMethod);
-                }
-                if (!this.readonly) {
-	                Method writeMethod = property.getWriteMethod();
-	                if (writeMethod != null) {
-	                    this.setters.put(name, writeMethod);
+			PropertyDescriptor[] properties = info.getPropertyDescriptors();
+			if (properties != null) {
+
+				boolean processSetters = !this.isReadonly();
+				for (PropertyDescriptor property : properties) {
+	                if (property == null) {
+	                	continue;
 	                }
-                }
-            }
-        }
 
-        this.beanInfo = null;
+	                String name = property.getName();
+	                Method readMethod = property.getReadMethod();
+	                if (readMethod != null) {
+	                	this.getters.put(name, readMethod);
+	                }
+
+	                if (processSetters) {
+		                Method writeMethod = property.getWriteMethod();
+		                if (writeMethod != null) {
+		                    this.setters.put(name, writeMethod);
+		                }
+	                }
+	            }
+	        }
+
+		} catch (IntrospectionException ex) {
+			ex.printStackTrace();
+
+		} finally {
+			this.inited = true;
+		}
 	}
-	
+
+	public boolean isReadonly() {
+		return (this.setters == null);
+	}
+
 	@Override
-	public Set<Map.Entry<String, Object>> entrySet() {
-		return new BeanEntrySet(this.value, this.getters);
+	public boolean isEmpty() {
+		this.ensureProperties();
+
+		return this.getters.isEmpty();
 	}
 
 	@Override
 	public Object get(Object key) {
+		this.ensureProperties();
+
 		Method method = this.getters.get(key);
+		if (method == null) {
+			return null;
+		}
+
 		try {
 			return method.invoke(this.value);
+
 		} catch (InvocationTargetException ex) {
 			ex.printStackTrace();
 		} catch (IllegalArgumentException ex) {
@@ -85,109 +98,96 @@ class ProxyMap extends AbstractMap<String, Object> {
 		} catch (IllegalAccessException ex) {
 			ex.printStackTrace();
 		}
+
 		return null;
 	}
-	
-	class BeanEntrySet implements Set<Map.Entry<String, Object>> {
+
+	@Override
+	public Object put(String key, Object value) {
+		if (this.isReadonly()) {
+			throw new IllegalStateException("ProxyMap is readonly");
+		}
+
+		this.ensureProperties();
+
+		Method method = this.getters.get(key);
+		if (method == null) {
+			return null;
+		}
+
+		try {
+			return method.invoke(this.value, value);
+
+		} catch (InvocationTargetException ex) {
+			ex.printStackTrace();
+		} catch (IllegalArgumentException ex) {
+			ex.printStackTrace();
+		} catch (IllegalAccessException ex) {
+			ex.printStackTrace();
+		}
+
+		return null;
+	}
+
+	@Override
+	public Set<Map.Entry<String, Object>> entrySet() {
+		this.ensureProperties();
+
+		return new ProxyEntrySet(this.value, this.getters);
+	}
+
+	class ProxyEntrySet extends AbstractSet<Map.Entry<String, Object>> {
 
 		private final Object value;
 		private final Map<String, Method> getters;
 
-		public BeanEntrySet(Object value, Map<String, Method> getters) {
+		public ProxyEntrySet(Object value, Map<String, Method> getters) {
 			this.value = value;
 			this.getters = getters;
 		}
 
 		@Override
-		public boolean add(Map.Entry<String, Object> arg0) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean addAll(Collection<? extends Map.Entry<String, Object>> arg0) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void clear() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean contains(Object arg0) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean containsAll(Collection<?> arg0) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
 		public boolean isEmpty() {
-			return false;
+			return this.getters.isEmpty();
 		}
 
 		@Override
 		public Iterator<Map.Entry<String, Object>> iterator() {
-			return new BeanIterator(this.value, this.getters);
-		}
-
-		@Override
-		public boolean remove(Object arg0) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean removeAll(Collection<?> arg0) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean retainAll(Collection<?> arg0) {
-			throw new UnsupportedOperationException();
+			return new ProxyIterator(this.value, this.getters);
 		}
 
 		@Override
 		public int size() {
 			return this.getters.size();
 		}
-
-		@Override
-		public Object[] toArray() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public <T> T[] toArray(T[] arg0) {
-			throw new UnsupportedOperationException();
-		}
 	}
 
-	class BeanIterator implements Iterator<Map.Entry<String, Object>> {
+	class ProxyIterator implements Iterator<Map.Entry<String, Object>> {
 
 		private final Object value;
 		private final Map<String, Method> getters;
-		private final Iterator<String> iter; 
+		private final Iterator<String> iterator; 
 
-		public BeanIterator(Object value, Map<String, Method> getters) {
+		public ProxyIterator(Object value, Map<String, Method> getters) {
 			this.value = value;
 			this.getters = getters;
-			this.iter = getters.keySet().iterator(); 
+			this.iterator = getters.keySet().iterator(); 
 		}
 
 		@Override
 		public boolean hasNext() {
-			return this.iter.hasNext();
+			return this.iterator.hasNext();
 		}
 
 		@Override
 		public Map.Entry<String, Object> next() {
-			String key = this.iter.next();
+			String key = this.iterator.next();
 			Method method = this.getters.get(key);
+
 			Object val = null;
 			try {
 				val = method.invoke(this.value);
+
 			} catch (InvocationTargetException ex) {
 				ex.printStackTrace();
 			} catch (IllegalArgumentException ex) {
@@ -195,6 +195,7 @@ class ProxyMap extends AbstractMap<String, Object> {
 			} catch (IllegalAccessException ex) {
 				ex.printStackTrace();
 			}
+
 			return new AbstractMap.SimpleImmutableEntry<String, Object>(key, val);
 		}
 

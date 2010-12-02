@@ -106,7 +106,7 @@ public abstract class DuelView {
 	public void render(Appendable output)
 		throws IOException {
 
-		this.render(new DuelContext(output), Collections.emptyMap(), 0, 1, null);
+		this.render(new DuelContext(output), null, 0, 1, null);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public abstract class DuelView {
 	public void render(Appendable output, Object data)
 		throws IOException {
 
-		this.render(new DuelContext(output), data, 0, 1, null);
+		this.render(new DuelContext(output), this.getProxy(data), 0, 1, null);
 	}
 
 	/**
@@ -131,7 +131,7 @@ public abstract class DuelView {
 			throw new NullPointerException("output");
 		}
 
-		this.render(output, Collections.emptyMap(), 0, 1, null);
+		this.render(output, Collections.EMPTY_MAP, 0, 1, null);
 	}
 
 	/**
@@ -146,7 +146,7 @@ public abstract class DuelView {
 			throw new NullPointerException("output");
 		}
 
-		this.render(new DuelContext(output), data, 0, 1, null);
+		this.render(new DuelContext(output), this.getProxy(data), 0, 1, null);
 	}
 
 	/**
@@ -157,7 +157,33 @@ public abstract class DuelView {
 	 * @param count
 	 * @param key
 	 */
-	protected abstract void render(DuelContext output, Object data, int index, int count, String key) throws IOException;
+	protected abstract void render(DuelContext output, Object data, int index, int count, String key)
+		throws IOException;
+
+	/**
+	 * Ensures the data object is easily accessed
+	 * @param data
+	 * @return
+	 */
+	private Object getProxy(Object data) {
+		if (data == null) {
+			return null;
+		}
+
+		Class<?> dataType = data.getClass();
+		if (isString(dataType) ||
+			isNumber(dataType) ||
+			isBoolean(dataType) ||
+			isArray(dataType) ||
+			Date.class.equals(dataType) ||
+			Map.class.isAssignableFrom(dataType)) {
+
+			return data;
+		}
+
+		// wrap for easy access
+		return new ProxyMap(data);
+	}
 
 	/**
 	 * Retrieves the property from the data object
@@ -186,7 +212,7 @@ public abstract class DuelView {
 					// technically "undefined"
 					return null;
 				}
-				return list.get(index);
+				return this.getProxy(list.get(index));
 			}
 
 			// technically "undefined" or error
@@ -218,7 +244,8 @@ public abstract class DuelView {
 			// technically "undefined"
 			return null;
 		}
-		return map.get(key);
+
+		return this.getProxy(map.get(key));
 	}
 
 	/**
@@ -456,11 +483,11 @@ public abstract class DuelView {
 	}
 
 	/**
-	 * Builds a Map from an interlaced sequence of key-value pairs
-	 * @param data
+	 * Builds a mutable Map from an interlaced sequence of key-value pairs
+	 * @param items
 	 * @return
 	 */
-	protected Map<String,Object> asMap(Object... items) {
+	public Map<String, Object> asMap(Object... items) {
 		if (items == null) {
 			return new LinkedHashMap<String, Object>(0);
 		}
@@ -475,6 +502,19 @@ public abstract class DuelView {
 		return map;
 	}
 
+	/**
+	 * Builds a mutable List from a sequence of items
+	 * @param items
+	 * @return
+	 */
+	public <T> List<T> asList(T... items) {
+		if (items == null) {
+			return new ArrayList<T>(0);
+		}
+
+		return Arrays.asList(items);
+	}
+	
 	/**
 	 * Writes the value to the output
 	 * @param output
