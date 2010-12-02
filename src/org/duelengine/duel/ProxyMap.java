@@ -4,50 +4,80 @@ import java.beans.*;
 import java.lang.reflect.*;
 import java.util.*;
 
-class BeanMap extends AbstractMap<String, Object> {
+class ProxyMap extends AbstractMap<String, Object> {
 
-	private final Object bean;
+	private final boolean readonly;
+	private final Object value;
+	private BeanInfo beanInfo;
 	private final Map<String, Method> getters = new HashMap<String, Method>();
-	
-	public BeanMap(Object bean) {
-		if (bean == null) {
+	private final Map<String, Method> setters = new HashMap<String, Method>();
+
+	public ProxyMap(Object value) {
+		this(value, true);
+	}
+
+	public ProxyMap(Object value, boolean readonly) {
+		if (value == null) {
 			throw new NullPointerException("value");
 		}
 
-		this.bean = bean;
+		this.value = value;
+		this.readonly = readonly;
 
-		BeanInfo beanInfo = null;
 		try {
-			beanInfo = Introspector.getBeanInfo(bean.getClass());
+			this.beanInfo = Introspector.getBeanInfo(value.getClass());
+
 		} catch (IntrospectionException ex) {
+			this.beanInfo = null;
 			ex.printStackTrace();
 		}
 
-		PropertyDescriptor[] properties = (beanInfo == null) ? null : beanInfo.getPropertyDescriptors();
+		// TODO: perform this lazily
+		this.ensureProperties();
+	}
+
+	/**
+	 * Initializes all property getters/setters
+	 */
+	private void ensureProperties() {
+		if (this.beanInfo == null) {
+			return;
+		}
+
+		PropertyDescriptor[] properties = this.beanInfo.getPropertyDescriptors();
         if (properties != null) {
             for (PropertyDescriptor property : properties) {
                 if (property == null) {
                 	continue;
                 }
+
                 String name = property.getName();
                 Method readMethod = property.getReadMethod();
                 if (readMethod != null) {
-                    getters.put(name, readMethod);
+                	this.getters.put(name, readMethod);
+                }
+                if (!this.readonly) {
+	                Method writeMethod = property.getWriteMethod();
+	                if (writeMethod != null) {
+	                    this.setters.put(name, writeMethod);
+	                }
                 }
             }
         }
-	}
 
+        this.beanInfo = null;
+	}
+	
 	@Override
 	public Set<Map.Entry<String, Object>> entrySet() {
-		return new BeanEntrySet(this.bean, this.getters);
+		return new BeanEntrySet(this.value, this.getters);
 	}
 
 	@Override
 	public Object get(Object key) {
-		Method method = getters.get(key);
+		Method method = this.getters.get(key);
 		try {
-			return method.invoke(this.bean);
+			return method.invoke(this.value);
 		} catch (InvocationTargetException ex) {
 			ex.printStackTrace();
 		} catch (IllegalArgumentException ex) {
@@ -60,11 +90,11 @@ class BeanMap extends AbstractMap<String, Object> {
 	
 	class BeanEntrySet implements Set<Map.Entry<String, Object>> {
 
-		private final Object bean;
+		private final Object value;
 		private final Map<String, Method> getters;
 
-		public BeanEntrySet(Object bean, Map<String, Method> getters) {
-			this.bean = bean;
+		public BeanEntrySet(Object value, Map<String, Method> getters) {
+			this.value = value;
 			this.getters = getters;
 		}
 
@@ -100,7 +130,7 @@ class BeanMap extends AbstractMap<String, Object> {
 
 		@Override
 		public Iterator<Map.Entry<String, Object>> iterator() {
-			return new BeanIterator(this.bean, this.getters);
+			return new BeanIterator(this.value, this.getters);
 		}
 
 		@Override
@@ -136,12 +166,12 @@ class BeanMap extends AbstractMap<String, Object> {
 
 	class BeanIterator implements Iterator<Map.Entry<String, Object>> {
 
-		private final Object bean;
+		private final Object value;
 		private final Map<String, Method> getters;
 		private final Iterator<String> iter; 
 
-		public BeanIterator(Object bean, Map<String, Method> getters) {
-			this.bean = bean;
+		public BeanIterator(Object value, Map<String, Method> getters) {
+			this.value = value;
 			this.getters = getters;
 			this.iter = getters.keySet().iterator(); 
 		}
@@ -154,10 +184,10 @@ class BeanMap extends AbstractMap<String, Object> {
 		@Override
 		public Map.Entry<String, Object> next() {
 			String key = this.iter.next();
-			Method method = getters.get(key);
+			Method method = this.getters.get(key);
 			Object val = null;
 			try {
-				val = method.invoke(this.bean);
+				val = method.invoke(this.value);
 			} catch (InvocationTargetException ex) {
 				ex.printStackTrace();
 			} catch (IllegalArgumentException ex) {

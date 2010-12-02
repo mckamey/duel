@@ -452,7 +452,7 @@ public abstract class DuelView {
 			return (Map<?,?>)data;
 		}
 
-		return new BeanMap(data);
+		return new ProxyMap(data);
 	}
 
 	/**
