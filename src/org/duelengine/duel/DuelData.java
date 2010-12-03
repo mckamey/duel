@@ -13,7 +13,7 @@ public class DuelData {
 	 * @return
 	 */
 	public static Map<String, Object> asMap(Object... pairs) {
-		if (pairs == null) {
+		if (pairs == null || pairs.length < 1) {
 			return new LinkedHashMap<String, Object>(0);
 		}
 
@@ -33,7 +33,7 @@ public class DuelData {
 	 * @return
 	 */
 	public static <T> List<T> asList(T... items) {
-		if (items == null) {
+		if (items == null || items.length < 1) {
 			return new ArrayList<T>(0);
 		}
 
