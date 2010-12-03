@@ -2,6 +2,7 @@ package org.duelengine.duel.codegen;
 
 import java.util.*;
 import org.duelengine.duel.DuelContext;
+import org.duelengine.duel.DuelData;
 import org.duelengine.duel.codedom.*;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
@@ -498,12 +499,12 @@ public class ScriptTranslator implements ErrorReporter {
 
 			initializers[i*2+1] = this.visitExpression(property.getRight());
 		}
-		
+
 		return new CodeMethodInvokeExpression(
-				Map.class,
-				new CodeThisReferenceExpression(),
-				"asMap",
-				initializers);
+			Map.class,
+			new CodeTypeReferenceExpression(DuelData.class),
+			"asMap",
+			initializers);
 	}
 
 	private CodeObject visitArrayLiteral(ArrayLiteral node) {

@@ -5,6 +5,7 @@ import java.util.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.duelengine.duel.DuelContext;
+import org.duelengine.duel.DuelData;
 import org.duelengine.duel.codedom.*;
 
 public class ServerCodeGenTests {
@@ -358,8 +359,8 @@ public class ServerCodeGenTests {
 					"items_1",// collection
 					new CodeMethodInvokeExpression(
 						List.class,
-						new CodeThisReferenceExpression(),
-						"asArray",
+						new CodeTypeReferenceExpression(DuelData.class),
+						"coerceJSArray",
 						new CodePropertyReferenceExpression(
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("items")))),
@@ -457,7 +458,7 @@ public class ServerCodeGenTests {
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
-			"\t\tCollection items_1 = this.asArray(this.getProperty(data, \"items\"));\n"+
+			"\t\tCollection items_1 = DuelData.coerceJSArray(this.getProperty(data, \"items\"));\n"+
 			"\t\tint index_2 = 0,\n" +
 			"\t\t\tcount_3 = items_1.size();\n"+
 			"\t\tfor (Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
@@ -508,8 +509,8 @@ public class ServerCodeGenTests {
 					"items_1",// collection
 					new CodeMethodInvokeExpression(
 						Map.class,
-						new CodeThisReferenceExpression(),
-						"asObject",
+						new CodeTypeReferenceExpression(DuelData.class),
+						"coerceJSObject",
 						new CodePropertyReferenceExpression(
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("foo")))),
@@ -617,7 +618,7 @@ public class ServerCodeGenTests {
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
-			"\t\tCollection items_1 = this.asObject(this.getProperty(data, \"foo\"));\n"+
+			"\t\tCollection items_1 = DuelData.coerceJSObject(this.getProperty(data, \"foo\"));\n"+
 			"\t\tint index_2 = 0,\n"+
 			"\t\t\tcount_3 = items_1.size();\n"+
 			"\t\tfor (Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
@@ -819,7 +820,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.write(output, this.asBoolean(data) ? 1.0 : 2.0);\n"+
+			"\t\tthis.write(output, DuelData.coerceBoolean(data) ? 1.0 : 2.0);\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -877,7 +878,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.write(output, this.echo(this.asNumber(data), (data = (this.asNumber(data) + 1))));\n"+
+			"\t\tthis.write(output, this.echo(DuelData.coerceNumber(data), (data = (DuelData.coerceNumber(data) + 1))));\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -935,7 +936,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.write(output, (data = (this.asNumber(data) - 1)));\n"+
+			"\t\tthis.write(output, (data = (DuelData.coerceNumber(data) - 1)));\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -994,7 +995,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.write(output, (data = (this.asNumber(data) % 5.0)));\n"+
+			"\t\tthis.write(output, (data = (DuelData.coerceNumber(data) % 5.0)));\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -1102,7 +1103,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tcount = this.asNumber(data);\n"+
+			"\t\tcount = DuelData.coerceNumber(data);\n"+
 			"\t}\n"+
 			"}\n";
 

@@ -2,6 +2,7 @@ package org.duelengine.duel.codegen;
 
 import java.util.*;
 import org.duelengine.duel.DuelContext;
+import org.duelengine.duel.DuelData;
 import org.duelengine.duel.DuelPart;
 import org.duelengine.duel.DuelView;
 import org.duelengine.duel.codedom.*;
@@ -153,34 +154,15 @@ final class CodeDOMUtility {
 	}
 
 	public static boolean isBoolean(CodeExpression expression) {
-		return isBoolean(expression.getResultType());
-	}
-
-	public static boolean isBoolean(Class<?> exprType) {
-		return (Boolean.class.equals(exprType) ||
-				boolean.class.equals(exprType));
+		return DuelData.isBoolean(expression.getResultType());
 	}
 
 	public static boolean isNumber(CodeExpression expression) {
-		return isNumber(expression.getResultType());
-	}
-
-	public static boolean isNumber(Class<?> exprType) {
-		return (Number.class.isAssignableFrom(exprType) ||
-				int.class.equals(exprType) ||
-				double.class.equals(exprType) ||
-				float.class.equals(exprType) ||
-				long.class.equals(exprType) ||
-				short.class.equals(exprType) ||
-				byte.class.equals(exprType));
+		return DuelData.isNumber(expression.getResultType());
 	}
 
 	public static boolean isString(CodeExpression expression) {
-		return isString(expression.getResultType());
-	}
-
-	public static boolean isString(Class<?> exprType) {
-		return String.class.equals(exprType);
+		return DuelData.isString(expression.getResultType());
 	}
 
 	public static CodeExpression ensureBoolean(CodeExpression expression) {
@@ -188,11 +170,11 @@ final class CodeDOMUtility {
 			return expression;
 		}
 
-		// this.asBoolean(expression);
+		// DuelData.coerceBoolean(expression);
 		return new CodeMethodInvokeExpression(
 			boolean.class,
-			new CodeThisReferenceExpression(),
-			"asBoolean",
+			new CodeTypeReferenceExpression(DuelData.class),
+			"coerceBoolean",
 			expression);
 	}
 
@@ -201,11 +183,11 @@ final class CodeDOMUtility {
 			return expression;
 		}
 
-		// this.asNumber(expression);
+		// DuelData.coerceNumber(expression);
 		return new CodeMethodInvokeExpression(
 			double.class,
-			new CodeThisReferenceExpression(),
-			"asNumber",
+			new CodeTypeReferenceExpression(DuelData.class),
+			"coerceNumber",
 			expression);
 	}
 
@@ -214,11 +196,37 @@ final class CodeDOMUtility {
 			return expression;
 		}
 
-		// this.asString(expression);
+		// DuelData.coerceString(expression);
 		return new CodeMethodInvokeExpression(
 			String.class,
-			new CodeThisReferenceExpression(),
-			"asString",
+			new CodeTypeReferenceExpression(DuelData.class),
+			"coerceString",
+			expression);
+	}
+
+	public static CodeExpression ensureJSArray(CodeExpression expression) {
+		if (List.class.equals(expression.getResultType())) {
+			return expression;
+		}
+
+		// DuelData.coerceArray(expression);
+		return new CodeMethodInvokeExpression(
+			List.class,
+			new CodeTypeReferenceExpression(DuelData.class),
+			"coerceJSArray",
+			expression);
+	}
+
+	public static CodeExpression ensureJSObject(CodeExpression expression) {
+		if (Map.class.equals(expression.getResultType())) {
+			return expression;
+		}
+
+		// DuelData.coerceObject(expression);
+		return new CodeMethodInvokeExpression(
+			Map.class,
+			new CodeTypeReferenceExpression(DuelData.class),
+			"coerceJSObject",
 			expression);
 	}
 
@@ -292,13 +300,13 @@ final class CodeDOMUtility {
 		if (varType.isAssignableFrom(valueType)) {
 			return expr;
 		}
-		if (isNumber(varType)) {
+		if (DuelData.isNumber(varType)) {
 			return ensureNumber(expr);
 		}
-		if (isString(varType)) {
+		if (DuelData.isString(varType)) {
 			return ensureString(expr);
 		}
-		if (isBoolean(varType)) {
+		if (DuelData.isBoolean(varType)) {
 			return ensureBoolean(expr);
 		}
 		return expr;

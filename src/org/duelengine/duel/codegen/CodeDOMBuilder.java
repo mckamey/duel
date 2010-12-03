@@ -431,11 +431,7 @@ public class CodeDOMBuilder {
 		CodeExpression data =
 			new CodeMethodInvokeExpression(
 				Set.class,
-				new CodeMethodInvokeExpression(
-					Map.class,
-					new CodeThisReferenceExpression(),
-					"asObject",
-					objExpr),
+				CodeDOMUtility.ensureJSObject(objExpr),
 				"entrySet");
 
 		// the collection to iterate over
@@ -518,12 +514,7 @@ public class CodeDOMBuilder {
 
 	private void buildIterationArray(CodeStatementCollection scope, CodeExpression arrayExpr, CodeMethod innerBind) {
 
-		CodeExpression items = 
-			new CodeMethodInvokeExpression(
-				List.class,
-				new CodeThisReferenceExpression(),
-				"asArray",
-				arrayExpr);
+		CodeExpression items = CodeDOMUtility.ensureJSArray(arrayExpr);
 
 		// the collection to iterate over
 		CodeVariableDeclarationStatement collectionDecl =

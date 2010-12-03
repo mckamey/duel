@@ -415,6 +415,9 @@ public class ServerCodeGen implements CodeGenerator {
 			} else if (expression instanceof CodeFieldReferenceExpression) {
 				this.writeFieldReference(output, (CodeFieldReferenceExpression)expression);
 
+			} else if (expression instanceof CodeTypeReferenceExpression) {
+				this.writeTypeName(output, ((CodeTypeReferenceExpression)expression).getResultType());
+
 			} else if (expression instanceof CodeThisReferenceExpression) {
 				output.append("this");
 
@@ -500,13 +503,13 @@ public class ServerCodeGen implements CodeGenerator {
 				Class<?> rightType = CodeDOMUtility.toPrimitive(right.getResultType());
 
 				// asString trumps asNumber
-				asString = CodeDOMUtility.isString(leftType) || CodeDOMUtility.isString(rightType);
+				asString = DuelData.isString(leftType) || DuelData.isString(rightType);
 				asNumber = !asString;
 				asBoolean = false;
 				break;
 			case ADD_ASSIGN:
 				// asString trumps asNumber
-				asString = CodeDOMUtility.isString(CodeDOMUtility.toPrimitive(left.getResultType()));
+				asString = DuelData.isString(CodeDOMUtility.toPrimitive(left.getResultType()));
 				this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.ADD, left,
 					asString ? CodeDOMUtility.ensureString(left) : CodeDOMUtility.ensureNumber(left),
 					asString ? CodeDOMUtility.ensureString(right) : CodeDOMUtility.ensureNumber(right)));
@@ -1012,7 +1015,7 @@ public class ServerCodeGen implements CodeGenerator {
 		} else if (value instanceof String) {
 			this.writeString(output, (String)value);
 
-		} else if (CodeDOMUtility.isNumber(value.getClass())) {
+		} else if (DuelData.isNumber(value.getClass())) {
 			double number = ((Number)value).doubleValue();
 			if (Double.isNaN(number)) {
 				output.append("Double.NaN");

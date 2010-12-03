@@ -6,6 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.duelengine.duel.DuelContext;
+import org.duelengine.duel.DuelData;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 
@@ -519,7 +520,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						List.class,
 						new CodeThisReferenceExpression(),
-						"asArray",
+						"coerceJSArray",
 						new CodePropertyReferenceExpression(
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("items")))),
@@ -653,8 +654,8 @@ public class CodeDOMBuilderTests {
 					"items_1",// collection
 					new CodeMethodInvokeExpression(
 						Map.class,
-						new CodeThisReferenceExpression(),
-						"asObject",
+						new CodeTypeReferenceExpression(DuelData.class),
+						"coerceJSObject",
 						new CodePropertyReferenceExpression(
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("foo")))),
