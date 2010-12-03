@@ -211,7 +211,7 @@ final class CodeDOMUtility {
 
 		// DuelData.coerceArray(expression);
 		return new CodeMethodInvokeExpression(
-			List.class,
+			Collection.class,
 			new CodeTypeReferenceExpression(DuelData.class),
 			"coerceJSArray",
 			expression);

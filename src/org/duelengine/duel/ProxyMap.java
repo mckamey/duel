@@ -46,6 +46,10 @@ class ProxyMap extends AbstractMap<String, Object> {
 	                }
 
 	                String name = property.getName();
+	                if ("class".equals(name)) {
+	                	continue;
+	                }
+
 	                Method readMethod = property.getReadMethod();
 	                if (readMethod != null) {
 	                	this.getters.put(name, readMethod);

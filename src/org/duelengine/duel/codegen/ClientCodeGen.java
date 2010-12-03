@@ -242,16 +242,15 @@ public class ClientCodeGen implements CodeGenerator {
 
 				boolean needsDelim = false;
 				for (String attr : attrs) {
-					// property delimiter
-					if (needsDelim) {
-						output.append(',');
-					} else {
-						needsDelim = true;
-					}
-
 					if (singleAttr) {
 						output.append(' ');
 					} else {
+						// property delimiter
+						if (needsDelim) {
+							output.append(',');
+						} else {
+							needsDelim = true;
+						}
 						this.writeln(output);
 					}
 

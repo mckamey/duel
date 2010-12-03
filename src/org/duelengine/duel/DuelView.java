@@ -172,26 +172,6 @@ public abstract class DuelView {
 		Class<?> dataType = data.getClass(); 
 		String key = DuelData.coerceString(property);
 
-		if (DuelData.isArray(dataType)) {
-			List<?> list = DuelData.coerceJSArray(data);
-
-			if ("length".equals(key)) {
-				return list.size();
-			}
-
-			if (DuelData.isNumber(property.getClass())) {
-				int index = ((Number)DuelData.coerceNumber(property)).intValue();
-				if ((index < 0) || (index >= list.size())) {
-					// technically "undefined"
-					return null;
-				}
-				return DuelData.asProxy(list.get(index));
-			}
-
-			// technically "undefined" or error
-			return null;
-		}
-
 		if (DuelData.isString(dataType)) {
 			String str = DuelData.coerceString(data);
 
@@ -208,7 +188,28 @@ public abstract class DuelView {
 				return str.charAt(index);
 			}
 
-			// technically "undefined" or error
+			// technically "undefined"
+			return null;
+		}
+
+		if (DuelData.isArray(dataType)) {
+			Collection<?> array = DuelData.coerceJSArray(data);
+
+			if ("length".equals(key)) {
+				return array.size();
+			}
+
+			if (DuelData.isNumber(property.getClass()) &&
+				array instanceof List<?>) {
+				int index = ((Number)DuelData.coerceNumber(property)).intValue();
+				if ((index < 0) || (index >= array.size())) {
+					// technically "undefined"
+					return null;
+				}
+				return DuelData.asProxy(((List<?>)array).get(index));
+			}
+
+			// technically "undefined"
 			return null;
 		}
 

@@ -1,12 +1,16 @@
 package org.duelengine.duel;
 
+import java.math.*;
 import java.util.*;
 
-public class DuelData {
-
+public final class DuelData {
+	
 	private static final Double ZERO = Double.valueOf(0.0);
 	private static final Double NaN = Double.valueOf(Double.NaN);
 
+	// static class
+	private DuelData() {}
+	
 	/**
 	 * Builds a mutable Map from an interlaced sequence of key-value pairs
 	 * @param pairs
@@ -52,7 +56,9 @@ public class DuelData {
 				float.class.isAssignableFrom(exprType) ||
 				long.class.isAssignableFrom(exprType) ||
 				short.class.isAssignableFrom(exprType) ||
-				byte.class.isAssignableFrom(exprType));
+				byte.class.isAssignableFrom(exprType) ||
+				BigInteger.class.isAssignableFrom(exprType) ||
+				BigDecimal.class.isAssignableFrom(exprType));
 	}
 
 	public static boolean isString(Class<?> exprType) {
@@ -61,7 +67,7 @@ public class DuelData {
 
 	public static boolean isArray(Class<?> exprType) {
 		return (exprType.isArray() ||
-				List.class.isAssignableFrom(exprType));
+				Collection.class.isAssignableFrom(exprType));
 	}
 
 	/**
@@ -192,23 +198,18 @@ public class DuelData {
 	 * @param data
 	 * @return
 	 */
-	public static List<?> coerceJSArray(Object data) {
+	public static Collection<?> coerceJSArray(Object data) {
 		if (data == null) {
 			return Collections.EMPTY_LIST;
 		}
 
-		if (data instanceof List<?>) {
+		if (data instanceof Collection<?>) {
 			// already correct type
-			return (List<?>)data;
+			return (Collection<?>)data;
 		}
 
 		if (data instanceof Object[]) {
 			return new ArrayIterable((Object[])data);
-		}
-
-		if (data instanceof Collection<?>) {
-			// unfortunate but we need the size
-			return new ArrayList<Object>((Collection<?>)data);
 		}
 
 		if (data instanceof Iterable<?>) {
