@@ -72,7 +72,8 @@ public class ClientCodeGen implements CodeGenerator {
 	private void writeNamespaces(Appendable output, VIEWCommandNode view)
 		throws IOException {
 
-		String ident = view.getName();
+		// prepend the client-side prefix
+		String ident = this.settings.getFullName(view.getName());
 		if (!JSUtility.isValidIdentifier(ident, true)) {
 			throw new InvalidNodeException("Invalid view name: "+ident, view.getAttribute("name"));
 		}
@@ -127,7 +128,8 @@ public class ClientCodeGen implements CodeGenerator {
 		this.depth = 0;
 		this.writeln(output);
 
-		String viewName = view.getName();
+		// prepend the client-side prefix
+		String viewName = this.settings.getFullName(view.getName());
 		if (viewName.indexOf('.') < 0) {
 			output.append("var ");
 		}
@@ -236,6 +238,8 @@ public class ClientCodeGen implements CodeGenerator {
 				output.append(", {");
 				this.depth++;
 
+				boolean addPrefix = (node instanceof CALLCommandNode) && this.settings.hasNamePrefix();
+
 				boolean needsDelim = false;
 				for (String attr : attrs) {
 					// property delimiter
@@ -257,6 +261,11 @@ public class ClientCodeGen implements CodeGenerator {
 					if (attrVal instanceof CommentNode) {
 						output.append("\"\"");
 					} else {
+						if (addPrefix && "view".equalsIgnoreCase(attr) && attrVal instanceof ExpressionNode) {
+							// prepend the client-side prefix
+							ExpressionNode nameAttr = (ExpressionNode)attrVal; 
+							attrVal = new ExpressionNode(this.settings.getFullName(nameAttr.getValue()), nameAttr.getIndex(), nameAttr.getLine(), nameAttr.getColumn());
+						}
 						this.writeNode(output, attrVal);
 					}
 				}

@@ -46,7 +46,7 @@ public class VIEWCommandNode extends CommandNode {
 		if (name == null || name.length() == 0) {
 			throw new NullPointerException("name");
 		}
-		if (!name.equalsIgnoreCase("name")) {
+		if (!"name".equalsIgnoreCase(name)) {
 			throw new InvalidNodeException("Attribute invalid on VIEW declaration: "+name, value);
 		}
 		if (value != null && !(value instanceof LiteralNode)) {

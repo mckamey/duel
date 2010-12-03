@@ -5,11 +5,36 @@ package org.duelengine.duel.codegen;
  */
 public class CodeGenSettings {
 
+	private String namePrefix;
 	private String indent = "\t";
 	private String newline = "\n";
 	private boolean convertLineEndings;
 	private boolean normalizeWhitespace;
 	private boolean encodeNonASCII = true;
+
+	public void setNamePrefix(String value) {
+		this.namePrefix = (value == null) ? null : value.trim();
+	}
+
+	public String getNamePrefix() {
+		return this.namePrefix;
+	}
+
+	public boolean hasNamePrefix() {
+		return (this.namePrefix != null) && (this.namePrefix.length() > 0);
+	}
+
+	public String getFullName(String name) {
+		if ((this.namePrefix == null) || (this.namePrefix.length() < 1)) {
+			return name;
+		}
+
+		if (name != null) {
+			name = name.trim();
+		}
+
+		return this.namePrefix+'.'+name;
+	}
 
 	/**
 	 * Gets the string used for source indentation

@@ -42,7 +42,8 @@ public class CodeDOMBuilder {
 
 	public CodeTypeDeclaration buildView(VIEWCommandNode viewNode) throws IOException {
 		try {
-			String fullName = viewNode.getName();
+			// prepend the server-side prefix
+			String fullName = this.settings.getFullName(viewNode.getName());
 			int lastDot = fullName.lastIndexOf('.');
 			String name = fullName.substring(lastDot+1);
 			String ns = (lastDot > 0) ? fullName.substring(0, lastDot) : null;
@@ -192,9 +193,12 @@ public class CodeDOMBuilder {
 		}
 
 		if (viewName == null) {
-			// TODO: how to cover switcher method cases?
+			// TODO: how to handle switcher method cases?
 			throw new InvalidNodeException("Unexpected Call command view attribute: "+attr, attr);
 		}
+
+		// prepend the server-side prefix
+		viewName = this.settings.getFullName(viewName);
 
 		CodeExpression[] ctorArgs = new CodeExpression[node.getChildren().size()];
 
