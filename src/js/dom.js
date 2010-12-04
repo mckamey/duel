@@ -9,6 +9,13 @@
 
 	/**
 	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var ATTR_EXTERN = "attr";
+
+	/**
+	 * @private
 	 * @constant
 	 * @type {string}
 	 */
@@ -491,6 +498,27 @@
 
 		return elem;
 	}
+
+	/**
+	 * @public
+	 * @param {Object} node The attributes object to apply
+	 * @param {*} data The data item being bound
+	 * @param {number} index The index of the current data item
+	 * @param {number} count The total number of data items
+	 * @param {string|null} key The current property name
+	 */
+	duel[ATTR_EXTERN] = duel.attr = function(elem, attr, data, index, count, key) {
+		// resolve the element ID
+		if (getType(elem) === VAL) {
+			elem = document.getElementById(elem);
+		}
+
+		// bind attribute nodes and apply them to the element
+		if (elem) {
+			// Closure Compiler type cast
+			patchDOM(elem, /** @type {Array} */(bindContent(["", attr], data, index, count, key)));
+		}
+	};
 
 	/**
 	 * Renders an error as a text node

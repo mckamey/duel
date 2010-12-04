@@ -3,7 +3,9 @@ package org.duelengine.duel.codegen;
 import java.io.*;
 import java.util.*;
 
+import org.duelengine.duel.DataEncoder;
 import org.duelengine.duel.DuelContext;
+import org.duelengine.duel.DuelData;
 import org.duelengine.duel.DuelView;
 import org.duelengine.duel.HTMLFormatter;
 import org.duelengine.duel.ast.*;
@@ -24,6 +26,7 @@ public class CodeDOMBuilder {
 
 	private final CodeGenSettings settings;
 	private final HTMLFormatter formatter;
+	private final DataEncoder serializer;
 	private final StringBuilder buffer;
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
 	private CodeTypeDeclaration viewType;
@@ -38,6 +41,7 @@ public class CodeDOMBuilder {
 		this.settings = (settings != null) ? settings : new CodeGenSettings();
 		this.buffer = new StringBuilder();
 		this.formatter = new HTMLFormatter();
+		this.serializer = new DataEncoder(this.settings.getIndent(), this.settings.getNewline());
 	}
 
 	public CodeTypeDeclaration buildView(VIEWCommandNode viewNode) throws IOException {
@@ -680,7 +684,7 @@ public class CodeDOMBuilder {
 		String tagName = element.getTagName();
 		this.formatter.writeOpenElementBeginTag(this.buffer, tagName);
 
-		Map<String, CodeBlockNode> deferredAttrs = new LinkedHashMap<String, CodeBlockNode>();
+		Map<String, DataEncoder.Snippet> deferredAttrs = new LinkedHashMap<String, DataEncoder.Snippet>();
 		for (String attrName : element.getAttributeNames()) {
 			DuelNode attrVal = element.getAttribute(attrName);
 
@@ -691,15 +695,21 @@ public class CodeDOMBuilder {
 				this.formatter.writeAttribute(this.buffer, attrName, ((LiteralNode)attrVal).getValue());
 
 			} else if (attrVal instanceof CodeBlockNode) {
-				deferredAttrs.put(attrName, (CodeBlockNode)attrVal);
+				deferredAttrs.put(attrName, DataEncoder.snippet(((CodeBlockNode)attrVal).getClientCode()));
 
 			} else {
 				throw new InvalidNodeException("Invalid attribute node type: "+attrVal.getClass(), attrVal);
 			}
 		}
 
-		String idVar;
+		CodeFieldReferenceExpression formatterVar = null;
+		CodeVariableDeclarationStatement idVar = null;
+		String idValue = null;
 		if (deferredAttrs.size() > 0) {
+			formatterVar = new CodeFieldReferenceExpression(
+				new CodeThisReferenceExpression(),
+				this.ensureEncoder());
+
 			DuelNode id = element.getAttribute("id");
 			if (id == null) {
 				this.formatter.writeOpenAttribute(this.buffer, "id");
@@ -707,12 +717,11 @@ public class CodeDOMBuilder {
 				this.formatter.writeCloseAttribute(this.buffer);
 
 			} else if (id instanceof LiteralNode) {
-				idVar = ((LiteralNode)id).getValue();
+				idValue = ((LiteralNode)id).getValue();
 
 			} else {
-
-				// TODO: check if was emitted
-				idVar = "TODO";
+				// TODO: find cases where this may be legitimate
+				throw new InvalidNodeException("Invalid ID attribute node type: "+id.getClass(), id);
 			}
 		}
 
@@ -751,14 +760,101 @@ public class CodeDOMBuilder {
 		}
 
 		if (deferredAttrs.size() > 0) {
-			// TODO: execute any deferred attributes using idVar
+			CodeStatementCollection scope = this.scopeStack.peek();
+
+			// execute any deferred attributes using idVar
+			this.formatter.writeOpenElementBeginTag(this.buffer, "script");
+			this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+			this.formatter.writeCloseElementBeginTag(this.buffer);
+
+			// emit patch function call which serializes attributes into object
+			this.buffer.append("duel.attr(");
+
+			// emit id var or known value
+			if (idVar != null) {
+				this.flushBuffer();
+				scope.add(new CodeMethodInvokeExpression(
+					Void.class,
+					formatterVar,
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(idVar)));
+			} else {
+				this.serializer.write(this.buffer, idValue);
+			}
+			this.buffer.append(",");
+
+			// emit deferredAttrs as a JS Object
+			this.serializer.write(this.buffer, deferredAttrs);
+
+			this.buffer.append(",");
+			this.flushBuffer();
+
+			// emit data value as literal
+			scope.add(new CodeMethodInvokeExpression(
+				Void.class,
+				formatterVar,
+				"write",
+				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(Object.class, "data")));
+
+			this.buffer.append(",");
+			this.flushBuffer();
+
+			// emit index value as number
+			scope.add(new CodeMethodInvokeExpression(
+				Void.class,
+				formatterVar,
+				"write",
+				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(int.class, "index")));
+
+			this.buffer.append(",");
+			this.flushBuffer();
+
+			// emit count value as number
+			scope.add(new CodeMethodInvokeExpression(
+				Void.class,
+				formatterVar,
+				"write",
+				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(int.class, "count")));
+
+			// TODO: emit if block checking if key is non-null
+			CodeConditionStatement condition = new CodeConditionStatement(
+				new CodeBinaryOperatorExpression(CodeBinaryOperatorType.IDENTITY_INEQUALITY,
+				new CodeVariableReferenceExpression(String.class, "key"),
+				new CodePrimitiveExpression(null)),
+				null);
+
+			scope.add(condition);
+			{
+				this.scopeStack.push(condition.getTrueStatements());
+
+				this.buffer.append(",");
+				this.flushBuffer();
+
+				// emit key value as String
+				condition.getTrueStatements().add(new CodeMethodInvokeExpression(
+					Void.class,
+					formatterVar,
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(String.class, "key")));
+
+				this.scopeStack.pop();
+			}
+			this.buffer.append(");");
+
+			// last parameter will be the current data
+			this.formatter.writeElementEndTag(this.buffer, "script");
 		}
 	}
 
-	private String emitClientID() {
+	private CodeVariableDeclarationStatement emitClientID() {
 		this.flushBuffer();
 		CodeStatementCollection scope = this.scopeStack.peek();
-		
+
 		// the var contains a new unique ident
 		CodeVariableDeclarationStatement localVar = CodeDOMUtility.nextID(scope);
 		scope.add(localVar);
@@ -769,7 +865,7 @@ public class CodeDOMBuilder {
 		CodeStatement emitVar = CodeDOMUtility.emitVarValue(localVar);
 		scope.add(emitVar);
 
-		return id;
+		return localVar;
 	}
 
 	/**
@@ -814,6 +910,38 @@ public class CodeDOMBuilder {
 		return this.initMethod;
 	}
 
+	private CodeField ensureEncoder() {
+
+		for (CodeMember member : this.viewType.getMembers()) {
+			if (member instanceof CodeField &&
+				DataEncoder.class.equals(((CodeField)member).getType())) {
+				return (CodeField)member;
+			}
+		}
+
+		// generate a field to hold the encoder
+		CodeField field = new CodeField(
+				AccessModifierType.PRIVATE,
+				DataEncoder.class,
+				this.viewType.nextIdent("encoder_"));
+		this.viewType.add(field);
+
+		CodeMethod initMethod = this.ensureInitMethod();
+
+		// use the current settings to instantiate a new encoder
+		initMethod.getStatements().add(
+			new CodeExpressionStatement(
+				new CodeBinaryOperatorExpression(
+					CodeBinaryOperatorType.ASSIGN,
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
+					new CodeObjectCreateExpression(
+						DataEncoder.class.getSimpleName(),
+						new CodePrimitiveExpression(this.settings.getIndent()),
+						new CodePrimitiveExpression(this.settings.getNewline())))));
+
+		return field;
+	}
+	
 	private void buildComment(CodeCommentNode comment) {
 		this.flushBuffer();
 

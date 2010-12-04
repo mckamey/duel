@@ -19,6 +19,7 @@ public class CodePrimitiveExpression extends CodeExpression {
 			!type.isPrimitive() &&
 			!Boolean.class.equals(type) &&
 			!String.class.equals(type) &&
+			!Character.class.equals(type) &&
 			!Number.class.isAssignableFrom(type)) {
 
 			throw new IllegalArgumentException("Invalid primitive value: "+type.getName());

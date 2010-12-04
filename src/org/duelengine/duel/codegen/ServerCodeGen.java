@@ -1011,11 +1011,14 @@ public class ServerCodeGen implements CodeGenerator {
 
 		if (value == null) {
 			output.append("null");
+			return;
+		}
 
-		} else if (value instanceof String) {
+		Class<?> type = value.getClass();
+		if (String.class.equals(type)) {
 			this.writeString(output, (String)value);
 
-		} else if (DuelData.isNumber(value.getClass())) {
+		} else if (DuelData.isNumber(type)) {
 			double number = ((Number)value).doubleValue();
 			if (Double.isNaN(number)) {
 				output.append("Double.NaN");
@@ -1025,8 +1028,59 @@ public class ServerCodeGen implements CodeGenerator {
 				output.append(String.valueOf(value));
 			}
 
+		} else if (Character.class.equals(type)) {
+			this.writeCharacter(output, (Character)value);
+
 		} else {
 			output.append(String.valueOf(value));
+		}
+	}
+
+	private void writeCharacter(Appendable output, char value)
+		throws IOException {
+
+		switch (value) {
+			case '\'':
+				output.append("'\\''");
+				break;
+			case '\\':
+				output.append("'\\\\'");
+				break;
+			case '\t':
+				String indent = this.settings.getIndent();
+				if (this.settings.getConvertLineEndings() && !"\t".equals(indent)) {
+					this.writeString(output, indent);
+				} else {
+					output.append("'\\t'");
+				}
+				break;
+			case '\n':
+				String newline = this.settings.getNewline();
+				if (this.settings.getConvertLineEndings() && !"\n".equals(newline)) {
+					this.writeString(output, newline);
+				} else {
+					output.append("'\\n'");
+				}
+				break;
+			case '\r':
+				// if the source came via the DuelLexer then CRLF have been
+				// compressed to single LF and these will not be present
+				output.append("'\\r'");
+				break;
+			case '\f':
+				output.append("'\\f'");
+				break;
+			case '\b':
+				output.append("'\\b'");
+				break;
+			default:
+				// no need to escape ASCII chars
+				if (value >= ' ' && value < '\u007F') {
+					output.append('\'').append(value).append('\'');
+				} else {
+					output.append(String.format("'\\u%04X'", (""+value).codePointAt(0)));
+				}
+				break;
 		}
 	}
 
@@ -1051,14 +1105,14 @@ public class ServerCodeGen implements CodeGenerator {
 		int start = 0,
 			length = value.length();
 
-		output.append('\"');
+		output.append('"');
 
 		for (int i=start; i<length; i++) {
 			String escape;
 
 			char ch = value.charAt(i);
 			switch (ch) {
-				case '\"':
+				case '"':
 					escape = "\\\"";
 					break;
 				case '\\':
@@ -1103,7 +1157,7 @@ public class ServerCodeGen implements CodeGenerator {
 			output.append(value, start, length);
 		}
 
-		output.append('\"');
+		output.append('"');
 	}
 
 	private void writeln(Appendable output)

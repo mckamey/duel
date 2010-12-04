@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.*;
 import org.junit.Test;
 
-public class DataFormatterTests {
+public class DataEncoderTests {
 
 	@Test
 	public void writeNullTest() throws IOException {
@@ -14,7 +14,7 @@ public class DataFormatterTests {
 		String expected = "null";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -27,7 +27,7 @@ public class DataFormatterTests {
 		String expected = "false";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -40,7 +40,7 @@ public class DataFormatterTests {
 		String expected = "true";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -53,7 +53,7 @@ public class DataFormatterTests {
 		String expected = "0";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -66,7 +66,7 @@ public class DataFormatterTests {
 		String expected = "26.2";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -79,7 +79,7 @@ public class DataFormatterTests {
 		String expected = "-10";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -92,7 +92,7 @@ public class DataFormatterTests {
 		String expected = "3.141592653589793";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -105,7 +105,7 @@ public class DataFormatterTests {
 		String expected = "7.6543E21";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 		assertEquals(expected, actual);
 	}
@@ -117,7 +117,7 @@ public class DataFormatterTests {
 		String expected = "-7.6543E-21";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -130,7 +130,7 @@ public class DataFormatterTests {
 		String expected = "\"-9223372036854775808\"";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -143,7 +143,7 @@ public class DataFormatterTests {
 		String expected = "\"9223372036854775807\"";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -156,7 +156,7 @@ public class DataFormatterTests {
 		String expected = "\"9223372036854775799\"";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -169,7 +169,7 @@ public class DataFormatterTests {
 		String expected = "\"-9223372036854775799\"";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -182,7 +182,7 @@ public class DataFormatterTests {
 		String expected = "NaN";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -195,7 +195,7 @@ public class DataFormatterTests {
 		String expected = "Infinity";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -208,7 +208,7 @@ public class DataFormatterTests {
 		String expected = "-Infinity";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -221,7 +221,7 @@ public class DataFormatterTests {
 		String expected = "new Date(1291422018285)";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -234,7 +234,7 @@ public class DataFormatterTests {
 		String expected = "new Date(-34963200000)";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -247,7 +247,7 @@ public class DataFormatterTests {
 		String expected = "\"\"";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -260,7 +260,7 @@ public class DataFormatterTests {
 		String expected = "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\"";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -273,7 +273,7 @@ public class DataFormatterTests {
 		String expected = "\"\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\\\"\"";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter().write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -286,7 +286,7 @@ public class DataFormatterTests {
 		String expected = "[]";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(false).write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -299,7 +299,7 @@ public class DataFormatterTests {
 		String expected = "[]";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(true).write(output, input);
+		new DataEncoder("\t", "\n").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -312,7 +312,7 @@ public class DataFormatterTests {
 		String expected = "[\"Test.\"]";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(false).write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -325,7 +325,7 @@ public class DataFormatterTests {
 		String expected = "[ \"Test.\" ]";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(true).write(output, input);
+		new DataEncoder("\t", "\n").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -339,7 +339,7 @@ public class DataFormatterTests {
 		String expected = "[false,null,true,42,\"Test\"]";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(false).write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -360,7 +360,7 @@ public class DataFormatterTests {
 			"]";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(true).write(output, input);
+		new DataEncoder("\t", "\n").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -373,7 +373,7 @@ public class DataFormatterTests {
 		String expected = "{}";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(false).write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -386,7 +386,7 @@ public class DataFormatterTests {
 		String expected = "{}";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(true).write(output, input);
+		new DataEncoder("\t", "\n").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -401,7 +401,7 @@ public class DataFormatterTests {
 		String expected = "{One:1}";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(false).write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -416,7 +416,7 @@ public class DataFormatterTests {
 		String expected = "{ One : 1 }";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(true).write(output, input);
+		new DataEncoder("\t", "\n").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -437,7 +437,7 @@ public class DataFormatterTests {
 		String expected = "{\"\":\"\",One:1,\"2\":\"Too\",\".T.H.R.E.E.\":3.141592653589793,$:null,\" white space \":true,\"false\":false}";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(false).write(output, input);
+		new DataEncoder().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -467,7 +467,7 @@ public class DataFormatterTests {
 			"}";
 
 		StringBuilder output = new StringBuilder();
-		new DataFormatter(true).write(output, input);
+		new DataEncoder("\t", "\n").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);

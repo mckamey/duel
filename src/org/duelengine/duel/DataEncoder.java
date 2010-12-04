@@ -5,9 +5,26 @@ import java.util.*;
 
 /**
  * Utility for writing data as JavaScript literals
+ * Inherently thread-safe as contains no data.
  */
-public class DataFormatter {
+public class DataEncoder {
 
+	public static class Snippet {
+		private final String snippet;
+
+		public Snippet(String snippet) {
+			this.snippet = snippet;
+		}
+
+		public String getSnippet() {
+			return this.snippet;
+		}
+	}
+
+	public static Snippet snippet(String text) {
+		return new Snippet(text);
+	}
+	
 	private static final String CONFIG_RESOURCE = "org.duelengine.duel.JSVocab";
 	private static Map<String, Boolean> reserved;
 	private static Map<String, Boolean> globals;
@@ -16,20 +33,15 @@ public class DataFormatter {
 	private final boolean prettyPrint;
 	private final String indent;
 	private final String newline;
-	private int depth;
 
-	public DataFormatter() {
-		this(true, "\t", "\n");
+	public DataEncoder() {
+		this(null, null);
 	}
 
-	public DataFormatter(boolean prettyPrint) {
-		this(prettyPrint, "\t", "\n");
-	}
-
-	public DataFormatter(boolean prettyPrint, String indent, String newline) {
-		this.prettyPrint = prettyPrint;
+	public DataEncoder(String indent, String newline) {
 		this.indent = (indent != null) ? indent : "";
 		this.newline = (newline != null) ? newline : "";
+		this.prettyPrint = (this.indent.length() > 0) || (this.newline.length() > 0);
 	}
 
 	/**
@@ -54,13 +66,6 @@ public class DataFormatter {
 	public void write(Appendable output, Object data, int depth)
 		throws IOException {
 
-		this.depth = depth;
-		this.writeData(output, data);
-	}
-
-	private void writeData(Appendable output, Object data)
-		throws IOException {
-
 		if (data == null) {
 			output.append("null");
 			return;
@@ -68,7 +73,10 @@ public class DataFormatter {
 
 		Class<?> dataType = data.getClass();
 
-		if (String.class.equals(dataType)) {
+		if (Snippet.class.equals(dataType)) {
+			output.append(((Snippet)data).getSnippet());
+
+		} else if (String.class.equals(dataType)) {
 			this.writeString(output, (String)data);
 
 		} else if (DuelData.isNumber(dataType)) {
@@ -81,7 +89,7 @@ public class DataFormatter {
 			this.writeBoolean(output, DuelData.coerceBoolean(data));
 
 		} else if (DuelData.isArray(dataType)) {
-			this.writeArray(output, DuelData.coerceJSArray(data));
+			this.writeArray(output, DuelData.coerceJSArray(data), depth);
 
 		} else if (Date.class.equals(dataType)) {
 			this.writeDate(output, (Date)data);
@@ -89,7 +97,7 @@ public class DataFormatter {
 		} else {
 			// need to also serialize RegExp literals
 			
-			this.writeObject(output, DuelData.coerceJSObject(data));
+			this.writeObject(output, DuelData.coerceJSObject(data), depth);
 		}
 	}
 
@@ -144,11 +152,11 @@ public class DataFormatter {
 		output.append(")");
 	}
 
-	private void writeArray(Appendable output, Collection<?> data)
+	private void writeArray(Appendable output, Collection<?> data, int depth)
 		throws IOException {
 
 		output.append('[');
-		this.depth++;
+		depth++;
 
 		boolean singleAttr = (data.size() == 1);
 		boolean hasChildren = singleAttr;
@@ -167,30 +175,30 @@ public class DataFormatter {
 				}
 
 				if (this.prettyPrint) {
-					this.writeln(output);
+					this.writeln(output, depth);
 				}
 			}
 
-			this.writeData(output, item);
+			this.write(output, item, depth);
 		}
 
-		this.depth--;
+		depth--;
 		if (this.prettyPrint) {
 			if (singleAttr) {
 				output.append(' ');
 			} else if (hasChildren) {
-				this.writeln(output);
+				this.writeln(output, depth);
 			}
 		}
 		output.append(']');
 	}
 
 	@SuppressWarnings("unchecked")
-	private void writeObject(Appendable output, Map<?, ?> data)
+	private void writeObject(Appendable output, Map<?, ?> data, int depth)
 		throws IOException {
 
 		output.append('{');
-		this.depth++;
+		depth++;
 
 		Set<?> properties = data.entrySet();
 		boolean singleAttr = (properties.size() == 1);
@@ -210,7 +218,7 @@ public class DataFormatter {
 				}
 
 				if (this.prettyPrint) {
-					this.writeln(output);
+					this.writeln(output, depth);
 				}
 			}
 
@@ -220,15 +228,15 @@ public class DataFormatter {
 			} else {
 				output.append(':');
 			}
-			this.writeData(output, property.getValue());
+			this.write(output, property.getValue(), depth);
 		}
 
-		this.depth--;
+		depth--;
 		if (this.prettyPrint) {
 			if (singleAttr) {
 				output.append(' ');
 			} else if (hasChildren) {
-				this.writeln(output);
+				this.writeln(output, depth);
 			}
 		}
 		output.append('}');
@@ -310,12 +318,12 @@ public class DataFormatter {
 		output.append('\"');
 	}
 
-	private void writeln(Appendable output)
+	private void writeln(Appendable output, int depth)
 		throws IOException {
 
 		output.append(this.newline);
 
-		for (int i=this.depth; i>0; i--) {
+		for (int i=depth; i>0; i--) {
 			output.append(this.indent);
 		}
 	}

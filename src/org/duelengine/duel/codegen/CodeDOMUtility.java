@@ -77,7 +77,7 @@ final class CodeDOMUtility {
 				Void.class,
 				new CodeVariableReferenceExpression(DuelContext.class, "output"),
 				"append",
-				new CodePrimitiveExpression(literal)));
+				new CodePrimitiveExpression((literal.length() == 1) ? literal.charAt(0) : literal)));
 	}
 
 	public static CodeStatement emitVarValue(CodeVariableDeclarationStatement localVar) {
