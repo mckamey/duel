@@ -670,6 +670,7 @@ public class CodeDOMBuilder {
 		String tagName = element.getTagName();
 		this.formatter.writeOpenElementBeginTag(this.buffer, tagName);
 
+		int argSize = 0;
 		Map<String, DataEncoder.Snippet> deferredAttrs = new LinkedHashMap<String, DataEncoder.Snippet>();
 		for (String attrName : element.getAttributeNames()) {
 			DuelNode attrVal = element.getAttribute(attrName);
@@ -697,6 +698,7 @@ public class CodeDOMBuilder {
 					
 					// only defer attributes that cannot be processed server-side
 					deferredAttrs.put(attrName, DataEncoder.snippet(((CodeBlockNode)attrVal).getClientCode()));
+					argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
 				}
 
 			} else {
@@ -704,14 +706,9 @@ public class CodeDOMBuilder {
 			}
 		}
 
-		CodeFieldReferenceExpression encoderVar = null;
 		CodeVariableDeclarationStatement idVar = null;
 		String idValue = null;
 		if (deferredAttrs.size() > 0) {
-			encoderVar = new CodeFieldReferenceExpression(
-				new CodeThisReferenceExpression(),
-				this.ensureEncoder());
-
 			DuelNode id = element.getAttribute("id");
 			if (id == null) {
 				this.formatter.writeOpenAttribute(this.buffer, "id");
@@ -762,48 +759,63 @@ public class CodeDOMBuilder {
 		}
 
 		if (deferredAttrs.size() > 0) {
-			CodeStatementCollection scope = this.scopeStack.peek();
-			boolean prettyPrint = this.encoder.isPrettyPrint();
+			this.buildDeferredAttributeExecution(deferredAttrs, idVar, idValue, argSize);
+		}
+	}
 
-			// execute any deferred attributes using idVar
-			this.formatter.writeOpenElementBeginTag(this.buffer, "script");
-			this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
-			this.formatter.writeCloseElementBeginTag(this.buffer);
+	private void buildDeferredAttributeExecution(
+		Map<String, DataEncoder.Snippet> deferredAttrs,
+		CodeVariableDeclarationStatement idVar,
+		String idValue,
+		int argSize) throws IOException {
 
-			// emit patch function call which serializes attributes into object
-			if (prettyPrint) {
-				this.buffer.append(this.settings.getNewline());
-			}
-			this.buffer.append("duel.attr(");
+		CodeFieldReferenceExpression encoderVar = new CodeFieldReferenceExpression(
+			new CodeThisReferenceExpression(),
+			this.ensureEncoder());
+		boolean prettyPrint = this.encoder.isPrettyPrint();
 
-			// emit id var or known value
-			if (idVar != null) {
-				this.flushBuffer();
-				scope.add(new CodeMethodInvokeExpression(
-					Void.class,
-					encoderVar,
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "output"),
-					new CodeVariableReferenceExpression(idVar),
-					CodePrimitiveExpression.ONE));
-			} else {
-				this.encoder.write(this.buffer, idValue, 1);
-			}
-			this.buffer.append(',');
-			if (prettyPrint) {
-				this.buffer.append(' ');
-			}
+		CodeStatementCollection scope = this.scopeStack.peek();
 
-			// emit deferredAttrs as a JS Object
-			this.encoder.write(this.buffer, deferredAttrs, 1);
+		// execute any deferred attributes using idVar
+		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
+		this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+		this.formatter.writeCloseElementBeginTag(this.buffer);
 
+		// emit patch function call which serializes attributes into object
+		if (prettyPrint) {
+			this.buffer.append(this.settings.getNewline());
+		}
+		this.buffer.append("duel.attr(");
+
+		// emit id var or known value
+		if (idVar != null) {
+			this.flushBuffer();
+			scope.add(new CodeMethodInvokeExpression(
+				Void.class,
+				encoderVar,
+				"write",
+				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(idVar),
+				CodePrimitiveExpression.ONE));
+		} else {
+			this.encoder.write(this.buffer, idValue, 1);
+		}
+		this.buffer.append(',');
+		if (prettyPrint) {
+			this.buffer.append(' ');
+		}
+
+		// emit deferredAttrs as a JS Object
+		this.encoder.write(this.buffer, deferredAttrs, 1);
+
+		if (argSize > 0) {
 			this.buffer.append(',');
 			if (prettyPrint) {
 				this.buffer.append(' ');
 			}
 			this.flushBuffer();
 
-			// emit data value as literal
+			// emit data var as literal
 			scope.add(new CodeMethodInvokeExpression(
 				Void.class,
 				encoderVar,
@@ -812,71 +824,64 @@ public class CodeDOMBuilder {
 				new CodeVariableReferenceExpression(Object.class, "data"),
 				CodePrimitiveExpression.ONE));
 
-			this.buffer.append(',');
-			if (prettyPrint) {
-				this.buffer.append(' ');
-			}
-			this.flushBuffer();
-
-			// emit index value as number
-			scope.add(new CodeMethodInvokeExpression(
-				Void.class,
-				encoderVar,
-				"write",
-				new CodeVariableReferenceExpression(DuelContext.class, "output"),
-				new CodeVariableReferenceExpression(int.class, "index"),
-				CodePrimitiveExpression.ONE));
-
-			this.buffer.append(',');
-			if (prettyPrint) {
-				this.buffer.append(' ');
-			}
-			this.flushBuffer();
-
-			// emit count value as number
-			scope.add(new CodeMethodInvokeExpression(
-				Void.class,
-				encoderVar,
-				"write",
-				new CodeVariableReferenceExpression(DuelContext.class, "output"),
-				new CodeVariableReferenceExpression(int.class, "count"),
-				CodePrimitiveExpression.ONE));
-
-			// emit if block checking if key is non-null
-			CodeConditionStatement condition = new CodeConditionStatement(
-				new CodeBinaryOperatorExpression(CodeBinaryOperatorType.IDENTITY_INEQUALITY,
-				new CodeVariableReferenceExpression(String.class, "key"),
-				CodePrimitiveExpression.NULL));
-
-			scope.add(condition);
-			{
-				this.scopeStack.push(condition.getTrueStatements());
-
+			if (argSize > 1) {
 				this.buffer.append(',');
 				if (prettyPrint) {
 					this.buffer.append(' ');
 				}
 				this.flushBuffer();
 
-				// emit key value as String
-				this.scopeStack.peek().add(new CodeMethodInvokeExpression(
+				// emit index var as number
+				scope.add(new CodeMethodInvokeExpression(
 					Void.class,
 					encoderVar,
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
-					new CodeVariableReferenceExpression(String.class, "key"),
+					new CodeVariableReferenceExpression(int.class, "index"),
 					CodePrimitiveExpression.ONE));
 
-				this.scopeStack.pop();
-			}
-			this.buffer.append(");");
-			if (prettyPrint) {
-				this.buffer.append(this.settings.getNewline());
-			}
+				if (argSize > 2) {
+					this.buffer.append(',');
+					if (prettyPrint) {
+						this.buffer.append(' ');
+					}
+					this.flushBuffer();
 
-			// last parameter will be the current data
-			this.formatter.writeElementEndTag(this.buffer, "script");
+					// emit count var as number
+					scope.add(new CodeMethodInvokeExpression(
+						Void.class,
+						encoderVar,
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						CodePrimitiveExpression.ONE));
+
+					if (argSize > 3) {
+						this.buffer.append(',');
+						if (prettyPrint) {
+							this.buffer.append(' ');
+						}
+						this.flushBuffer();
+
+						// emit key var as String
+						scope.add(new CodeMethodInvokeExpression(
+							Void.class,
+							encoderVar,
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							new CodeVariableReferenceExpression(String.class, "key"),
+							CodePrimitiveExpression.ONE));
+					}
+				}
+			}
 		}
+		this.buffer.append(");");
+		if (prettyPrint) {
+			this.buffer.append(this.settings.getNewline());
+		}
+
+		// last parameter will be the current data
+		this.formatter.writeElementEndTag(this.buffer, "script");
 	}
 
 	private CodeVariableDeclarationStatement emitClientID() {

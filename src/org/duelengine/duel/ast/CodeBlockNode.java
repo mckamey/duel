@@ -17,12 +17,12 @@ public abstract class CodeBlockNode extends BlockNode {
 	protected CodeBlockNode(String begin, String end, String value) {
 		super(begin, end, value);
 	}
-
+	
 	public ArgList getParamList() {
 		// NOTE: this is pretty basic right now
 		// it could result in false positives
 		// but it should reduce bulk for most cases
-		
+
 		String value = this.getValue();
 		if (value == null) {
 			return ArgList.NONE;
@@ -59,6 +59,21 @@ public abstract class CodeBlockNode extends BlockNode {
 				return "data, index, count, key";
 			default:
 				return "";
+		}
+	}
+
+	public int getArgSize() {
+		switch (this.getParamList()) {
+			case DATA:
+				return 1;
+			case INDEX:
+				return 2;
+			case COUNT:
+				return 3;
+			case KEY:
+				return 4;
+			default:
+				return 0;
 		}
 	}
 

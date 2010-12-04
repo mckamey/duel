@@ -1674,7 +1674,7 @@ public class CodeDOMBuilderTests {
 				},
 				new ElementNode("p",
 					new AttributePair[] {
-						new AttributePair("class", new ExpressionNode("barCSS(count)"))
+						new AttributePair("class", new ExpressionNode("barCSS(key)"))
 					},
 					new LiteralNode("Lorem ipsum."))
 			));
@@ -1737,7 +1737,7 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression("\">Lorem ipsum.</p><script type=\"text/javascript\">\nduel.attr("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_8"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(String.class, "id_2"),
@@ -1746,10 +1746,10 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
-					new CodePrimitiveExpression(", { \"class\" : function(data, index, count) { return (barCSS(count)); } }, "))),
+					new CodePrimitiveExpression(", { \"class\" : function(data, index, count, key) { return (barCSS(key)); } }, "))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_8"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(Object.class, "data"),
@@ -1761,7 +1761,7 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression(", "))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_8"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(int.class, "index"),
@@ -1773,28 +1773,23 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression(", "))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_8"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(int.class, "count"),
 					CodePrimitiveExpression.ONE)),
-				new CodeConditionStatement(
-					new CodeBinaryOperatorExpression(
-						CodeBinaryOperatorType.IDENTITY_INEQUALITY,
-						new CodeVariableReferenceExpression(String.class, "key"),
-						CodePrimitiveExpression.NULL),
-					new CodeExpressionStatement(new CodeMethodInvokeExpression(
-						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
-						new CodePrimitiveExpression(", "))),
-					new CodeExpressionStatement(new CodeMethodInvokeExpression(
-						Void.class,
-						new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
-						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						new CodeVariableReferenceExpression(String.class, "key"),
-						CodePrimitiveExpression.ONE))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression(", "))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_8"),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(String.class, "key"),
+					CodePrimitiveExpression.ONE)),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -1802,7 +1797,7 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression(");\n</script></div><script type=\"text/javascript\">\nduel.attr("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_8"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(String.class, "id_1"),
@@ -1814,7 +1809,7 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression(", {\n\t\t\"class\" : function(data, index) { return (fooCSS(index)); },\n\t\tstyle : function(data) { return (customStyle(data)); }\n\t}, "))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_8"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(Object.class, "data"),
@@ -1826,40 +1821,11 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression(", "))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_8"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(int.class, "index"),
 					CodePrimitiveExpression.ONE)),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeVariableReferenceExpression(DuelContext.class, "output"),
-					"append",
-					new CodePrimitiveExpression(", "))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "output"),
-					new CodeVariableReferenceExpression(int.class, "count"),
-					CodePrimitiveExpression.ONE)),
-				new CodeConditionStatement(
-					new CodeBinaryOperatorExpression(
-						CodeBinaryOperatorType.IDENTITY_INEQUALITY,
-						new CodeVariableReferenceExpression(String.class, "key"),
-						CodePrimitiveExpression.NULL),
-					new CodeExpressionStatement(new CodeMethodInvokeExpression(
-						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
-						new CodePrimitiveExpression(", "))),
-					new CodeExpressionStatement(new CodeMethodInvokeExpression(
-						Void.class,
-						new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
-						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						new CodeVariableReferenceExpression(String.class, "key"),
-						CodePrimitiveExpression.ONE))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
@@ -1869,7 +1835,7 @@ public class CodeDOMBuilderTests {
 			new CodeField(
 				AccessModifierType.PRIVATE,
 				DataEncoder.class,
-				"encoder_6"),
+				"encoder_8"),
 			new CodeMethod(
 				AccessModifierType.PROTECTED,
 				Void.class,
@@ -1880,7 +1846,7 @@ public class CodeDOMBuilderTests {
 					new CodeFieldReferenceExpression(
 						new CodeThisReferenceExpression(),
 						DataEncoder.class,
-						"encoder_6"),
+						"encoder_8"),
 					new CodeObjectCreateExpression(
 						DataEncoder.class.getSimpleName(),
 						new CodePrimitiveExpression("\n"),
@@ -1892,7 +1858,8 @@ public class CodeDOMBuilderTests {
 		((CodeMethod)expected.getMembers().get(4)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
-
+System.out.println(expected);
+System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 }
