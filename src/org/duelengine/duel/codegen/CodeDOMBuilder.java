@@ -1,17 +1,12 @@
 package org.duelengine.duel.codegen;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.*;
 
-import org.duelengine.duel.DataEncoder;
-import org.duelengine.duel.DuelContext;
-import org.duelengine.duel.DuelData;
-import org.duelengine.duel.DuelView;
-import org.duelengine.duel.HTMLFormatter;
+import org.duelengine.duel.*;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 import org.duelengine.duel.parsing.InvalidNodeException;
-import org.duelengine.duel.parsing.SyntaxException;
 
 /**
  * Translates the view AST to CodeDOM tree
@@ -30,7 +25,6 @@ public class CodeDOMBuilder {
 	private final StringBuilder buffer;
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
 	private CodeTypeDeclaration viewType;
-	private CodeMethod initMethod;
 	private TagMode tagMode = TagMode.None;
 
 	public CodeDOMBuilder() {
@@ -63,7 +57,6 @@ public class CodeDOMBuilder {
 			return this.viewType;
 
 		} finally {
-			this.initMethod = null;
 			this.viewType = null;
 		}
 	}
@@ -894,19 +887,22 @@ public class CodeDOMBuilder {
 	}
 
 	private CodeMethod ensureInitMethod() {
-		if (this.initMethod != null) {
-			return this.initMethod;
+		for (CodeMember member : this.viewType.getMembers()) {
+			if (member instanceof CodeMethod &&
+				"init".equals(((CodeMethod)member).getName())) {
+				return (CodeMethod)member;
+			}
 		}
 
-		this.initMethod = new CodeMethod(
+		CodeMethod initMethod = new CodeMethod(
 			AccessModifierType.PROTECTED,
 			Void.class,
 			"init",
 			null);
-		this.initMethod.setOverride(true);
-		this.viewType.add(this.initMethod);
+		initMethod.setOverride(true);
+		this.viewType.add(initMethod);
 
-		return this.initMethod;
+		return initMethod;
 	}
 
 	private CodeField ensureEncoder() {
