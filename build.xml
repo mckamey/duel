@@ -92,8 +92,8 @@
 			todir="${bin.dir}/org/duelengine/duel/parsing/"/>
 		<copy file="${src.dir}/org/duelengine/duel/ast/HTMLTags.properties"
 			todir="${bin.dir}/org/duelengine/duel/ast/"/>
-		<copy file="${src.dir}/org/duelengine/duel/codegen/JSVocab.properties"
-			todir="${bin.dir}/org/duelengine/duel/codegen/"/>
+		<copy file="${src.dir}/org/duelengine/duel/JSVocab.properties"
+			todir="${bin.dir}/org/duelengine/duel/"/>
 	</target>
 
 	<target name="jar.compiler" depends="compile.src" description="Package compiler as a jar">
@@ -109,6 +109,7 @@
 	<target name="jar.runtime" depends="compile.src" description="Package runtime as a jar">
 		<jar destfile="${jarfile.runtime}" update="true">
 			<fileset dir="${bin.dir}" includes="org/duelengine/duel/*.class" />
+			<fileset dir="${bin.dir}" includes="/org/duelengine/duel/*.properties" />
 		</jar>
 	</target>
 

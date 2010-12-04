@@ -8,6 +8,11 @@ import java.util.*;
  */
 public class DataFormatter {
 
+	private static final String CONFIG_RESOURCE = "org.duelengine.duel.JSVocab";
+	private static Map<String, Boolean> reserved;
+	private static Map<String, Boolean> globals;
+	private static boolean inited;
+
 	private final boolean prettyPrint;
 	private final String indent;
 	private final String newline;
@@ -107,7 +112,7 @@ public class DataFormatter {
 			long numberLong = ((Number)data).longValue();
 
 			// if overflows IEEE-754 precision then emit as String
-			if (this.invalidIEEE754(numberLong)) {
+			if (invalidIEEE754(numberLong)) {
 				this.writeString(output, Long.toString(numberLong));
 			} else {
 				output.append(Long.toString(numberLong));
@@ -234,8 +239,8 @@ public class DataFormatter {
 
 		String name = DuelData.coerceString(data);
 
-		if (false) {
-			// write directly if doesn't need quoting
+		if (isValidIdentifier(name, false)) {
+			output.append(name);
 		} else {
 			this.writeString(output, name);
 		}
@@ -315,12 +320,95 @@ public class DataFormatter {
 		}
 	}
 
+	private static boolean isValidIdentifier(String ident, boolean nested) {
+		if (ident == null || ident.length() == 0) {
+			return false;
+		}
+
+		if (!inited) {
+			initLookups();
+		}
+
+		if (nested) {
+			String[] parts = ident.split(".");
+			for (int i=0, length=parts.length; i<length; i++) {
+				if (!isValidIdentifier(parts[i], false))
+				{
+					return false;
+				}
+				if (i == 0 && globals.containsKey(parts[i])) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		if (reserved.containsKey(ident)) {
+			return false;
+		}
+
+		boolean indentPart = false;
+		for (int i=0, length=ident.length(); i<length; i++) {
+			char ch = ident.charAt(i);
+			if (indentPart && ((ch >= '0') && (ch <= '9'))) {
+				// digits are only allowed after first char
+				continue;
+			}
+
+			// can be start or part
+			if (((ch >= 'a') && (ch <= 'z')) ||
+				((ch >= 'A') && (ch <= 'Z')) ||
+				(ch == '_') || (ch == '$')) {
+				indentPart = true;
+				continue;
+			}
+
+			return false;
+		}
+
+		return true;		
+	}
+
+	private static void initLookups() {
+
+		String[] tags;
+		Map<String, Boolean> map;
+
+		// definitions maintained in JSVocab.properties
+		ResourceBundle config = ResourceBundle.getBundle(CONFIG_RESOURCE);
+
+		// reserved words
+		tags = (config != null) && config.containsKey("reserved") ?
+				config.getString("reserved").split(",") : new String[0];
+		map = new HashMap<String, Boolean>(tags.length);
+		for (String value : tags) {
+			map.put(value, true);
+		}
+
+		// add Object properties to reserved words
+		tags = (config != null) && config.containsKey("properties") ?
+				config.getString("properties").split(",") : new String[0];
+		for (String value : tags) {
+			map.put(value, true);
+		}
+		reserved = map;
+
+		// global objects
+		tags = (config != null) && config.containsKey("globals") ?
+				config.getString("globals").split(",") : new String[0];
+		map = new HashMap<String, Boolean>(tags.length);
+		for (String value : tags) {
+			map.put(value, true);
+		}
+		globals = map;
+	}
+
 	/**
 	 * Checks if Number cannot be represented in JavaScript without changing
 	 * http://stackoverflow.com/questions/1601646
 	 * http://stackoverflow.com/questions/4349155
 	 */
-	private boolean invalidIEEE754(long value) {
+	private static boolean invalidIEEE754(long value) {
 		if (Long.MAX_VALUE == value || Long.MIN_VALUE == value) {
 			// these are technically valid IEEE-754 but JavaScript truncates
 			return true;

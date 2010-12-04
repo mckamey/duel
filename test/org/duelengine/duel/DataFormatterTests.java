@@ -395,4 +395,55 @@ public class DataFormatterTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void writeObjectMultipleTest() throws IOException {
+		Object input = DuelData.asMap(
+				"", "",
+				"One", 1,
+				2, "Too",
+				".T.H.R.E.E.", Math.PI,
+				"$", null,
+				" white space ", true,
+				false, false
+			);
+
+		String expected = "{\"\":\"\",One:1,\"2\":\"Too\",\".T.H.R.E.E.\":3.141592653589793,$:null,\" white space \":true,\"false\":false}";
+
+		StringBuilder output = new StringBuilder();
+		new DataFormatter(false).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeObjectMultiplePrettyPrintTest() throws IOException {
+		Object input = DuelData.asMap(
+				"", "",
+				"One", 1,
+				2, "Too",
+				".T.H.R.E.E.", Math.PI,
+				"$", null,
+				" white space ", true,
+				false, false
+			);
+
+		String expected =
+			"{\n"+
+			"\t\"\" : \"\",\n"+
+			"\tOne : 1,\n"+
+			"\t\"2\" : \"Too\",\n"+
+			"\t\".T.H.R.E.E.\" : 3.141592653589793,\n"+
+			"\t$ : null,\n"+
+			"\t\" white space \" : true,\n"+
+			"\t\"false\" : false\n"+
+			"}";
+
+		StringBuilder output = new StringBuilder();
+		new DataFormatter(true).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
 }

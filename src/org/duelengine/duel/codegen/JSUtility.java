@@ -4,7 +4,7 @@ import java.util.*;
 
 final class JSUtility {
 
-	private static final String CONFIG_RESOURCE = "org.duelengine.duel.codegen.JSVocab";
+	private static final String CONFIG_RESOURCE = "org.duelengine.duel.JSVocab";
 	private static Map<String, Boolean> reserved;
 	private static Map<String, Boolean> globals;
 	private static Map<String, Boolean> properties;
