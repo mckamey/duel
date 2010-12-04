@@ -232,7 +232,7 @@
 	 * @return {Node}
 	 */
 	function addAttributes(elem, attr) {
-		if (attr.name && document.attachEvent) {
+		if (attr.name && document.attachEvent && !elem.parentNode) {
 			try {
 				// IE fix for not being able to programatically change the name attribute
 				var alt = createElement("<"+elem.tagName+" name='"+attr.name+"'>");
@@ -513,10 +513,13 @@
 			elem = document.getElementById(elem);
 		}
 
-		// bind attribute nodes and apply them to the element
 		if (elem) {
+			// bind attribute nodes
+			attr = bind(attr, data, index, count, key);
+
+			// apply them to the existing element
 			// Closure Compiler type cast
-			patchDOM(elem, /** @type {Array} */(bindContent(["", attr], data, index, count, key)));
+			addAttributes(elem, /** @type {Array} */(attr));
 		}
 	};
 
