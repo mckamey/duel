@@ -470,13 +470,26 @@ public class ServerCodeGen implements CodeGenerator {
 		String operator;
 		switch (expression.getOperator()) {
 			case IDENTITY_EQUALITY:
-				this.writeExpression(output, CodeDOMUtility.equal(left, right));
-				return;
+				if (!CodePrimitiveExpression.NULL.equals(left) &&
+					!CodePrimitiveExpression.NULL.equals(right)) {
+					this.writeExpression(output, CodeDOMUtility.equal(left, right));
+					return;
+				}
+				operator = " == ";
+				asNumber = false;
+				break;
+			case IDENTITY_INEQUALITY:
+				if (!CodePrimitiveExpression.NULL.equals(left) &&
+					!CodePrimitiveExpression.NULL.equals(right)) {
+
+					this.writeExpression(output, CodeDOMUtility.notEqual(left, right));
+					return;
+				}
+				operator = " != ";
+				asNumber = false;
+				break;
 			case VALUE_EQUALITY:
 				this.writeExpression(output, CodeDOMUtility.coerceEqual(left, right));
-				return;
-			case IDENTITY_INEQUALITY:
-				this.writeExpression(output, CodeDOMUtility.notEqual(left, right));
 				return;
 			case VALUE_INEQUALITY:
 				this.writeExpression(output, CodeDOMUtility.coerceNotEqual(left, right));

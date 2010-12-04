@@ -26,7 +26,7 @@ public class CodeDOMBuilder {
 
 	private final CodeGenSettings settings;
 	private final HTMLFormatter formatter;
-	private final DataEncoder serializer;
+	private final DataEncoder encoder;
 	private final StringBuilder buffer;
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
 	private CodeTypeDeclaration viewType;
@@ -41,7 +41,7 @@ public class CodeDOMBuilder {
 		this.settings = (settings != null) ? settings : new CodeGenSettings();
 		this.buffer = new StringBuilder();
 		this.formatter = new HTMLFormatter();
-		this.serializer = new DataEncoder(this.settings.getIndent(), this.settings.getNewline());
+		this.encoder = new DataEncoder(this.settings.getNewline(), this.settings.getIndent());
 	}
 
 	public CodeTypeDeclaration buildView(VIEWCommandNode viewNode) throws IOException {
@@ -780,12 +780,12 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(idVar)));
 			} else {
-				this.serializer.write(this.buffer, idValue);
+				this.encoder.write(this.buffer, idValue);
 			}
 			this.buffer.append(",");
 
 			// emit deferredAttrs as a JS Object
-			this.serializer.write(this.buffer, deferredAttrs);
+			this.encoder.write(this.buffer, deferredAttrs);
 
 			this.buffer.append(",");
 			this.flushBuffer();
@@ -820,12 +820,11 @@ public class CodeDOMBuilder {
 				new CodeVariableReferenceExpression(DuelContext.class, "output"),
 				new CodeVariableReferenceExpression(int.class, "count")));
 
-			// TODO: emit if block checking if key is non-null
+			// emit if block checking if key is non-null
 			CodeConditionStatement condition = new CodeConditionStatement(
 				new CodeBinaryOperatorExpression(CodeBinaryOperatorType.IDENTITY_INEQUALITY,
 				new CodeVariableReferenceExpression(String.class, "key"),
-				new CodePrimitiveExpression(null)),
-				null);
+				CodePrimitiveExpression.NULL));
 
 			scope.add(condition);
 			{
@@ -835,7 +834,7 @@ public class CodeDOMBuilder {
 				this.flushBuffer();
 
 				// emit key value as String
-				condition.getTrueStatements().add(new CodeMethodInvokeExpression(
+				this.scopeStack.peek().add(new CodeMethodInvokeExpression(
 					Void.class,
 					formatterVar,
 					"write",
@@ -936,8 +935,8 @@ public class CodeDOMBuilder {
 					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
 					new CodeObjectCreateExpression(
 						DataEncoder.class.getSimpleName(),
-						new CodePrimitiveExpression(this.settings.getIndent()),
-						new CodePrimitiveExpression(this.settings.getNewline())))));
+						new CodePrimitiveExpression(this.settings.getNewline()),
+						new CodePrimitiveExpression(this.settings.getIndent())))));
 
 		return field;
 	}

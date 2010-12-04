@@ -258,27 +258,25 @@ public class ServerCodeGenTests {
 						CodeBinaryOperatorType.VALUE_EQUALITY,
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodePrimitiveExpression(0.0)),
-					new CodeStatement[] {
-						new CodeExpressionStatement(
-							new CodeMethodInvokeExpression(
-								Void.class,
-								new CodeVariableReferenceExpression(DuelContext.class, "output"),
-								"append",
-								new CodePrimitiveExpression("zero")))
-					}),
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							"append",
+							new CodePrimitiveExpression("zero")))
+					),
 				new CodeConditionStatement(
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.VALUE_EQUALITY,
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodePrimitiveExpression(1.0)),
-					new CodeStatement[] {
-						new CodeExpressionStatement(
-							new CodeMethodInvokeExpression(
-								Void.class,
-								new CodeVariableReferenceExpression(DuelContext.class, "output"),
-								"append",
-								new CodePrimitiveExpression("one")))
-					}),
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							"append",
+							new CodePrimitiveExpression("one")))
+					),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,

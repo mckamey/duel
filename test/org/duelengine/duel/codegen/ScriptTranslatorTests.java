@@ -443,8 +443,8 @@ public class ScriptTranslatorTests {
 						"asMap",
 						new CodePrimitiveExpression("a"), new CodeUnaryOperatorExpression(CodeUnaryOperatorType.NEGATION, new CodePrimitiveExpression(2)),
 						new CodePrimitiveExpression("count"), new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodePrimitiveExpression(""), new CodePrimitiveExpression(null),
-						new CodePrimitiveExpression("$"), new CodePrimitiveExpression(false))));
+						new CodePrimitiveExpression(""), CodePrimitiveExpression.NULL,
+						new CodePrimitiveExpression("$"), CodePrimitiveExpression.FALSE)));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 
@@ -500,8 +500,8 @@ public class ScriptTranslatorTests {
 						new CodePrimitiveExpression("a"),
 						new CodePrimitiveExpression(42),
 						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodePrimitiveExpression(null),
-						new CodePrimitiveExpression(true))));
+						CodePrimitiveExpression.NULL,
+						CodePrimitiveExpression.TRUE)));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
@@ -581,8 +581,8 @@ public class ScriptTranslatorTests {
 						new CodePrimitiveExpression("a"),
 						new CodePrimitiveExpression(42),
 						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodePrimitiveExpression(null),
-						new CodePrimitiveExpression(true))));
+						CodePrimitiveExpression.NULL,
+						CodePrimitiveExpression.TRUE)));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
@@ -607,7 +607,7 @@ public class ScriptTranslatorTests {
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeMethodReturnStatement(
-					new CodePrimitiveExpression(null)));
+					CodePrimitiveExpression.NULL));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);

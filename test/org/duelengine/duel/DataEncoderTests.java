@@ -299,7 +299,7 @@ public class DataEncoderTests {
 		String expected = "[]";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder("\t", "\n").write(output, input);
+		new DataEncoder("\n", "\t").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -325,7 +325,7 @@ public class DataEncoderTests {
 		String expected = "[ \"Test.\" ]";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder("\t", "\n").write(output, input);
+		new DataEncoder("\n", "\t").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -360,7 +360,7 @@ public class DataEncoderTests {
 			"]";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder("\t", "\n").write(output, input);
+		new DataEncoder("\n", "\t").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -386,7 +386,7 @@ public class DataEncoderTests {
 		String expected = "{}";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder("\t", "\n").write(output, input);
+		new DataEncoder("\n", "\t").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -416,7 +416,7 @@ public class DataEncoderTests {
 		String expected = "{ One : 1 }";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder("\t", "\n").write(output, input);
+		new DataEncoder("\n", "\t").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -467,7 +467,7 @@ public class DataEncoderTests {
 			"}";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder("\t", "\n").write(output, input);
+		new DataEncoder("\n", "\t").write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);

@@ -24,7 +24,7 @@ public class DataEncoder {
 	public static Snippet snippet(String text) {
 		return new Snippet(text);
 	}
-	
+
 	private static final String CONFIG_RESOURCE = "org.duelengine.duel.JSVocab";
 	private static Map<String, Boolean> reserved;
 	private static Map<String, Boolean> globals;
@@ -38,7 +38,7 @@ public class DataEncoder {
 		this(null, null);
 	}
 
-	public DataEncoder(String indent, String newline) {
+	public DataEncoder(String newline, String indent) {
 		this.indent = (indent != null) ? indent : "";
 		this.newline = (newline != null) ? newline : "";
 		this.prettyPrint = (this.indent.length() > 0) || (this.newline.length() > 0);

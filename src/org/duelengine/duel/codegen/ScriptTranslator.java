@@ -367,7 +367,7 @@ public class ScriptTranslator implements ErrorReporter {
 
 		if (JSUtility.isGlobalIdent(ident)) {
 			if ("undefined".equals(ident)) {
-				return new CodePrimitiveExpression(null);
+				return CodePrimitiveExpression.NULL;
 			}
 			if ("NaN".equals(ident)) {
 				return new CodePrimitiveExpression(Double.NaN);
