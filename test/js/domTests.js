@@ -202,6 +202,30 @@ test("ignore doctype node", function() {
 	same(toHTML(actual), toHTML(expected), "");
 });
 
+test("deferred attribute binding", function() {
+
+	var attrs = {
+		"class" : function() { return "hello"; },
+		"data-foo" : function() { return "foo"; }
+	};
+
+	var id = "__"+new Date().valueOf();
+
+	var expected = document.createElement("div");
+	expected.setAttribute("id", id);
+	expected.setAttribute("class", "hello");
+	expected.setAttribute("data-foo", "foo");
+	expected.appendChild(document.createTextNode("Lorem ipsum"));
+
+	var actual = document.createElement("div");
+	actual.setAttribute("id", id);
+	actual.appendChild(document.createTextNode("Lorem ipsum"));
+
+	duel.attr(actual, attrs);
+	
+	same(toHTML(actual), toHTML(expected), "");
+});
+
 } catch (ex) {
 	alert(ex);
 }
