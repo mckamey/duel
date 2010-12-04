@@ -1805,8 +1805,7 @@ public class CodeDOMBuilderTests {
 		((CodeMethod)expected.getMembers().get(4)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
-System.err.println(expected);
-System.out.println(actual);
+
 		assertEquals(expected, actual);
 	}
 }
