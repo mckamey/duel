@@ -906,17 +906,12 @@ public class CodeDOMBuilder {
 		boolean prettyPrint = this.encoder.isPrettyPrint();
 		CodeStatementCollection scope = this.scopeStack.peek();
 
-		// emit a noscript tag to use as the replacement element
-		this.formatter.writeOpenElementBeginTag(this.buffer, "noscript");
+		// use the script tag as its own replacement element
+		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
+		this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
 		this.formatter.writeOpenAttribute(this.buffer, "id");
 		CodeVariableDeclarationStatement idVar = this.emitClientID();
 		this.formatter.writeCloseAttribute(this.buffer);
-		this.formatter.writeCloseElementBeginTag(this.buffer);
-		this.formatter.writeElementEndTag(this.buffer, "noscript");
-
-		// execute any deferred attributes using idVar
-		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
-		this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
 		this.formatter.writeCloseElementBeginTag(this.buffer);
 
 		// emit patch function call which serializes attributes into object

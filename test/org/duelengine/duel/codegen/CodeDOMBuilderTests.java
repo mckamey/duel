@@ -1893,7 +1893,7 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
-					new CodePrimitiveExpression("<div><noscript id=\""))),
+					new CodePrimitiveExpression("<div><script type=\"text/javascript\" id=\""))),
 				new CodeVariableDeclarationStatement(
 					String.class,
 					"id_1",
@@ -1910,7 +1910,7 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
-					new CodePrimitiveExpression("\"></noscript><script type=\"text/javascript\">\nduel.replace("))),
+					new CodePrimitiveExpression("\">\nduel.replace("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_4"),
