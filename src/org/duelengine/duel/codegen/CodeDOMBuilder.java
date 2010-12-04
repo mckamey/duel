@@ -97,6 +97,7 @@ public class CodeDOMBuilder {
 			String literal = ((LiteralNode)node).getValue();
 			if (this.tagMode == TagMode.SuspendMode) {
 				this.buffer.append(literal);
+
 			} else {
 				if (literal != null &&
 					literal.length() > 0 &&
@@ -112,61 +113,53 @@ public class CodeDOMBuilder {
 
 				this.formatter.writeLiteral(this.buffer, literal, this.settings.getEncodeNonASCII());
 			}
-			return;
-		}
 
-		if (node instanceof CommandNode) {
+		} else if (node instanceof CommandNode) {
 			CommandNode command = (CommandNode)node;
 			switch (command.getCommand()) {
 				case XOR:
 					this.buildConditional((XORCommandNode)node);
-					return;
+					break;
 				case IF:
 					this.buildConditional((IFCommandNode)node, this.scopeStack.peek());
-					return;
+					break;
 				case FOR:
 					this.buildIteration((FORCommandNode)node);
-					return;
+					break;
 				case CALL:
 					this.buildCall((CALLCommandNode)node);
-					return;
+					break;
 				case PART:
 					this.buildPartPlaceholder((PARTCommandNode)node);
-					return;
+					break;
 				default:
 					throw new InvalidNodeException("Invalid command node type: "+command.getCommand(), command);
 			}
-		}
 
-		if (node instanceof ElementNode) {
+		} else if (node instanceof ElementNode) {
 			ElementNode element = (ElementNode)node;
 			this.buildElement(element);
-			return;
-		}
 
-		if (node instanceof CodeBlockNode) {
+		} else if (node instanceof CodeBlockNode) {
 			CodeBlockNode block = (CodeBlockNode)node;
-			this.buildCodeBlock(block);
-			return;
-		}
+			CodeStatement writeStatement = this.buildCodeBlock(block);
+			if (writeStatement != null) {
+				this.flushBuffer();
+				this.scopeStack.peek().add(writeStatement);
+			}
 
-		if (node instanceof CommentNode) {
+		} else if (node instanceof CommentNode) {
 			// emit comment markup
 			CommentNode comment = (CommentNode)node;
 			this.formatter.writeComment(this.buffer, comment.getValue());
-			return;
-		}
 
-		if (node instanceof DocTypeNode) {
+		} else if (node instanceof DocTypeNode) {
 			// emit doctype
 			DocTypeNode doctype = (DocTypeNode)node;
 			this.formatter.writeDocType(this.buffer, doctype.getValue());
-			return;
-		}
 
-		if (node instanceof CodeCommentNode) {
+		} else if (node instanceof CodeCommentNode) {
 			this.buildComment((CodeCommentNode)node);
-			return;
 		}
 	}
 
@@ -634,7 +627,7 @@ public class CodeDOMBuilder {
 
 			CodeExpression expression = null;
 			if (members.size() == 1 && members.get(0) instanceof CodeMethod) {
-				// first attempt to extract single expression (inlines the return)
+				// first attempt to extract single expression (inline the return expression)
 				expression = CodeDOMUtility.inlineMethod((CodeMethod)members.get(0));
 			}
 
@@ -688,7 +681,23 @@ public class CodeDOMBuilder {
 				this.formatter.writeAttribute(this.buffer, attrName, ((LiteralNode)attrVal).getValue());
 
 			} else if (attrVal instanceof CodeBlockNode) {
-				deferredAttrs.put(attrName, DataEncoder.snippet(((CodeBlockNode)attrVal).getClientCode()));
+
+				try {
+					CodeStatement writeStatement = this.buildCodeBlock((CodeBlockNode)attrVal);
+					if (writeStatement != null) {
+						this.formatter.writeOpenAttribute(this.buffer, attrName);
+						this.flushBuffer();
+						this.scopeStack.peek().add(writeStatement);
+						this.formatter.writeCloseAttribute(this.buffer);
+					} else {
+						this.formatter.writeAttribute(this.buffer, attrName, null);
+					}
+
+				} catch (Exception ex) {
+					
+					// only defer attributes that cannot be processed server-side
+					deferredAttrs.put(attrName, DataEncoder.snippet(((CodeBlockNode)attrVal).getClientCode()));
+				}
 
 			} else {
 				throw new InvalidNodeException("Invalid attribute node type: "+attrVal.getClass(), attrVal);
@@ -888,10 +897,10 @@ public class CodeDOMBuilder {
 	}
 
 	/**
-	 * emits the values of code blocks
 	 * @param block
+	 * @return Code which emits the evaluated value of a code block
 	 */
-	private void buildCodeBlock(CodeBlockNode block) {
+	private CodeStatement buildCodeBlock(CodeBlockNode block) {
 		boolean htmlEncode = true;
 		if (block instanceof MarkupExpressionNode) {
 			htmlEncode = false;
@@ -900,17 +909,12 @@ public class CodeDOMBuilder {
 
 		CodeExpression codeExpr = this.translateExpression(block);
 		if (codeExpr == null) {
-			return;
+			return null;
 		}
 
-		CodeStatement writeStatement =
-			htmlEncode ?
+		return htmlEncode ?
 			CodeDOMUtility.emitExpressionSafe(codeExpr) :
 			CodeDOMUtility.emitExpression(codeExpr);
-
-		this.flushBuffer();
-		CodeStatementCollection scope = this.scopeStack.peek();
-		scope.add(writeStatement);
 	}
 
 	private CodeMethod ensureInitMethod() {

@@ -876,64 +876,6 @@ public class CodeDOMBuilderTests {
 	}
 
 	@Test
-	public void attributesTest() throws IOException {
-
-		VIEWCommandNode input = new VIEWCommandNode(
-			new AttributePair[] {
-				new AttributePair("name", new LiteralNode("foo"))
-			},
-			new ElementNode("div",
-				new AttributePair[] {
-					new AttributePair("class", new LiteralNode("foo")),
-					new AttributePair("style", new LiteralNode("color:red"))
-				},
-				new ElementNode("ul",
-					new AttributePair[] {
-						new AttributePair("class", new LiteralNode("bar"))
-					},
-					new ElementNode("li", null,
-						new LiteralNode("one")),
-					new ElementNode("li", null,
-						new LiteralNode("two")),
-					new ElementNode("li", null,
-						new LiteralNode("three")))
-			));
-
-		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
-			null,
-			"foo",
-			new CodeMethod(
-				AccessModifierType.PROTECTED,
-				Void.class,
-				"render",
-				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
-					new CodeParameterDeclarationExpression(Object.class, "data"),
-					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count"),
-					new CodeParameterDeclarationExpression(String.class, "key")
-				},
-				new Class<?>[] {
-					IOException.class
-				},
-				new CodeExpressionStatement(
-					new CodeMethodInvokeExpression(
-						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
-						new CodePrimitiveExpression("<div class=\"foo\" style=\"color:red\"><ul class=\"bar\"><li>one</li><li>two</li><li>three</li></ul></div>")))
-				)
-			);
-
-		// mark override and parens
-		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
-
-		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	public void suspendModeTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
@@ -1574,6 +1516,151 @@ public class CodeDOMBuilderTests {
 	}
 
 	@Test
+	public void attributesTest() throws IOException {
+
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div",
+				new AttributePair[] {
+					new AttributePair("class", new LiteralNode("foo")),
+					new AttributePair("style", new LiteralNode("color:red"))
+				},
+				new ElementNode("ul",
+					new AttributePair[] {
+						new AttributePair("class", new LiteralNode("bar"))
+					},
+					new ElementNode("li", null,
+						new LiteralNode("one")),
+					new ElementNode("li", null,
+						new LiteralNode("two")),
+					new ElementNode("li", null,
+						new LiteralNode("three")))
+			));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"append",
+						new CodePrimitiveExpression("<div class=\"foo\" style=\"color:red\"><ul class=\"bar\"><li>one</li><li>two</li><li>three</li></ul></div>")))
+				)
+			);
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void attributesExpressionsTest() throws IOException {
+
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div",
+				new AttributePair[] {
+					new AttributePair("class", new ExpressionNode("\"foo\"")),
+					new AttributePair("style", new ExpressionNode("\"color:\"+data"))
+				},
+				new ElementNode("ul",
+					new AttributePair[] {
+						new AttributePair("class", new LiteralNode("bar"))
+					},
+					new ElementNode("li", null,
+						new LiteralNode("one")),
+					new ElementNode("li", null,
+						new LiteralNode("two")),
+					new ElementNode("li", null,
+						new LiteralNode("three")))
+			));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
+				},
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression("<div class=\""))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"htmlEncode",
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodePrimitiveExpression("foo"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression("\" style=\""))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.ADD,
+							new CodePrimitiveExpression("color:"),
+							new CodeVariableReferenceExpression(Object.class, "data"))
+						)),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression("\"><ul class=\"bar\"><li>one</li><li>two</li><li>three</li></ul></div>")))
+				)
+			);
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)expected.getMembers().get(2)).getStatements().get(3)).getExpression()).getArguments().get(1).setHasParens(true);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void deferredExecutionAttributesTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
@@ -1582,12 +1669,12 @@ public class CodeDOMBuilderTests {
 			},
 			new ElementNode("div",
 				new AttributePair[] {
-					new AttributePair("class", new ExpressionNode("\"foo-\"+index")),
-					new AttributePair("style", new ExpressionNode("data"))
+					new AttributePair("class", new ExpressionNode("fooCSS(index)")),
+					new AttributePair("style", new ExpressionNode("customStyle(data)"))
 				},
 				new ElementNode("p",
 					new AttributePair[] {
-						new AttributePair("class", new ExpressionNode("\"bar-\"+count"))
+						new AttributePair("class", new ExpressionNode("barCSS(count)"))
 					},
 					new LiteralNode("Lorem ipsum."))
 			));
@@ -1650,7 +1737,7 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression("\">Lorem ipsum.</p><script type=\"text/javascript\">\nduel.attr("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_2"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(String.class, "id_2"),
@@ -1659,10 +1746,10 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
-					new CodePrimitiveExpression(", { \"class\" : function(data, index, count) { return (\"bar-\"+count); } }, "))),
+					new CodePrimitiveExpression(", { \"class\" : function(data, index, count) { return (barCSS(count)); } }, "))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_2"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(Object.class, "data"),
@@ -1674,7 +1761,7 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression(", "))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_2"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(int.class, "index"),
@@ -1686,7 +1773,7 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression(", "))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_2"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(int.class, "count"),
@@ -1703,7 +1790,7 @@ public class CodeDOMBuilderTests {
 						new CodePrimitiveExpression(", "))),
 					new CodeExpressionStatement(new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_2"),
+						new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(String.class, "key"),
@@ -1715,7 +1802,7 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression(");\n</script></div><script type=\"text/javascript\">\nduel.attr("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_2"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(String.class, "id_1"),
@@ -1724,10 +1811,10 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
-					new CodePrimitiveExpression(", {\n\t\t\"class\" : function(data, index) { return (\"foo-\"+index); },\n\t\tstyle : function(data) { return (data); }\n\t}, "))),
+					new CodePrimitiveExpression(", {\n\t\t\"class\" : function(data, index) { return (fooCSS(index)); },\n\t\tstyle : function(data) { return (customStyle(data)); }\n\t}, "))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_2"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(Object.class, "data"),
@@ -1739,7 +1826,7 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression(", "))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_2"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(int.class, "index"),
@@ -1751,7 +1838,7 @@ public class CodeDOMBuilderTests {
 					new CodePrimitiveExpression(", "))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_2"),
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					new CodeVariableReferenceExpression(int.class, "count"),
@@ -1768,7 +1855,7 @@ public class CodeDOMBuilderTests {
 						new CodePrimitiveExpression(", "))),
 					new CodeExpressionStatement(new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_2"),
+						new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_6"),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(String.class, "key"),
@@ -1782,7 +1869,7 @@ public class CodeDOMBuilderTests {
 			new CodeField(
 				AccessModifierType.PRIVATE,
 				DataEncoder.class,
-				"encoder_2"),
+				"encoder_6"),
 			new CodeMethod(
 				AccessModifierType.PROTECTED,
 				Void.class,
@@ -1793,7 +1880,7 @@ public class CodeDOMBuilderTests {
 					new CodeFieldReferenceExpression(
 						new CodeThisReferenceExpression(),
 						DataEncoder.class,
-						"encoder_2"),
+						"encoder_6"),
 					new CodeObjectCreateExpression(
 						DataEncoder.class.getSimpleName(),
 						new CodePrimitiveExpression("\n"),

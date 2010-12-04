@@ -466,9 +466,12 @@ public class ScriptTranslator implements ErrorReporter {
 	}
 
 	private CodeObject visitFunctionCall(FunctionCall node) {
+		CodeExpression target = this.visitExpression(node.getTarget());
+		if (target instanceof CodeVariableReferenceExpression) {
+			throw new ScriptTranslationException("Arbitrary function call not supported ("+node.getClass()+"):\n"+(node.debugPrint()), node.getTarget());
+		}
 		CodeExpression[] args = this.visitExpressionList(node.getArguments());
-
-		return new CodeMethodInvokeExpression(Object.class, this.visitExpression(node.getTarget()), null, args);
+		return new CodeMethodInvokeExpression(Object.class, target, null, args);
 	}
 
 	private CodeObject visitNew(NewExpression node) {

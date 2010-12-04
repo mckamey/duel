@@ -179,6 +179,19 @@ public class ScriptTranslatorTests {
 	}
 
 	@Test
+	public void translateExternalMethodCallTest() {
+		String input = "function(data) { return foo(5, 2); }";
+
+		try {
+			new ScriptTranslator().translate(input);
+			fail("Expected to throw a ScriptTranslationException");
+
+		} catch (ScriptTranslationException ex) {
+			assertEquals(24, ex.getIndex());
+		}
+	}
+
+	@Test
 	public void translateMapValueAccessTest() {
 		String input = "function(data) { return data['foo']; }";
 
