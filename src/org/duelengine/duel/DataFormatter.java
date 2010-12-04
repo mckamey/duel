@@ -134,9 +134,9 @@ public class DataFormatter {
 
 		output.append("new Date(");
 
-		// TODO: allow choosing between UTC and "browser-timezone"
 		if (false) {
-			// format as browser-timezone
+			// TODO: allow formatting in browser's timezone
+			// new Date(yyyy, M, d, H, m, s, ms)
 		} else {
 			// format as UTC
 			output.append(Long.toString(data.getTime()));

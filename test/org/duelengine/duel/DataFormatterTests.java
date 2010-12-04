@@ -215,6 +215,32 @@ public class DataFormatterTests {
 	}
 
 	@Test
+	public void writeDate2010UTCTest() throws IOException {
+		Object input = new Date(1291422018285L);
+
+		String expected = "new Date(1291422018285)";
+
+		StringBuilder output = new StringBuilder();
+		new DataFormatter().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeDate1968UTCTest() throws IOException {
+		Object input = new Date(-34963200000L);
+
+		String expected = "new Date(-34963200000)";
+
+		StringBuilder output = new StringBuilder();
+		new DataFormatter().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void writeStringEmptyTest() throws IOException {
 		Object input = "";
 
