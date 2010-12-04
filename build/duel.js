@@ -1058,6 +1058,13 @@ var duel = (
 
 	/**
 	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var REPLACE_EXTERN = "replace";
+
+	/**
+	 * @private
 	 * @constant
 	 * @type {string}
 	 */
@@ -1542,6 +1549,17 @@ var duel = (
 	}
 
 	/**
+	 * Renders an error as a text node
+	 * 
+	 * @private
+	 * @param {Error} ex The exception
+	 * @return {Node}
+	 */
+	function onErrorDOM(ex) {
+		return document.createTextNode(onError(ex));
+	}
+
+	/**
 	 * @public
 	 * @param {Object} node The attributes object to apply
 	 * @param {*} data The data item being bound
@@ -1566,15 +1584,36 @@ var duel = (
 	};
 
 	/**
-	 * Renders an error as a text node
-	 * 
-	 * @private
-	 * @param {Error} ex The exception
-	 * @return {Node}
+	 * @public
+	 * @param {Object} node The attributes object to apply
+	 * @param {*} data The data item being bound
+	 * @param {number} index The index of the current data item
+	 * @param {number} count The total number of data items
+	 * @param {string|null} key The current property name
 	 */
-	function onErrorDOM(ex) {
-		return document.createTextNode(onError(ex));
-	}
+	duel[REPLACE_EXTERN] = duel.replace = function(elem, node, data, index, count, key) {
+		// resolve the element ID
+		if (getType(elem) === VAL) {
+			elem = document.getElementById(elem);
+		}
+
+		if (elem && elem.parentNode) {
+			// bind node
+			node = duel(node).getView();
+			// Closure Compiler type cast
+			node = bind(/** @type {Array} */(node), data, index, count, key);
+
+			try {
+				node = patchDOM(createElement(node[0]), node);
+			} catch (ex) {
+				// handle error with context
+				node = onErrorDOM(ex);
+			}
+
+			// replace existing element with result
+			elem.parentNode.replaceChild(node, elem);
+		}
+	};
 
 	/**
 	 * Returns result as DOM objects

@@ -141,12 +141,7 @@ public class CodeDOMBuilder {
 			this.buildElement(element);
 
 		} else if (node instanceof CodeBlockNode) {
-			CodeBlockNode block = (CodeBlockNode)node;
-			CodeStatement writeStatement = this.buildCodeBlock(block);
-			if (writeStatement != null) {
-				this.flushBuffer();
-				this.scopeStack.peek().add(writeStatement);
-			}
+			this.buildCodeBlock((CodeBlockNode)node);
 
 		} else if (node instanceof CommentNode) {
 			// emit comment markup
@@ -684,7 +679,7 @@ public class CodeDOMBuilder {
 			} else if (attrVal instanceof CodeBlockNode) {
 
 				try {
-					CodeStatement writeStatement = this.buildCodeBlock((CodeBlockNode)attrVal);
+					CodeStatement writeStatement = this.processCodeBlock((CodeBlockNode)attrVal);
 					if (writeStatement != null) {
 						this.formatter.writeOpenAttribute(this.buffer, attrName);
 						this.flushBuffer();
@@ -884,6 +879,145 @@ public class CodeDOMBuilder {
 		this.formatter.writeElementEndTag(this.buffer, "script");
 	}
 
+	private void buildCodeBlock(CodeBlockNode node) throws IOException {
+		try {
+			CodeStatement writeStatement = this.processCodeBlock(node);
+			if (writeStatement == null) {
+				return;
+			}
+
+			this.flushBuffer();
+			this.scopeStack.peek().add(writeStatement);
+			return;
+
+		} catch (Exception ex) {
+			// only defer blocks that cannot be fully processed server-side
+			buildDeferredCodeBlock(node.getClientCode(), node.getArgSize());
+		}
+	}
+
+	private void buildDeferredCodeBlock(String clientCode, int argSize)
+			throws IOException {
+
+		CodeFieldReferenceExpression encoderVar = new CodeFieldReferenceExpression(
+				new CodeThisReferenceExpression(),
+				this.ensureEncoder());
+
+		boolean prettyPrint = this.encoder.isPrettyPrint();
+		CodeStatementCollection scope = this.scopeStack.peek();
+
+		// emit a noscript tag to use as the replacement element
+		this.formatter.writeOpenElementBeginTag(this.buffer, "noscript");
+		this.formatter.writeOpenAttribute(this.buffer, "id");
+		CodeVariableDeclarationStatement idVar = this.emitClientID();
+		this.formatter.writeCloseAttribute(this.buffer);
+		this.formatter.writeCloseElementBeginTag(this.buffer);
+		this.formatter.writeElementEndTag(this.buffer, "noscript");
+
+		// execute any deferred attributes using idVar
+		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
+		this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+		this.formatter.writeCloseElementBeginTag(this.buffer);
+
+		// emit patch function call which serializes attributes into object
+		if (prettyPrint) {
+			this.buffer.append(this.settings.getNewline());
+		}
+		this.buffer.append("duel.replace(");
+
+		// emit id var or known value
+		this.flushBuffer();
+		scope.add(new CodeMethodInvokeExpression(
+			Void.class,
+			encoderVar,
+			"write",
+			new CodeVariableReferenceExpression(DuelContext.class, "output"),
+			new CodeVariableReferenceExpression(idVar),
+			CodePrimitiveExpression.ONE));
+		this.buffer.append(',');
+		if (prettyPrint) {
+			this.buffer.append(' ');
+		}
+
+		// emit client code directly
+		this.buffer.append(clientCode);
+
+		if (argSize > 0) {
+			this.buffer.append(',');
+			if (prettyPrint) {
+				this.buffer.append(' ');
+			}
+			this.flushBuffer();
+
+			// emit data var as literal
+			scope.add(new CodeMethodInvokeExpression(
+				Void.class,
+				encoderVar,
+				"write",
+				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(Object.class, "data"),
+				CodePrimitiveExpression.ONE));
+
+			if (argSize > 1) {
+				this.buffer.append(',');
+				if (prettyPrint) {
+					this.buffer.append(' ');
+				}
+				this.flushBuffer();
+
+				// emit index var as number
+				scope.add(new CodeMethodInvokeExpression(
+					Void.class,
+					encoderVar,
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(int.class, "index"),
+					CodePrimitiveExpression.ONE));
+
+				if (argSize > 2) {
+					this.buffer.append(',');
+					if (prettyPrint) {
+						this.buffer.append(' ');
+					}
+					this.flushBuffer();
+
+					// emit count var as number
+					scope.add(new CodeMethodInvokeExpression(
+						Void.class,
+						encoderVar,
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						CodePrimitiveExpression.ONE));
+
+					if (argSize > 3) {
+						this.buffer.append(',');
+						if (prettyPrint) {
+							this.buffer.append(' ');
+						}
+						this.flushBuffer();
+
+						// emit key var as String
+						scope.add(new CodeMethodInvokeExpression(
+							Void.class,
+							encoderVar,
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							new CodeVariableReferenceExpression(String.class, "key"),
+							CodePrimitiveExpression.ONE));
+					}
+				}
+			}
+		}
+		this.buffer.append(");");
+		if (prettyPrint) {
+			this.buffer.append(this.settings.getNewline());
+		}
+
+		// last parameter will be the current data
+		this.formatter.writeElementEndTag(this.buffer, "script");
+	}
+
 	private CodeVariableDeclarationStatement emitClientID() {
 		this.flushBuffer();
 		CodeStatementCollection scope = this.scopeStack.peek();
@@ -905,7 +1039,7 @@ public class CodeDOMBuilder {
 	 * @param block
 	 * @return Code which emits the evaluated value of a code block
 	 */
-	private CodeStatement buildCodeBlock(CodeBlockNode block) {
+	private CodeStatement processCodeBlock(CodeBlockNode block) {
 		boolean htmlEncode = true;
 		if (block instanceof MarkupExpressionNode) {
 			htmlEncode = false;

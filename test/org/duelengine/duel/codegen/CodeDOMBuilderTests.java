@@ -1858,8 +1858,123 @@ public class CodeDOMBuilderTests {
 		((CodeMethod)expected.getMembers().get(4)).setOverride(true);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
-System.out.println(expected);
-System.err.println(actual);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void deferredExecutionExpressionTest() throws IOException {
+
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div", null,
+				new ExpressionNode("foo(index)")));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new Class<?>[] {
+					IOException.class
+				},
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression("<div><noscript id=\""))),
+				new CodeVariableDeclarationStatement(
+					String.class,
+					"id_1",
+					new CodeMethodInvokeExpression(
+						String.class,
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"nextID")),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodeVariableReferenceExpression(String.class, "id_1"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression("\"></noscript><script type=\"text/javascript\">\nduel.replace("))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_4"),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(String.class, "id_1"),
+					CodePrimitiveExpression.ONE)),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression(", function(data, index) { return (foo(index)); }, "))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_4"),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(Object.class, "data"),
+					CodePrimitiveExpression.ONE)),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression(", "))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_4"),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(int.class, "index"),
+					CodePrimitiveExpression.ONE)),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression(");\n</script></div>")))
+			),
+			new CodeField(
+				AccessModifierType.PRIVATE,
+				DataEncoder.class,
+				"encoder_4"),
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"init",
+				null,
+				new CodeExpressionStatement(new CodeBinaryOperatorExpression(
+					CodeBinaryOperatorType.ASSIGN,
+					new CodeFieldReferenceExpression(
+						new CodeThisReferenceExpression(),
+						DataEncoder.class,
+						"encoder_4"),
+					new CodeObjectCreateExpression(
+						DataEncoder.class.getSimpleName(),
+						new CodePrimitiveExpression("\n"),
+						new CodePrimitiveExpression("\t")))))
+		);
+
+		// mark override and parens
+		((CodeMethod)expected.getMembers().get(2)).setOverride(true);
+		((CodeMethod)expected.getMembers().get(4)).setOverride(true);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+
 		assertEquals(expected, actual);
 	}
 }
