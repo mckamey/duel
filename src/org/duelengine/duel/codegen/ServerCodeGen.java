@@ -1110,6 +1110,9 @@ public class ServerCodeGen implements CodeGenerator {
 			if (!"\t".equals(this.settings.getIndent())) {
 				value = value.replace("\t", this.settings.getIndent());
 			}
+			// if the source came via the DuelLexer then CRLF have been
+			// compressed to single LF and these will not be present
+			value = value.replace("\r\n", "\n").replace("\r", "\n");
 			if (!"\n".equals(this.settings.getNewline())) {
 				value = value.replace("\n", this.settings.getNewline());
 			}
@@ -1138,8 +1141,6 @@ public class ServerCodeGen implements CodeGenerator {
 					escape = "\\n";
 					break;
 				case '\r':
-					// if the source came via the DuelLexer then CRLF have been
-					// compressed to single LF and these will not be present
 					escape = "\\r";
 					break;
 				case '\f':

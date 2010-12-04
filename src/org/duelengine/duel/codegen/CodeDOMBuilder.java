@@ -695,11 +695,11 @@ public class CodeDOMBuilder {
 			}
 		}
 
-		CodeFieldReferenceExpression formatterVar = null;
+		CodeFieldReferenceExpression encoderVar = null;
 		CodeVariableDeclarationStatement idVar = null;
 		String idValue = null;
 		if (deferredAttrs.size() > 0) {
-			formatterVar = new CodeFieldReferenceExpression(
+			encoderVar = new CodeFieldReferenceExpression(
 				new CodeThisReferenceExpression(),
 				this.ensureEncoder());
 
@@ -754,6 +754,7 @@ public class CodeDOMBuilder {
 
 		if (deferredAttrs.size() > 0) {
 			CodeStatementCollection scope = this.scopeStack.peek();
+			boolean prettyPrint = this.encoder.isPrettyPrint();
 
 			// execute any deferred attributes using idVar
 			this.formatter.writeOpenElementBeginTag(this.buffer, "script");
@@ -761,6 +762,9 @@ public class CodeDOMBuilder {
 			this.formatter.writeCloseElementBeginTag(this.buffer);
 
 			// emit patch function call which serializes attributes into object
+			if (prettyPrint) {
+				this.buffer.append(this.settings.getNewline());
+			}
 			this.buffer.append("duel.attr(");
 
 			// emit id var or known value
@@ -768,50 +772,66 @@ public class CodeDOMBuilder {
 				this.flushBuffer();
 				scope.add(new CodeMethodInvokeExpression(
 					Void.class,
-					formatterVar,
+					encoderVar,
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
-					new CodeVariableReferenceExpression(idVar)));
+					new CodeVariableReferenceExpression(idVar),
+					CodePrimitiveExpression.ONE));
 			} else {
-				this.encoder.write(this.buffer, idValue);
+				this.encoder.write(this.buffer, idValue, 1);
 			}
-			this.buffer.append(",");
+			this.buffer.append(',');
+			if (prettyPrint) {
+				this.buffer.append(' ');
+			}
 
 			// emit deferredAttrs as a JS Object
-			this.encoder.write(this.buffer, deferredAttrs);
+			this.encoder.write(this.buffer, deferredAttrs, 1);
 
-			this.buffer.append(",");
+			this.buffer.append(',');
+			if (prettyPrint) {
+				this.buffer.append(' ');
+			}
 			this.flushBuffer();
 
 			// emit data value as literal
 			scope.add(new CodeMethodInvokeExpression(
 				Void.class,
-				formatterVar,
+				encoderVar,
 				"write",
 				new CodeVariableReferenceExpression(DuelContext.class, "output"),
-				new CodeVariableReferenceExpression(Object.class, "data")));
+				new CodeVariableReferenceExpression(Object.class, "data"),
+				CodePrimitiveExpression.ONE));
 
-			this.buffer.append(",");
+			this.buffer.append(',');
+			if (prettyPrint) {
+				this.buffer.append(' ');
+			}
 			this.flushBuffer();
 
 			// emit index value as number
 			scope.add(new CodeMethodInvokeExpression(
 				Void.class,
-				formatterVar,
+				encoderVar,
 				"write",
 				new CodeVariableReferenceExpression(DuelContext.class, "output"),
-				new CodeVariableReferenceExpression(int.class, "index")));
+				new CodeVariableReferenceExpression(int.class, "index"),
+				CodePrimitiveExpression.ONE));
 
-			this.buffer.append(",");
+			this.buffer.append(',');
+			if (prettyPrint) {
+				this.buffer.append(' ');
+			}
 			this.flushBuffer();
 
 			// emit count value as number
 			scope.add(new CodeMethodInvokeExpression(
 				Void.class,
-				formatterVar,
+				encoderVar,
 				"write",
 				new CodeVariableReferenceExpression(DuelContext.class, "output"),
-				new CodeVariableReferenceExpression(int.class, "count")));
+				new CodeVariableReferenceExpression(int.class, "count"),
+				CodePrimitiveExpression.ONE));
 
 			// emit if block checking if key is non-null
 			CodeConditionStatement condition = new CodeConditionStatement(
@@ -823,20 +843,27 @@ public class CodeDOMBuilder {
 			{
 				this.scopeStack.push(condition.getTrueStatements());
 
-				this.buffer.append(",");
+				this.buffer.append(',');
+				if (prettyPrint) {
+					this.buffer.append(' ');
+				}
 				this.flushBuffer();
 
 				// emit key value as String
 				this.scopeStack.peek().add(new CodeMethodInvokeExpression(
 					Void.class,
-					formatterVar,
+					encoderVar,
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
-					new CodeVariableReferenceExpression(String.class, "key")));
+					new CodeVariableReferenceExpression(String.class, "key"),
+					CodePrimitiveExpression.ONE));
 
 				this.scopeStack.pop();
 			}
 			this.buffer.append(");");
+			if (prettyPrint) {
+				this.buffer.append(this.settings.getNewline());
+			}
 
 			// last parameter will be the current data
 			this.formatter.writeElementEndTag(this.buffer, "script");
@@ -929,10 +956,12 @@ public class CodeDOMBuilder {
 				new CodeBinaryOperatorExpression(
 					CodeBinaryOperatorType.ASSIGN,
 					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
-					new CodeObjectCreateExpression(
-						DataEncoder.class.getSimpleName(),
-						new CodePrimitiveExpression(this.settings.getNewline()),
-						new CodePrimitiveExpression(this.settings.getIndent())))));
+					this.encoder.isPrettyPrint() ? 
+						new CodeObjectCreateExpression(
+							DataEncoder.class.getSimpleName(),
+							new CodePrimitiveExpression(this.settings.getNewline()),
+							new CodePrimitiveExpression(this.settings.getIndent())) :
+						new CodeObjectCreateExpression(DataEncoder.class.getSimpleName()))));
 
 		return field;
 	}

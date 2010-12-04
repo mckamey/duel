@@ -44,6 +44,10 @@ public class DataEncoder {
 		this.prettyPrint = (this.indent.length() > 0) || (this.newline.length() > 0);
 	}
 
+	public boolean isPrettyPrint() {
+		return this.prettyPrint;
+	}
+
 	/**
 	 * Serializes the data as JavaScript literals
 	 * @param output
