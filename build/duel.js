@@ -1080,6 +1080,13 @@ var duel = (
 
 	/**
 	 * @private
+	 * @constant
+	 * @type {string}
+	 */
+	var RELOAD = "reload";
+
+	/**
+	 * @private
 	 * @const
 	 * @type {string}
 	 */
@@ -1601,6 +1608,44 @@ var duel = (
 		} catch (ex) {
 			// handle error with context
 			return onErrorDOM(ex);
+		}
+	};
+
+	/**
+	 * Replaces entire document with this Result
+	 * 
+	 * @public
+	 * @this {Result}
+	 */
+	Result.prototype[RELOAD] = Result.prototype.reload = function() {
+		// http://stackoverflow.com/questions/4297877
+		var doc = document;
+		try {
+			var newRoot = this.toDOM();
+			doc.replaceChild(newRoot, doc.documentElement);
+
+			if (doc.createStyleSheet) {
+				// IE requires link repair
+				var head = newRoot.firstChild;
+				while (head && (head.tagName||"") !== "HEAD") {
+					head = head.nextSibling;
+				}
+
+				var link = head && head.firstChild;
+				while (link) {
+					if ((link.tagName||"") === "LINK") {
+						// this seems to repair the link
+						link.href = link.href;
+					}
+					link = link.nextSibling;
+				}
+			}
+		} catch (ex) {
+			/*jslint evil:true*/
+			doc = doc.open("text/html");
+			doc.write(this.toString());
+			doc.close();
+			/*jslint evil:false*/
 		}
 	};
 
