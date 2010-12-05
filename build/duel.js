@@ -882,6 +882,13 @@ var duel = (
 	};
 
 	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var WRITE_EXTERN = "write";
+
+	/**
 	 * Encodes invalid literal characters in strings
 	 * 
 	 * @private
@@ -966,7 +973,8 @@ var duel = (
 		var tag = node[0] || "",
 			length = node.length,
 			i = 1,
-			child;
+			child,
+			isVoid = VOID_TAGS[tag];
 
 		if (tag.charAt(0) === '!') {
 			renderComment(buffer, node);
@@ -990,6 +998,9 @@ var duel = (
 				}
 				i++;
 			}
+			if (isVoid) {
+				buffer.append(' /');
+			}
 			buffer.append('>');
 		}
 
@@ -1004,7 +1015,7 @@ var duel = (
 			}
 		}
 
-		if (tag && !VOID_TAGS[tag]) {
+		if (tag && !isVoid) {
 			// emit close tag
 			buffer.append('</', tag, '>');
 		}
@@ -1038,6 +1049,24 @@ var duel = (
 	 */
 	Result.prototype.toString = function() {
 		return render(this.value);
+	};
+
+	/**
+	 * @public
+	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} view The view to replace
+	 * @param {*} data The data item being bound
+	 * @param {number} index The index of the current data item
+	 * @param {number} count The total number of data items
+	 * @param {string|null} key The current property name
+	 */
+	duel[WRITE_EXTERN] = duel.write = function(view, data, index, count, key) {
+		// bind node
+		view = duel(view).getView();
+		// Closure Compiler type cast
+		view = bind(/** @type {Array} */(view), data, index, count, key);
+		/*jslint evil:true*/
+		document.write(render(view));
+		/*jslint evil:false*/
 	};
 
 	/* dom.js --------------------*/
@@ -1560,7 +1589,24 @@ var duel = (
 	}
 
 	/**
+	 * Returns result as DOM objects
+	 * 
 	 * @public
+	 * @this {Result}
+	 * @return {Node}
+	 */
+	Result.prototype[TODOM] = Result.prototype.toDOM = function() {
+		try {
+			return patchDOM(createElement(this.value[0]), this.value);
+		} catch (ex) {
+			// handle error with context
+			return onErrorDOM(ex);
+		}
+	};
+
+	/**
+	 * @public
+	 * @param {Node} elem The element to affect 
 	 * @param {Object} node The attributes object to apply
 	 * @param {*} data The data item being bound
 	 * @param {number} index The index of the current data item
@@ -1585,13 +1631,14 @@ var duel = (
 
 	/**
 	 * @public
-	 * @param {Object} node The attributes object to apply
+	 * @param {Node} elem The element to be replaced
+	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} view The view to replace
 	 * @param {*} data The data item being bound
 	 * @param {number} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {string|null} key The current property name
 	 */
-	duel[REPLACE_EXTERN] = duel.replace = function(elem, node, data, index, count, key) {
+	duel[REPLACE_EXTERN] = duel.replace = function(elem, view, data, index, count, key) {
 		// resolve the element ID
 		if (getType(elem) === VAL) {
 			elem = document.getElementById(elem);
@@ -1599,35 +1646,19 @@ var duel = (
 
 		if (elem && elem.parentNode) {
 			// bind node
-			node = duel(node).getView();
+			view = duel(view).getView();
 			// Closure Compiler type cast
-			node = bind(/** @type {Array} */(node), data, index, count, key);
+			view = bind(/** @type {Array} */(view), data, index, count, key);
 
 			try {
-				node = patchDOM(createElement(node[0]), node);
+				view = patchDOM(createElement(view[0]), view);
 			} catch (ex) {
 				// handle error with context
-				node = onErrorDOM(ex);
+				view = onErrorDOM(ex);
 			}
 
 			// replace existing element with result
-			elem.parentNode.replaceChild(node, elem);
-		}
-	};
-
-	/**
-	 * Returns result as DOM objects
-	 * 
-	 * @public
-	 * @this {Result}
-	 * @return {Node}
-	 */
-	Result.prototype[TODOM] = Result.prototype.toDOM = function() {
-		try {
-			return patchDOM(createElement(this.value[0]), this.value);
-		} catch (ex) {
-			// handle error with context
-			return onErrorDOM(ex);
+			elem.parentNode.replaceChild(view, elem);
 		}
 	};
 

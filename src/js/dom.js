@@ -518,7 +518,24 @@
 	}
 
 	/**
+	 * Returns result as DOM objects
+	 * 
 	 * @public
+	 * @this {Result}
+	 * @return {Node}
+	 */
+	Result.prototype[TODOM] = Result.prototype.toDOM = function() {
+		try {
+			return patchDOM(createElement(this.value[0]), this.value);
+		} catch (ex) {
+			// handle error with context
+			return onErrorDOM(ex);
+		}
+	};
+
+	/**
+	 * @public
+	 * @param {Node} elem The element to affect 
 	 * @param {Object} node The attributes object to apply
 	 * @param {*} data The data item being bound
 	 * @param {number} index The index of the current data item
@@ -543,13 +560,14 @@
 
 	/**
 	 * @public
-	 * @param {Object} node The attributes object to apply
+	 * @param {Node} elem The element to be replaced
+	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} view The view to replace
 	 * @param {*} data The data item being bound
 	 * @param {number} index The index of the current data item
 	 * @param {number} count The total number of data items
 	 * @param {string|null} key The current property name
 	 */
-	duel[REPLACE_EXTERN] = duel.replace = function(elem, node, data, index, count, key) {
+	duel[REPLACE_EXTERN] = duel.replace = function(elem, view, data, index, count, key) {
 		// resolve the element ID
 		if (getType(elem) === VAL) {
 			elem = document.getElementById(elem);
@@ -557,35 +575,19 @@
 
 		if (elem && elem.parentNode) {
 			// bind node
-			node = duel(node).getView();
+			view = duel(view).getView();
 			// Closure Compiler type cast
-			node = bind(/** @type {Array} */(node), data, index, count, key);
+			view = bind(/** @type {Array} */(view), data, index, count, key);
 
 			try {
-				node = patchDOM(createElement(node[0]), node);
+				view = patchDOM(createElement(view[0]), view);
 			} catch (ex) {
 				// handle error with context
-				node = onErrorDOM(ex);
+				view = onErrorDOM(ex);
 			}
 
 			// replace existing element with result
-			elem.parentNode.replaceChild(node, elem);
-		}
-	};
-
-	/**
-	 * Returns result as DOM objects
-	 * 
-	 * @public
-	 * @this {Result}
-	 * @return {Node}
-	 */
-	Result.prototype[TODOM] = Result.prototype.toDOM = function() {
-		try {
-			return patchDOM(createElement(this.value[0]), this.value);
-		} catch (ex) {
-			// handle error with context
-			return onErrorDOM(ex);
+			elem.parentNode.replaceChild(view, elem);
 		}
 	};
 

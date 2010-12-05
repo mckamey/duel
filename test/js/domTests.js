@@ -11,11 +11,13 @@ test("nested elements with attributes", function() {
 			],
 			["p",
 			 	"URL: ",
+			 	["br"],
 			 	["a", { "href" : "http://example.com/foo.js", "target" : "_blank", "title" : "Lorem ipsum dolor sit amet" },
 			 		"http://example.com/foo.js"
 		 		],
 			 	" (5.87KB)"
 		 	],
+		 	["hr"],
 			["p",
 			 	"Description: Lorem ipsum dolor sit amet"
 			]
@@ -32,6 +34,7 @@ test("nested elements with attributes", function() {
 
 	temp = document.createElement("p");
 	temp.appendChild(document.createTextNode("URL: "));
+	temp.appendChild(document.createElement("br"));
 	var temp2 = document.createElement("a");
 	temp2.setAttribute("href", "http://example.com/foo.js");
 	temp2.setAttribute("target", "_blank");
@@ -40,6 +43,8 @@ test("nested elements with attributes", function() {
 	temp.appendChild(temp2);
 	temp.appendChild(document.createTextNode(" (5.87KB)"));
 	expected.appendChild(temp);
+
+	expected.appendChild(document.createElement("hr"));
 
 	temp = document.createElement("p");
 	temp.appendChild(document.createTextNode("Description: Lorem ipsum dolor sit amet"));
@@ -213,9 +218,9 @@ test("deferred attribute binding", function() {
 
 	var expected = document.createElement("div");
 	expected.setAttribute("id", id);
+	expected.appendChild(document.createTextNode("Lorem ipsum"));
 	expected.setAttribute("class", "hello");
 	expected.setAttribute("data-foo", "foo");
-	expected.appendChild(document.createTextNode("Lorem ipsum"));
 
 	var actual = document.createElement("div");
 	actual.setAttribute("id", id);

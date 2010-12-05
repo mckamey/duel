@@ -27,6 +27,13 @@
 	};
 
 	/**
+	 * @private
+	 * @const
+	 * @type {string}
+	 */
+	var WRITE_EXTERN = "write";
+
+	/**
 	 * Encodes invalid literal characters in strings
 	 * 
 	 * @private
@@ -111,7 +118,8 @@
 		var tag = node[0] || "",
 			length = node.length,
 			i = 1,
-			child;
+			child,
+			isVoid = VOID_TAGS[tag];
 
 		if (tag.charAt(0) === '!') {
 			renderComment(buffer, node);
@@ -135,6 +143,9 @@
 				}
 				i++;
 			}
+			if (isVoid) {
+				buffer.append(' /');
+			}
 			buffer.append('>');
 		}
 
@@ -149,7 +160,7 @@
 			}
 		}
 
-		if (tag && !VOID_TAGS[tag]) {
+		if (tag && !isVoid) {
 			// emit close tag
 			buffer.append('</', tag, '>');
 		}
@@ -183,5 +194,23 @@
 	 */
 	Result.prototype.toString = function() {
 		return render(this.value);
+	};
+
+	/**
+	 * @public
+	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} view The view to replace
+	 * @param {*} data The data item being bound
+	 * @param {number} index The index of the current data item
+	 * @param {number} count The total number of data items
+	 * @param {string|null} key The current property name
+	 */
+	duel[WRITE_EXTERN] = duel.write = function(view, data, index, count, key) {
+		// bind node
+		view = duel(view).getView();
+		// Closure Compiler type cast
+		view = bind(/** @type {Array} */(view), data, index, count, key);
+		/*jslint evil:true*/
+		document.write(render(view));
+		/*jslint evil:false*/
 	};
 

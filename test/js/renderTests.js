@@ -11,11 +11,13 @@ test("nested elements with attributes", function() {
 			],
 			["p",
 			 	"URL: ",
+			 	["br"],
 			 	["a", { "href" : "http://example.com/foo.js", "target" : "_blank", "title" : "Lorem ipsum dolor sit amet" },
 			 		"http://example.com/foo.js"
 		 		],
 			 	" (5.87KB)"
 		 	],
+		 	["hr"],
 			["p",
 			 	"Description: Lorem ipsum dolor sit amet"
 			]
@@ -25,7 +27,8 @@ test("nested elements with attributes", function() {
 
 	var expected =
 		'<div class="download"><h2>Filename: Foo.js</h2>'+
-		'<p>URL: <a href="http://example.com/foo.js" target="_blank" title="Lorem ipsum dolor sit amet">http://example.com/foo.js</a> (5.87KB)</p>'+
+		'<p>URL: <br /><a href="http://example.com/foo.js" target="_blank" title="Lorem ipsum dolor sit amet">http://example.com/foo.js</a> (5.87KB)</p>'+
+		'<hr />'+
 		'<p>Description: Lorem ipsum dolor sit amet</p>'+
 		'</div>';
 
@@ -41,11 +44,13 @@ test("native toString", function() {
 			],
 			["p",
 			 	"URL: ",
+			 	["br"],
 			 	["a", { "href" : "http://example.com/foo.js", "target" : "_blank", "title" : "Lorem ipsum dolor sit amet" },
 			 		"http://example.com/foo.js"
 		 		],
 			 	" (5.87KB)"
 		 	],
+		 	["hr"],
 			["p",
 			 	"Description: Lorem ipsum dolor sit amet"
 			]
@@ -55,7 +60,8 @@ test("native toString", function() {
 
 	var expected =
 		'<div class="download"><h2>Filename: Foo.js</h2>'+
-		'<p>URL: <a href="http://example.com/foo.js" target="_blank" title="Lorem ipsum dolor sit amet">http://example.com/foo.js</a> (5.87KB)</p>'+
+		'<p>URL: <br /><a href="http://example.com/foo.js" target="_blank" title="Lorem ipsum dolor sit amet">http://example.com/foo.js</a> (5.87KB)</p>'+
+		'<hr />'+
 		'<p>Description: Lorem ipsum dolor sit amet</p>'+
 		'</div>';
 
@@ -71,11 +77,13 @@ test("innerHTML toString", function() {
 			],
 			["p",
 			 	"URL: ",
+			 	["br"],
 			 	["a", { "href" : "http://example.com/foo.js", "target" : "_blank", "title" : "Lorem ipsum dolor sit amet" },
 			 		"http://example.com/foo.js"
 		 		],
 			 	" (5.87KB)"
 		 	],
+		 	["hr"],
 			["p",
 			 	"Description: Lorem ipsum dolor sit amet"
 			]
@@ -87,7 +95,8 @@ test("innerHTML toString", function() {
 	var expected = document.createElement("div");
 	expected.innerHTML =
 		'<div class="download"><h2>Filename: Foo.js</h2>'+
-		'<p>URL: <a href="http://example.com/foo.js" target="_blank" title="Lorem ipsum dolor sit amet">http://example.com/foo.js</a> (5.87KB)</p>'+
+		'<p>URL: <br /><a href="http://example.com/foo.js" target="_blank" title="Lorem ipsum dolor sit amet">http://example.com/foo.js</a> (5.87KB)</p>'+
+		'<hr />'+
 		'<p>Description: Lorem ipsum dolor sit amet</p>'+
 		'</div>';
 
