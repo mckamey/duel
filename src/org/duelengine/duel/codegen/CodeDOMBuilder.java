@@ -777,9 +777,6 @@ public class CodeDOMBuilder {
 		this.formatter.writeCloseElementBeginTag(this.buffer);
 
 		// emit patch function call which serializes attributes into object
-		if (prettyPrint) {
-			this.buffer.append(this.settings.getNewline());
-		}
 		this.buffer.append("duel.attr(");
 
 		// emit id var or known value
@@ -871,9 +868,6 @@ public class CodeDOMBuilder {
 			}
 		}
 		this.buffer.append(");");
-		if (prettyPrint) {
-			this.buffer.append(this.settings.getNewline());
-		}
 
 		// last parameter will be the current data
 		this.formatter.writeElementEndTag(this.buffer, "script");
@@ -915,9 +909,6 @@ public class CodeDOMBuilder {
 		this.formatter.writeCloseElementBeginTag(this.buffer);
 
 		// emit patch function call which serializes attributes into object
-		if (prettyPrint) {
-			this.buffer.append(this.settings.getNewline());
-		}
 		this.buffer.append("duel.replace(");
 
 		// emit id var or known value
@@ -1005,9 +996,6 @@ public class CodeDOMBuilder {
 			}
 		}
 		this.buffer.append(");");
-		if (prettyPrint) {
-			this.buffer.append(this.settings.getNewline());
-		}
 
 		// last parameter will be the current data
 		this.formatter.writeElementEndTag(this.buffer, "script");

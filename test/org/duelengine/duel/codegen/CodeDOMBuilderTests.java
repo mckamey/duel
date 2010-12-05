@@ -1734,7 +1734,7 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
-					new CodePrimitiveExpression("\">Lorem ipsum.</p><script type=\"text/javascript\">\nduel.attr("))),
+					new CodePrimitiveExpression("\">Lorem ipsum.</p><script type=\"text/javascript\">duel.attr("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_8"),
@@ -1794,7 +1794,7 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
-					new CodePrimitiveExpression(");\n</script></div><script type=\"text/javascript\">\nduel.attr("))),
+					new CodePrimitiveExpression(");</script></div><script type=\"text/javascript\">duel.attr("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_8"),
@@ -1830,7 +1830,7 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
-					new CodePrimitiveExpression(");\n</script>")))
+					new CodePrimitiveExpression(");</script>")))
 			),
 			new CodeField(
 				AccessModifierType.PRIVATE,
@@ -1910,7 +1910,7 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
-					new CodePrimitiveExpression("\">\nduel.replace("))),
+					new CodePrimitiveExpression("\">duel.replace("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_4"),
@@ -1946,7 +1946,7 @@ public class CodeDOMBuilderTests {
 					Void.class,
 					new CodeVariableReferenceExpression(DuelContext.class, "output"),
 					"append",
-					new CodePrimitiveExpression(");\n</script></div>")))
+					new CodePrimitiveExpression(");</script></div>")))
 			),
 			new CodeField(
 				AccessModifierType.PRIVATE,
