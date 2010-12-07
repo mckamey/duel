@@ -461,11 +461,12 @@ public class CodeDOMBuilder {
 			new CodeVariableDeclarationStatement(
 				Map.Entry.class,
 				scope.nextIdent("entry_"),
-				new CodeMethodInvokeExpression(
-					Map.Entry.class,
-					new CodeVariableReferenceExpression(iteratorDecl),
-					"next"));
-		
+				new CodeCastExpression(Map.Entry.class,
+					new CodeMethodInvokeExpression(
+						Object.class,
+						new CodeVariableReferenceExpression(iteratorDecl),
+						"next")));
+
 		// the for loop block
 		scope.add(
 			new CodeIterationStatement(
@@ -491,10 +492,11 @@ public class CodeDOMBuilder {
 							"getValue"),
 						new CodeVariableReferenceExpression(indexDecl),
 						new CodeVariableReferenceExpression(countDecl),
-						new CodeMethodInvokeExpression(
-							String.class,
-							new CodeVariableReferenceExpression(entryDecl),
-							"getKey")))));
+						new CodeCastExpression(String.class,
+							new CodeMethodInvokeExpression(
+								Object.class,// will be cast to String
+								new CodeVariableReferenceExpression(entryDecl),
+								"getKey"))))));
 	}
 
 	private void buildIterationArray(CodeStatementCollection scope, CodeExpression arrayExpr, CodeMethod innerBind) {

@@ -1,7 +1,7 @@
 package org.duelengine.duel.codedom;
 
 /**
- * Represents a method call
+ * Represents a variable declaration
  */
 public class CodeVariableDeclarationStatement extends CodeStatement {
 
@@ -57,6 +57,10 @@ public class CodeVariableDeclarationStatement extends CodeStatement {
 			return false;
 		}
 
+		if (this.initExpression == null ? that.initExpression != null : !this.initExpression.equals(that.initExpression)) {
+			return false;
+		}
+
 		return this.type.equals(that.type);
 	}
 
@@ -67,6 +71,9 @@ public class CodeVariableDeclarationStatement extends CodeStatement {
 		int hash = this.type.hashCode();
 		if (this.name != null) {
 			hash = hash * HASH_PRIME + this.name.hashCode();
+		}
+		if (this.initExpression != null) {
+			hash = hash * HASH_PRIME + this.initExpression.hashCode();
 		}
 		return hash;
 	}

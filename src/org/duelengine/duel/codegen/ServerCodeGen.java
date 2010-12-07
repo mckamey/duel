@@ -427,6 +427,9 @@ public class ServerCodeGen implements CodeGenerator {
 			} else if (expression instanceof CodeObjectCreateExpression) {
 				this.writeObjectCreate(output, (CodeObjectCreateExpression)expression);
 
+			} else if (expression instanceof CodeCastExpression) {
+				this.writeCast(output, (CodeCastExpression)expression);
+
 			} else if (expression != null) {
 				// TODO: build client-side deferred execution here
 
@@ -922,6 +925,16 @@ public class ServerCodeGen implements CodeGenerator {
 		output.append(')');
 	}
 
+	private void writeCast(Appendable output, CodeCastExpression expression)
+		throws IOException {
+
+		output.append("((");
+		this.writeTypeName(output, expression.getResultType());
+		output.append(")(");
+		this.writeExpression(output, expression.getExpression());
+		output.append("))");
+	}
+
 	private void writeTypeName(Appendable output, Class<?> type)
 		throws IOException {
 
@@ -1014,6 +1027,8 @@ public class ServerCodeGen implements CodeGenerator {
 		output.append("import java.io.*;");
 		this.writeln(output);
 		output.append("import java.util.*;");
+		this.writeln(output);
+		output.append("import java.util.Map.Entry;");
 		this.writeln(output);
 		output.append("import ").append(DUEL_PACKAGE).append(".*;");
 		this.writeln(output, 2);
