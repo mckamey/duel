@@ -375,7 +375,9 @@ public class ScriptTranslator implements ErrorReporter {
 			if ("Infinity".equals(ident)) {
 				return new CodePrimitiveExpression(Double.POSITIVE_INFINITY);
 			}
-			return new ScriptVariableReferenceExpression(ident);
+
+			throw new ScriptTranslationException("Unsupported global var reference: "+ident, node);
+//			return new ScriptVariableReferenceExpression(ident);
 		}
 
 		if ("data".equals(ident)) {

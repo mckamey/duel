@@ -201,7 +201,7 @@ public class CodeDOMBuilderTests {
 		assertEquals(expected, actual);
 	}
 
-	@Test
+//	@Test
 	public void statementNoneTest() throws IOException {
 
 		VIEWCommandNode input = new VIEWCommandNode(
