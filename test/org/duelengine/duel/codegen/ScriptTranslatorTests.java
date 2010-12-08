@@ -108,10 +108,7 @@ public class ScriptTranslatorTests {
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.GREATER_THAN_OR_EQUAL,
 						new CodeVariableReferenceExpression(int.class, "count"),
-						new CodePrimitiveExpression(1))));
-
-		// need to signal that a parens was absorbed
-		((CodeMethodReturnStatement)expected.getStatements().getLastStatement()).getExpression().setHasParens(true);
+						new CodePrimitiveExpression(1)).withParens()));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
@@ -264,10 +261,7 @@ public class ScriptTranslatorTests {
 				new CodeMethodReturnStatement(
 					new CodeUnaryOperatorExpression(
 						CodeUnaryOperatorType.NEGATION,
-						new CodePrimitiveExpression(42))));
-
-		// need to signal that a parens was absorbed
-		((CodeUnaryOperatorExpression)((CodeMethodReturnStatement)expected.getStatements().getLastStatement()).getExpression()).getExpression().setHasParens(true);
+						new CodePrimitiveExpression(42).withParens())));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);

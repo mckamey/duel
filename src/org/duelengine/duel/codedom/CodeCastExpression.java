@@ -9,6 +9,7 @@ public class CodeCastExpression extends CodeExpression {
 	private CodeExpression expression;
 
 	public CodeCastExpression() {
+		this.withParens();
 	}
 
 	public CodeCastExpression(Class<?> type, CodeExpression expression) {
@@ -16,6 +17,7 @@ public class CodeCastExpression extends CodeExpression {
 			this.type = type;
 		}
 		this.expression = expression;
+		this.withParens();
 	}
 
 	@Override

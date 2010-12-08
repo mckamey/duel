@@ -27,24 +27,19 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride().withThrows(IOException.class));
 
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -82,9 +77,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -92,14 +84,13 @@ public class ServerCodeGenTests {
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(int.class, "count")))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride().withThrows(IOException.class)
+			);
 
 		String expected =
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class foo extends DuelView {\n\n"+
 			"\tpublic foo() {\n"+
@@ -137,9 +128,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -150,7 +138,7 @@ public class ServerCodeGenTests {
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.IDENTITY_EQUALITY,
 						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodePrimitiveExpression(0.0)),
+						new CodePrimitiveExpression(0)).withParens(),
 					new CodeStatement[] {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
@@ -164,7 +152,7 @@ public class ServerCodeGenTests {
 							new CodeBinaryOperatorExpression(
 								CodeBinaryOperatorType.IDENTITY_EQUALITY,
 								new CodeVariableReferenceExpression(Object.class, "data"),
-								new CodePrimitiveExpression(1.0)),
+								new CodePrimitiveExpression(1)).withParens(),
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
@@ -188,17 +176,14 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
-		((CodeConditionStatement)((CodeMethod)input.getMembers().get(2)).getStatements().get(1)).getCondition().setHasParens(true);
-		((CodeConditionStatement)((CodeConditionStatement)((CodeMethod)input.getMembers().get(2)).getStatements().get(1)).getFalseStatements().getLastStatement()).getCondition().setHasParens(true);
+				).withOverride().withThrows(IOException.class)
+			);
 
 		String expected =
 			"package example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class foo extends DuelView {\n\n"+
 			"\tpublic foo() {\n"+
@@ -209,9 +194,9 @@ public class ServerCodeGenTests {
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
-			"\t\tif (this.equal(data, 0.0)) {\n"+
+			"\t\tif (this.equal(data, 0)) {\n"+
 			"\t\t\toutput.append(\"zero\");\n"+
-			"\t\t} else if (this.equal(data, 1.0)) {\n"+
+			"\t\t} else if (this.equal(data, 1)) {\n"+
 			"\t\t\toutput.append(\"one\");\n"+
 			"\t\t} else {\n"+
 			"\t\t\toutput.append(\"many\");\n"+
@@ -243,9 +228,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
-				},
-				new Class<?>[] {
-					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -289,15 +271,14 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride().withThrows(IOException.class)
+			);
 
 		String expected =
 			"package example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class foo2 extends DuelView {\n\n"+
 			"\tpublic foo2() {\n"+
@@ -343,9 +324,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -358,7 +336,7 @@ public class ServerCodeGenTests {
 					new CodeMethodInvokeExpression(
 						List.class,
 						new CodeTypeReferenceExpression(DuelData.class),
-						"coerceJSArray",
+						"coerceCollection",
 						new CodePropertyReferenceExpression(
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("items")))),
@@ -409,7 +387,7 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
-			),
+			).withOverride().withThrows(IOException.class),
 			new CodeMethod(
 				AccessModifierType.PRIVATE,
 				Void.class,
@@ -420,9 +398,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
-				},
-				new Class<?>[] {
-					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -436,16 +411,13 @@ public class ServerCodeGenTests {
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						new CodeVariableReferenceExpression(int.class, "index")))
-			));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+						new CodeVariableReferenceExpression(int.class, "index").withParens()))
+			).withThrows(IOException.class));
 
 		String expected =
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class example extends DuelView {\n\n"+
 			"\tpublic example() {\n"+
@@ -456,7 +428,7 @@ public class ServerCodeGenTests {
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
-			"\t\tCollection items_1 = DuelData.coerceJSArray(this.getProperty(data, \"items\"));\n"+
+			"\t\tCollection items_1 = DuelData.coerceCollection(this.getProperty(data, \"items\"));\n"+
 			"\t\tint index_2 = 0,\n" +
 			"\t\t\tcount_3 = items_1.size();\n"+
 			"\t\tfor (Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
@@ -466,7 +438,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\tprivate void render_2(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\toutput.append(\"item \");\n"+
-			"\t\tthis.write(output, (index));\n"+
+			"\t\tthis.write(output, index);\n"+
 			"\t}\n}\n";
 
 		StringBuilder output = new StringBuilder();
@@ -493,9 +465,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -508,7 +477,7 @@ public class ServerCodeGenTests {
 					new CodeMethodInvokeExpression(
 						Map.class,
 						new CodeTypeReferenceExpression(DuelData.class),
-						"coerceJSObject",
+						"coerceMap",
 						new CodePropertyReferenceExpression(
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression("foo")))),
@@ -569,7 +538,7 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
-			),
+			).withOverride().withThrows(IOException.class),
 			new CodeMethod(
 				AccessModifierType.PRIVATE,
 				Void.class,
@@ -580,9 +549,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
-				},
-				new Class<?>[] {
-					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -596,16 +562,13 @@ public class ServerCodeGenTests {
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						new CodeVariableReferenceExpression(int.class, "index")))
-			));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+						new CodeVariableReferenceExpression(int.class, "index").withParens()))
+			).withThrows(IOException.class));
 
 		String expected =
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class example extends DuelView {\n\n"+
 			"\tpublic example() {\n"+
@@ -616,7 +579,7 @@ public class ServerCodeGenTests {
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\toutput.append(\"<div>\");\n"+
-			"\t\tCollection items_1 = DuelData.coerceJSObject(this.getProperty(data, \"foo\"));\n"+
+			"\t\tCollection items_1 = DuelData.coerceMap(this.getProperty(data, \"foo\"));\n"+
 			"\t\tint index_2 = 0,\n"+
 			"\t\t\tcount_3 = items_1.size();\n"+
 			"\t\tfor (Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
@@ -627,7 +590,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\tprivate void render_2(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\toutput.append(\"item \");\n"+
-			"\t\tthis.write(output, (index));\n"+
+			"\t\tthis.write(output, index);\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -654,9 +617,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
-				},
-				new Class<?>[] {
-					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -704,7 +664,7 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
-			),
+			).withOverride().withThrows(IOException.class),
 			new CodeMethod(
 				AccessModifierType.PRIVATE,
 				Void.class,
@@ -715,9 +675,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
-				},
-				new Class<?>[] {
-					IOException.class
 				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
@@ -731,16 +688,13 @@ public class ServerCodeGenTests {
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						new CodeVariableReferenceExpression(int.class, "index")))
-			));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(3)).getStatements().get(1)).getExpression()).getArguments().get(1).setHasParens(true);
+						new CodeVariableReferenceExpression(int.class, "index").withParens()))
+			).withThrows(IOException.class));
 
 		String expected =
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class example extends DuelView {\n\n"+
 			"\tpublic example() {\n"+
@@ -759,7 +713,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\tprivate void render_2(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\toutput.append(\"item \");\n"+
-			"\t\tthis.write(output, (index));\n"+
+			"\t\tthis.write(output, index);\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -787,9 +741,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -800,15 +751,13 @@ public class ServerCodeGenTests {
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression(1.0),
 							new CodePrimitiveExpression(2.0))))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride().withThrows(IOException.class));
 
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -846,9 +795,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -858,15 +804,13 @@ public class ServerCodeGenTests {
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.POST_INCREMENT,
 							new CodeVariableReferenceExpression(Object.class, "data"))))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride().withThrows(IOException.class));
 
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -904,9 +848,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -916,15 +857,13 @@ public class ServerCodeGenTests {
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.PRE_DECREMENT,
 							new CodeVariableReferenceExpression(Object.class, "data"))))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride().withThrows(IOException.class));
 
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -962,9 +901,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -975,15 +911,13 @@ public class ServerCodeGenTests {
 							CodeBinaryOperatorType.MODULUS_ASSIGN,
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression(5.0))))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride().withThrows(IOException.class));
 
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -1021,23 +955,18 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.ASSIGN,
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodeVariableReferenceExpression(String.class, "key")))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride().withThrows(IOException.class));
 
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -1075,23 +1004,18 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.ASSIGN,
 						new CodeVariableReferenceExpression(int.class, "count"),
 						new CodeVariableReferenceExpression(Object.class, "data")))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride().withThrows(IOException.class));
 
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -1129,9 +1053,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -1146,7 +1067,7 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(int.class, "index"),
 						new CodeVariableReferenceExpression(int.class, "count"),
 						new CodeVariableReferenceExpression(String.class, "key")))
-				),
+				).withOverride().withThrows(IOException.class),
 			new CodeField(
 				AccessModifierType.PRIVATE,
 				org.duelengine.duel.DuelView.class,
@@ -1164,15 +1085,13 @@ public class ServerCodeGenTests {
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
 						new CodeObjectCreateExpression("foo.bar.Yada")))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride());
 
 		String expected =
 			"package foo.bar;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Blah extends DuelView {\n\n"+
 			"\tpublic Blah() {\n"+
@@ -1185,6 +1104,7 @@ public class ServerCodeGenTests {
 			"\t\tthis.renderView(this.view_2, output, data, index, count, key);\n"+
 			"\t}\n\n"+
 			"\tprivate DuelView view_2;\n\n"+
+			"\t@Override\n"+
 			"\tprotected void init() {\n"+
 			"\t\tthis.view_2 = new foo.bar.Yada();\n"+
 			"\t}\n"+
@@ -1214,9 +1134,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -1227,11 +1144,11 @@ public class ServerCodeGenTests {
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(Object.class, "data").withParens(),
 						new CodeVariableReferenceExpression(int.class, "index"),
 						new CodeVariableReferenceExpression(int.class, "count"),
 						new CodeVariableReferenceExpression(String.class, "key")))
-				),
+				).withOverride().withThrows(IOException.class),
 			new CodeField(
 				AccessModifierType.PRIVATE,
 				org.duelengine.duel.DuelView.class,
@@ -1243,7 +1160,7 @@ public class ServerCodeGenTests {
 					String.class,
 					"getName",
 					null,
-					new CodeMethodReturnStatement(new CodePrimitiveExpression("header"))),
+					new CodeMethodReturnStatement(new CodePrimitiveExpression("header"))).withOverride(),
 				new CodeMethod(
 					AccessModifierType.PROTECTED,
 					Void.class,
@@ -1255,16 +1172,13 @@ public class ServerCodeGenTests {
 						new CodeParameterDeclarationExpression(int.class, "count"),
 						new CodeParameterDeclarationExpression(String.class, "key")
 					},
-					new Class<?>[] {
-						IOException.class
-					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
 							Void.class,
 							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							"append",
 							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
-					)),
+					).withOverride().withThrows(IOException.class)),
 			new CodeMethod(
 				AccessModifierType.PROTECTED,
 				Void.class,
@@ -1281,18 +1195,13 @@ public class ServerCodeGenTests {
 							"foo.bar.Yada",
 							new CodeThisReferenceExpression(),
 							new CodeObjectCreateExpression("part_3"))))
-				));
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
-		((CodeMethod)input.getMembers().get(5)).setOverride(true);
-		((CodeMethodInvokeExpression)((CodeExpressionStatement)((CodeMethod)input.getMembers().get(2)).getStatements().get(0)).getExpression()).getArguments().get(2).setHasParens(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(4)).getMembers().get(0)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(4)).getMembers().get(1)).setOverride(true);
+				).withOverride());
 
 		String expected =
 			"package foo.bar;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Blah extends DuelView {\n\n"+
 			"\tpublic Blah() {\n"+
@@ -1302,7 +1211,7 @@ public class ServerCodeGenTests {
 			"\t}\n\n"+
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.renderView(this.view_2, output, (data), index, count, key);\n"+
+			"\t\tthis.renderView(this.view_2, output, data, index, count, key);\n"+
 			"\t}\n\n"+
 			"\tprivate DuelView view_2;\n\n"+
 			"\tprivate class part_3 extends DuelPart {\n\n"+
@@ -1345,9 +1254,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -1388,7 +1294,7 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("</div>")))
-			),
+			).withOverride().withThrows(IOException.class),
 			CodeDOMUtility.createPartType(
 				"part_2",
 				new CodeMethod(
@@ -1396,7 +1302,7 @@ public class ServerCodeGenTests {
 					String.class,
 					"getName",
 					null,
-					new CodeMethodReturnStatement(new CodePrimitiveExpression("header"))),
+					new CodeMethodReturnStatement(new CodePrimitiveExpression("header"))).withOverride(),
 				new CodeMethod(
 					AccessModifierType.PROTECTED,
 					Void.class,
@@ -1408,16 +1314,13 @@ public class ServerCodeGenTests {
 						new CodeParameterDeclarationExpression(int.class, "count"),
 						new CodeParameterDeclarationExpression(String.class, "key")
 					},
-					new Class<?>[] {
-						IOException.class
-					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
 							Void.class,
 							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							"append",
 							new CodePrimitiveExpression("<h2>Warning</h2>")))
-					)),
+					).withOverride().withThrows(IOException.class)),
 			new CodeMethod(
 				AccessModifierType.PROTECTED,
 				Void.class,
@@ -1434,7 +1337,7 @@ public class ServerCodeGenTests {
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"addPart",
-						new CodeObjectCreateExpression("part_3")))),
+						new CodeObjectCreateExpression("part_3")))).withOverride(),
 			CodeDOMUtility.createPartType(
 				"part_3",
 				new CodeMethod(
@@ -1442,7 +1345,7 @@ public class ServerCodeGenTests {
 					String.class,
 					"getName",
 					null,
-					new CodeMethodReturnStatement(new CodePrimitiveExpression("body"))),
+					new CodeMethodReturnStatement(new CodePrimitiveExpression("body"))).withOverride(),
 				new CodeMethod(
 					AccessModifierType.PROTECTED,
 					Void.class,
@@ -1454,29 +1357,19 @@ public class ServerCodeGenTests {
 						new CodeParameterDeclarationExpression(int.class, "count"),
 						new CodeParameterDeclarationExpression(String.class, "key")
 					},
-					new Class<?>[] {
-						IOException.class
-					},
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
 							Void.class,
 							new CodeVariableReferenceExpression(DuelContext.class, "output"),
 							"append",
 							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
-					)));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
-		((CodeMethod)input.getMembers().get(4)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(3)).getMembers().get(0)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(3)).getMembers().get(1)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(5)).getMembers().get(0)).setOverride(true);
-		((CodeMethod)((CodeTypeDeclaration)input.getMembers().get(5)).getMembers().get(1)).setOverride(true);
+					).withOverride().withThrows(IOException.class)));
 
 		String expected =
 			"package foo.bar;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Blah extends DuelView {\n\n"+
 			"\tpublic Blah() {\n"+
@@ -1543,24 +1436,19 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("Hello world.<!--Comment Here-->Lorem ipsum.")))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride().withThrows(IOException.class));
 
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -1598,9 +1486,6 @@ public class ServerCodeGenTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new Class<?>[] {
-					IOException.class
-				},
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -1614,15 +1499,13 @@ public class ServerCodeGenTests {
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						"append",
 						new CodePrimitiveExpression("Lorem ipsum.")))
-				));
-
-		// mark override and parens
-		((CodeMethod)input.getMembers().get(2)).setOverride(true);
+				).withOverride().withThrows(IOException.class));
 
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
 			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+

@@ -1,5 +1,6 @@
 package org.duelengine.duel;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -10,13 +11,13 @@ class ArrayIterable extends AbstractList<Object> {
 
 	private class ArrayIterator implements Iterator<Object> {
 
-		private final Object[] array;
+		private final Object array;
 		private final int last;
 		private int index = -1;
 
-		public ArrayIterator(Object[] array) {
+		public ArrayIterator(Object array, int length) {
 			this.array = array;
-			this.last = array.length-1;
+			this.last = length-1;
 		}
 
 		@Override
@@ -26,12 +27,12 @@ class ArrayIterable extends AbstractList<Object> {
 
 		@Override
 		public Object next() {
-			if (this.index >= this.last) {
+			if (this.index > this.last) {
 				// JavaScript style out of bounds
 				return null;
 			}
 
-			return this.array[++this.index];
+			return Array.get(this.array, ++this.index);
 		}
 
 		@Override
@@ -40,10 +41,12 @@ class ArrayIterable extends AbstractList<Object> {
 		}
 	}
 	
-	private final Object[] array;
+	private final Object array;
+	private final int length;
 	
-	public ArrayIterable(Object[] array) {
+	public ArrayIterable(Object array) {
 		this.array = array;
+		this.length = Array.getLength(this.array);
 	}
 
 	@Override
@@ -52,31 +55,32 @@ class ArrayIterable extends AbstractList<Object> {
 			throw new NullPointerException("array");
 		}
 
-		return new ArrayIterator(this.array);
+		return new ArrayIterator(this.array, this.length);
 	}
 
 	@Override
 	public int size() {
-		return this.array.length;
+		return this.length;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return this.array.length > 0;
+		return this.length > 0;
 	}
 
 	@Override
 	public Object[] toArray() {
-		return this.array;
+		// this will only work for Object arrays
+		return (Object[])this.array;
 	}
 
 	@Override
 	public Object get(int index) {
-		if (index < 0 || index >= this.array.length) {
+		if (index < 0 || index >= this.length) {
 			// JavaScript style out of bounds
 			return null;
 		}
 
-		return this.array[index];
+		return Array.get(this.array, index);
 	}
 }

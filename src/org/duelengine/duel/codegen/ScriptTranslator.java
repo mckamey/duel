@@ -137,7 +137,7 @@ public class ScriptTranslator implements ErrorReporter {
 			case Token.LP:
 				CodeExpression expr = this.visitExpression(((ParenthesizedExpression)node).getExpression());
 				if (expr != null) {
-					expr.setHasParens(true);
+					expr.withParens();
 				}
 				return expr;
 			case Token.STRING:

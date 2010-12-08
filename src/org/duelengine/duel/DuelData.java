@@ -1,5 +1,6 @@
 package org.duelengine.duel;
 
+import java.lang.reflect.Array;
 import java.math.*;
 import java.util.*;
 
@@ -44,6 +45,15 @@ public final class DuelData {
 		return Arrays.asList(items);
 	}
 
+	public static boolean isPrimitive(Class<?> dataType) {
+		return (dataType.isPrimitive() ||
+				String.class.equals(dataType) ||
+				Number.class.isAssignableFrom(dataType) ||
+				Date.class.equals(dataType) ||
+				Boolean.class.equals(dataType) ||
+				Character.class.isAssignableFrom(dataType));
+	}
+
 	public static boolean isBoolean(Class<?> exprType) {
 		return (Boolean.class.equals(exprType) ||
 				boolean.class.equals(exprType));
@@ -67,7 +77,7 @@ public final class DuelData {
 
 	public static boolean isArray(Class<?> exprType) {
 		return (exprType.isArray() ||
-				Collection.class.isAssignableFrom(exprType));
+				Iterable.class.isAssignableFrom(exprType));
 	}
 
 	/**
@@ -136,22 +146,7 @@ public final class DuelData {
 			return Double.toString(number);
 		}
 
-		if (dataType.isArray()) {
-			// flatten into simple list
-			StringBuilder buffer = new StringBuilder();
-			boolean needsDelim = false;
-			for (Object item : (Object[])data) {
-				if (needsDelim) {
-					buffer.append(", ");
-				} else {
-					needsDelim = true;
-				}
-				buffer.append(coerceString(item));
-			}
-			return buffer.toString();
-		}
-
-		if (List.class.isAssignableFrom(dataType)) {
+		if (Iterable.class.isAssignableFrom(dataType)) {
 			// flatten into simple list
 			StringBuilder buffer = new StringBuilder();
 			boolean needsDelim = false;
@@ -162,6 +157,21 @@ public final class DuelData {
 					needsDelim = true;
 				}
 				buffer.append(coerceString(item));
+			}
+			return buffer.toString();
+		}
+
+		if (dataType.isArray()) {
+			// flatten into simple list
+			StringBuilder buffer = new StringBuilder();
+			boolean needsDelim = false;
+			for (int i=0, length=Array.getLength(data); i<length; i++) {
+				if (needsDelim) {
+					buffer.append(", ");
+				} else {
+					needsDelim = true;
+				}
+				buffer.append(coerceString(Array.get(data, i)));
 			}
 			return buffer.toString();
 		}
@@ -198,21 +208,23 @@ public final class DuelData {
 	 * @param data
 	 * @return
 	 */
-	public static Collection<?> coerceJSArray(Object data) {
+	public static Collection<?> coerceCollection(Object data) {
 		if (data == null) {
 			return Collections.EMPTY_LIST;
 		}
 
-		if (data instanceof Collection<?>) {
+		Class<?> dataType = data.getClass();
+
+		if (Collection.class.isAssignableFrom(dataType)) {
 			// already correct type
 			return (Collection<?>)data;
 		}
 
-		if (data instanceof Object[]) {
-			return new ArrayIterable((Object[])data);
+		if (dataType.isArray()) {
+			return new ArrayIterable(data);
 		}
 
-		if (data instanceof Iterable<?>) {
+		if (Iterable.class.isAssignableFrom(dataType)) {
 			// unfortunate but we need the size
 			List<Object> list = new LinkedList<Object>();
 			for (Object item : (Iterable<?>)data) {
@@ -229,13 +241,31 @@ public final class DuelData {
 	 * @param data
 	 * @return
 	 */
-	public static Map<?,?> coerceJSObject(Object data) {
+	public static Map<?,?> coerceMap(Object data) {
 		if (data == null) {
-			return null;
+			return Collections.EMPTY_MAP;
 		}
 
-		if (data instanceof Map<?,?>) {
+		Class<?> dataType = data.getClass();
+
+		if (Map.class.isAssignableFrom(dataType)) {
 			return (Map<?,?>)data;
+		}
+
+		if (isPrimitive(dataType)) {
+			// doesn't make sense to coerce to Map
+			// this will give results similar to client-side
+			return asMap("", data);
+		}
+
+		if (isArray(dataType)) {
+			int i = 0;
+			Collection<?> array = coerceCollection(data);
+			LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(array.size());
+			for (Object item : array) {
+				map.put(Integer.toString(i++), item);
+			}
+			return map;
 		}
 
 		return new ProxyMap(data);
@@ -252,11 +282,8 @@ public final class DuelData {
 		}
 
 		Class<?> dataType = data.getClass();
-		if (isString(dataType) ||
-			isNumber(dataType) ||
-			isBoolean(dataType) ||
+		if (isPrimitive(dataType) ||
 			isArray(dataType) ||
-			Date.class.equals(dataType) ||
 			Map.class.isAssignableFrom(dataType)) {
 
 			return data;

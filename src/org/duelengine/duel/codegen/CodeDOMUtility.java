@@ -204,29 +204,29 @@ final class CodeDOMUtility {
 			expression);
 	}
 
-	public static CodeExpression ensureJSArray(CodeExpression expression) {
+	public static CodeExpression ensureCollection(CodeExpression expression) {
 		if (List.class.equals(expression.getResultType())) {
 			return expression;
 		}
 
-		// DuelData.coerceArray(expression);
+		// DuelData.coerceCollection(expression);
 		return new CodeMethodInvokeExpression(
 			Collection.class,
 			new CodeTypeReferenceExpression(DuelData.class),
-			"coerceJSArray",
+			"coerceCollection",
 			expression);
 	}
 
-	public static CodeExpression ensureJSObject(CodeExpression expression) {
+	public static CodeExpression ensureMap(CodeExpression expression) {
 		if (Map.class.equals(expression.getResultType())) {
 			return expression;
 		}
 
-		// DuelData.coerceObject(expression);
+		// DuelData.coerceMap(expression);
 		return new CodeMethodInvokeExpression(
 			Map.class,
 			new CodeTypeReferenceExpression(DuelData.class),
-			"coerceJSObject",
+			"coerceMap",
 			expression);
 	}
 
@@ -287,12 +287,11 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeExpression asAssignment(CodeBinaryOperatorType op, CodeExpression assign, CodeExpression left, CodeExpression right) {
-		CodeBinaryOperatorExpression expr = new CodeBinaryOperatorExpression(op, left, right);
-		expr.setHasParens(true);
-
-		expr = new CodeBinaryOperatorExpression(CodeBinaryOperatorType.ASSIGN, assign, expr);
-		expr.setHasParens(true);
-		return expr;
+		return new CodeBinaryOperatorExpression(
+				CodeBinaryOperatorType.ASSIGN,
+				assign,
+				new CodeBinaryOperatorExpression(op, left, right).withParens()
+			).withParens();
 	}
 
 	public static CodeExpression ensureType(Class<?> varType, CodeExpression expr) {

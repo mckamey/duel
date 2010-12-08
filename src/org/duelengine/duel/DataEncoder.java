@@ -93,15 +93,15 @@ public class DataEncoder {
 			this.writeBoolean(output, DuelData.coerceBoolean(data));
 
 		} else if (DuelData.isArray(dataType)) {
-			this.writeArray(output, DuelData.coerceJSArray(data), depth);
+			this.writeArray(output, DuelData.coerceCollection(data), depth);
 
 		} else if (Date.class.equals(dataType)) {
 			this.writeDate(output, (Date)data);
 
-		} else {
 			// need to also serialize RegExp literals
-			
-			this.writeObject(output, DuelData.coerceJSObject(data), depth);
+
+		} else {
+			this.writeObject(output, DuelData.coerceMap(data), depth);
 		}
 	}
 
@@ -332,7 +332,7 @@ public class DataEncoder {
 		}
 	}
 
-	private static boolean isValidIdentifier(String ident, boolean nested) {
+	static boolean isValidIdentifier(String ident, boolean nested) {
 		if (ident == null || ident.length() == 0) {
 			return false;
 		}

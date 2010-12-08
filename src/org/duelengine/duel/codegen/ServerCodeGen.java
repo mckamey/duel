@@ -239,7 +239,7 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 		output.append(')');
 		needsDelim = false;
-		for (Class<?> exception : method.getExceptions()) {
+		for (Class<?> exception : method.getThrows()) {
 			if (needsDelim) {
 				output.append(", ");
 			} else {
@@ -370,75 +370,89 @@ public class ServerCodeGen implements CodeGenerator {
 			return;
 		}
 
-		boolean addParens;
+		boolean needsParens;
 		switch (parens) {
 			case FORCE:
-				addParens = true;
+				needsParens = true;
 				break;
 			case SUPPRESS:
-				addParens = false;
+				needsParens = false;
 				break;
 			default:
-				addParens = expression.getHasParens();
+				needsParens = expression.hasParens();
 				break;
 		}
 
-		if (addParens) {
-			output.append('(');
-		}
+		if (expression instanceof CodePrimitiveExpression) {
+			this.writePrimitive(output, ((CodePrimitiveExpression)expression).getValue());
 
-		try {
-			if (expression instanceof CodePrimitiveExpression) {
-				this.writePrimitive(output, ((CodePrimitiveExpression)expression).getValue());
+		} else if (expression instanceof CodeVariableReferenceExpression) {
+			output.append(((CodeVariableReferenceExpression)expression).getIdent());
 
-			} else if (expression instanceof CodeVariableReferenceExpression) {
-				output.append(((CodeVariableReferenceExpression)expression).getIdent());
-
-			} else if (expression instanceof CodeBinaryOperatorExpression) {
-				this.writeBinaryOperator(output, (CodeBinaryOperatorExpression)expression);
-
-			} else if (expression instanceof CodeUnaryOperatorExpression) {
-				this.writeUnaryOperator(output, (CodeUnaryOperatorExpression)expression);
-
-			} else if (expression instanceof CodePropertyReferenceExpression) {
-				this.writePropertyReference(output, (CodePropertyReferenceExpression)expression);
-
-			} else if (expression instanceof CodeTernaryOperatorExpression) {
-				this.writeTernaryOperator(output, (CodeTernaryOperatorExpression)expression);
-
-			} else if (expression instanceof CodeArrayCreateExpression) {
-				this.writeArrayCreate(output, (CodeArrayCreateExpression)expression);
-
-			} else if (expression instanceof CodeMethodInvokeExpression) {
-				this.writeMethodInvoke(output, (CodeMethodInvokeExpression)expression);
-
-			} else if (expression instanceof CodeFieldReferenceExpression) {
-				this.writeFieldReference(output, (CodeFieldReferenceExpression)expression);
-
-			} else if (expression instanceof CodeTypeReferenceExpression) {
-				this.writeTypeName(output, ((CodeTypeReferenceExpression)expression).getResultType());
-
-			} else if (expression instanceof CodeThisReferenceExpression) {
-				output.append("this");
-
-			} else if (expression instanceof CodeParameterDeclarationExpression) {
-				this.writeParameterDeclaration(output, (CodeParameterDeclarationExpression)expression);
-
-			} else if (expression instanceof CodeObjectCreateExpression) {
-				this.writeObjectCreate(output, (CodeObjectCreateExpression)expression);
-
-			} else if (expression instanceof CodeCastExpression) {
-				this.writeCast(output, (CodeCastExpression)expression);
-
-			} else if (expression != null) {
-				// TODO: build client-side deferred execution here
-
-				throw new UnsupportedOperationException("Expression not yet supported: "+expression.getClass());
+		} else if (expression instanceof CodeBinaryOperatorExpression) {
+			if (needsParens) {
+				output.append('(');
 			}
-		} finally {
-			if (addParens) {
+			this.writeBinaryOperator(output, (CodeBinaryOperatorExpression)expression);
+			if (needsParens) {
 				output.append(')');
 			}
+
+		} else if (expression instanceof CodeUnaryOperatorExpression) {
+			if (needsParens) {
+				output.append('(');
+			}
+			this.writeUnaryOperator(output, (CodeUnaryOperatorExpression)expression);
+			if (needsParens) {
+				output.append(')');
+			}
+
+		} else if (expression instanceof CodePropertyReferenceExpression) {
+			this.writePropertyReference(output, (CodePropertyReferenceExpression)expression);
+
+		} else if (expression instanceof CodeTernaryOperatorExpression) {
+			if (needsParens) {
+				output.append('(');
+			}
+			this.writeTernaryOperator(output, (CodeTernaryOperatorExpression)expression);
+			if (needsParens) {
+				output.append(')');
+			}
+
+		} else if (expression instanceof CodeArrayCreateExpression) {
+			this.writeArrayCreate(output, (CodeArrayCreateExpression)expression);
+
+		} else if (expression instanceof CodeMethodInvokeExpression) {
+			this.writeMethodInvoke(output, (CodeMethodInvokeExpression)expression);
+
+		} else if (expression instanceof CodeFieldReferenceExpression) {
+			this.writeFieldReference(output, (CodeFieldReferenceExpression)expression);
+
+		} else if (expression instanceof CodeTypeReferenceExpression) {
+			this.writeTypeName(output, ((CodeTypeReferenceExpression)expression).getResultType());
+
+		} else if (expression instanceof CodeThisReferenceExpression) {
+			output.append("this");
+
+		} else if (expression instanceof CodeParameterDeclarationExpression) {
+			this.writeParameterDeclaration(output, (CodeParameterDeclarationExpression)expression);
+
+		} else if (expression instanceof CodeObjectCreateExpression) {
+			this.writeObjectCreate(output, (CodeObjectCreateExpression)expression);
+
+		} else if (expression instanceof CodeCastExpression) {
+			if (needsParens) {
+				output.append('(');
+			}
+			this.writeCast(output, (CodeCastExpression)expression);
+			if (needsParens) {
+				output.append(')');
+			}
+
+		} else if (expression != null) {
+			// TODO: build client-side deferred execution here
+
+			throw new UnsupportedOperationException("Expression not yet supported: "+expression.getClass());
 		}
 	}
 
@@ -928,11 +942,10 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeCast(Appendable output, CodeCastExpression expression)
 		throws IOException {
 
-		output.append("((");
+		output.append('(');
 		this.writeTypeName(output, expression.getResultType());
-		output.append(")(");
-		this.writeExpression(output, expression.getExpression());
-		output.append("))");
+		output.append(')');
+		this.writeExpression(output, expression.getExpression(), ParensSetting.FORCE);
 	}
 
 	private void writeTypeName(Appendable output, Class<?> type)

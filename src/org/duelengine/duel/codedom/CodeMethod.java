@@ -19,12 +19,6 @@ public class CodeMethod extends CodeMember {
 	public CodeMethod(AccessModifierType access, Class<?> returnType, String methodName,
 		CodeParameterDeclarationExpression[] parameters, CodeStatement... statements) {
 
-		this(access, returnType, methodName, parameters, null, statements);
-	}
-
-	public CodeMethod(AccessModifierType access, Class<?> returnType, String methodName,
-		CodeParameterDeclarationExpression[] parameters, Class<?>[] exceptions, CodeStatement... statements) {
-
 		super(access, methodName);
 
 		if (returnType != null) {
@@ -32,9 +26,6 @@ public class CodeMethod extends CodeMember {
 		}
 		if (parameters != null) {
 			this.parameters.addAll(Arrays.asList(parameters));
-		}
-		if (exceptions != null) {
-			this.exceptions.addAll(Arrays.asList(exceptions));
 		}
 		if (statements != null) {
 			this.statements.addAll(statements);
@@ -57,6 +48,11 @@ public class CodeMethod extends CodeMember {
 		this.override = value;
 	}
 
+	public CodeMethod withOverride() {
+		this.override = true;
+		return this;
+	}
+
 	public List<CodeParameterDeclarationExpression> getParameters() {
 		return this.parameters;
 	}
@@ -69,12 +65,20 @@ public class CodeMethod extends CodeMember {
 		this.parameters.add(parameter);
 	}
 
-	public List<Class<?>> getExceptions() {
+	public List<Class<?>> getThrows() {
 		return this.exceptions;
 	}
 
-	public void addException(Class<?> type) {
+	public void addThrows(Class<?> type) {
 		this.exceptions.add(type);
+	}
+
+	public CodeMethod withThrows(Class<?>... exceptions) {
+		if (exceptions != null) {
+			this.exceptions.addAll(Arrays.asList(exceptions));
+		}
+		
+		return this;
 	}
 
 	public CodeStatementCollection getStatements() {

@@ -23,7 +23,7 @@ public class CodeTypeReferenceExpression extends CodeExpression {
 
 	@Override
 	public boolean equals(Object arg) {
-		if (!(arg instanceof CodeVariableReferenceExpression)) {
+		if (!(arg instanceof CodeTypeReferenceExpression)) {
 			// includes null
 			return false;
 		}

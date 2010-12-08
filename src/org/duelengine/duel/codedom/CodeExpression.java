@@ -2,16 +2,21 @@ package org.duelengine.duel.codedom;
 
 public abstract class CodeExpression extends CodeObject {
 
-	private boolean hasParens;
+	private boolean parens;
 
 	public abstract Class<?> getResultType();
 
-	public void setHasParens(boolean value) {
-		this.hasParens = value;
+	public void setParens(boolean value) {
+		this.parens = value;
 	}
 
-	public boolean getHasParens() {
-		return this.hasParens;
+	public boolean hasParens() {
+		return this.parens;
+	}
+
+	public CodeExpression withParens() {
+		this.parens = true;
+		return this;
 	}
 
 	@Override
@@ -22,7 +27,7 @@ public abstract class CodeExpression extends CodeObject {
 		}
 
 		CodeExpression that = (CodeExpression)arg;
-		return (this.hasParens == that.hasParens);
+		return (this.parens == that.parens);
 	}
 
 	@Override

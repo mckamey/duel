@@ -193,7 +193,7 @@ public abstract class DuelView {
 		}
 
 		if (DuelData.isArray(dataType)) {
-			Collection<?> array = DuelData.coerceJSArray(data);
+			Collection<?> array = DuelData.coerceCollection(data);
 
 			if ("length".equals(key)) {
 				return array.size();
@@ -213,7 +213,7 @@ public abstract class DuelView {
 			return null;
 		}
 
-		Map<?,?> map = DuelData.coerceJSObject(data);
+		Map<?,?> map = DuelData.coerceMap(data);
 		if (map == null || !map.containsKey(key)) {
 			// technically "undefined"
 			return null;

@@ -48,11 +48,10 @@ public class CodeDOMBuilder {
 
 			this.viewType = CodeDOMUtility.createViewType(ns, name);
 
-			CodeMethod method = this.buildRenderMethod(viewNode.getChildren());
+			CodeMethod method = this.buildRenderMethod(viewNode.getChildren()).withOverride();
 
 			method.setName("render");
 			method.setAccess(AccessModifierType.PROTECTED);
-			method.setOverride(true);
 
 			return this.viewType;
 
@@ -74,10 +73,7 @@ public class CodeDOMBuilder {
 				new CodeParameterDeclarationExpression(int.class, "index"),
 				new CodeParameterDeclarationExpression(int.class, "count"),
 				new CodeParameterDeclarationExpression(String.class, "key")
-			},
-			new Class<?>[] {
-				IOException.class
-			});
+			}).withThrows(IOException.class);
 
 		this.viewType.add(method);
 
@@ -265,19 +261,17 @@ public class CodeDOMBuilder {
 			String.class,
 			"getPartName",
 			null,
-			new CodeMethodReturnStatement(new CodePrimitiveExpression(partName)));
-		getNameMethod.setOverride(true);
+			new CodeMethodReturnStatement(new CodePrimitiveExpression(partName))).withOverride();
 		part.add(getNameMethod);
 
 		CodeTypeDeclaration parentView = this.viewType;
 		try {
 			this.viewType = part;
 
-			CodeMethod renderMethod = this.buildRenderMethod(node.getChildren());
+			CodeMethod renderMethod = this.buildRenderMethod(node.getChildren()).withOverride();
 
 			renderMethod.setName("render");
 			renderMethod.setAccess(AccessModifierType.PROTECTED);
-			renderMethod.setOverride(true);
 
 		} finally {
 			this.viewType = parentView;
@@ -416,7 +410,7 @@ public class CodeDOMBuilder {
 		CodeExpression data =
 			new CodeMethodInvokeExpression(
 				Set.class,
-				CodeDOMUtility.ensureJSObject(objExpr),
+				CodeDOMUtility.ensureMap(objExpr),
 				"entrySet");
 
 		// the collection to iterate over
@@ -492,16 +486,16 @@ public class CodeDOMBuilder {
 							"getValue"),
 						new CodeVariableReferenceExpression(indexDecl),
 						new CodeVariableReferenceExpression(countDecl),
-						new CodeCastExpression(String.class,
+						CodeDOMUtility.ensureString(
 							new CodeMethodInvokeExpression(
-								Object.class,// will be cast to String
+								Object.class,
 								new CodeVariableReferenceExpression(entryDecl),
 								"getKey"))))));
 	}
 
 	private void buildIterationArray(CodeStatementCollection scope, CodeExpression arrayExpr, CodeMethod innerBind) {
 
-		CodeExpression items = CodeDOMUtility.ensureJSArray(arrayExpr);
+		CodeExpression items = CodeDOMUtility.ensureCollection(arrayExpr);
 
 		// the collection to iterate over
 		CodeVariableDeclarationStatement collectionDecl =
@@ -1053,8 +1047,7 @@ public class CodeDOMBuilder {
 			AccessModifierType.PROTECTED,
 			Void.class,
 			"init",
-			null);
-		initMethod.setOverride(true);
+			null).withOverride();
 		this.viewType.add(initMethod);
 
 		return initMethod;
