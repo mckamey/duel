@@ -324,48 +324,46 @@ public class DataEncoder {
 			throw new IllegalArgumentException("Invalid identifier: "+ident);
 		}
 
-		int depth = 0;
-		boolean nsEmitted = false;
-		StringBuilder buffer = new StringBuilder(ident.length());
-		String[] parts = ident.split("\\.");
-		for (int i=0, length=parts.length-1; i<length; i++) {
-			if (i > 0) {
-				buffer.append('.');
-			}
-			buffer.append(parts[i]);
+		boolean needsNewline = false;
+		boolean isRoot = true;
+		int nextDot = ident.indexOf('.');
+		while (nextDot > -1) {
+			String ns = ident.substring(0, nextDot);
 
-			String ns = buffer.toString();
-			if ((i == 0 && JSUtility.isGlobalIdent(ns)) || namespaces.contains(ns)) {
+			// check if already exists
+			if ((isRoot && JSUtility.isGlobalIdent(ns)) || namespaces.contains(ns)) {
+				// next iteration
+				nextDot = ident.indexOf('.', nextDot+1);
+				isRoot = false;
 				continue;
 			}
 			namespaces.add(ns);
 
-			if (i == 0) {
-				this.writeln(output, depth);
+			if (isRoot) {
+				this.writeln(output, 0);
 				output.append("var ");
 				output.append(ns);
 				output.append(';');
+				isRoot = false;
 			}
 
-			this.writeln(output, depth);
+			this.writeln(output, 0);
 			output.append("if (typeof ");
 			output.append(ns);
 			output.append(" === \"undefined\") {");
-			depth++;
-			this.writeln(output, depth);
+			this.writeln(output, 1);
 			output.append(ns);
 			output.append(" = {};");
-			depth--;
-			this.writeln(output, depth);
+			this.writeln(output, 0);
 			output.append('}');
 
-			if (!nsEmitted) {
-				nsEmitted = true;
-			}
+			// next iteration
+			nextDot = ident.indexOf('.', nextDot+1);
+			needsNewline = true;
 		}
 
-		if (nsEmitted) {
-			this.writeln(output, depth);
+		if (needsNewline) {
+			this.writeln(output, 0);
 		}
 	}
 

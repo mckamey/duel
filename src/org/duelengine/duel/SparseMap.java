@@ -26,10 +26,10 @@ public class SparseMap extends LinkedHashMap<String, Object> {
 		}
 
 		Map parent = this;
-		int lastDot = -1;
+		int prevDot = -1;
 		int nextDot = ident.indexOf('.');
-		while (nextDot > lastDot) {
-			String childKey = ident.substring(lastDot+1, nextDot);
+		while (nextDot > prevDot) {
+			String childKey = ident.substring(prevDot+1, nextDot);
 			Map child;
 			if (parent.containsKey(childKey)) {
 				Object obj = parent.get(childKey);
@@ -46,11 +46,11 @@ public class SparseMap extends LinkedHashMap<String, Object> {
 			}
 
 			parent = child;
-			lastDot = nextDot;
+			prevDot = nextDot;
 			nextDot = ident.indexOf('.', nextDot+1);
 		}
 
-		return parent.put(ident.substring(lastDot+1), DuelData.asProxy(value, false));
+		return parent.put(ident.substring(prevDot+1), DuelData.asProxy(value, false));
 	}
 
 	/**
