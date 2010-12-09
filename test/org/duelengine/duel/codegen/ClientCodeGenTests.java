@@ -1,7 +1,6 @@
 package org.duelengine.duel.codegen;
 
 import java.io.IOException;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.duelengine.duel.ast.*;
@@ -23,7 +22,7 @@ public class ClientCodeGenTests {
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
-		
+
 		assertEquals(expected, actual);
 	}
 

@@ -68,10 +68,14 @@ public class ClientCodeGen implements CodeGenerator {
 			if (view == null) {
 				continue;
 			}
+			this.writeln(output, 0);
+
 			// prepend the client-side prefix
 			String viewName = this.settings.getFullName(view.getName());
 			try {
-				this.encoder.writeNamespace(output, namespaces, viewName);
+				if (this.encoder.writeNamespace(output, namespaces, viewName)) {
+					this.writeln(output, 0);
+				}
 			} catch (IllegalArgumentException ex) {
 				throw new InvalidNodeException("Invalid view name: "+viewName, view.getAttribute("name"), ex);
 			}
@@ -81,8 +85,6 @@ public class ClientCodeGen implements CodeGenerator {
 
 	private void writeView(Appendable output, VIEWCommandNode view, String viewName)
 		throws IOException {
-
-		this.writeln(output, 0);
 
 		// prepend the client-side prefix
 		if (viewName.indexOf('.') < 0) {
@@ -375,8 +377,9 @@ public class ClientCodeGen implements CodeGenerator {
 
 		output.append(this.settings.getNewline());
 
-		for (int i=depth; i>0; i--) {
-			output.append(this.settings.getIndent());
+		String indent = this.settings.getIndent();
+		while (depth-- > 0) {
+			output.append(indent);
 		}
 	}
 }

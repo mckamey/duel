@@ -5,6 +5,7 @@ import java.util.*;
 /**
  * Represents sparsely populated graph of data to be
  * serialized over the top of existing JavaScript Objects
+ * Does not get serialized directly.
  */
 @SuppressWarnings("serial")
 public class SparseMap extends LinkedHashMap<String, Object> {

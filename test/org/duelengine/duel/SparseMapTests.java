@@ -7,16 +7,57 @@ import org.junit.Test;
 public class SparseMapTests {
 
 	@Test
+	public void putPrimitiveSingleTest() throws IOException {
+		SparseMap input = SparseMap.asSparseMap(
+			"isDebug", false);
+
+		String expected =
+			"var isDebug = false;\n";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder("\n", "\t").writeVars(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void putPrimitivesTest() throws IOException {
-		Object input = SparseMap.asSparseMap(
+		SparseMap input = SparseMap.asSparseMap(
+			"simple", "Hello",
+			"nested", DuelData.asMap(
+				"foo", 42,
+				"bar", true));
+
+		String expected =
+			"var simple = \"Hello\";\n"+
+			"var nested = {\n"+
+			"\tfoo : 42,\n"+
+			"\tbar : true\n"+
+			"};\n";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder("\n", "\t").writeVars(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void putPrimitivesSparseTest() throws IOException {
+		SparseMap input = SparseMap.asSparseMap(
 			"simple", "Hello",
 			"nested.foo", 42,
 			"nested.bar", true);
 
-		String expected = "{simple:\"Hello\",nested:{foo:42,bar:true}}";
+		String expected =
+			"var simple = \"Hello\";\n"+
+			"var nested = nested || {};\n"+
+			"nested.foo = 42;\n"+
+			"nested.bar = true;\n";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder().write(output, input);
+		new DataEncoder("\n", "\t").writeVars(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -32,10 +73,19 @@ public class SparseMapTests {
 		// extend
 		input.putSparse("nested.baz", DuelData.asList(1, 2, 3));
 
-		String expected = "{simple:\"Hello\",nested:{foo:42,bar:true,baz:[1,2,3]}}";
+		String expected =
+			"var simple = \"Hello\";\n"+
+			"var nested = nested || {};\n"+
+			"nested.foo = 42;\n"+
+			"nested.bar = true;\n"+
+			"nested.baz = [\n"+
+			"\t1,\n"+
+			"\t2,\n"+
+			"\t3\n"+
+			"];\n";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder().write(output, input);
+		new DataEncoder("\n", "\t").writeVars(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -51,10 +101,16 @@ public class SparseMapTests {
 		// overwrite
 		input.putSparse("nested", DuelData.asList(1, 2, 3));
 
-		String expected = "{simple:\"Hello\",nested:[1,2,3]}";
+		String expected =
+			"var simple = \"Hello\";\n"+
+			"var nested = [\n"+
+			"\t1,\n"+
+			"\t2,\n"+
+			"\t3\n"+
+			"];\n";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder().write(output, input);
+		new DataEncoder("\n", "\t").writeVars(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -67,10 +123,34 @@ public class SparseMapTests {
 			"nested.foo", null,
 			"nested.bar", new Object());
 
-		String expected = "{simple:\"Hello\",nested:{foo:null,bar:{}}}";
+		String expected =
+			"var simple=\"Hello\";"+
+			"var nested=nested||{};"+
+			"nested.foo=null;"+
+			"nested.bar={};";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder().write(output, input);
+		new DataEncoder().writeVars(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void putObjectPrettyPrintTest() throws IOException {
+		SparseMap input = SparseMap.asSparseMap(
+			"simple", "Hello",
+			"nested.foo", null,
+			"nested.bar", new Object());
+
+		String expected =
+			"var simple = \"Hello\";\n"+
+			"var nested = nested || {};\n"+
+			"nested.foo = null;\n"+
+			"nested.bar = {};\n";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder("\n", "\t").writeVars(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -86,10 +166,19 @@ public class SparseMapTests {
 		input.putSparse("nested.foo", DuelData.asList(1, 2, 3));
 		input.putSparse("nested.bar", true);
 
-		String expected = "{simple:\"Hello\",nested:{foo:[1,2,3],bar:true}}";
+		String expected =
+			"var simple = \"Hello\";\n"+
+			"var nested = {\n"+
+			"\tfoo : [\n"+
+			"\t\t1,\n"+
+			"\t\t2,\n"+
+			"\t\t3\n"+
+			"\t],\n"+
+			"\tbar : true\n"+
+			"};\n";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder().write(output, input);
+		new DataEncoder("\n", "\t").writeVars(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -103,13 +192,51 @@ public class SparseMapTests {
 		// add expando properties
 		input.putSparse("nested.many.$levels.deep", DuelData.asList(1, 2, 3));
 
-		String expected = "{nested:{many:{$levels:{$:true,\"\":false,deep:[1,2,3]}}}}";
+		String expected =
+			"var nested=nested||{};"+
+			"nested.many=nested.many||{};"+
+			"nested.many.$levels={"+
+			"$:true,"+
+			"\"\":false,"+
+			"deep:["+
+			"1,"+
+			"2,"+
+			"3"+
+			"]"+
+			"};";
 
 		StringBuilder output = new StringBuilder();
-		new DataEncoder().write(output, input);
+		new DataEncoder().writeVars(output, input);
 		String actual = output.toString();
-System.out.println(expected);
-System.err.println(actual);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void putMapDeepNestPrettyPrintTest() throws IOException {
+		SparseMap input = SparseMap.asSparseMap(
+			"nested.many.$levels", DuelData.asMap("$", true, "", false));
+
+		// add expando properties
+		input.putSparse("nested.many.$levels.deep", DuelData.asList(1, 2, 3));
+
+		String expected =
+			"var nested = nested || {};\n"+
+			"nested.many = nested.many || {};\n"+
+			"nested.many.$levels = {\n"+
+			"\t$ : true,\n"+
+			"\t\"\" : false,\n"+
+			"\tdeep : [\n"+
+			"\t\t1,\n"+
+			"\t\t2,\n"+
+			"\t\t3\n"+
+			"\t]\n"+
+			"};\n";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder("\n", "\t").writeVars(output, input);
+		String actual = output.toString();
+
 		assertEquals(expected, actual);
 	}
 

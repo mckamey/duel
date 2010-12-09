@@ -2,6 +2,7 @@ package org.duelengine.duel;
 
 import java.io.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Utility for writing data as JavaScript literals
@@ -52,6 +53,9 @@ public class DataEncoder {
 	public void write(Appendable output, Object data)
 		throws IOException {
 
+		if (data instanceof SparseMap) {
+			return;
+		}
 		this.write(output, data, 0);
 	}
 
@@ -161,6 +165,10 @@ public class DataEncoder {
 		boolean hasChildren = singleAttr;
 		boolean needsDelim = false;
 		for (Object item : data) {
+			if (data instanceof SparseMap) {
+				continue;
+			}
+
 			if (singleAttr) {
 				if (this.prettyPrint) {
 					output.append(' ');
@@ -204,6 +212,11 @@ public class DataEncoder {
 		boolean hasChildren = singleAttr;
 		boolean needsDelim = false;
 		for (Map.Entry<?, ?> property : (Set<Map.Entry<?, ?>>)properties) {
+			Object value = property.getValue();
+			if (value instanceof SparseMap) {
+				continue;
+			}
+
 			if (singleAttr) {
 				if (this.prettyPrint) {
 					output.append(' ');
@@ -227,7 +240,7 @@ public class DataEncoder {
 			} else {
 				output.append(':');
 			}
-			this.write(output, property.getValue(), depth);
+			this.write(output, value, depth);
 		}
 
 		depth--;
@@ -322,16 +335,17 @@ public class DataEncoder {
 	 * @param output
 	 * @param namespaces
 	 * @param ident
+	 * @return true if namespaces were emitted
 	 * @throws IOException
 	 */
-	public void writeNamespace(Appendable output, List<String> namespaces, String ident)
+	public boolean writeNamespace(Appendable output, List<String> namespaces, String ident)
 		throws IOException {
 
 		if (!JSUtility.isValidIdentifier(ident, true)) {
 			throw new IllegalArgumentException("Invalid identifier: "+ident);
 		}
 
-		boolean needsNewline = false;
+		boolean wroteNS = false;
 		boolean isRoot = true;
 		int nextDot = ident.indexOf('.');
 		while (nextDot > -1) {
@@ -346,25 +360,36 @@ public class DataEncoder {
 			}
 			namespaces.add(ns);
 
-			this.writeln(output, 0);
 			if (isRoot) {
 				output.append("var ");
 				isRoot = false;
 			}
 
 			output.append(ns);
-			output.append(" = ");
+			if (this.prettyPrint) {
+				output.append(' ');
+			}
+			output.append('=');
+			if (this.prettyPrint) {
+				output.append(' ');
+			}
 			output.append(ns);
-			output.append(" || {};");
+			if (this.prettyPrint) {
+				output.append(' ');
+			}
+			output.append("||");
+			if (this.prettyPrint) {
+				output.append(' ');
+			}
+			output.append("{};");
 
 			// next iteration
 			nextDot = ident.indexOf('.', nextDot+1);
-			needsNewline = true;
+			this.writeln(output, 0);
+			wroteNS = true;
 		}
 
-		if (needsNewline) {
-			this.writeln(output, 0);
-		}
+		return wroteNS;
 	}
 
 	/**
@@ -430,7 +455,7 @@ public class DataEncoder {
 
 		output.append(this.newline);
 
-		for (int i=depth; i>0; i--) {
+		while (depth-- > 0) {
 			output.append(this.indent);
 		}
 	}
@@ -450,6 +475,94 @@ public class DataEncoder {
 			return ((long)((double)value)) != value;
 		} catch (Exception ex) {
 			return true;
+		}
+	}
+
+	/**
+	 * Serializes the items as JavaScript variable
+	 * @param output 
+	 * @param items Variables to serialize
+	 * @throws IOException
+	 */
+	public void writeVars(Appendable output, SparseMap items)
+		throws IOException {
+
+		// begin by flattening the heirarchy whereever a SparseMap is encountered
+		Map<String, Object> vars = new LinkedHashMap<String, Object>();
+		this.accumulateVars(items, vars, new StringBuilder());
+
+		// emit as a code block of var declarations
+		List<String> namespaces = new ArrayList<String>();
+		for (Entry<String, Object> globalVar : vars.entrySet()) {
+			String key = globalVar.getKey();
+			this.writeNamespace(output, namespaces, key);
+
+			if (key.indexOf('.') < 0) {
+				output.append("var ");
+			}
+			output.append(key);
+			if (this.prettyPrint) {
+				output.append(' ');
+			}
+			output.append('=');
+			if (this.prettyPrint) {
+				output.append(' ');
+			}
+			this.write(output, globalVar.getValue());
+			output.append(';');
+			this.writeln(output, 0);
+		}
+	}
+
+	private void accumulateVars(Object data, Map<String, Object> vars, StringBuilder buffer)
+		throws IOException {
+
+		if (data == null) {
+			return;
+		}
+
+		final String ROOT = "window";
+		int length = buffer.length();
+		boolean emptyBuffer = (length < 1);
+		Class<?> dataType = data.getClass();
+
+		if (Map.class.isAssignableFrom(dataType)) {
+			boolean isSparseMap = SparseMap.class.equals(dataType);
+			for (Entry<?,?> child : ((Map<?,?>)data).entrySet()) {
+				String key = DuelData.coerceString(child.getKey());
+				if (JSUtility.isValidIdentifier(key, false)) {
+					if (!emptyBuffer) {
+						buffer.append('.');
+					}
+					buffer.append(key);
+				} else {
+					if (emptyBuffer) {
+						buffer.append(ROOT);
+					}
+					buffer.append('[');
+					this.writeString(buffer, key);
+					buffer.append(']');
+				}
+				Object value = child.getValue();
+				if (isSparseMap && !(value instanceof SparseMap)) {
+					vars.put(buffer.toString(), value);
+				}
+				this.accumulateVars(value, vars, buffer);
+				buffer.setLength(length);
+			}
+
+		} else if (DuelData.isArray(dataType)) {
+			int i = 0;
+			for (Object child : DuelData.coerceCollection(data)) {
+				if (emptyBuffer) {
+					buffer.append(ROOT);
+				}
+				buffer.append('[');
+				this.writeNumber(buffer, i++);
+				buffer.append(']');
+				this.accumulateVars(child, vars, buffer);
+				buffer.setLength(length);
+			}
 		}
 	}
 }
