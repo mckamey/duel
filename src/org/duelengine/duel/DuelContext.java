@@ -2,6 +2,10 @@ package org.duelengine.duel;
 
 import java.io.IOException;
 
+/**
+ * Maintains context state for a single request/response cycle.
+ * DuelContext is not thread-safe and not intended to be reusable.
+ */
 public class DuelContext implements Appendable, ClientIDStrategy {
 
 	private final Appendable output;
@@ -31,6 +35,10 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 
 	public void setEncodeNonASCII(boolean value) {
 		this.encodeNonASCII = value;
+	}
+
+	Object getGlobals() {
+		return this.globalData;
 	}
 
 	public Object getGlobalData(String ident) {

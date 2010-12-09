@@ -5,7 +5,7 @@ import java.util.*;
 
 /**
  * Utility for writing data as JavaScript literals
- * Inherently thread-safe as contains no data.
+ * Inherently thread-safe as contains no instance data.
  */
 public class DataEncoder {
 
@@ -25,11 +25,6 @@ public class DataEncoder {
 		return new Snippet(text);
 	}
 
-	private static final String CONFIG_RESOURCE = "org.duelengine.duel.JSVocab";
-	private static Map<String, Boolean> reserved;
-	private static Map<String, Boolean> globals;
-	private static boolean inited;
-
 	private final boolean prettyPrint;
 	private final String indent;
 	private final String newline;
@@ -39,8 +34,8 @@ public class DataEncoder {
 	}
 
 	public DataEncoder(String newline, String indent) {
-		this.indent = (indent != null) ? indent : "";
 		this.newline = (newline != null) ? newline : "";
+		this.indent = (indent != null) ? indent : "";
 		this.prettyPrint = (this.indent.length() > 0) || (this.newline.length() > 0);
 	}
 
@@ -251,7 +246,7 @@ public class DataEncoder {
 
 		String name = DuelData.coerceString(data);
 
-		if (isValidIdentifier(name, false)) {
+		if (JSUtility.isValidIdentifier(name, false)) {
 			output.append(name);
 		} else {
 			this.writeString(output, name);
@@ -322,6 +317,58 @@ public class DataEncoder {
 		output.append('\"');
 	}
 
+	public void writeNamespace(Appendable output, List<String> namespaces, String ident)
+		throws IOException {
+
+		if (!JSUtility.isValidIdentifier(ident, true)) {
+			throw new IllegalArgumentException("Invalid identifier: "+ident);
+		}
+
+		int depth = 0;
+		boolean nsEmitted = false;
+		StringBuilder buffer = new StringBuilder(ident.length());
+		String[] parts = ident.split("\\.");
+		for (int i=0, length=parts.length-1; i<length; i++) {
+			if (i > 0) {
+				buffer.append('.');
+			}
+			buffer.append(parts[i]);
+
+			String ns = buffer.toString();
+			if ((i == 0 && JSUtility.isGlobalIdent(ns)) || namespaces.contains(ns)) {
+				continue;
+			}
+			namespaces.add(ns);
+
+			if (i == 0) {
+				this.writeln(output, depth);
+				output.append("var ");
+				output.append(ns);
+				output.append(';');
+			}
+
+			this.writeln(output, depth);
+			output.append("if (typeof ");
+			output.append(ns);
+			output.append(" === \"undefined\") {");
+			depth++;
+			this.writeln(output, depth);
+			output.append(ns);
+			output.append(" = {};");
+			depth--;
+			this.writeln(output, depth);
+			output.append('}');
+
+			if (!nsEmitted) {
+				nsEmitted = true;
+			}
+		}
+
+		if (nsEmitted) {
+			this.writeln(output, depth);
+		}
+	}
+
 	private void writeln(Appendable output, int depth)
 		throws IOException {
 
@@ -330,89 +377,6 @@ public class DataEncoder {
 		for (int i=depth; i>0; i--) {
 			output.append(this.indent);
 		}
-	}
-
-	static boolean isValidIdentifier(String ident, boolean nested) {
-		if (ident == null || ident.length() == 0) {
-			return false;
-		}
-
-		if (!inited) {
-			initLookups();
-		}
-
-		if (nested) {
-			String[] parts = ident.split(".");
-			for (int i=0, length=parts.length; i<length; i++) {
-				if (!isValidIdentifier(parts[i], false))
-				{
-					return false;
-				}
-				if (i == 0 && globals.containsKey(parts[i])) {
-					return false;
-				}
-			}
-			return true;
-		}
-
-		if (reserved.containsKey(ident)) {
-			return false;
-		}
-
-		boolean indentPart = false;
-		for (int i=0, length=ident.length(); i<length; i++) {
-			char ch = ident.charAt(i);
-			if (indentPart && ((ch >= '0') && (ch <= '9'))) {
-				// digits are only allowed after first char
-				continue;
-			}
-
-			// can be start or part
-			if (((ch >= 'a') && (ch <= 'z')) ||
-				((ch >= 'A') && (ch <= 'Z')) ||
-				(ch == '_') || (ch == '$')) {
-				indentPart = true;
-				continue;
-			}
-
-			return false;
-		}
-
-		return true;		
-	}
-
-	private static void initLookups() {
-
-		String[] tags;
-		Map<String, Boolean> map;
-
-		// definitions maintained in JSVocab.properties
-		ResourceBundle config = ResourceBundle.getBundle(CONFIG_RESOURCE);
-
-		// reserved words
-		tags = (config != null) && config.containsKey("reserved") ?
-				config.getString("reserved").split(",") : new String[0];
-		map = new HashMap<String, Boolean>(tags.length);
-		for (String value : tags) {
-			map.put(value, true);
-		}
-
-		// add Object properties to reserved words
-		tags = (config != null) && config.containsKey("properties") ?
-				config.getString("properties").split(",") : new String[0];
-		for (String value : tags) {
-			map.put(value, true);
-		}
-		reserved = map;
-
-		// global objects
-		tags = (config != null) && config.containsKey("globals") ?
-				config.getString("globals").split(",") : new String[0];
-		map = new HashMap<String, Boolean>(tags.length);
-		for (String value : tags) {
-			map.put(value, true);
-		}
-		globals = map;
 	}
 
 	/**

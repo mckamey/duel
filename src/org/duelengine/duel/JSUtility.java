@@ -1,8 +1,8 @@
-package org.duelengine.duel.codegen;
+package org.duelengine.duel;
 
 import java.util.*;
 
-final class JSUtility {
+public final class JSUtility {
 
 	private static final String CONFIG_RESOURCE = "org.duelengine.duel.JSVocab";
 	private static Map<String, Boolean> reserved;
@@ -13,14 +13,6 @@ final class JSUtility {
 
 	// static class
 	private JSUtility() {}
-
-	public static List<String> cloneBrowserObjects() {
-		if (!inited) {
-			initLookups();
-		}
-
-		return new ArrayList<String>(browser.keySet());
-	}
 
 	public static boolean isValidIdentifier(String ident, boolean nested) {
 		if (ident == null || ident.length() == 0) {

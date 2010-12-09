@@ -21,7 +21,7 @@ public class SparseMap extends LinkedHashMap<String, Object> {
 		if (ident == null) {
 			throw new NullPointerException("ident");
 		}
-		if (!DataEncoder.isValidIdentifier(ident, true)) {
+		if (!JSUtility.isValidIdentifier(ident, true)) {
 			return this.put(ident, value);
 		}
 

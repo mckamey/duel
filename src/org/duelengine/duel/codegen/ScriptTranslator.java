@@ -3,6 +3,7 @@ package org.duelengine.duel.codegen;
 import java.util.*;
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelData;
+import org.duelengine.duel.JSUtility;
 import org.duelengine.duel.codedom.*;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
