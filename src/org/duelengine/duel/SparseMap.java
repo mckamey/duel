@@ -18,8 +18,11 @@ public class SparseMap extends LinkedHashMap<String, Object> {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object putSparse(String ident, Object value) {
-		if (ident == null || !DataEncoder.isValidIdentifier(ident, true)) {
-			throw new IllegalArgumentException("Invalid global data identifier: "+ident);
+		if (ident == null) {
+			throw new NullPointerException("ident");
+		}
+		if (!DataEncoder.isValidIdentifier(ident, true)) {
+			return this.put(ident, value);
 		}
 
 		Map parent = this;
@@ -33,7 +36,7 @@ public class SparseMap extends LinkedHashMap<String, Object> {
 				if (obj instanceof Map) {
 					child = (Map)obj;
 				} else {
-					throw new IllegalArgumentException("Global data collision: "+ident);
+					throw new IllegalArgumentException("Object cannot have properties: "+ident);
 				}
 			} else {
 				// build out with SparseMap since these will be

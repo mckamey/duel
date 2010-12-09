@@ -115,7 +115,7 @@ public abstract class DuelView {
 	public void render(Appendable output, Object data)
 		throws IOException {
 
-		this.render(new DuelContext(output), DuelData.asProxy(data), 0, 1, null);
+		this.render(new DuelContext(output), DuelData.asProxy(data, true), 0, 1, null);
 	}
 
 	/**
@@ -144,7 +144,7 @@ public abstract class DuelView {
 			throw new NullPointerException("output");
 		}
 
-		this.render(new DuelContext(output), DuelData.asProxy(data), 0, 1, null);
+		this.render(new DuelContext(output), DuelData.asProxy(data, true), 0, 1, null);
 	}
 
 	/**
@@ -206,7 +206,7 @@ public abstract class DuelView {
 					// technically "undefined"
 					return null;
 				}
-				return DuelData.asProxy(((List<?>)array).get(index));
+				return DuelData.asProxy(((List<?>)array).get(index), true);
 			}
 
 			// technically "undefined"
@@ -219,7 +219,7 @@ public abstract class DuelView {
 			return null;
 		}
 
-		return DuelData.asProxy(map.get(key));
+		return DuelData.asProxy(map.get(key), true);
 	}
 
 	/**

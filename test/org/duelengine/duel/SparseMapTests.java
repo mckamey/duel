@@ -72,8 +72,59 @@ public class SparseMapTests {
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
 		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void putObjectExpandoTest() throws IOException {
+		SparseMap input = SparseMap.asSparseMap(
+			"simple", "Hello",
+			"nested", new Object());
+
+		// add expando properties
+		input.putSparse("nested.foo", DuelData.asList(1, 2, 3));
+		input.putSparse("nested.bar", true);
+
+		String expected = "{simple:\"Hello\",nested:{foo:[1,2,3],bar:true}}";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder().write(output, input);
+		String actual = output.toString();
 System.out.println(expected);
 System.err.println(actual);
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void putInvalidExpandoStringTest() throws IOException {
+		SparseMap input = SparseMap.asSparseMap(
+			"simple", "Hello",
+			"nested", "World");
+
+		try {
+			// add invalid expando properties
+			input.putSparse("nested.foo", 42);
+
+			fail("Expected IllegalStateException");
+		} catch (IllegalArgumentException ex) {
+			
+		}
+	}
+
+	@Test
+	public void putInvalidExpandoNullTest() throws IOException {
+		SparseMap input = SparseMap.asSparseMap(
+			"simple", "Hello",
+			"nested", null);
+
+		try {
+			// add invalid expando properties
+			input.putSparse("nested.foo", 42);
+
+			fail("Expected IllegalStateException");
+		} catch (IllegalArgumentException ex) {
+			
+		}
 	}
 }

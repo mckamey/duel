@@ -268,11 +268,7 @@ public final class DuelData {
 			return map;
 		}
 
-		return new ProxyMap(data);
-	}
-
-	static Object asProxy(Object data) {
-		return asProxy(data, true);
+		return new ProxyMap(data, true);
 	}
 
 	/**

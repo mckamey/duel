@@ -4,16 +4,18 @@ import java.beans.*;
 import java.lang.reflect.*;
 import java.util.*;
 
+/**
+ * A proxy for arbitrary classes.
+ * Allows bean-like property access via a Map interface,
+ * and allows expando properties to be dynamically added
+ */
 class ProxyMap extends AbstractMap<String, Object> {
 
 	private final Object value;
 	private final Map<String, Method> getters;
 	private final Map<String, Method> setters;
+	private Map<String, Object> expando;
 	private boolean inited;
-
-	public ProxyMap(Object value) {
-		this(value, true);
-	}
 
 	public ProxyMap(Object value, boolean readonly) {
 		if (value == null) {
@@ -80,7 +82,7 @@ class ProxyMap extends AbstractMap<String, Object> {
 	public boolean isEmpty() {
 		this.ensureProperties();
 
-		return this.getters.isEmpty();
+		return this.getters.isEmpty() && (this.expando == null || this.expando.isEmpty());
 	}
 
 	@Override
@@ -89,7 +91,10 @@ class ProxyMap extends AbstractMap<String, Object> {
 
 		Method method = this.getters.get(key);
 		if (method == null) {
-			return null;
+			if (this.expando == null) {
+				return null;
+			}
+			return this.expando.get(key); 
 		}
 
 		try {
@@ -109,18 +114,23 @@ class ProxyMap extends AbstractMap<String, Object> {
 	@Override
 	public Object put(String key, Object value) {
 		if (this.isReadonly()) {
-			throw new IllegalStateException("ProxyMap is readonly");
+			throw new IllegalStateException("The ProxyMap is readonly");
 		}
 
 		this.ensureProperties();
 
-		Method method = this.getters.get(key);
+		Method method = this.setters.get(key);
 		if (method == null) {
-			return null;
+			if (this.expando == null) {
+				this.expando = new LinkedHashMap<String, Object>();
+			}
+			return this.expando.put(key, value);
 		}
 
 		try {
-			return method.invoke(this.value, value);
+			Object old = this.get(key);
+			method.invoke(this.value, value);
+			return old;
 
 		} catch (InvocationTargetException ex) {
 			ex.printStackTrace();
@@ -137,67 +147,79 @@ class ProxyMap extends AbstractMap<String, Object> {
 	public Set<Map.Entry<String, Object>> entrySet() {
 		this.ensureProperties();
 
-		return new ProxyEntrySet(this.value, this.getters);
+		return new ProxyEntrySet(this.value, this.getters, this.expando);
 	}
 
-	class ProxyEntrySet extends AbstractSet<Map.Entry<String, Object>> {
+	static class ProxyEntrySet extends AbstractSet<Map.Entry<String, Object>> {
 
 		private final Object value;
 		private final Map<String, Method> getters;
+		private final Map<String, Object> expando;
 
-		public ProxyEntrySet(Object value, Map<String, Method> getters) {
+		public ProxyEntrySet(Object value, Map<String, Method> getters, Map<String, Object> expando) {
 			this.value = value;
 			this.getters = getters;
+			this.expando = expando;
 		}
 
 		@Override
 		public boolean isEmpty() {
-			return this.getters.isEmpty();
+			return this.getters.isEmpty() && (this.expando == null || this.expando.isEmpty());
 		}
 
 		@Override
 		public Iterator<Map.Entry<String, Object>> iterator() {
-			return new ProxyIterator(this.value, this.getters);
+			return new ProxyIterator(this.value, this.getters, this.expando);
 		}
 
 		@Override
 		public int size() {
-			return this.getters.size();
+			return this.getters.size() + (this.expando == null ? 0 : this.expando.size());
 		}
 	}
 
-	class ProxyIterator implements Iterator<Map.Entry<String, Object>> {
+	static class ProxyIterator implements Iterator<Map.Entry<String, Object>> {
 
 		private final Object value;
 		private final Map<String, Method> getters;
-		private final Iterator<String> iterator; 
+		private final Map<String, Object> expando;
+		private final Iterator<String> getterIterator;
+		private final Iterator<String> expandoIterator;
 
-		public ProxyIterator(Object value, Map<String, Method> getters) {
+		public ProxyIterator(Object value, Map<String, Method> getters, Map<String, Object> expando) {
 			this.value = value;
 			this.getters = getters;
-			this.iterator = getters.keySet().iterator(); 
+			this.expando = expando;
+			this.getterIterator = getters.keySet().iterator(); 
+			this.expandoIterator = (expando != null) ? expando.keySet().iterator() : null; 
 		}
 
 		@Override
 		public boolean hasNext() {
-			return this.iterator.hasNext();
+			return this.getterIterator.hasNext() || (this.expando != null && this.expandoIterator.hasNext());
 		}
 
 		@Override
 		public Map.Entry<String, Object> next() {
-			String key = this.iterator.next();
-			Method method = this.getters.get(key);
-
+			String key = null;
 			Object val = null;
-			try {
-				val = method.invoke(this.value);
-
-			} catch (InvocationTargetException ex) {
-				ex.printStackTrace();
-			} catch (IllegalArgumentException ex) {
-				ex.printStackTrace();
-			} catch (IllegalAccessException ex) {
-				ex.printStackTrace();
+			if (this.getterIterator.hasNext()) {
+				key = this.getterIterator.next();
+				Method method = this.getters.get(key);
+	
+				try {
+					val = method.invoke(this.value);
+	
+				} catch (InvocationTargetException ex) {
+					ex.printStackTrace();
+				} catch (IllegalArgumentException ex) {
+					ex.printStackTrace();
+				} catch (IllegalAccessException ex) {
+					ex.printStackTrace();
+				}
+			} else if (this.expando != null){
+				key = this.expandoIterator.next();
+				val = this.expando.get(key);
 			}
 
 			return new AbstractMap.SimpleImmutableEntry<String, Object>(key, val);
