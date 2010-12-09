@@ -92,7 +92,7 @@
 			todir="${bin.dir}/org/duelengine/duel/parsing/"/>
 		<copy file="${src.dir}/org/duelengine/duel/ast/HTMLTags.properties"
 			todir="${bin.dir}/org/duelengine/duel/ast/"/>
-		<copy file="${src.dir}/org/duelengine/duel/JSVocab.properties"
+		<copy file="${src.dir}/org/duelengine/duel/JSUtility.properties"
 			todir="${bin.dir}/org/duelengine/duel/"/>
 	</target>
 
@@ -113,7 +113,7 @@
 		</jar>
 	</target>
 
-	<target name="compile.test" depends="jar.compiler" description="Compile Java tests">
+	<target name="compile.test" depends="jar.compiler,jar.runtime" description="Compile Java tests">
 		<javac
 			srcdir="${test.dir}"
 			destdir="${bin.dir}"
