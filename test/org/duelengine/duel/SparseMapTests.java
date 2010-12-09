@@ -91,6 +91,23 @@ public class SparseMapTests {
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
 		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void putMapDeepNestTest() throws IOException {
+		SparseMap input = SparseMap.asSparseMap(
+			"nested.many.$levels", DuelData.asMap("$", true, "", false));
+
+		// add expando properties
+		input.putSparse("nested.many.$levels.deep", DuelData.asList(1, 2, 3));
+
+		String expected = "{nested:{many:{$levels:{$:true,\"\":false,deep:[1,2,3]}}}}";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder().write(output, input);
+		String actual = output.toString();
 System.out.println(expected);
 System.err.println(actual);
 		assertEquals(expected, actual);
@@ -108,7 +125,7 @@ System.err.println(actual);
 
 			fail("Expected IllegalStateException");
 		} catch (IllegalArgumentException ex) {
-			
+			// expected
 		}
 	}
 
@@ -124,7 +141,7 @@ System.err.println(actual);
 
 			fail("Expected IllegalStateException");
 		} catch (IllegalArgumentException ex) {
-			
+			// expected
 		}
 	}
 }

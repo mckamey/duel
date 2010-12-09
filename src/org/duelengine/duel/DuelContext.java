@@ -54,7 +54,7 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 			this.globalData = new SparseMap();
 		}
 
-		this.globalData.put(ident, value);
+		this.globalData.putSparse(ident, value);
 	}
 
 	@Override
