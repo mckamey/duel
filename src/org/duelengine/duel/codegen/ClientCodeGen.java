@@ -75,18 +75,16 @@ public class ClientCodeGen implements CodeGenerator {
 			} catch (IllegalArgumentException ex) {
 				throw new InvalidNodeException("Invalid view name: "+viewName, view.getAttribute("name"), ex);
 			}
-			this.writeView(output, view);
+			this.writeView(output, view, viewName);
 		}
 	}
 
-	private void writeView(Appendable output, VIEWCommandNode view)
+	private void writeView(Appendable output, VIEWCommandNode view, String viewName)
 		throws IOException {
 
-		int depth = 0;
 		this.writeln(output, 0);
 
 		// prepend the client-side prefix
-		String viewName = this.settings.getFullName(view.getName());
 		if (viewName.indexOf('.') < 0) {
 			output.append("var ");
 		}
@@ -96,16 +94,16 @@ public class ClientCodeGen implements CodeGenerator {
 		if (view.childCount() == 1) {
 			DuelNode child = view.getFirstChild();
 			if (child instanceof ElementNode &&
-				((ElementNode)child).hasChildren()) {
-				this.writeln(output, ++depth);
+				(((ElementNode)child).hasChildren() ||
+				((ElementNode)child).hasAttributes())) {
+				this.writeln(output, 1);
 			}
 
 			// just emit the single child
-			this.writeNode(output, child, depth, false);
-			depth--;
+			this.writeNode(output, child, 1, false);
 		} else {
 			// wrap in a document fragment
-			this.writeElement(output, "", view, depth, false);
+			this.writeElement(output, "", view, 0, false);
 		}
 
 		output.append(");");

@@ -637,15 +637,15 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = foo || {};\n"+
 			"foo.bar = foo.bar || {};\n\n"+
-			"foo.bar.Blah = duel([\"$call\", {\n"+
-			"\t\t\"view\" : function() { return (foo.bar.Yada); },\n"+
-			"\t\t\"data\" : function(data) { return (data.foo); }\n"+
-			"\t}]);\n";
+			"foo.bar.Blah = duel(\n"+
+			"\t[\"$call\", {\n"+
+			"\t\t\t\"view\" : function() { return (foo.bar.Yada); },\n"+
+			"\t\t\t\"data\" : function(data) { return (data.foo); }\n"+
+			"\t\t}]);\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
 		String actual = output.toString();
-
 		assertEquals(expected, actual);
 	}
 
