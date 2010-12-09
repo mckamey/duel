@@ -317,7 +317,65 @@ public class DataEncoder {
 		output.append('\"');
 	}
 
+	/**
+	 * Produces more compact namespace declarations.
+	 * @param output
+	 * @param namespaces
+	 * @param ident
+	 * @throws IOException
+	 */
 	public void writeNamespace(Appendable output, List<String> namespaces, String ident)
+		throws IOException {
+
+		if (!JSUtility.isValidIdentifier(ident, true)) {
+			throw new IllegalArgumentException("Invalid identifier: "+ident);
+		}
+
+		boolean needsNewline = false;
+		boolean isRoot = true;
+		int nextDot = ident.indexOf('.');
+		while (nextDot > -1) {
+			String ns = ident.substring(0, nextDot);
+
+			// check if already exists
+			if ((isRoot && JSUtility.isGlobalIdent(ns)) || namespaces.contains(ns)) {
+				// next iteration
+				nextDot = ident.indexOf('.', nextDot+1);
+				isRoot = false;
+				continue;
+			}
+			namespaces.add(ns);
+
+			this.writeln(output, 0);
+			if (isRoot) {
+				output.append("var ");
+				isRoot = false;
+			}
+
+			output.append(ns);
+			output.append(" = ");
+			output.append(ns);
+			output.append(" || {};");
+
+			// next iteration
+			nextDot = ident.indexOf('.', nextDot+1);
+			needsNewline = true;
+		}
+
+		if (needsNewline) {
+			this.writeln(output, 0);
+		}
+	}
+
+	/**
+	 * Produces more verbose but technically more correct namespace declarations
+	 * @param output
+	 * @param namespaces
+	 * @param ident
+	 * @throws IOException
+	 */
+	@Deprecated
+	public void writeNamespaceAlt(Appendable output, List<String> namespaces, String ident)
 		throws IOException {
 
 		if (!JSUtility.isValidIdentifier(ident, true)) {

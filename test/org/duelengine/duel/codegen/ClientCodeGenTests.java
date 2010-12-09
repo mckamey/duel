@@ -358,13 +358,8 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo;\n"+
-			"if (typeof foo === \"undefined\") {\n"+
-			"\tfoo = {};\n"+
-			"}\n"+
-			"if (typeof foo.bar === \"undefined\") {\n"+
-			"\tfoo.bar = {};\n"+
-			"}\n\n"+
+			"var foo = foo || {};\n"+
+			"foo.bar = foo.bar || {};\n\n"+
 			"foo.bar.Blah = duel([\"div\"]);\n";
 
 		StringBuilder output = new StringBuilder();
@@ -378,13 +373,8 @@ public class ClientCodeGenTests {
 	public void namespaceRepeatedTest() throws IOException {
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo;\n"+
-			"if (typeof foo === \"undefined\") {\n"+
-			"\tfoo = {};\n"+
-			"}\n"+
-			"if (typeof foo.bar === \"undefined\") {\n"+
-			"\tfoo.bar = {};\n"+
-			"}\n\n"+
+			"var foo = foo || {};\n"+
+			"foo.bar = foo.bar || {};\n\n"+
 			"foo.bar.Blah = duel(\"First View\");\n\n"+
 			"foo.bar.Yada = duel(\"Second View\");\n";
 
@@ -409,20 +399,11 @@ public class ClientCodeGenTests {
 	public void namespacesOverlappingTest() throws IOException {
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo;\n"+
-			"if (typeof foo === \"undefined\") {\n"+
-			"\tfoo = {};\n"+
-			"}\n"+
-			"if (typeof foo.bar === \"undefined\") {\n"+
-			"\tfoo.bar = {};\n"+
-			"}\n"+
-			"if (typeof foo.bar.one === \"undefined\") {\n"+
-			"\tfoo.bar.one = {};\n"+
-			"}\n\n"+
+			"var foo = foo || {};\n"+
+			"foo.bar = foo.bar || {};\n"+
+			"foo.bar.one = foo.bar.one || {};\n\n"+
 			"foo.bar.one.Blah = duel(\"First View\");\n\n"+
-			"if (typeof foo.bar.two === \"undefined\") {\n"+
-			"\tfoo.bar.two = {};\n"+
-			"}\n\n"+
+			"foo.bar.two = foo.bar.two || {};\n\n"+
 			"foo.bar.two.Yada = duel(\"Second View\");\n";
 
 		StringBuilder output = new StringBuilder();
@@ -446,21 +427,11 @@ public class ClientCodeGenTests {
 	public void namespacesDistinctTest() throws IOException {
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo;\n"+
-			"if (typeof foo === \"undefined\") {\n"+
-			"\tfoo = {};\n"+
-			"}\n"+
-			"if (typeof foo.bar === \"undefined\") {\n"+
-			"\tfoo.bar = {};\n"+
-			"}\n\n"+
+			"var foo = foo || {};\n"+
+			"foo.bar = foo.bar || {};\n\n"+
 			"foo.bar.Blah = duel(\"First View\");\n\n"+
-			"var com;\n"+
-			"if (typeof com === \"undefined\") {\n"+
-			"\tcom = {};\n"+
-			"}\n"+
-			"if (typeof com.example === \"undefined\") {\n"+
-			"\tcom.example = {};\n"+
-			"}\n\n"+
+			"var com = com || {};\n"+
+			"com.example = com.example || {};\n\n"+
 			"com.example.Yada = duel(\"Second View\");\n";
 
 		StringBuilder output = new StringBuilder();
@@ -664,13 +635,8 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo;\n"+
-			"if (typeof foo === \"undefined\") {\n"+
-			"\tfoo = {};\n"+
-			"}\n"+
-			"if (typeof foo.bar === \"undefined\") {\n"+
-			"\tfoo.bar = {};\n"+
-			"}\n\n"+
+			"var foo = foo || {};\n"+
+			"foo.bar = foo.bar || {};\n\n"+
 			"foo.bar.Blah = duel([\"$call\", {\n"+
 			"\t\t\"view\" : function() { return (foo.bar.Yada); },\n"+
 			"\t\t\"data\" : function(data) { return (data.foo); }\n"+
@@ -703,13 +669,8 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo;\n"+
-			"if (typeof foo === \"undefined\") {\n"+
-			"\tfoo = {};\n"+
-			"}\n"+
-			"if (typeof foo.bar === \"undefined\") {\n"+
-			"\tfoo.bar = {};\n"+
-			"}\n\n"+
+			"var foo = foo || {};\n"+
+			"foo.bar = foo.bar || {};\n\n"+
 			"foo.bar.Blah = duel(\n"+
 			"\t[\"$call\", {\n"+
 			"\t\t\t\"view\" : function() { return (foo.bar.Yada); },\n"+
@@ -755,13 +716,8 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo;\n"+
-			"if (typeof foo === \"undefined\") {\n"+
-			"\tfoo = {};\n"+
-			"}\n"+
-			"if (typeof foo.bar === \"undefined\") {\n"+
-			"\tfoo.bar = {};\n"+
-			"}\n\n"+
+			"var foo = foo || {};\n"+
+			"foo.bar = foo.bar || {};\n\n"+
 			"foo.bar.Blah = duel(\n"+
 			"\t[\"div\", { \"class\" : \"dialog\" },\n"+
 			"\t\t[\"$part\", { \"name\" : \"header\" },\n"+
