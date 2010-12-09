@@ -11,7 +11,7 @@ public final class DuelData {
 
 	// static class
 	private DuelData() {}
-	
+
 	/**
 	 * Builds a mutable Map from an interlaced sequence of key-value pairs
 	 * @param pairs
@@ -271,12 +271,16 @@ public final class DuelData {
 		return new ProxyMap(data);
 	}
 
+	static Object asProxy(Object data) {
+		return asProxy(data, true);
+	}
+
 	/**
 	 * Ensures a data object is easily walked
 	 * @param data
 	 * @return
 	 */
-	static Object asProxy(Object data) {
+	static Object asProxy(Object data, boolean readonly) {
 		if (data == null) {
 			return null;
 		}
@@ -290,6 +294,6 @@ public final class DuelData {
 		}
 
 		// wrap for easy access
-		return new ProxyMap(data);
+		return new ProxyMap(data, readonly);
 	}
 }
