@@ -19,7 +19,10 @@ import org.mozilla.javascript.ast.*;
  */
 public class ScriptTranslator implements ErrorReporter {
 
+	public static final String CLIENT_SOURCE = "CLIENT";
+	
 	private final IdentifierScope scope;
+	private boolean needsFallback;
 
 	public ScriptTranslator() {
 		this(new CodeTypeDeclaration());
@@ -67,7 +70,13 @@ public class ScriptTranslator implements ErrorReporter {
 			return null;
 		}
 
-		return this.visitRoot(root);
+		List<CodeMember> members = this.visitRoot(root);
+		if (this.needsFallback && members.size() > 0) {
+			// store original source code on the member to
+			// allow generation of fallback block
+			members.get(0).withUserData(CLIENT_SOURCE, jsSource);
+		}
+		return members;
 	}
 
 	private CodeStatement visitStatement(AstNode node) {
@@ -386,7 +395,8 @@ public class ScriptTranslator implements ErrorReporter {
 				return new CodePrimitiveExpression(Double.POSITIVE_INFINITY);
 			}
 
-//			throw new ScriptTranslationException("Unsupported global var reference: "+ident, node);
+			// mark as potential to fail at runtime based upon data
+			this.needsFallback = true;
 			return new ScriptVariableReferenceExpression(ident);
 		}
 
@@ -410,6 +420,8 @@ public class ScriptTranslator implements ErrorReporter {
 			return new CodeVariableReferenceExpression(Object.class, ident);
 		}
 
+		// mark as potential to fail at runtime based upon data
+		this.needsFallback = true;
 		return new ScriptVariableReferenceExpression(ident);
 	}
 

@@ -10,6 +10,21 @@ import org.duelengine.duel.codedom.*;
 public class ScriptTranslatorTests {
 
 	@Test
+	public void translateEmptyTest() {
+		String input = "function(data) { return ( /*...*/ ); }";
+
+		try {
+			new ScriptTranslator().translate(input);
+
+			fail("Expected to throw a ScriptTranslationException");
+
+		} catch (ScriptTranslationException ex) {
+		
+			assertEquals(35, ex.getColumn());
+		}
+	}
+
+	@Test
 	public void translateVarRefTest() {
 		String input = "function(data) { return data; }";
 
@@ -195,6 +210,33 @@ public class ScriptTranslatorTests {
 	}
 
 	@Test
+	public void translateExternalVarRefTest() {
+		String input = "function(data) { return foo.bar; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodePropertyReferenceExpression(
+						new ScriptVariableReferenceExpression("foo"),
+						new CodePrimitiveExpression("bar"))));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
 	public void translateMapValueAccessTest() {
 		String input = "function(data) { return data['foo']; }";
 
@@ -360,12 +402,12 @@ public class ScriptTranslatorTests {
 	@Test
 	public void translateForLoopTest() {
 		String input =
-			"function(data) {"+
-			"var str;"+
-			"for (var i=0, length=data.length; i<length; i++) {"+
-			"str += data[i].toString();"+
-			"}"+
-			"return str;"+
+			"function (data) {"+
+			"  var str;"+
+			"  for (var i=0, length=data.length; i<length; i++) {"+
+			"    str += data[i].toString();"+
+			"  }"+
+			"  return str;"+
 			"}";
 
 		CodeMethod expected =
@@ -682,26 +724,13 @@ public class ScriptTranslatorTests {
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeMethodReturnStatement(
-					new CodeUnaryOperatorExpression(CodeUnaryOperatorType.NEGATION, new CodePrimitiveExpression(Double.POSITIVE_INFINITY))));
+					new CodeUnaryOperatorExpression(
+						CodeUnaryOperatorType.NEGATION,
+						new CodePrimitiveExpression(Double.POSITIVE_INFINITY))));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
 		assertEquals(1, actual.size());
 		assertEquals(expected, actual.get(0));
-	}
-
-	@Test
-	public void translateEmptyTest() {
-		String input = "function(data) { return ( /*...*/ ); }";
-
-		try {
-			new ScriptTranslator().translate(input);
-
-			fail("Expected to throw a ScriptTranslationException");
-
-		} catch (ScriptTranslationException ex) {
-		
-			assertEquals(35, ex.getColumn());
-		}
 	}
 }

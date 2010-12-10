@@ -34,6 +34,11 @@ public abstract class CodeMember extends CodeObject {
 	}
 
 	@Override
+	public CodeMember withUserData(Object... pairs) {
+		return (CodeMember)super.withUserData(pairs);
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeMember)) {
 			// includes null

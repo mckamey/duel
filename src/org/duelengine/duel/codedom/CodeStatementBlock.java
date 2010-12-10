@@ -31,6 +31,11 @@ public class CodeStatementBlock extends CodeObject {
 	}
 
 	@Override
+	public CodeStatementBlock withUserData(Object... pairs) {
+		return (CodeStatementBlock)super.withUserData(pairs);
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeStatementBlock)) {
 			// includes null

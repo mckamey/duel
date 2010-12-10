@@ -133,6 +133,11 @@ final class CodeDOMUtility {
 	 * @return null if not able to be inlined
 	 */
 	public static CodeExpression inlineMethod(CodeMethod method) {
+		if (method.getUserData(ScriptTranslator.CLIENT_SOURCE) != null) {
+			// maintain entire code block as unit for fallback support
+			return null;
+		}
+
 		List<CodeParameterDeclarationExpression> parameters = method.getParameters();
 		if (parameters.size() != 5 || !DuelContext.class.equals(parameters.get(0).getType())) {
 			// incompatible method signature

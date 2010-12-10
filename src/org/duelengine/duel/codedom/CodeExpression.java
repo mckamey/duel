@@ -20,6 +20,11 @@ public abstract class CodeExpression extends CodeObject {
 	}
 
 	@Override
+	public CodeExpression withUserData(Object... pairs) {
+		return (CodeExpression)super.withUserData(pairs);
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeExpression)) {
 			// includes null
