@@ -1686,8 +1686,6 @@ public class CodeDOMBuilderTests {
 			);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -1796,6 +1794,237 @@ System.err.println(actual);
 		);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void hybridDeferredExecutionExpressionTest() throws IOException {
+
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div", null,
+				new ExpressionNode("foo.bar")));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression("<div>"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"htmlEncode",
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeMethodInvokeExpression(
+						Object.class,
+						new CodeThisReferenceExpression(),
+						"hybrid_3",
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key")))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression("</div>")))
+			).withOverride().withThrows(IOException.class),
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"hybrid_3",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeConditionStatement(
+					new CodeMethodInvokeExpression(
+						boolean.class,
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"hasGlobalData",
+						new CodePrimitiveExpression("foo")),
+					new CodeMethodReturnStatement(
+						new CodePropertyReferenceExpression(
+							new ScriptVariableReferenceExpression("foo"),
+							new CodePrimitiveExpression("bar")).withParens())
+				),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression("<script type=\"text/javascript\">duel.write(function() { return (foo.bar); });</script>"))),
+				new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+			).withThrows(IOException.class)
+		);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void hybridDeferredExecutionStatementTest() throws IOException {
+
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div", null,
+				new StatementNode("foo.bar = (baz+data);")));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression("<div>"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"htmlEncode",
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeMethodInvokeExpression(
+						Object.class,
+						new CodeThisReferenceExpression(),
+						"hybrid_3",
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key")))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression("</div>")))
+			).withOverride().withThrows(IOException.class),
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_2",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.ASSIGN,
+						new CodePropertyReferenceExpression(
+							new ScriptVariableReferenceExpression("foo"),
+							new CodePrimitiveExpression("bar")),
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.ADD,
+							new ScriptVariableReferenceExpression("baz"),
+							new CodeVariableReferenceExpression(Object.class, "data")).withParens())),
+				new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+			),
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"hybrid_3",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeConditionStatement(
+					new CodeMethodInvokeExpression(
+						boolean.class,
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						"hasGlobalData",
+						new CodePrimitiveExpression("foo"),
+						new CodePrimitiveExpression("baz")),
+					new CodeMethodReturnStatement(
+						new CodeMethodInvokeExpression(
+							Object.class,
+							new CodeThisReferenceExpression(),
+							"code_2",
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							new CodeVariableReferenceExpression(Object.class, "data"),
+							new CodeVariableReferenceExpression(int.class, "index"),
+							new CodeVariableReferenceExpression(int.class, "count"),
+							new CodeVariableReferenceExpression(String.class, "key")))
+				),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression("<script type=\"text/javascript\">duel.write(function(data) { foo.bar = (baz+data); }, "))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), DataEncoder.class, "encoder_4"),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(Object.class, "data"),
+					CodePrimitiveExpression.ONE)),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					"append",
+					new CodePrimitiveExpression(");</script>"))),
+				new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+			).withThrows(IOException.class),
+			new CodeField(
+				AccessModifierType.PRIVATE,
+				DataEncoder.class,
+				"encoder_4"),
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"init",
+				null,
+				new CodeExpressionStatement(new CodeBinaryOperatorExpression(
+					CodeBinaryOperatorType.ASSIGN,
+					new CodeFieldReferenceExpression(
+						new CodeThisReferenceExpression(),
+						DataEncoder.class,
+						"encoder_4"),
+					new CodeObjectCreateExpression(
+						DataEncoder.class.getSimpleName(),
+						new CodePrimitiveExpression("\n"),
+						new CodePrimitiveExpression("\t"))))).withOverride()
+		);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+System.out.println(expected);
+System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 }

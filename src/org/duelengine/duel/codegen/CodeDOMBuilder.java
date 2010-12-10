@@ -615,44 +615,203 @@ public class CodeDOMBuilder {
 		try {
 			// convert from JavaScript source to CodeDOM
 			List<CodeMember> members = new ScriptTranslator(this.viewType).translate(node.getClientCode());
+			boolean firstIsMethod = (members.size() > 0) && members.get(0) instanceof CodeMethod;
 
 			CodeExpression expression = null;
-			if (members.size() == 1 && members.get(0) instanceof CodeMethod) {
-				// first attempt to extract single expression (inline the return expression)
+			if (firstIsMethod) {
+				// attempt to extract single expression (inline the return expression)
 				expression = CodeDOMUtility.inlineMethod((CodeMethod)members.get(0));
 			}
 
-			if (expression == null && (members.size() > 0)) {
+			if (expression != null) {
+				// add remaining CodeDOM members to viewType
+				for (int i=1, length=members.size(); i<length; i++) {
+					this.viewType.add(members.get(i));
+				}
+
+			} else if (firstIsMethod) {
 				// add all CodeDOM members to viewType
 				this.viewType.addAll(members);
 
+				CodeMethod method = (CodeMethod)members.get(0);
+
 				// have the expression be a method invocation
 				expression = new CodeMethodInvokeExpression(
-					Void.class,
-						new CodeThisReferenceExpression(),
-						members.get(0).getName(),
+					method.getReturnType(),
+					new CodeThisReferenceExpression(),
+					method.getName(),
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(Object.class, "data"),
+					new CodeVariableReferenceExpression(int.class, "index"),
+					new CodeVariableReferenceExpression(int.class, "count"),
+					new CodeVariableReferenceExpression(String.class, "key"));
+			}
+
+			if (members.size() > 0 &&
+				members.get(0).getUserData(ScriptTranslator.EXTERNAL_IDENTS) instanceof Object[]) {
+
+				Object[] idents = (Object[])members.get(0).getUserData(ScriptTranslator.EXTERNAL_IDENTS);
+				CodeExpression[] identArgs = new CodeExpression[idents.length];
+				for (int i=0, length=identArgs.length; i<length; i++) {
+					identArgs[i] = new CodePrimitiveExpression(idents[i]);
+				}
+
+				// if data present, then run server-side, else defer execution to client
+				CodeConditionStatement runtimeCheck = new CodeConditionStatement(
+					new CodeMethodInvokeExpression(
+						boolean.class,
 						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodeVariableReferenceExpression(int.class, "index"),
-						new CodeVariableReferenceExpression(int.class, "count"),
-						new CodeVariableReferenceExpression(String.class, "key"));
+						"hasGlobalData",
+						identArgs),
+					new CodeMethodReturnStatement(expression));
+
+				CodeMethod runtimeCheckMethod = new CodeMethod(
+					AccessModifierType.PRIVATE,
+					Object.class,
+					this.viewType.nextIdent("hybrid_"),
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					runtimeCheck).withThrows(IOException.class);
+
+				this.viewType.add(runtimeCheckMethod);
+
+				// ensure a break in the write stream
+				this.flushBuffer();
+				this.scopeStack.push(runtimeCheckMethod.getStatements());
+				try {
+					// defer blocks that cannot be fully processed server-side
+					this.buildDeferredWrite(node.getClientCode(), node.getArgSize());
+					this.flushBuffer();
+
+				} finally {
+					this.scopeStack.pop();
+				}
+
+				// if was immediately writen, return null
+				runtimeCheckMethod.getStatements().add(new CodeMethodReturnStatement(CodePrimitiveExpression.NULL));
+
+				// have the expression be a method invocation
+				expression = new CodeMethodInvokeExpression(
+					runtimeCheckMethod.getReturnType(),
+					new CodeThisReferenceExpression(),
+					runtimeCheckMethod.getName(),
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(Object.class, "data"),
+					new CodeVariableReferenceExpression(int.class, "index"),
+					new CodeVariableReferenceExpression(int.class, "count"),
+					new CodeVariableReferenceExpression(String.class, "key"));
 			}
 			return expression;
 
 		} catch (ScriptTranslationException ex) {
-
-			// TODO: differentiate client-side deferred execution from syntax errors
 			throw ex.adjustErrorStatistics(node);
 
 		} catch (Exception ex) {
-
-			// TODO: differentiate client-side deferred execution from syntax errors
 			String message = ex.getMessage();
 			if (message == null) {
 				message = ex.toString();
 			}
 			throw new InvalidNodeException(message, node, ex);
 		}
+	}
+
+	private void buildDeferredWrite(String clientCode, int argSize)
+			throws IOException {
+
+		boolean prettyPrint = this.encoder.isPrettyPrint();
+		CodeStatementCollection scope = this.scopeStack.peek();
+
+		// use the script tag as its own replacement element
+		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
+		this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+		this.formatter.writeCloseElementBeginTag(this.buffer);
+
+		// emit patch function call which serializes attributes into object
+		this.buffer.append("duel.write(");
+
+		// emit client code directly
+		this.buffer.append(clientCode);
+
+		if (argSize > 0) {
+			CodeFieldReferenceExpression encoderVar = new CodeFieldReferenceExpression(
+				new CodeThisReferenceExpression(),
+				this.ensureEncoder());
+
+			this.buffer.append(',');
+			if (prettyPrint) {
+				this.buffer.append(' ');
+			}
+			this.flushBuffer();
+
+			// emit data var as literal
+			scope.add(new CodeMethodInvokeExpression(
+				Void.class,
+				encoderVar,
+				"write",
+				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(Object.class, "data"),
+				CodePrimitiveExpression.ONE));
+
+			if (argSize > 1) {
+				this.buffer.append(',');
+				if (prettyPrint) {
+					this.buffer.append(' ');
+				}
+				this.flushBuffer();
+
+				// emit index var as number
+				scope.add(new CodeMethodInvokeExpression(
+					Void.class,
+					encoderVar,
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(int.class, "index"),
+					CodePrimitiveExpression.ONE));
+
+				if (argSize > 2) {
+					this.buffer.append(',');
+					if (prettyPrint) {
+						this.buffer.append(' ');
+					}
+					this.flushBuffer();
+
+					// emit count var as number
+					scope.add(new CodeMethodInvokeExpression(
+						Void.class,
+						encoderVar,
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						CodePrimitiveExpression.ONE));
+
+					if (argSize > 3) {
+						this.buffer.append(',');
+						if (prettyPrint) {
+							this.buffer.append(' ');
+						}
+						this.flushBuffer();
+
+						// emit key var as String
+						scope.add(new CodeMethodInvokeExpression(
+							Void.class,
+							encoderVar,
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							new CodeVariableReferenceExpression(String.class, "key"),
+							CodePrimitiveExpression.ONE));
+					}
+				}
+			}
+		}
+		this.buffer.append(");");
+
+		// last parameter will be the current data
+		this.formatter.writeElementEndTag(this.buffer, "script");
 	}
 
 	private void buildElement(ElementNode element)
@@ -760,9 +919,7 @@ public class CodeDOMBuilder {
 		String idValue,
 		int argSize) throws IOException {
 
-		CodeFieldReferenceExpression encoderVar = new CodeFieldReferenceExpression(
-			new CodeThisReferenceExpression(),
-			this.ensureEncoder());
+		CodeFieldReferenceExpression encoderVar = null;
 		boolean prettyPrint = this.encoder.isPrettyPrint();
 
 		CodeStatementCollection scope = this.scopeStack.peek();
@@ -777,6 +934,10 @@ public class CodeDOMBuilder {
 
 		// emit id var or known value
 		if (idVar != null) {
+			encoderVar = new CodeFieldReferenceExpression(
+				new CodeThisReferenceExpression(),
+				this.ensureEncoder());
+
 			this.flushBuffer();
 			scope.add(new CodeMethodInvokeExpression(
 				Void.class,
@@ -797,6 +958,12 @@ public class CodeDOMBuilder {
 		this.encoder.write(this.buffer, deferredAttrs, 1);
 
 		if (argSize > 0) {
+			if (encoderVar == null) {
+				encoderVar = new CodeFieldReferenceExpression(
+					new CodeThisReferenceExpression(),
+					this.ensureEncoder());
+			}
+
 			this.buffer.append(',');
 			if (prettyPrint) {
 				this.buffer.append(' ');
@@ -882,7 +1049,7 @@ public class CodeDOMBuilder {
 
 		} catch (Exception ex) {
 			// only defer blocks that cannot be fully processed server-side
-			buildDeferredCodeBlock(node.getClientCode(), node.getArgSize());
+			this.buildDeferredCodeBlock(node.getClientCode(), node.getArgSize());
 		}
 	}
 

@@ -2,6 +2,7 @@ package org.duelengine.duel.codedom;
 
 import java.util.*;
 import org.duelengine.duel.DuelData;
+import org.duelengine.duel.ast.DuelNode;
 import org.duelengine.duel.codegen.ServerCodeGen;
 
 public abstract class CodeObject {
@@ -41,7 +42,40 @@ public abstract class CodeObject {
 		}
 		return this;
 	}
-	
+
+	@Override
+	public boolean equals(Object arg) {
+		if (!(arg instanceof CodeObject)) {
+			// includes null
+			return false;
+		}
+
+		CodeObject that = (CodeObject)arg;
+		if (this.userData == null) {
+			return (that.userData == null);
+		}
+
+		for (String name : this.userData.keySet()) {
+			if (!that.userData.containsKey(name)) {
+				return false;
+			}
+
+			Object thisValue = this.userData.get(name);
+			Object thatValue = that.userData.get(name);
+
+			if (thisValue == null ? thatValue != null : !thisValue.equals(thatValue)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return (this.userData != null) ? this.userData.hashCode() : super.hashCode();
+	}
+
 	@Override
 	public String toString() {
 		try {

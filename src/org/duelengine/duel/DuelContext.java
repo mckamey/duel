@@ -46,7 +46,7 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 			throw new NullPointerException("ident");
 		}
 
-		if (this.globalData == null || this.globalData.containsKey(ident)) {
+		if (this.globalData == null || !this.globalData.containsKey(ident)) {
 			return null;
 		}
 
@@ -63,6 +63,22 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 		}
 
 		this.globalData.putSparse(ident, value);
+	}
+
+	public boolean hasGlobalData(String... idents) {
+		if (this.globalData == null) {
+			return false;
+		}
+
+		if (idents != null) {
+			for (String ident : idents) {
+				if (!this.globalData.containsKey(ident)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	@Override

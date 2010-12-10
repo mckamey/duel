@@ -133,11 +133,6 @@ final class CodeDOMUtility {
 	 * @return null if not able to be inlined
 	 */
 	public static CodeExpression inlineMethod(CodeMethod method) {
-		if (method.getUserData(ScriptTranslator.CLIENT_SOURCE) != null) {
-			// maintain entire code block as unit for fallback support
-			return null;
-		}
-
 		List<CodeParameterDeclarationExpression> parameters = method.getParameters();
 		if (parameters.size() != 5 || !DuelContext.class.equals(parameters.get(0).getType())) {
 			// incompatible method signature
@@ -330,6 +325,14 @@ final class CodeDOMUtility {
 		return String.class;
 	}
 
+	public static CodeExpression lookupExternalVar(String ident) {
+		return new CodeMethodInvokeExpression(
+			Object.class,
+			new CodeVariableReferenceExpression(DuelContext.class, "output"),
+			"getGlobalData",
+			new CodePrimitiveExpression(ident));
+	}
+
 	/**
 	 * Implementation of common JS methods
 	 * @param returnType
@@ -369,5 +372,4 @@ final class CodeDOMUtility {
 		// implement others as needed
 		return null;
 	}
-
 }

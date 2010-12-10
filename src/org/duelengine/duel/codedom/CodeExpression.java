@@ -19,6 +19,10 @@ public abstract class CodeExpression extends CodeObject {
 		return this;
 	}
 
+	public CodeStatement asStatement() {
+		return new CodeExpressionStatement(this);
+	}
+
 	@Override
 	public CodeExpression withUserData(Object... pairs) {
 		return (CodeExpression)super.withUserData(pairs);

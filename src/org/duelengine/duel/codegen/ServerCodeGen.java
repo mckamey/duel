@@ -855,8 +855,10 @@ public class ServerCodeGen implements CodeGenerator {
 		return true;
 	}
 
-	private void writeGlobalDataReference(Appendable output, ScriptVariableReferenceExpression expression) {
-		throw new UnsupportedOperationException("ScriptVariableReferenceExpression "+expression.getIdent()); 
+	private void writeGlobalDataReference(Appendable output, ScriptVariableReferenceExpression expression)
+		throws IOException {
+
+		this.writeExpression(output, CodeDOMUtility.lookupExternalVar(expression.getIdent()));
 	}
 
 	private boolean writeConditionStatement(Appendable output, CodeConditionStatement statement)

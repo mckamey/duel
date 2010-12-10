@@ -19,10 +19,10 @@ import org.mozilla.javascript.ast.*;
  */
 public class ScriptTranslator implements ErrorReporter {
 
-	public static final String CLIENT_SOURCE = "CLIENT";
+	public static final String EXTERNAL_IDENTS = "EXTERNAL";
 	
 	private final IdentifierScope scope;
-	private boolean needsFallback;
+	private List<String> externalIdents;
 
 	public ScriptTranslator() {
 		this(new CodeTypeDeclaration());
@@ -41,6 +41,7 @@ public class ScriptTranslator implements ErrorReporter {
 	 */
 	public List<CodeMember> translate(String jsSource) {
 
+		this.externalIdents = null;
 		String jsFilename = "anonymous.js";
 		ErrorReporter errorReporter = this;
 
@@ -71,10 +72,9 @@ public class ScriptTranslator implements ErrorReporter {
 		}
 
 		List<CodeMember> members = this.visitRoot(root);
-		if (this.needsFallback && members.size() > 0) {
-			// store original source code on the member to
-			// allow generation of fallback block
-			members.get(0).withUserData(CLIENT_SOURCE, jsSource);
+		if (this.externalIdents != null && members.size() > 0) {
+			// store external identifiers on the member to allow generation of a fallback block
+			members.get(0).withUserData(EXTERNAL_IDENTS, this.externalIdents.toArray());
 		}
 		return members;
 	}
@@ -394,26 +394,20 @@ public class ScriptTranslator implements ErrorReporter {
 			if ("Infinity".equals(ident)) {
 				return new CodePrimitiveExpression(Double.POSITIVE_INFINITY);
 			}
+			
+			// fall through
 
-			// mark as potential to fail at runtime based upon data
-			this.needsFallback = true;
-			return new ScriptVariableReferenceExpression(ident);
-		}
-
-		if ("data".equals(ident)) {
+		} else if ("data".equals(ident)) {
 			return new CodeVariableReferenceExpression(Object.class, "data");
-		}
 
-		if ("index".equals(ident) || "count".equals(ident)) {
+		} else if ("index".equals(ident) || "count".equals(ident)) {
 			return new CodeVariableReferenceExpression(int.class, ident);
-		}
 
-		if ("key".equals(ident)) {
+		} else if ("key".equals(ident)) {
 			return new CodeVariableReferenceExpression(String.class, ident);
-		}
 
-		// map to the unique server-side identifier
-		if (declaration || this.scope.isLocalIdent(ident)) {
+		} else if (declaration || this.scope.isLocalIdent(ident)) {
+			// map to the unique server-side identifier
 			ident = this.scope.uniqueIdent(ident);
 
 			// TODO: can this surface result type?
@@ -421,7 +415,11 @@ public class ScriptTranslator implements ErrorReporter {
 		}
 
 		// mark as potential to fail at runtime based upon data
-		this.needsFallback = true;
+		if (this.externalIdents == null) {
+			this.externalIdents = new ArrayList<String>();
+		}
+		this.externalIdents.add(ident);
+
 		return new ScriptVariableReferenceExpression(ident);
 	}
 
@@ -449,7 +447,6 @@ public class ScriptTranslator implements ErrorReporter {
 			null);
 
 		if (node.depth() == 1) {
-			method.setReturnType(Void.class);
 			method.addParameter(DuelContext.class, "output");
 			method.addParameter(Object.class, "data");
 			method.addParameter(int.class, "index");
@@ -475,22 +472,31 @@ public class ScriptTranslator implements ErrorReporter {
 			throw new ScriptTranslationException("Unexpected function body: "+body.getClass(), node.getBody());
 		}
 
+		if ((node.depth() == 1) &&
+			!(method.getStatements().getLastStatement() instanceof CodeMethodReturnStatement)) {
+			// this is effectively an empty return in JavaScript
+			method.getStatements().add(new CodeMethodReturnStatement(CodePrimitiveExpression.NULL));
+		}
+
+		/*
+		// refine return type?
 		for (CodeStatement statement : method.getStatements()) {
 			if (statement instanceof CodeMethodReturnStatement &&
 				((CodeMethodReturnStatement)statement).getExpression() != null) {
-				// TODO: refine return type
-				method.setReturnType(Object.class);
+				method.setReturnType(((CodeMethodReturnStatement)statement).getExpression().getReturnType());
 				break;
 			}
 		}
-		
+		*/
+
 		return method;
 	}
 
 	private CodeMethodReturnStatement visitReturn(ReturnStatement node) {
 		CodeExpression value = this.visitExpression(node.getReturnValue());
 
-		return new CodeMethodReturnStatement(value);
+		// always return a value
+		return new CodeMethodReturnStatement(value != null ? value : CodePrimitiveExpression.NULL);
 	}
 
 	private CodeObject visitFunctionCall(FunctionCall node) {
