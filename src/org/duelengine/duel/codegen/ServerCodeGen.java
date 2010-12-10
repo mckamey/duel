@@ -304,7 +304,7 @@ public class ServerCodeGen implements CodeGenerator {
 
 		boolean needsSemicolon; 
 		if (statement instanceof CodeExpressionStatement) {
-			this.writeExpression(output, ((CodeExpressionStatement)statement).getExpression());
+			this.writeExpression(output, ((CodeExpressionStatement)statement).getExpression(), ParensSetting.SUPPRESS);
 			needsSemicolon = true;
 
 		} else if (statement instanceof CodeConditionStatement) {
@@ -449,10 +449,11 @@ public class ServerCodeGen implements CodeGenerator {
 				output.append(')');
 			}
 
+		} else if (expression instanceof ScriptVariableReferenceExpression) {
+			this.writeGlobalDataReference(output, (ScriptVariableReferenceExpression)expression);
+			
 		} else if (expression != null) {
-			// TODO: build client-side deferred execution here
-
-			throw new UnsupportedOperationException("Expression not yet supported: "+expression.getClass());
+			throw new UnsupportedOperationException("Unexpected expression: "+expression.getClass());
 		}
 	}
 
@@ -854,6 +855,10 @@ public class ServerCodeGen implements CodeGenerator {
 		return true;
 	}
 
+	private void writeGlobalDataReference(Appendable output, ScriptVariableReferenceExpression expression) {
+		throw new UnsupportedOperationException("ScriptVariableReferenceExpression "+expression.getIdent()); 
+	}
+
 	private boolean writeConditionStatement(Appendable output, CodeConditionStatement statement)
 		throws IOException {
 
@@ -919,12 +924,9 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writeMethodInvoke(Appendable output, CodeMethodInvokeExpression expression)
 		throws IOException {
 
-		this.writeExpression(output, expression.getTarget());
 		String methodName = expression.getMethodName();
-		if (methodName != null && methodName.length() > 0) {
-			output.append('.').append(methodName);
-		}
-		output.append('(');
+		this.writeExpression(output, expression.getTarget());
+		output.append('.').append(methodName).append('(');
 		boolean needsDelim = false;
 		List<CodeExpression> args = expression.getArguments();
 		boolean singleArg = (args.size() == 1);

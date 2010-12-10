@@ -82,6 +82,11 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 	}
 
 	@Override
+	public boolean isLocalIdent(String ident) {
+		return (this.identMap != null) && this.identMap.containsKey(ident);
+	}
+
+	@Override
 	public String uniqueIdent(String ident) {
 		if (this.identMap == null) {
 			this.identMap = new HashMap<String, String>();

@@ -4,6 +4,7 @@ import java.util.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.duelengine.duel.DuelContext;
+import org.duelengine.duel.DuelData;
 import org.duelengine.duel.codedom.*;
 
 public class ScriptTranslatorTests {
@@ -161,13 +162,18 @@ public class ScriptTranslatorTests {
 				},
 				new CodeMethodReturnStatement(
 					new CodeMethodInvokeExpression(
-						Object.class,
-						new CodePropertyReferenceExpression(
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodePrimitiveExpression("substr")),
-							null,
+						String.class,
+						new CodeMethodInvokeExpression(
+							String.class,
+							new CodeTypeReferenceExpression(DuelData.class),
+							"coerceString",
+							new CodeVariableReferenceExpression(Object.class, "data")),
+						"substring",
+						new CodePrimitiveExpression(5),
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.ADD,
 							new CodePrimitiveExpression(5),
-							new CodePrimitiveExpression(2))));
+							new CodePrimitiveExpression(2)))));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);
@@ -353,12 +359,19 @@ public class ScriptTranslatorTests {
 
 	@Test
 	public void translateForLoopTest() {
-		String input = "function(data) { for (var i=0, length=data.length; i<length; i++) { data[i].toString(); } }";
+		String input =
+			"function(data) {"+
+			"var str;"+
+			"for (var i=0, length=data.length; i<length; i++) {"+
+			"str += data[i].toString();"+
+			"}"+
+			"return str;"+
+			"}";
 
 		CodeMethod expected =
 			new CodeMethod(
 				AccessModifierType.PRIVATE,
-				Void.class,
+				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
@@ -367,31 +380,36 @@ public class ScriptTranslatorTests {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
+				new CodeVariableDeclarationStatement(Object.class, "str2", null),
 				new CodeIterationStatement(
 					new CodeVariableCompoundDeclarationStatement(
-						new CodeVariableDeclarationStatement(Object.class, "i2",
-							new CodePrimitiveExpression(0.0)),
+						new CodeVariableDeclarationStatement(Object.class, "i3",
+							new CodePrimitiveExpression(0)),
 						new CodeVariableDeclarationStatement(Object.class, "length4",
 							new CodePropertyReferenceExpression(
 								new CodeVariableReferenceExpression(Object.class, "data"),
-								new CodePrimitiveExpression("length4")))),
+								new CodePrimitiveExpression("length")))),
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.LESS_THAN,
-						new CodeVariableReferenceExpression(Object.class, "i2"),
+						new CodeVariableReferenceExpression(Object.class, "i3"),
 						new CodeVariableReferenceExpression(Object.class, "length4")),
 					new CodeExpressionStatement(
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.POST_INCREMENT,
-							new CodeVariableReferenceExpression(Object.class, "i2"))),
+							new CodeVariableReferenceExpression(Object.class, "i3"))),
 					new CodeExpressionStatement(
-						new CodeMethodInvokeExpression(
-							Object.class,
-							new CodePropertyReferenceExpression(
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.ADD_ASSIGN,
+							new CodeVariableReferenceExpression(Object.class, "str2"),
+							new CodeMethodInvokeExpression(
+								String.class,
+								new CodeTypeReferenceExpression(DuelData.class),
+								"coerceString",
 								new CodePropertyReferenceExpression(
 									new CodeVariableReferenceExpression(Object.class, "data"),
-									new CodeVariableReferenceExpression(Object.class, "i2")),
-								new CodePrimitiveExpression("toString")),
-							null))));
+									new CodeVariableReferenceExpression(Object.class, "i3")))))),
+					new CodeMethodReturnStatement(
+						new CodeVariableReferenceExpression(Object.class, "str2")));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);

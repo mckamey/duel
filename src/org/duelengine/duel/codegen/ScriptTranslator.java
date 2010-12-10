@@ -134,7 +134,7 @@ public class ScriptTranslator implements ErrorReporter {
 			case Token.RETURN:
 				return this.visitReturn((ReturnStatement)node);
 			case Token.NAME:
-				return this.visitVarRef((Name)node);
+				return this.visitVarRef((Name)node, false);
 			case Token.LP:
 				CodeExpression expr = this.visitExpression(((ParenthesizedExpression)node).getExpression());
 				if (expr != null) {
@@ -347,23 +347,32 @@ public class ScriptTranslator implements ErrorReporter {
 		CodeVariableCompoundDeclarationStatement vars = new CodeVariableCompoundDeclarationStatement();
 
 		for (VariableInitializer init : node.getVariables()) {
-			CodeObject target = this.visit(init.getTarget());
+			Node nameNode = init.getTarget();
+			if (!(nameNode instanceof Name)) {
+				throw new ScriptTranslationException("Unexpected VAR node type ("+nameNode.getClass()+")", node);
+			}
+			CodeObject target = this.visitVarRef((Name)nameNode, true);
 			if (!(target instanceof CodeVariableReferenceExpression)) {
 				throw new ScriptTranslationException("Unexpected VAR type ("+target.getClass()+")", node);
 			}
 
-			// TODO: can this surface result type?
-			String ident = this.scope.uniqueIdent(((CodeVariableReferenceExpression)target).getIdent());
+			CodeVariableReferenceExpression varRef = ((CodeVariableReferenceExpression)target);
 			CodeVariableDeclarationStatement decl = new CodeVariableDeclarationStatement(
-				Object.class, ident, this.visitExpression(init.getInitializer()));
+					varRef.getResultType(),
+					varRef.getIdent(),
+					this.visitExpression(init.getInitializer()));
 
 			vars.addVar(decl);
 		}
 
+		if (vars.getVars().size() == 1) {
+			return vars.getVars().get(0);
+		}
+		
 		return vars;
 	}
 
-	private CodeObject visitVarRef(Name node) {
+	private CodeObject visitVarRef(Name node, boolean declaration) {
 		String ident = node.getIdentifier();
 
 		if (JSUtility.isGlobalIdent(ident)) {
@@ -377,8 +386,8 @@ public class ScriptTranslator implements ErrorReporter {
 				return new CodePrimitiveExpression(Double.POSITIVE_INFINITY);
 			}
 
-			throw new ScriptTranslationException("Unsupported global var reference: "+ident, node);
-//			return new ScriptVariableReferenceExpression(ident);
+//			throw new ScriptTranslationException("Unsupported global var reference: "+ident, node);
+			return new ScriptVariableReferenceExpression(ident);
 		}
 
 		if ("data".equals(ident)) {
@@ -394,10 +403,14 @@ public class ScriptTranslator implements ErrorReporter {
 		}
 
 		// map to the unique server-side identifier
-		ident = this.scope.uniqueIdent(ident);
+		if (declaration || this.scope.isLocalIdent(ident)) {
+			ident = this.scope.uniqueIdent(ident);
 
-		// TODO: can this surface result type?
-		return new CodeVariableReferenceExpression(Object.class, ident);
+			// TODO: can this surface result type?
+			return new CodeVariableReferenceExpression(Object.class, ident);
+		}
+
+		return new ScriptVariableReferenceExpression(ident);
 	}
 
 	private CodeObject visitForLoop(ForLoop node) {
@@ -470,11 +483,23 @@ public class ScriptTranslator implements ErrorReporter {
 
 	private CodeObject visitFunctionCall(FunctionCall node) {
 		CodeExpression target = this.visitExpression(node.getTarget());
-		if (target instanceof CodeVariableReferenceExpression) {
-			throw new ScriptTranslationException("Arbitrary function call not supported ("+node.getClass()+"):\n"+(node.debugPrint()), node.getTarget());
+		if (!(target instanceof CodePropertyReferenceExpression)) {
+			throw new ScriptTranslationException("Unsupported function call ("+node.getClass()+"):\n"+(node.debugPrint()), node.getTarget());
 		}
+
+		CodePropertyReferenceExpression propertyRef = (CodePropertyReferenceExpression)target;
+		CodeExpression nameExpr = propertyRef.getPropertyName();
+		if (!(nameExpr instanceof CodePrimitiveExpression)) {
+			throw new ScriptTranslationException("Unsupported function call ("+node.getClass()+"):\n"+(node.debugPrint()), node.getTarget());
+		}
+		String methodName = DuelData.coerceString(((CodePrimitiveExpression)nameExpr).getValue());
 		CodeExpression[] args = this.visitExpressionList(node.getArguments());
-		return new CodeMethodInvokeExpression(Object.class, target, null, args);
+
+		CodeObject methodCall = CodeDOMUtility.translateMethodCall(propertyRef.getResultType(), propertyRef.getTarget(), methodName, args);
+		if (methodCall == null) {
+			throw new ScriptTranslationException("Unsupported function call ("+node.getClass()+"):\n"+(node.debugPrint()), node.getTarget());
+		}
+		return methodCall;
 	}
 
 	private CodeObject visitNew(NewExpression node) {

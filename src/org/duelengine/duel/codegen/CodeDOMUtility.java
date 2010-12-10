@@ -324,4 +324,45 @@ final class CodeDOMUtility {
 		// generalize others get coerced to String
 		return String.class;
 	}
+
+	/**
+	 * Implementation of common JS methods
+	 * @param returnType
+	 * @param target
+	 * @param methodName
+	 * @param args
+	 * @return
+	 */
+	public static CodeObject translateMethodCall(Class<?> returnType, CodeExpression target, String methodName, CodeExpression... args) {
+		if ("toString".equals(methodName)) {
+			return ensureString(target);
+		}
+
+		if ("substring".equals(methodName)) {
+			return new CodeMethodInvokeExpression(
+				String.class,
+				ensureString(target),
+				"substring",
+				args);
+		}
+
+		if ("substr".equals(methodName)) {
+			if (args.length > 1) {
+				args[1] = new CodeBinaryOperatorExpression(
+					CodeBinaryOperatorType.ADD,
+					args[0],
+					args[1]);
+			}
+
+			return new CodeMethodInvokeExpression(
+				String.class,
+				ensureString(target),
+				"substring",
+				args);
+		}
+
+		// implement others as needed
+		return null;
+	}
+
 }
