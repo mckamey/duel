@@ -86,12 +86,16 @@ public final class DuelData {
 	 * @return
 	 */
 	public static boolean coerceBoolean(Object data) {
-		return
-			!(data == null ||
-			Boolean.FALSE.equals(data) ||
-			"".equals(data) ||
-			ZERO.equals(data) ||
-			NaN.equals(data));
+		if (data == null || Boolean.FALSE.equals(data) || "".equals(data)) {
+			return false;
+		}
+
+		if (data instanceof Number) {
+			data = ((Number)data).doubleValue();
+			return !(ZERO.equals(data) || NaN.equals(data));
+		}
+
+		return true;
 	}
 
 	/**
