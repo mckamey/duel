@@ -8,22 +8,16 @@ import java.util.*;
 @SuppressWarnings("serial")
 public class CodeStatementCollection extends ArrayList<CodeStatement> implements IdentifierScope {
 
+	private final CodeObject owner;
 	private Map<String, String> identMap;
 	private int nextID;
 
-	public CodeStatementCollection() {
+	public CodeStatementCollection(CodeObject owner) {
+		this.owner = owner;
 	}
 
-	public CodeStatementCollection(CodeStatement[] statements) {
-		this(Arrays.asList(statements));
-	}
-
-	public CodeStatementCollection(Iterable<CodeStatement> statements) {
-		if (statements != null) {
-			for (CodeStatement statement : statements) {
-				this.add(statement);
-			}
-		}
+	public CodeObject getOwner() {
+		return owner;
 	}
 
 	public boolean addAll(CodeStatementBlock block) {

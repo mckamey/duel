@@ -8,15 +8,17 @@ public class CodeIterationStatement extends CodeStatement {
 	private CodeStatement initStatement;
 	private CodeExpression testExpression;
 	private CodeStatement incrementStatement;
-	private final CodeStatementCollection statements = new CodeStatementCollection();
+	private final CodeStatementCollection statements;
 
 	public CodeIterationStatement() {
+		this(null, null, null);
 	}
 
 	public CodeIterationStatement(CodeStatement initStatement, CodeExpression testExpression, CodeStatement incrementStatement, CodeStatement... statements) {
 		this.initStatement = initStatement;
 		this.testExpression = testExpression;
 		this.incrementStatement = incrementStatement;
+		this.statements = new CodeStatementCollection(this);
 		if (statements != null) {
 			this.statements.addAll(statements);
 		}

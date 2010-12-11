@@ -2,7 +2,6 @@ package org.duelengine.duel.codegen;
 
 import java.io.IOException;
 import java.util.*;
-
 import org.duelengine.duel.*;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
@@ -25,7 +24,8 @@ public class CodeDOMBuilder {
 	private final StringBuilder buffer;
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
 	private CodeTypeDeclaration viewType;
-	private TagMode tagMode = TagMode.None;
+	private TagMode tagMode;
+	private boolean globalsEmitted;
 
 	public CodeDOMBuilder() {
 		this(null);
@@ -46,6 +46,9 @@ public class CodeDOMBuilder {
 			String name = fullName.substring(lastDot+1);
 			String ns = (lastDot > 0) ? fullName.substring(0, lastDot) : null;
 
+			this.scopeStack.clear();
+			this.tagMode = TagMode.None;
+			this.globalsEmitted = false;
 			this.viewType = CodeDOMUtility.createViewType(ns, name);
 
 			CodeMethod method = this.buildRenderMethod(viewNode.getChildren()).withOverride();
@@ -202,7 +205,7 @@ public class CodeDOMBuilder {
 		CodeExpression dataExpr;
 		DuelNode callData = node.getAttribute(CALLCommandNode.DATA);
 		if (callData instanceof CodeBlockNode) {
-			dataExpr = this.translateExpression((CodeBlockNode)callData);
+			dataExpr = this.translateExpression((CodeBlockNode)callData, false);
 		} else {
 			dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
 		}
@@ -210,7 +213,7 @@ public class CodeDOMBuilder {
 		CodeExpression indexExpr;
 		DuelNode callIndex = node.getAttribute(CALLCommandNode.INDEX);
 		if (callIndex instanceof CodeBlockNode) {
-			indexExpr = this.translateExpression((CodeBlockNode)callIndex);
+			indexExpr = this.translateExpression((CodeBlockNode)callIndex, false);
 		} else {
 			indexExpr = new CodeVariableReferenceExpression(int.class, "index");
 		}
@@ -218,7 +221,7 @@ public class CodeDOMBuilder {
 		CodeExpression countExpr;
 		DuelNode callCount = node.getAttribute(CALLCommandNode.COUNT);
 		if (callCount instanceof CodeBlockNode) {
-			countExpr = this.translateExpression((CodeBlockNode)callCount);
+			countExpr = this.translateExpression((CodeBlockNode)callCount, false);
 		} else {
 			countExpr = new CodeVariableReferenceExpression(int.class, "count");
 		}
@@ -226,7 +229,7 @@ public class CodeDOMBuilder {
 		CodeExpression keyExpr;
 		DuelNode callKey = node.getAttribute(CALLCommandNode.KEY);
 		if (callKey instanceof CodeBlockNode) {
-			keyExpr = this.translateExpression((CodeBlockNode)callKey);
+			keyExpr = this.translateExpression((CodeBlockNode)callKey, false);
 		} else {
 			keyExpr = new CodeVariableReferenceExpression(String.class, "key");
 		}
@@ -325,11 +328,11 @@ public class CodeDOMBuilder {
 		CodeExpression dataExpr;
 		DuelNode loopCount = node.getAttribute(FORCommandNode.COUNT);
 		if (loopCount instanceof CodeBlockNode) {
-			CodeExpression countExpr = this.translateExpression((CodeBlockNode)loopCount);
+			CodeExpression countExpr = this.translateExpression((CodeBlockNode)loopCount, false);
 
 			DuelNode loopData = node.getAttribute(FORCommandNode.DATA);
 			if (loopData instanceof CodeBlockNode) {
-				dataExpr = this.translateExpression((CodeBlockNode)loopData);
+				dataExpr = this.translateExpression((CodeBlockNode)loopData, false);
 			} else {
 				dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
 			}
@@ -339,7 +342,7 @@ public class CodeDOMBuilder {
 		} else {
 			DuelNode loopObj = node.getAttribute(FORCommandNode.IN);
 			if (loopObj instanceof CodeBlockNode) {
-				CodeExpression objExpr = this.translateExpression((CodeBlockNode)loopObj);
+				CodeExpression objExpr = this.translateExpression((CodeBlockNode)loopObj, false);
 				this.buildIterationObject(scope, objExpr, innerBind);
 
 			} else {
@@ -348,7 +351,7 @@ public class CodeDOMBuilder {
 					throw new InvalidNodeException("FOR loop missing arguments", loopArray);
 				}
 
-				CodeExpression arrayExpr = this.translateExpression((CodeBlockNode)loopArray);
+				CodeExpression arrayExpr = this.translateExpression((CodeBlockNode)loopArray, false);
 				this.buildIterationArray(scope, arrayExpr, innerBind);
 			}
 		}
@@ -596,7 +599,7 @@ public class CodeDOMBuilder {
 		CodeConditionStatement condition = new CodeConditionStatement();
 		scope.add(condition);
 
-		condition.setCondition(this.translateExpression(testNode));
+		condition.setCondition(this.translateExpression(testNode, false));
 
 		if (node.hasChildren()) {
 			this.scopeStack.push(condition.getTrueStatements());
@@ -610,7 +613,7 @@ public class CodeDOMBuilder {
 		return condition.getFalseStatements();
 	}
 
-	private CodeExpression translateExpression(CodeBlockNode node) {
+	private CodeExpression translateExpression(CodeBlockNode node, boolean isWrite) {
 
 		try {
 			// convert from JavaScript source to CodeDOM
@@ -647,7 +650,7 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(String.class, "key"));
 			}
 
-			if (members.size() > 0 &&
+			if (isWrite && members.size() > 0 &&
 				members.get(0).getUserData(ScriptTranslator.EXTERNAL_IDENTS) instanceof Object[]) {
 
 				Object[] idents = (Object[])members.get(0).getUserData(ScriptTranslator.EXTERNAL_IDENTS);
@@ -730,6 +733,7 @@ public class CodeDOMBuilder {
 		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
 		this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
 		this.formatter.writeCloseElementBeginTag(this.buffer);
+		this.ensureGlobalsEmitted(false);
 
 		// emit patch function call which serializes attributes into object
 		this.buffer.append("duel.write(");
@@ -818,6 +822,11 @@ public class CodeDOMBuilder {
 		throws IOException {
 
 		String tagName = element.getTagName();
+
+		if ("script".equalsIgnoreCase(tagName)) {
+			this.ensureGlobalsEmitted(true);
+		}
+		
 		this.formatter.writeOpenElementBeginTag(this.buffer, tagName);
 
 		int argSize = 0;
@@ -880,9 +889,11 @@ public class CodeDOMBuilder {
 			TagMode prevMode = this.tagMode;
 			if ("script".equalsIgnoreCase(tagName) || "style".equalsIgnoreCase(tagName)) {
 				this.tagMode = TagMode.SuspendMode;
+
 			} else if ("pre".equalsIgnoreCase(tagName)) {
 				this.tagMode = TagMode.PreMode;
 			}
+
 			try {
 				for (DuelNode child : element.getChildren()) {
 					if (this.settings.getNormalizeWhitespace() &&
@@ -928,6 +939,7 @@ public class CodeDOMBuilder {
 		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
 		this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
 		this.formatter.writeCloseElementBeginTag(this.buffer);
+		this.ensureGlobalsEmitted(false);
 
 		// emit patch function call which serializes attributes into object
 		this.buffer.append("duel.attr(");
@@ -1070,6 +1082,7 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement idVar = this.emitClientID();
 		this.formatter.writeCloseAttribute(this.buffer);
 		this.formatter.writeCloseElementBeginTag(this.buffer);
+		this.ensureGlobalsEmitted(false);
 
 		// emit patch function call which serializes attributes into object
 		this.buffer.append("duel.replace(");
@@ -1192,7 +1205,7 @@ public class CodeDOMBuilder {
 			block = new ExpressionNode(block.getValue(), block.getIndex(), block.getLine(), block.getColumn());
 		}
 
-		CodeExpression codeExpr = this.translateExpression(block);
+		CodeExpression codeExpr = this.translateExpression(block, true);
 		if (codeExpr == null) {
 			return null;
 		}
@@ -1200,6 +1213,38 @@ public class CodeDOMBuilder {
 		return htmlEncode ?
 			CodeDOMUtility.emitExpressionSafe(codeExpr) :
 			CodeDOMUtility.emitExpression(codeExpr);
+	}
+
+	private void ensureGlobalsEmitted(boolean needsTags) {
+		if (this.globalsEmitted) {
+			return;
+		}
+
+		// emit check just inside first script block
+		this.flushBuffer();
+
+		CodeField encoder = this.ensureEncoder();
+		this.scopeStack.peek().add(
+			new CodeMethodInvokeExpression(
+				Void.class,
+				new CodeThisReferenceExpression(),
+				"writeGlobalData",
+				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), encoder),
+				new CodePrimitiveExpression(needsTags)));
+
+		// check scope chain for any condition or iteration blocks that
+		// might prevent this from being emitted. if found do not mark.
+		// there is a runtime check as well which will prevent multiple.
+		for (CodeStatementCollection scope : this.scopeStack) {
+
+			// TODO: this is too naive. doesn't work with hybrid methods
+			if (!(scope.getOwner() instanceof CodeMethod)) {
+				return;
+			}
+		}
+
+		this.globalsEmitted = true;
 	}
 
 	private CodeMethod ensureInitMethod() {

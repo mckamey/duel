@@ -4,7 +4,8 @@ import java.io.*;
 import java.util.*;
 
 /**
- * The skeletal implementation of DUEL view runtime
+ * The skeletal implementation of DUEL view runtime.
+ * Inherently thread-safe as contains no instance data.
  */
 public abstract class DuelView {
 
@@ -297,6 +298,25 @@ public abstract class DuelView {
 		}
 	}
 
+	protected void writeGlobalData(DuelContext output, DataEncoder encoder, boolean needsTags)
+		throws IOException {
+
+		if (!output.isGlobalDataPending()) {
+			return;
+		}
+
+		if (needsTags) {
+			formatter.writeOpenElementBeginTag(output, "script");
+			formatter.writeAttribute(output, "type", "text/javascript");
+			formatter.writeCloseElementBeginTag(output);
+		}
+		encoder.writeVars(output, output.getGlobalData());
+		if (needsTags) {
+			formatter.writeElementEndTag(output, "script");
+		}
+		output.setGlobalDataPending(false);
+	}
+	
 	/**
 	 * A work-around for dynamic post-inc/dec operators
 	 * @param value

@@ -11,6 +11,7 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 	private final Appendable output;
 	private final ClientIDStrategy clientID;
 	private boolean encodeNonASCII = true;
+	private boolean globalDataPending;
 	private SparseMap globalData;
 
 	public DuelContext(Appendable output) {
@@ -37,10 +38,6 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 		this.encodeNonASCII = value;
 	}
 
-	Object getGlobals() {
-		return this.globalData;
-	}
-
 	public Object getGlobalData(String ident) {
 		if (ident == null) {
 			throw new NullPointerException("ident");
@@ -62,6 +59,7 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 			this.globalData = new SparseMap();
 		}
 
+		this.globalDataPending = true;
 		this.globalData.putSparse(ident, value);
 	}
 
@@ -79,6 +77,18 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 		}
 
 		return true;
+	}
+
+	SparseMap getGlobalData() {
+		return this.globalData;
+	}
+
+	boolean isGlobalDataPending() {
+		return this.globalDataPending;
+	}
+
+	void setGlobalDataPending(boolean value) {
+		this.globalDataPending = value;
 	}
 
 	@Override

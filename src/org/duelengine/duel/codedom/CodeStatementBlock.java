@@ -1,17 +1,14 @@
 package org.duelengine.duel.codedom;
 
 /**
- * Only used internally to pass around a sequence of statements as a CodeObject
+ * Used internally to pass around a sequence of statements as a CodeObject
  */
 public class CodeStatementBlock extends CodeObject {
 
-	private final CodeStatementCollection statements = new CodeStatementCollection();
+	private final CodeStatementCollection statements;
 
 	public CodeStatementBlock() {
-	}
-
-	public CodeStatementBlock(CodeStatement[] statements) {
-		this.statements.addAll(statements);
+		this.statements = new CodeStatementCollection(this);
 	}
 
 	public CodeStatementCollection getStatements() {

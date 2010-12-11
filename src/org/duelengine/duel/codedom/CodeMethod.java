@@ -7,13 +7,14 @@ import java.util.*;
  */
 public class CodeMethod extends CodeMember {
 
-	private Class<?> returnType = Void.class;
+	private Class<?> returnType;
 	private final List<CodeParameterDeclarationExpression> parameters = new ArrayList<CodeParameterDeclarationExpression>();
-	private final CodeStatementCollection statements = new CodeStatementCollection();
+	private final CodeStatementCollection statements;
 	private final List<Class<?>> exceptions = new ArrayList<Class<?>>();
 	private boolean override;
 
 	public CodeMethod() {
+		this(AccessModifierType.DEFAULT, null, null, null);
 	}
 
 	public CodeMethod(AccessModifierType access, Class<?> returnType, String methodName,
@@ -21,12 +22,13 @@ public class CodeMethod extends CodeMember {
 
 		super(access, methodName);
 
-		if (returnType != null) {
-			this.returnType = returnType;
-		}
+		this.setReturnType(returnType);
+
 		if (parameters != null) {
 			this.parameters.addAll(Arrays.asList(parameters));
 		}
+
+		this.statements = new CodeStatementCollection(this);
 		if (statements != null) {
 			this.statements.addAll(statements);
 		}

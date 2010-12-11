@@ -1,14 +1,13 @@
 package org.duelengine.duel.codedom;
 
-import java.util.Arrays;
-
 public class CodeConditionStatement extends CodeStatement {
 
 	private CodeExpression condition;
-	private final CodeStatementCollection trueStatements = new CodeStatementCollection();
-	private final CodeStatementCollection falseStatements = new CodeStatementCollection();
+	private final CodeStatementCollection trueStatements;
+	private final CodeStatementCollection falseStatements;
 
 	public CodeConditionStatement() {
+		this(null);
 	}
 
 	public CodeConditionStatement(CodeExpression condition, CodeStatement... trueStatements) {
@@ -16,6 +15,9 @@ public class CodeConditionStatement extends CodeStatement {
 	}
 
 	public CodeConditionStatement(CodeExpression condition, CodeStatement[] trueStatements, CodeStatement[] falseStatements) {
+		this.trueStatements = new CodeStatementCollection(this);
+		this.falseStatements = new CodeStatementCollection(this);
+
 		this.condition = condition;
 
 		if (trueStatements != null) {

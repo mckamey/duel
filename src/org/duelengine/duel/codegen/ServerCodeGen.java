@@ -865,7 +865,7 @@ public class ServerCodeGen implements CodeGenerator {
 		throws IOException {
 
 		output.append("if (");
-		this.writeExpression(output, statement.getCondition(), ParensSetting.SUPPRESS);
+		this.writeExpression(output, CodeDOMUtility.ensureBoolean(statement.getCondition()), ParensSetting.SUPPRESS);
 		output.append(") {");
 		this.depth++;
 
@@ -907,7 +907,7 @@ public class ServerCodeGen implements CodeGenerator {
 
 		this.writeStatement(output, statement.getInitStatement(), true);
 		output.append("; ");
-		this.writeExpression(output, statement.getTestExpression());
+		this.writeExpression(output, CodeDOMUtility.ensureBoolean(statement.getTestExpression()));
 		output.append("; ");
 		this.writeStatement(output, statement.getIncrementStatement(), true);
 
