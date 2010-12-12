@@ -287,7 +287,7 @@ public abstract class DuelView {
 	 */
 	protected Object getProperty(Object data, Object property) {
 		if (data == null || property == null) {
-			// technically "undefined" or error
+			// technically "undefined" or error if data is null
 			return null;
 		}
 

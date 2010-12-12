@@ -467,11 +467,15 @@ public class ServerCodeGen implements CodeGenerator {
 	private void writePropertyReference(Appendable output, CodePropertyReferenceExpression expression)
 		throws IOException {
 
-		output.append("this.getProperty(");
-		this.writeExpression(output, expression.getTarget());
-		output.append(", ");
-		this.writeExpression(output, expression.getPropertyName());
-		output.append(')');
+		// translate into dynamic helper method call
+		this.writeExpression(
+			output,
+			new CodeMethodInvokeExpression(
+				expression.getResultType(),
+				new CodeThisReferenceExpression(),
+				"getProperty",
+				expression.getTarget(),
+				expression.getPropertyName()));
 	}
 
 	private void writeBinaryOperator(Appendable output, CodeBinaryOperatorExpression expression)
