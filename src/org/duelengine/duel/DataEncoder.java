@@ -2,7 +2,6 @@ package org.duelengine.duel;
 
 import java.io.*;
 import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * Utility for writing data as JavaScript literals
@@ -493,7 +492,7 @@ public class DataEncoder {
 
 		// emit as a code block of var declarations
 		List<String> namespaces = new ArrayList<String>();
-		for (Entry<String, Object> globalVar : vars.entrySet()) {
+		for (Map.Entry<String, Object> globalVar : vars.entrySet()) {
 			String key = globalVar.getKey();
 			this.writeNamespace(output, namespaces, key);
 
@@ -528,7 +527,7 @@ public class DataEncoder {
 
 		if (Map.class.isAssignableFrom(dataType)) {
 			boolean isSparseMap = SparseMap.class.equals(dataType);
-			for (Entry<?,?> child : ((Map<?,?>)data).entrySet()) {
+			for (Map.Entry<?,?> child : ((Map<?,?>)data).entrySet()) {
 				String key = DuelData.coerceString(child.getKey());
 				if (JSUtility.isValidIdentifier(key, false)) {
 					if (!emptyBuffer) {

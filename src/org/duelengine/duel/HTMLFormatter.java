@@ -8,11 +8,11 @@ import java.io.*;
  */
 public class HTMLFormatter {
 
-	public void writeComment(Appendable output, String value)
+	public HTMLFormatter writeComment(Appendable output, String value)
 		throws IOException {
 
-		final String OPEN = "<!--"; 
-		final String CLOSE = "-->"; 
+		final String OPEN = "<!--";
+		final String CLOSE = "-->";
 
 		output.append(OPEN);
 		if (value != null) {
@@ -21,8 +21,7 @@ public class HTMLFormatter {
 
 			int close = value.indexOf(CLOSE);
 			while (close >= 0) {
-				output.append(value, start, close+2);
-				output.append("&gt;");
+				output.append(value, start, close+2).append("&gt;");
 				start = close+3;
 				close = value.indexOf(CLOSE, start);
 			}
@@ -32,88 +31,103 @@ public class HTMLFormatter {
 			}
 		}
 		output.append(CLOSE);
+
+		return this;
 	}
 
-	public void writeDocType(Appendable output, String value)
+	public HTMLFormatter writeDocType(Appendable output, String value)
 		throws IOException {
 
-		output.append("<!doctype");
+		final String OPEN = "<!doctype";
+		final char CLOSE = '>';
+
+		output.append(OPEN);
 		if (value != null && value.length() > 0) {
 			output.append(' ').append(value);
 		}
-		output.append('>');
+		output.append(CLOSE);
+
+		return this;
 	}
 
-	public void writeOpenElementBeginTag(Appendable output, String tagName)
+	public HTMLFormatter writeOpenElementBeginTag(Appendable output, String tagName)
 		throws IOException {
 
-		output.append('<');
-		output.append(tagName);
+		output.append('<').append(tagName);
+
+		return this;
 	}
 
-	public void writeOpenAttribute(Appendable output, String name)
+	public HTMLFormatter writeOpenAttribute(Appendable output, String name)
 		throws IOException {
 
-		output.append(' ');
-		output.append(name);
-		output.append("=\"");
+		output.append(' ').append(name).append("=\"");
+
+		return this;
 	}
 
-	public void writeCloseAttribute(Appendable output)
+	public HTMLFormatter writeCloseAttribute(Appendable output)
 		throws IOException {
 
 		output.append('"');
+
+		return this;
 	}
 
-	public void writeAttribute(Appendable output, String name, String value)
+	public HTMLFormatter writeAttribute(Appendable output, String name, String value)
 		throws IOException {
 
-		output.append(' ');
-		output.append(name);
+		output.append(' ').append(name);
 		if (value != null) {
 			output.append("=\"");
 			this.writeLiteral(output, value, true, true);
 			output.append('"');
 		}
+
+		return this;
 	}
 
-	public void writeCloseElementBeginTag(Appendable output)
+	public HTMLFormatter writeCloseElementBeginTag(Appendable output)
 		throws IOException {
 
 		output.append('>');
+
+		return this;
 	}
 
-	public void writeCloseElementVoidTag(Appendable output)
+	public HTMLFormatter writeCloseElementVoidTag(Appendable output)
 		throws IOException {
 
 		output.append(" />");
+
+		return this;
 	}
 
-	public void writeElementEndTag(Appendable output, String tagName)
+	public HTMLFormatter writeElementEndTag(Appendable output, String tagName)
 		throws IOException {
 
-		output.append("</");
-		output.append(tagName);
-		output.append('>');
+		output.append("</").append(tagName).append('>');
+
+		return this;
 	}
 
-	public void writeLiteral(Appendable output, String value)
+	public HTMLFormatter writeLiteral(Appendable output, String value)
 		throws IOException {
 
-		this.writeLiteral(output, value, false, false);
+		return this.writeLiteral(output, value, false, false);
 	}
 
-	public void writeLiteral(Appendable output, String value, boolean encodeNonASCII)
+	public HTMLFormatter writeLiteral(Appendable output, String value, boolean encodeNonASCII)
 		throws IOException {
 
-		this.writeLiteral(output, value, false, encodeNonASCII);
+		return this.writeLiteral(output, value, false, encodeNonASCII);
 	}
 
-	private void writeLiteral(Appendable output, String value, boolean isAttribute, boolean encodeNonASCII)
+	private HTMLFormatter writeLiteral(Appendable output, String value, boolean isAttribute, boolean encodeNonASCII)
 		throws IOException {
 
 		if (value == null) {
-			return;
+			return this;
 		}
 
 		int start = 0,
@@ -212,5 +226,7 @@ public class HTMLFormatter {
 				output.append(value, start, length);
 			}
 		}
+
+		return this;
 	}
 }

@@ -1,36 +1,46 @@
 package org.duelengine.duel;
 
-import java.io.IOException;
-
 /**
  * Maintains context state for a single request/response cycle.
  * DuelContext is not thread-safe and not intended to be reusable.
  */
-public class DuelContext implements Appendable {
+public class DuelContext {
 
 	private final Appendable output;
-	private final ClientIDStrategy clientID;
+	private ClientIDStrategy clientID;
+	private DataEncoder encoder;
+	private String newline;
+	private String indent;
 	private boolean encodeNonASCII = true;
+
 	private boolean globalsPending;
 	private SparseMap globals;
 
 	public DuelContext(Appendable output) {
-		this(output, new IncClientIDStrategy());
-	}
-
-	public DuelContext(Appendable output, ClientIDStrategy clientID) {
 		if (output == null) {
 			throw new NullPointerException("output");
 		}
-		if (clientID == null) {
-			throw new NullPointerException("clientID");
-		}
 
 		this.output = output;
-		this.clientID = clientID;
 	}
 
-	public boolean getEncodeNonASCII() {
+	String getNewline() {
+		return this.newline;
+	}
+
+	public void setNewline(String value) {
+		this.newline = value;
+	}
+
+	String getIndent() {
+		return this.indent;
+	}
+
+	public void setIndent(String value) {
+		this.indent = value;
+	}
+
+	boolean getEncodeNonASCII() {
 		return this.encodeNonASCII;
 	}
 
@@ -94,29 +104,20 @@ public class DuelContext implements Appendable {
 	Appendable getOutput() {
 		return this.output;
 	}
-	
+
+	DataEncoder getEncoder() {
+		if (this.encoder == null) {
+			this.encoder = new DataEncoder(this.newline, this.indent);
+		}
+
+		return this.encoder;
+	}
+
 	String nextID() {
+		if (this.clientID == null) {
+			this.clientID = new IncClientIDStrategy();
+		}
+
 		return this.clientID.nextID();
-	}
-	
-	@Override
-	public Appendable append(CharSequence csq)
-		throws IOException {
-
-		return this.output.append(csq);
-	}
-
-	@Override
-	public Appendable append(char c)
-		throws IOException {
-
-		return this.output.append(c);
-	}
-
-	@Override
-	public Appendable append(CharSequence csq, int start, int end)
-			throws IOException {
-
-		return this.output.append(csq, start, end);
 	}
 }

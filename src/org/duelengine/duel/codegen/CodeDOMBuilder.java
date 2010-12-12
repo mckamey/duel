@@ -743,10 +743,6 @@ public class CodeDOMBuilder {
 		this.buffer.append(clientCode);
 
 		if (argSize > 0) {
-			CodeFieldReferenceExpression encoderVar = new CodeFieldReferenceExpression(
-				new CodeThisReferenceExpression(),
-				this.ensureEncoder());
-
 			this.buffer.append(',');
 			if (prettyPrint) {
 				this.buffer.append(' ');
@@ -756,8 +752,8 @@ public class CodeDOMBuilder {
 			// emit data var as literal
 			scope.add(new CodeMethodInvokeExpression(
 				Void.class,
-				encoderVar,
-				"write",
+				new CodeThisReferenceExpression(),
+				"dataEncode",
 				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodeVariableReferenceExpression(Object.class, "data"),
 				CodePrimitiveExpression.ONE));
@@ -772,8 +768,8 @@ public class CodeDOMBuilder {
 				// emit index var as number
 				scope.add(new CodeMethodInvokeExpression(
 					Void.class,
-					encoderVar,
-					"write",
+					new CodeThisReferenceExpression(),
+					"dataEncode",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodeVariableReferenceExpression(int.class, "index"),
 					CodePrimitiveExpression.ONE));
@@ -788,8 +784,8 @@ public class CodeDOMBuilder {
 					// emit count var as number
 					scope.add(new CodeMethodInvokeExpression(
 						Void.class,
-						encoderVar,
-						"write",
+						new CodeThisReferenceExpression(),
+						"dataEncode",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeVariableReferenceExpression(int.class, "count"),
 						CodePrimitiveExpression.ONE));
@@ -804,8 +800,8 @@ public class CodeDOMBuilder {
 						// emit key var as String
 						scope.add(new CodeMethodInvokeExpression(
 							Void.class,
-							encoderVar,
-							"write",
+							new CodeThisReferenceExpression(),
+							"dataEncode",
 							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodeVariableReferenceExpression(String.class, "key"),
 							CodePrimitiveExpression.ONE));
@@ -931,15 +927,15 @@ public class CodeDOMBuilder {
 		String idValue,
 		int argSize) throws IOException {
 
-		CodeFieldReferenceExpression encoderVar = null;
 		boolean prettyPrint = this.encoder.isPrettyPrint();
 
 		CodeStatementCollection scope = this.scopeStack.peek();
 
 		// execute any deferred attributes using idVar
-		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
-		this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
-		this.formatter.writeCloseElementBeginTag(this.buffer);
+		this.formatter
+			.writeOpenElementBeginTag(this.buffer, "script")
+			.writeAttribute(this.buffer, "type", "text/javascript")
+			.writeCloseElementBeginTag(this.buffer);
 		this.ensureGlobalsEmitted(false);
 
 		// emit patch function call which serializes attributes into object
@@ -947,15 +943,11 @@ public class CodeDOMBuilder {
 
 		// emit id var or known value
 		if (idVar != null) {
-			encoderVar = new CodeFieldReferenceExpression(
-				new CodeThisReferenceExpression(),
-				this.ensureEncoder());
-
 			this.flushBuffer();
 			scope.add(new CodeMethodInvokeExpression(
 				Void.class,
-				encoderVar,
-				"write",
+				new CodeThisReferenceExpression(),
+				"dataEncode",
 				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodeVariableReferenceExpression(idVar),
 				CodePrimitiveExpression.ONE));
@@ -971,12 +963,6 @@ public class CodeDOMBuilder {
 		this.encoder.write(this.buffer, deferredAttrs, 1);
 
 		if (argSize > 0) {
-			if (encoderVar == null) {
-				encoderVar = new CodeFieldReferenceExpression(
-					new CodeThisReferenceExpression(),
-					this.ensureEncoder());
-			}
-
 			this.buffer.append(',');
 			if (prettyPrint) {
 				this.buffer.append(' ');
@@ -986,8 +972,8 @@ public class CodeDOMBuilder {
 			// emit data var as literal
 			scope.add(new CodeMethodInvokeExpression(
 				Void.class,
-				encoderVar,
-				"write",
+				new CodeThisReferenceExpression(),
+				"dataEncode",
 				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodeVariableReferenceExpression(Object.class, "data"),
 				CodePrimitiveExpression.ONE));
@@ -1002,8 +988,8 @@ public class CodeDOMBuilder {
 				// emit index var as number
 				scope.add(new CodeMethodInvokeExpression(
 					Void.class,
-					encoderVar,
-					"write",
+					new CodeThisReferenceExpression(),
+					"dataEncode",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodeVariableReferenceExpression(int.class, "index"),
 					CodePrimitiveExpression.ONE));
@@ -1018,8 +1004,8 @@ public class CodeDOMBuilder {
 					// emit count var as number
 					scope.add(new CodeMethodInvokeExpression(
 						Void.class,
-						encoderVar,
-						"write",
+						new CodeThisReferenceExpression(),
+						"dataEncode",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeVariableReferenceExpression(int.class, "count"),
 						CodePrimitiveExpression.ONE));
@@ -1034,8 +1020,8 @@ public class CodeDOMBuilder {
 						// emit key var as String
 						scope.add(new CodeMethodInvokeExpression(
 							Void.class,
-							encoderVar,
-							"write",
+							new CodeThisReferenceExpression(),
+							"dataEncode",
 							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodeVariableReferenceExpression(String.class, "key"),
 							CodePrimitiveExpression.ONE));
@@ -1069,10 +1055,6 @@ public class CodeDOMBuilder {
 	private void buildDeferredCodeBlock(String clientCode, int argSize)
 			throws IOException {
 
-		CodeFieldReferenceExpression encoderVar = new CodeFieldReferenceExpression(
-				new CodeThisReferenceExpression(),
-				this.ensureEncoder());
-
 		boolean prettyPrint = this.encoder.isPrettyPrint();
 		CodeStatementCollection scope = this.scopeStack.peek();
 
@@ -1092,8 +1074,8 @@ public class CodeDOMBuilder {
 		this.flushBuffer();
 		scope.add(new CodeMethodInvokeExpression(
 			Void.class,
-			encoderVar,
-			"write",
+			new CodeThisReferenceExpression(),
+			"dataEncode",
 			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			new CodeVariableReferenceExpression(idVar),
 			CodePrimitiveExpression.ONE));
@@ -1115,8 +1097,8 @@ public class CodeDOMBuilder {
 			// emit data var as literal
 			scope.add(new CodeMethodInvokeExpression(
 				Void.class,
-				encoderVar,
-				"write",
+				new CodeThisReferenceExpression(),
+				"dataEncode",
 				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodeVariableReferenceExpression(Object.class, "data"),
 				CodePrimitiveExpression.ONE));
@@ -1131,8 +1113,8 @@ public class CodeDOMBuilder {
 				// emit index var as number
 				scope.add(new CodeMethodInvokeExpression(
 					Void.class,
-					encoderVar,
-					"write",
+					new CodeThisReferenceExpression(),
+					"dataEncode",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodeVariableReferenceExpression(int.class, "index"),
 					CodePrimitiveExpression.ONE));
@@ -1147,8 +1129,8 @@ public class CodeDOMBuilder {
 					// emit count var as number
 					scope.add(new CodeMethodInvokeExpression(
 						Void.class,
-						encoderVar,
-						"write",
+						new CodeThisReferenceExpression(),
+						"dataEncode",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeVariableReferenceExpression(int.class, "count"),
 						CodePrimitiveExpression.ONE));
@@ -1163,8 +1145,8 @@ public class CodeDOMBuilder {
 						// emit key var as String
 						scope.add(new CodeMethodInvokeExpression(
 							Void.class,
-							encoderVar,
-							"write",
+							new CodeThisReferenceExpression(),
+							"dataEncode",
 							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodeVariableReferenceExpression(String.class, "key"),
 							CodePrimitiveExpression.ONE));
@@ -1224,14 +1206,12 @@ public class CodeDOMBuilder {
 		// emit check just inside first script block
 		this.flushBuffer();
 
-		CodeField encoder = this.ensureEncoder();
 		this.scopeStack.peek().add(
 			new CodeMethodInvokeExpression(
 				Void.class,
 				new CodeThisReferenceExpression(),
 				"writeGlobals",
 				new CodeVariableReferenceExpression(DuelContext.class, "context"),
-				new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), encoder),
 				new CodePrimitiveExpression(needsTags)));
 
 		// check scope chain for any condition or iteration blocks that
@@ -1263,40 +1243,6 @@ public class CodeDOMBuilder {
 		this.viewType.add(initMethod);
 
 		return initMethod;
-	}
-
-	private CodeField ensureEncoder() {
-
-		for (CodeMember member : this.viewType.getMembers()) {
-			if (member instanceof CodeField &&
-				DataEncoder.class.equals(((CodeField)member).getType())) {
-				return (CodeField)member;
-			}
-		}
-
-		// generate a field to hold the encoder
-		CodeField field = new CodeField(
-				AccessModifierType.PRIVATE,
-				DataEncoder.class,
-				this.viewType.nextIdent("encoder_"));
-		this.viewType.add(field);
-
-		CodeMethod initMethod = this.ensureInitMethod();
-
-		// use the current settings to instantiate a new encoder
-		initMethod.getStatements().add(
-			new CodeExpressionStatement(
-				new CodeBinaryOperatorExpression(
-					CodeBinaryOperatorType.ASSIGN,
-					new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
-					this.encoder.isPrettyPrint() ? 
-						new CodeObjectCreateExpression(
-							DataEncoder.class.getSimpleName(),
-							new CodePrimitiveExpression(this.settings.getNewline()),
-							new CodePrimitiveExpression(this.settings.getIndent())) :
-						new CodeObjectCreateExpression(DataEncoder.class.getSimpleName()))));
-
-		return field;
 	}
 	
 	private void buildComment(CodeCommentNode comment) {

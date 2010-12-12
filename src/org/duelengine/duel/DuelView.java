@@ -9,6 +9,11 @@ import java.util.*;
  */
 public abstract class DuelView {
 
+	private static final Object DEFAULT_DATA = Collections.EMPTY_MAP;
+	private static final int DEFAULT_INDEX = 0;
+	private static final int DEFAULT_COUNT = 1;
+	private static final String DEFAULT_KEY = null;
+	
 	private static final HTMLFormatter formatter = new HTMLFormatter();
 	private Map<String, DuelPart> parts = null;
 
@@ -39,9 +44,78 @@ public abstract class DuelView {
 	}
 
 	/**
-	 * Initialization of views and parts
+	 * Initialization of parts and child-views
 	 */
 	protected void init() {}
+
+	/**
+	 * Renders the view to the output
+	 * @param output
+	 */
+	public void render(Appendable output)
+		throws IOException {
+
+		if (output == null) {
+			throw new NullPointerException("output");
+		}
+
+		this.render(new DuelContext(output), DEFAULT_DATA, DEFAULT_INDEX, DEFAULT_COUNT, DEFAULT_KEY);
+	}
+
+	/**
+	 * Binds the view to the data and renders the view to the output
+	 * @param output
+	 * @param data
+	 */
+	public void render(Appendable output, Object data)
+		throws IOException {
+
+		if (output == null) {
+			throw new NullPointerException("output");
+		}
+
+		this.render(new DuelContext(output), DuelData.asProxy(data, true), DEFAULT_INDEX, DEFAULT_COUNT, DEFAULT_KEY);
+	}
+
+	/**
+	 * Renders the view to the output
+	 * @param context
+	 */
+	public void render(DuelContext context)
+		throws IOException {
+
+		if (context == null) {
+			throw new NullPointerException("context");
+		}
+
+		this.render(context, DEFAULT_DATA, DEFAULT_INDEX, DEFAULT_COUNT, DEFAULT_KEY);
+	}
+
+	/**
+	 * Binds the view to the data and renders the view to the output
+	 * @param context
+	 * @param data
+	 */
+	public void render(DuelContext context, Object data)
+		throws IOException {
+
+		if (context == null) {
+			throw new NullPointerException("context");
+		}
+
+		this.render(context, DuelData.asProxy(data, true), DEFAULT_INDEX, DEFAULT_COUNT, DEFAULT_KEY);
+	}
+
+	/**
+	 * The entry point into the view tree
+	 * @param context
+	 * @param data
+	 * @param index
+	 * @param count
+	 * @param key
+	 */
+	protected abstract void render(DuelContext context, Object data, int index, int count, String key)
+		throws IOException;
 
 	/**
 	 * Sets the partial view for a named area
@@ -99,48 +173,112 @@ public abstract class DuelView {
 	}
 
 	/**
-	 * Renders the view to the output
-	 * @param output
+	 * Writes the value to the output
+	 * @param context
+	 * @param value
+	 * @throws IOException
 	 */
-	public void render(Appendable output)
+	protected void write(DuelContext context, Object value)
 		throws IOException {
 
-		if (output == null) {
-			throw new NullPointerException("output");
+		if (value == null) {
+			return;
 		}
 
-		DuelContext context = (output instanceof DuelContext) ? (DuelContext)output : new DuelContext(output);
-		
-		this.render(context, Collections.EMPTY_MAP, 0, 1, null);
+		context.getOutput().append(DuelData.coerceString(value));
 	}
 
 	/**
-	 * Binds the view to the data and renders the view to the output
-	 * @param output
-	 * @param data
+	 * Writes the value to the output
+	 * @param context
+	 * @param value
+	 * @throws IOException
 	 */
-	public void render(Appendable output, Object data)
+	protected void write(DuelContext context, char value)
 		throws IOException {
 
-		if (output == null) {
-			throw new NullPointerException("output");
-		}
-
-		DuelContext context = (output instanceof DuelContext) ? (DuelContext)output : new DuelContext(output);
-
-		this.render(context, DuelData.asProxy(data, true), 0, 1, null);
+		context.getOutput().append(value);
 	}
 
 	/**
-	 * The entry point into the view tree
+	 * Writes the value to the output
+	 * @param context
+	 * @param value
+	 * @throws IOException
+	 */
+	protected void write(DuelContext context, String value)
+		throws IOException {
+
+		context.getOutput().append(value);
+	}
+
+	/**
+	 * Ensures the value is properly encoded as HTML text
+	 * @param context
+	 * @param value
+	 * @throws IOException
+	 */
+	protected void htmlEncode(DuelContext context, Object value)
+		throws IOException {
+
+		if (value == null) {
+			return;
+		}
+
+		if (value instanceof Boolean || value instanceof Number) {
+			// no need to encode non-text primitives
+			context.getOutput().append(DuelData.coerceString(value));
+
+		} else {
+			formatter.writeLiteral(context.getOutput(), DuelData.coerceString(value), context.getEncodeNonASCII());
+		}
+	}
+
+	/**
+	 * Emits data object as a graph of JavaScript literals
 	 * @param context
 	 * @param data
-	 * @param index
-	 * @param count
-	 * @param key
+	 * @param depth
+	 * @throws IOException
 	 */
-	protected abstract void render(DuelContext context, Object data, int index, int count, String key)
-		throws IOException;
+	protected void dataEncode(DuelContext context, Object data, int depth)
+		throws IOException {
+
+		context.getEncoder().write(context.getOutput(), data, depth);
+	}
+
+	protected Object getGlobal(DuelContext context, String ident) {
+		return context.getGlobal(ident);
+	}
+
+	protected Object hasGlobals(DuelContext context, String... idents) {
+		return context.hasGlobals(idents);
+	}
+
+	protected void writeGlobals(DuelContext context, boolean needsTags)
+		throws IOException {
+
+		if (!context.isGlobalsPending()) {
+			return;
+		}
+
+		Appendable output = context.getOutput();
+		if (needsTags) {
+			formatter
+				.writeOpenElementBeginTag(output, "script")
+				.writeAttribute(output, "type", "text/javascript")
+				.writeCloseElementBeginTag(output);
+		}
+		context.getEncoder().writeVars(output, context.getGlobals());
+		if (needsTags) {
+			formatter.writeElementEndTag(output, "script");
+		}
+		context.setGlobalsPending(false);
+	}
+
+	protected String nextID(DuelContext context) {
+		return context.nextID();
+	}
 
 	/**
 	 * Retrieves the property from the data object
@@ -244,100 +382,7 @@ public abstract class DuelView {
 	}
 
 	/**
-	 * Writes the value to the output
-	 * @param context
-	 * @param value
-	 * @throws IOException
-	 */
-	protected void write(DuelContext context, Object value)
-		throws IOException {
-
-		if (value == null) {
-			return;
-		}
-
-		context.getOutput().append(DuelData.coerceString(value));
-	}
-
-	/**
-	 * Writes the value to the output
-	 * @param context
-	 * @param value
-	 * @throws IOException
-	 */
-	protected void write(DuelContext context, String value)
-		throws IOException {
-
-		context.getOutput().append(value);
-	}
-
-	/**
-	 * Writes the value to the output
-	 * @param context
-	 * @param value
-	 * @throws IOException
-	 */
-	protected void write(DuelContext context, char value)
-		throws IOException {
-
-		context.getOutput().append(value);
-	}
-
-	/**
-	 * Ensures the value is properly encoded as HTML text
-	 * @param context
-	 * @param value
-	 * @throws IOException
-	 */
-	protected void htmlEncode(DuelContext context, Object value)
-		throws IOException {
-
-		if (value == null) {
-			return;
-		}
-
-		if (value instanceof Boolean || value instanceof Number) {
-			// no need to encode non-text primitives
-			context.append(DuelData.coerceString(value));
-
-		} else {
-			formatter.writeLiteral(context, DuelData.coerceString(value), context.getEncodeNonASCII());
-		}
-	}
-
-	protected Object getGlobal(DuelContext context, String ident) {
-		return context.getGlobal(ident);
-	}
-
-	protected Object hasGlobals(DuelContext context, String... idents) {
-		return context.hasGlobals(idents);
-	}
-
-	protected void writeGlobals(DuelContext context, DataEncoder encoder, boolean needsTags)
-		throws IOException {
-
-		if (!context.isGlobalsPending()) {
-			return;
-		}
-
-		if (needsTags) {
-			formatter.writeOpenElementBeginTag(context, "script");
-			formatter.writeAttribute(context, "type", "text/javascript");
-			formatter.writeCloseElementBeginTag(context);
-		}
-		encoder.writeVars(context, context.getGlobals());
-		if (needsTags) {
-			formatter.writeElementEndTag(context, "script");
-		}
-		context.setGlobalsPending(false);
-	}
-
-	protected String nextID(DuelContext context) {
-		return context.nextID();
-	}
-
-	/**
-	 * A work-around for dynamic post-inc/dec operators
+	 * A work-around for dynamic post-inc/dec operator semantics
 	 * @param value
 	 * @param ignore
 	 * @return
