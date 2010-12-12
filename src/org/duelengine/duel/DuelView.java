@@ -62,13 +62,13 @@ public abstract class DuelView {
 	/**
 	 * Renders a named partial view
 	 * @param partName
-	 * @param output
+	 * @param context
 	 * @param data
 	 * @param index
 	 * @param count
 	 * @param key
 	 */
-	protected void renderPart(String partName, DuelContext output, Object data, int index, int count, String key)
+	protected void renderPart(DuelContext context, String partName, Object data, int index, int count, String key)
 		throws IOException {
 
 		if (this.parts == null || !this.parts.containsKey(partName)) {
@@ -80,22 +80,22 @@ public abstract class DuelView {
 			return;
 		}
 
-		part.render(output, data, index, count, key);
+		part.render(context, data, index, count, key);
 	}
 
 	/**
 	 * Allows one view to render another
 	 * @param view
-	 * @param output
+	 * @param context
 	 * @param data
 	 * @param index
 	 * @param count
 	 * @param key
 	 */
-	protected void renderView(DuelView view, DuelContext output, Object data, int index, int count, String key)
+	protected void renderView(DuelContext context, DuelView view, Object data, int index, int count, String key)
 		throws IOException {
 
-		view.render(output, data, index, count, key);
+		view.render(context, data, index, count, key);
 	}
 
 	/**
@@ -133,13 +133,13 @@ public abstract class DuelView {
 
 	/**
 	 * The entry point into the view tree
-	 * @param output
+	 * @param context
 	 * @param data
 	 * @param index
 	 * @param count
 	 * @param key
 	 */
-	protected abstract void render(DuelContext output, Object data, int index, int count, String key)
+	protected abstract void render(DuelContext context, Object data, int index, int count, String key)
 		throws IOException;
 
 	/**
@@ -242,30 +242,54 @@ public abstract class DuelView {
 
 		return a.equals(b);
 	}
-	
+
 	/**
 	 * Writes the value to the output
-	 * @param output
+	 * @param context
 	 * @param value
 	 * @throws IOException
 	 */
-	protected void write(DuelContext output, Object value)
+	protected void write(DuelContext context, Object value)
 		throws IOException {
 
 		if (value == null) {
 			return;
 		}
 
-		output.append(DuelData.coerceString(value));
+		context.getOutput().append(DuelData.coerceString(value));
+	}
+
+	/**
+	 * Writes the value to the output
+	 * @param context
+	 * @param value
+	 * @throws IOException
+	 */
+	protected void write(DuelContext context, String value)
+		throws IOException {
+
+		context.getOutput().append(value);
+	}
+
+	/**
+	 * Writes the value to the output
+	 * @param context
+	 * @param value
+	 * @throws IOException
+	 */
+	protected void write(DuelContext context, char value)
+		throws IOException {
+
+		context.getOutput().append(value);
 	}
 
 	/**
 	 * Ensures the value is properly encoded as HTML text
-	 * @param output
+	 * @param context
 	 * @param value
 	 * @throws IOException
 	 */
-	protected void htmlEncode(DuelContext output, Object value)
+	protected void htmlEncode(DuelContext context, Object value)
 		throws IOException {
 
 		if (value == null) {
@@ -274,32 +298,44 @@ public abstract class DuelView {
 
 		if (value instanceof Boolean || value instanceof Number) {
 			// no need to encode non-text primitives
-			output.append(DuelData.coerceString(value));
+			context.append(DuelData.coerceString(value));
 
 		} else {
-			formatter.writeLiteral(output, DuelData.coerceString(value), output.getEncodeNonASCII());
+			formatter.writeLiteral(context, DuelData.coerceString(value), context.getEncodeNonASCII());
 		}
 	}
 
-	protected void writeGlobalData(DuelContext output, DataEncoder encoder, boolean needsTags)
+	protected Object getGlobal(DuelContext context, String ident) {
+		return context.getGlobal(ident);
+	}
+
+	protected Object hasGlobals(DuelContext context, String... idents) {
+		return context.hasGlobals(idents);
+	}
+
+	protected void writeGlobals(DuelContext context, DataEncoder encoder, boolean needsTags)
 		throws IOException {
 
-		if (!output.isGlobalDataPending()) {
+		if (!context.isGlobalsPending()) {
 			return;
 		}
 
 		if (needsTags) {
-			formatter.writeOpenElementBeginTag(output, "script");
-			formatter.writeAttribute(output, "type", "text/javascript");
-			formatter.writeCloseElementBeginTag(output);
+			formatter.writeOpenElementBeginTag(context, "script");
+			formatter.writeAttribute(context, "type", "text/javascript");
+			formatter.writeCloseElementBeginTag(context);
 		}
-		encoder.writeVars(output, output.getGlobalData());
+		encoder.writeVars(context, context.getGlobals());
 		if (needsTags) {
-			formatter.writeElementEndTag(output, "script");
+			formatter.writeElementEndTag(context, "script");
 		}
-		output.setGlobalDataPending(false);
+		context.setGlobalsPending(false);
 	}
-	
+
+	protected String nextID(DuelContext context) {
+		return context.nextID();
+	}
+
 	/**
 	 * A work-around for dynamic post-inc/dec operators
 	 * @param value

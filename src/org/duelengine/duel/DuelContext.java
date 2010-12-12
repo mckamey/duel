@@ -6,13 +6,13 @@ import java.io.IOException;
  * Maintains context state for a single request/response cycle.
  * DuelContext is not thread-safe and not intended to be reusable.
  */
-public class DuelContext implements Appendable, ClientIDStrategy {
+public class DuelContext implements Appendable {
 
 	private final Appendable output;
 	private final ClientIDStrategy clientID;
 	private boolean encodeNonASCII = true;
-	private boolean globalDataPending;
-	private SparseMap globalData;
+	private boolean globalsPending;
+	private SparseMap globals;
 
 	public DuelContext(Appendable output) {
 		this(output, new IncClientIDStrategy());
@@ -38,39 +38,27 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 		this.encodeNonASCII = value;
 	}
 
-	public Object getGlobalData(String ident) {
+	public void putGlobal(String ident, Object value) {
 		if (ident == null) {
 			throw new NullPointerException("ident");
 		}
 
-		if (this.globalData == null || !this.globalData.containsKey(ident)) {
-			return null;
+		if (this.globals == null) {
+			this.globals = new SparseMap();
 		}
 
-		return this.globalData.get(ident);
+		this.globalsPending = true;
+		this.globals.putSparse(ident, value);
 	}
 
-	public void putGlobalData(String ident, Object value) {
-		if (ident == null) {
-			throw new NullPointerException("ident");
-		}
-
-		if (this.globalData == null) {
-			this.globalData = new SparseMap();
-		}
-
-		this.globalDataPending = true;
-		this.globalData.putSparse(ident, value);
-	}
-
-	public boolean hasGlobalData(String... idents) {
-		if (this.globalData == null) {
+	boolean hasGlobals(String... idents) {
+		if (this.globals == null) {
 			return false;
 		}
 
 		if (idents != null) {
 			for (String ident : idents) {
-				if (!this.globalData.containsKey(ident)) {
+				if (!this.globals.containsKey(ident)) {
 					return false;
 				}
 			}
@@ -79,18 +67,38 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 		return true;
 	}
 
-	SparseMap getGlobalData() {
-		return this.globalData;
+	Object getGlobal(String ident) {
+		if (ident == null) {
+			throw new NullPointerException("ident");
+		}
+
+		if (this.globals == null || !this.globals.containsKey(ident)) {
+			return null;
+		}
+
+		return this.globals.get(ident);
 	}
 
-	boolean isGlobalDataPending() {
-		return this.globalDataPending;
+	SparseMap getGlobals() {
+		return this.globals;
 	}
 
-	void setGlobalDataPending(boolean value) {
-		this.globalDataPending = value;
+	boolean isGlobalsPending() {
+		return this.globalsPending;
 	}
 
+	void setGlobalsPending(boolean value) {
+		this.globalsPending = value;
+	}
+
+	Appendable getOutput() {
+		return this.output;
+	}
+	
+	String nextID() {
+		return this.clientID.nextID();
+	}
+	
 	@Override
 	public Appendable append(CharSequence csq)
 		throws IOException {
@@ -110,10 +118,5 @@ public class DuelContext implements Appendable, ClientIDStrategy {
 			throws IOException {
 
 		return this.output.append(csq, start, end);
-	}
-
-	@Override
-	public String nextID() {
-		return this.clientID.nextID();
 	}
 }

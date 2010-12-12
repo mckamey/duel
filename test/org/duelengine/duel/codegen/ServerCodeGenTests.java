@@ -21,7 +21,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -30,8 +30,9 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("A JSON payload should be an object or array, not a string.")))
 				).withOverride().withThrows(IOException.class));
 
@@ -48,8 +49,8 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"A JSON payload should be an object or array, not a string.\");\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"A JSON payload should be an object or array, not a string.\");\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -71,7 +72,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -82,7 +83,7 @@ public class ServerCodeGenTests {
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeVariableReferenceExpression(int.class, "count")))
 				).withOverride().withThrows(IOException.class)
 			);
@@ -99,8 +100,8 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.write(output, count);\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, count);\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -122,7 +123,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -131,8 +132,9 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("<div>"))),
 				new CodeConditionStatement(
 					new CodeBinaryOperatorExpression(
@@ -143,8 +145,9 @@ public class ServerCodeGenTests {
 						new CodeExpressionStatement(
 							new CodeMethodInvokeExpression(
 								Void.class,
-								new CodeVariableReferenceExpression(DuelContext.class, "output"),
-								"append",
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
 								new CodePrimitiveExpression("zero")))
 					},
 					new CodeStatement[] {
@@ -157,24 +160,27 @@ public class ServerCodeGenTests {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
 										Void.class,
-										new CodeVariableReferenceExpression(DuelContext.class, "output"),
-										"append",
+										new CodeThisReferenceExpression(),
+										"write",
+										new CodeVariableReferenceExpression(DuelContext.class, "context"),
 										new CodePrimitiveExpression("one")))
 							},
 							new CodeStatement[] {
 								new CodeExpressionStatement(
 									new CodeMethodInvokeExpression(
 										Void.class,
-										new CodeVariableReferenceExpression(DuelContext.class, "output"),
-										"append",
+										new CodeThisReferenceExpression(),
+										"write",
+										new CodeVariableReferenceExpression(DuelContext.class, "context"),
 										new CodePrimitiveExpression("many")))
 							})
 					}),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("</div>")))
 				).withOverride().withThrows(IOException.class)
 			);
@@ -192,16 +198,16 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"<div>\");\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"<div>\");\n"+
 			"\t\tif (this.equal(data, 0)) {\n"+
-			"\t\t\toutput.append(\"zero\");\n"+
+			"\t\t\tthis.write(context, \"zero\");\n"+
 			"\t\t} else if (this.equal(data, 1)) {\n"+
-			"\t\t\toutput.append(\"one\");\n"+
+			"\t\t\tthis.write(context, \"one\");\n"+
 			"\t\t} else {\n"+
-			"\t\t\toutput.append(\"many\");\n"+
+			"\t\t\tthis.write(context, \"many\");\n"+
 			"\t\t}\n"+
-			"\t\toutput.append(\"</div>\");\n"+
+			"\t\tthis.write(context, \"</div>\");\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -223,7 +229,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -232,8 +238,9 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("<div>"))),
 				new CodeConditionStatement(
 					new CodeBinaryOperatorExpression(
@@ -243,8 +250,9 @@ public class ServerCodeGenTests {
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
 							Void.class,
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
-							"append",
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodePrimitiveExpression("zero")))
 					),
 				new CodeConditionStatement(
@@ -255,21 +263,24 @@ public class ServerCodeGenTests {
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
 							Void.class,
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
-							"append",
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodePrimitiveExpression("one")))
 					),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("many"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("</div>")))
 				).withOverride().withThrows(IOException.class)
 			);
@@ -287,16 +298,16 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"<div>\");\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"<div>\");\n"+
 			"\t\tif (this.coerceEqual(data, 0.0)) {\n"+
-			"\t\t\toutput.append(\"zero\");\n"+
+			"\t\t\tthis.write(context, \"zero\");\n"+
 			"\t\t}\n"+
 			"\t\tif (this.coerceEqual(data, 1.0)) {\n"+
-			"\t\t\toutput.append(\"one\");\n"+
+			"\t\t\tthis.write(context, \"one\");\n"+
 			"\t\t}\n"+
-			"\t\toutput.append(\"many\");\n"+
-			"\t\toutput.append(\"</div>\");\n"+
+			"\t\tthis.write(context, \"many\");\n"+
+			"\t\tthis.write(context, \"</div>\");\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -318,7 +329,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -327,8 +338,9 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("<div>"))),
 				new CodeVariableDeclarationStatement(
 					Collection.class,
@@ -373,7 +385,7 @@ public class ServerCodeGenTests {
 							Void.class,
 							new CodeThisReferenceExpression(),
 							"render_2",
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodeMethodInvokeExpression(
 								Map.Entry.class,
 								new CodeVariableReferenceExpression(Iterator.class, "iterator_4"),
@@ -384,8 +396,9 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("</div>")))
 			).withOverride().withThrows(IOException.class),
 			new CodeMethod(
@@ -393,7 +406,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render_2",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -402,15 +415,16 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeVariableReferenceExpression(int.class, "index").withParens()))
 			).withThrows(IOException.class));
 
@@ -426,19 +440,19 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"<div>\");\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"<div>\");\n"+
 			"\t\tCollection items_1 = DuelData.coerceCollection(this.getProperty(data, \"items\"));\n"+
 			"\t\tint index_2 = 0,\n" +
 			"\t\t\tcount_3 = items_1.size();\n"+
 			"\t\tfor (Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
-			"\t\t\tthis.render_2(output, iterator_4.next(), index_2, count_3, null);\n"+
+			"\t\t\tthis.render_2(context, iterator_4.next(), index_2, count_3, null);\n"+
 			"\t\t}\n"+
-			"\t\toutput.append(\"</div>\");\n"+
+			"\t\tthis.write(context, \"</div>\");\n"+
 			"\t}\n\n"+
-			"\tprivate void render_2(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"item \");\n"+
-			"\t\tthis.write(output, index);\n"+
+			"\tprivate void render_2(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"item \");\n"+
+			"\t\tthis.write(context, index);\n"+
 			"\t}\n}\n";
 
 		StringBuilder output = new StringBuilder();
@@ -459,7 +473,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -468,8 +482,9 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("<div>"))),
 				new CodeVariableDeclarationStatement(
 					Collection.class,
@@ -521,7 +536,7 @@ public class ServerCodeGenTests {
 							Void.class,
 							new CodeThisReferenceExpression(),
 							"render_2",
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodeMethodInvokeExpression(
 								Object.class,
 								new CodeVariableReferenceExpression(Map.Entry.class, "entry_5"),
@@ -535,8 +550,9 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("</div>")))
 			).withOverride().withThrows(IOException.class),
 			new CodeMethod(
@@ -544,7 +560,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render_2",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -553,15 +569,16 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeVariableReferenceExpression(int.class, "index").withParens()))
 			).withThrows(IOException.class));
 
@@ -577,20 +594,20 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"<div>\");\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"<div>\");\n"+
 			"\t\tCollection items_1 = DuelData.coerceMap(this.getProperty(data, \"foo\"));\n"+
 			"\t\tint index_2 = 0,\n"+
 			"\t\t\tcount_3 = items_1.size();\n"+
 			"\t\tfor (Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
 			"\t\t\tEntry entry_5 = iterator_4.next();\n"+
-			"\t\t\tthis.render_2(output, entry_5.getValue(), index_2, count_3, entry_5.getKey());\n"+
+			"\t\t\tthis.render_2(context, entry_5.getValue(), index_2, count_3, entry_5.getKey());\n"+
 			"\t\t}\n"+
-			"\t\toutput.append(\"</div>\");\n"+
+			"\t\tthis.write(context, \"</div>\");\n"+
 			"\t}\n\n"+
-			"\tprivate void render_2(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"item \");\n"+
-			"\t\tthis.write(output, index);\n"+
+			"\tprivate void render_2(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"item \");\n"+
+			"\t\tthis.write(context, index);\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -612,7 +629,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -621,8 +638,9 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("<div>"))),
 				new CodeVariableDeclarationStatement(
 					Object.class,
@@ -653,7 +671,7 @@ public class ServerCodeGenTests {
 							Void.class,
 							new CodeThisReferenceExpression(),
 							"render_2",
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodeVariableReferenceExpression(Object.class, "data_1"),
 							new CodeVariableReferenceExpression(int.class, "index_2"),
 							new CodeVariableReferenceExpression(int.class, "count_3"),
@@ -661,8 +679,9 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("</div>")))
 			).withOverride().withThrows(IOException.class),
 			new CodeMethod(
@@ -670,7 +689,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render_2",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -679,15 +698,16 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("item "))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeVariableReferenceExpression(int.class, "index").withParens()))
 			).withThrows(IOException.class));
 
@@ -703,17 +723,17 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"<div>\");\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"<div>\");\n"+
 			"\t\tObject data_1 = this.getProperty(data, \"name\");\n"+
 			"\t\tfor (int index_2=0, count_3=4; index_2 < count_3; index_2++) {\n"+
-			"\t\t\tthis.render_2(output, data_1, index_2, count_3, null);\n"+
+			"\t\t\tthis.render_2(context, data_1, index_2, count_3, null);\n"+
 			"\t\t}\n"+
-			"\t\toutput.append(\"</div>\");\n"+
+			"\t\tthis.write(context, \"</div>\");\n"+
 			"\t}\n\n"+
-			"\tprivate void render_2(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"item \");\n"+
-			"\t\tthis.write(output, index);\n"+
+			"\tprivate void render_2(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"item \");\n"+
+			"\t\tthis.write(context, index);\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -735,7 +755,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -746,7 +766,7 @@ public class ServerCodeGenTests {
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeTernaryOperatorExpression(
 							new CodeVariableReferenceExpression(Object.class, "data"),
 							new CodePrimitiveExpression(1.0),
@@ -766,8 +786,8 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.write(output, DuelData.coerceBoolean(data) ? 1.0 : 2.0);\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, DuelData.coerceBoolean(data) ? 1.0 : 2.0);\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -789,7 +809,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -800,7 +820,7 @@ public class ServerCodeGenTests {
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.POST_INCREMENT,
 							new CodeVariableReferenceExpression(Object.class, "data"))))
@@ -819,8 +839,8 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.write(output, this.echo(DuelData.coerceNumber(data), (data = (DuelData.coerceNumber(data) + 1))));\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, this.echo(DuelData.coerceNumber(data), (data = (DuelData.coerceNumber(data) + 1))));\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -842,7 +862,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -853,7 +873,7 @@ public class ServerCodeGenTests {
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeUnaryOperatorExpression(
 							CodeUnaryOperatorType.PRE_DECREMENT,
 							new CodeVariableReferenceExpression(Object.class, "data"))))
@@ -872,8 +892,8 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.write(output, (data = (DuelData.coerceNumber(data) - 1)));\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, (data = (DuelData.coerceNumber(data) - 1)));\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -895,7 +915,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -906,7 +926,7 @@ public class ServerCodeGenTests {
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeBinaryOperatorExpression(
 							CodeBinaryOperatorType.MODULUS_ASSIGN,
 							new CodeVariableReferenceExpression(Object.class, "data"),
@@ -926,8 +946,8 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.write(output, (data = (DuelData.coerceNumber(data) % 5.0)));\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, (data = (DuelData.coerceNumber(data) % 5.0)));\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -949,7 +969,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -975,7 +995,7 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\tdata = key;\n"+
 			"\t}\n"+
 			"}\n";
@@ -998,7 +1018,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1024,7 +1044,7 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\tcount = DuelData.coerceNumber(data);\n"+
 			"\t}\n"+
 			"}\n";
@@ -1047,7 +1067,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1058,11 +1078,11 @@ public class ServerCodeGenTests {
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"renderView",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeFieldReferenceExpression(
 							new CodeThisReferenceExpression(),
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodeVariableReferenceExpression(int.class, "index"),
 						new CodeVariableReferenceExpression(int.class, "count"),
@@ -1100,8 +1120,8 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.renderView(this.view_2, output, data, index, count, key);\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.renderView(context, this.view_2, data, index, count, key);\n"+
 			"\t}\n\n"+
 			"\tprivate DuelView view_2;\n\n"+
 			"\t@Override\n"+
@@ -1128,7 +1148,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1139,11 +1159,11 @@ public class ServerCodeGenTests {
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"renderView",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeFieldReferenceExpression(
 							new CodeThisReferenceExpression(),
 							org.duelengine.duel.DuelView.class,
 							"view_2"),
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data").withParens(),
 						new CodeVariableReferenceExpression(int.class, "index"),
 						new CodeVariableReferenceExpression(int.class, "count"),
@@ -1166,7 +1186,7 @@ public class ServerCodeGenTests {
 					Void.class,
 					"render",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+						new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1175,8 +1195,9 @@ public class ServerCodeGenTests {
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
 							Void.class,
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
-							"append",
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
 					).withOverride().withThrows(IOException.class)),
 			new CodeMethod(
@@ -1210,8 +1231,8 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\tthis.renderView(this.view_2, output, data, index, count, key);\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.renderView(context, this.view_2, data, index, count, key);\n"+
 			"\t}\n\n"+
 			"\tprivate DuelView view_2;\n\n"+
 			"\tprivate class part_3 extends DuelPart {\n\n"+
@@ -1220,8 +1241,8 @@ public class ServerCodeGenTests {
 			"\t\t\treturn \"header\";\n"+
 			"\t\t}\n\n"+
 			"\t\t@Override\n"+
-			"\t\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\t\toutput.append(\"<div>Lorem ipsum.</div>\");\n"+
+			"\t\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\t\tthis.write(context, \"<div>Lorem ipsum.</div>\");\n"+
 			"\t\t}\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
@@ -1248,7 +1269,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1257,16 +1278,17 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("<div class=\"dialog\">"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"renderPart",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("header"),
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodeVariableReferenceExpression(int.class, "index"),
 						new CodeVariableReferenceExpression(int.class, "count"),
@@ -1274,16 +1296,17 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("<hr />"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
 						"renderPart",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("body"),
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
 						new CodeVariableReferenceExpression(Object.class, "data"),
 						new CodeVariableReferenceExpression(int.class, "index"),
 						new CodeVariableReferenceExpression(int.class, "count"),
@@ -1291,8 +1314,9 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("</div>")))
 			).withOverride().withThrows(IOException.class),
 			CodeDOMUtility.createPartType(
@@ -1308,7 +1332,7 @@ public class ServerCodeGenTests {
 					Void.class,
 					"render",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+						new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1317,8 +1341,9 @@ public class ServerCodeGenTests {
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
 							Void.class,
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
-							"append",
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodePrimitiveExpression("<h2>Warning</h2>")))
 					).withOverride().withThrows(IOException.class)),
 			new CodeMethod(
@@ -1351,7 +1376,7 @@ public class ServerCodeGenTests {
 					Void.class,
 					"render",
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+						new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1360,8 +1385,9 @@ public class ServerCodeGenTests {
 					new CodeExpressionStatement(
 						new CodeMethodInvokeExpression(
 							Void.class,
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
-							"append",
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
 					).withOverride().withThrows(IOException.class)));
 
@@ -1378,12 +1404,12 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"<div class=\\\"dialog\\\">\");\n"+
-			"\t\tthis.renderPart(\"header\", output, data, index, count, key);\n"+
-			"\t\toutput.append(\"<hr />\");\n"+
-			"\t\tthis.renderPart(\"body\", output, data, index, count, key);\n"+
-			"\t\toutput.append(\"</div>\");\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"<div class=\\\"dialog\\\">\");\n"+
+			"\t\tthis.renderPart(context, \"header\", data, index, count, key);\n"+
+			"\t\tthis.write(context, \"<hr />\");\n"+
+			"\t\tthis.renderPart(context, \"body\", data, index, count, key);\n"+
+			"\t\tthis.write(context, \"</div>\");\n"+
 			"\t}\n\n"+
 			"\tprivate class part_2 extends DuelPart {\n\n"+
 			"\t\t@Override\n"+
@@ -1391,8 +1417,8 @@ public class ServerCodeGenTests {
 			"\t\t\treturn \"header\";\n"+
 			"\t\t}\n\n"+
 			"\t\t@Override\n"+
-			"\t\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\t\toutput.append(\"<h2>Warning</h2>\");\n"+
+			"\t\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\t\tthis.write(context, \"<h2>Warning</h2>\");\n"+
 			"\t\t}\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
@@ -1406,8 +1432,8 @@ public class ServerCodeGenTests {
 			"\t\t\treturn \"body\";\n"+
 			"\t\t}\n\n"+
 			"\t\t@Override\n"+
-			"\t\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\t\toutput.append(\"<div>Lorem ipsum.</div>\");\n"+
+			"\t\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\t\tthis.write(context, \"<div>Lorem ipsum.</div>\");\n"+
 			"\t\t}\n"+
 			"\t}\n"+
 			"}\n";
@@ -1430,7 +1456,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1439,8 +1465,9 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("Hello world.<!--Comment Here-->Lorem ipsum.")))
 				).withOverride().withThrows(IOException.class));
 
@@ -1457,8 +1484,8 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"Hello world.<!--Comment Here-->Lorem ipsum.\");\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"Hello world.<!--Comment Here-->Lorem ipsum.\");\n"+
 			"\t}\n"+
 			"}\n";
 
@@ -1480,7 +1507,7 @@ public class ServerCodeGenTests {
 				Void.class,
 				"render",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -1489,15 +1516,17 @@ public class ServerCodeGenTests {
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("Hello world."))),
 				new CodeCommentStatement("Code Comment Here"),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"append",
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("Lorem ipsum.")))
 				).withOverride().withThrows(IOException.class));
 
@@ -1514,10 +1543,10 @@ public class ServerCodeGenTests {
 			"\t\tsuper(parts);\n"+
 			"\t}\n\n"+
 			"\t@Override\n"+
-			"\tprotected void render(DuelContext output, Object data, int index, int count, String key) throws IOException {\n"+
-			"\t\toutput.append(\"Hello world.\");\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"Hello world.\");\n"+
 			"\t\t/*Code Comment Here*/\n"+
-			"\t\toutput.append(\"Lorem ipsum.\");\n"+
+			"\t\tthis.write(context, \"Lorem ipsum.\");\n"+
 			"\t}\n"+
 			"}\n";
 

@@ -71,7 +71,7 @@ public class CodeDOMBuilder {
 			Void.class,
 			this.viewType.nextIdent("render_"),
 			new CodeParameterDeclarationExpression[] {
-				new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+				new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 				new CodeParameterDeclarationExpression(Object.class, "data"),
 				new CodeParameterDeclarationExpression(int.class, "index"),
 				new CodeParameterDeclarationExpression(int.class, "count"),
@@ -239,8 +239,8 @@ public class CodeDOMBuilder {
 			Void.class,
 			new CodeThisReferenceExpression(),
 			"renderView",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field),
-			new CodeVariableReferenceExpression(DuelContext.class, "output"),
 			dataExpr,
 			indexExpr,
 			countExpr,
@@ -305,8 +305,8 @@ public class CodeDOMBuilder {
 			Void.class,
 			new CodeThisReferenceExpression(),
 			"renderPart",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			new CodePrimitiveExpression(part.getName()),
-			new CodeVariableReferenceExpression(DuelContext.class, "output"),
 			new CodeVariableReferenceExpression(Object.class, "data"),
 			new CodeVariableReferenceExpression(int.class, "index"),
 			new CodeVariableReferenceExpression(int.class, "count"),
@@ -402,7 +402,7 @@ public class CodeDOMBuilder {
 						Void.class,
 						new CodeThisReferenceExpression(),
 						innerBind.getName(),
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeVariableReferenceExpression(dataDecl),
 						new CodeVariableReferenceExpression(indexDecl),
 						new CodeVariableReferenceExpression(countDecl),
@@ -482,7 +482,7 @@ public class CodeDOMBuilder {
 						innerBind.getReturnType(),
 						new CodeThisReferenceExpression(),
 						innerBind.getName(),
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeMethodInvokeExpression(
 							Object.class,
 							new CodeVariableReferenceExpression(entryDecl),
@@ -554,7 +554,7 @@ public class CodeDOMBuilder {
 						innerBind.getReturnType(),
 						new CodeThisReferenceExpression(),
 						innerBind.getName(),
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeMethodInvokeExpression(
 							Map.Entry.class,
 							new CodeVariableReferenceExpression(iteratorDecl),
@@ -643,7 +643,7 @@ public class CodeDOMBuilder {
 					method.getReturnType(),
 					new CodeThisReferenceExpression(),
 					method.getName(),
-					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodeVariableReferenceExpression(Object.class, "data"),
 					new CodeVariableReferenceExpression(int.class, "index"),
 					new CodeVariableReferenceExpression(int.class, "count"),
@@ -654,18 +654,19 @@ public class CodeDOMBuilder {
 				members.get(0).getUserData(ScriptTranslator.EXTERNAL_IDENTS) instanceof Object[]) {
 
 				Object[] idents = (Object[])members.get(0).getUserData(ScriptTranslator.EXTERNAL_IDENTS);
-				CodeExpression[] identArgs = new CodeExpression[idents.length];
-				for (int i=0, length=identArgs.length; i<length; i++) {
-					identArgs[i] = new CodePrimitiveExpression(idents[i]);
+				CodeExpression[] args = new CodeExpression[idents.length+1];
+				args[0] = new CodeVariableReferenceExpression(DuelContext.class, "context");
+				for (int i=0, length=idents.length; i<length; i++) {
+					args[i+1] = new CodePrimitiveExpression(idents[i]);
 				}
 
 				// if data present, then run server-side, else defer execution to client
 				CodeConditionStatement runtimeCheck = new CodeConditionStatement(
 					new CodeMethodInvokeExpression(
 						boolean.class,
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
-						"hasGlobalData",
-						identArgs),
+						new CodeThisReferenceExpression(),
+						"hasGlobals",
+						args),
 					new CodeMethodReturnStatement(expression));
 
 				CodeMethod runtimeCheckMethod = new CodeMethod(
@@ -673,7 +674,7 @@ public class CodeDOMBuilder {
 					Object.class,
 					this.viewType.nextIdent("hybrid_"),
 					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+						new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
 						new CodeParameterDeclarationExpression(int.class, "index"),
 						new CodeParameterDeclarationExpression(int.class, "count"),
@@ -703,7 +704,7 @@ public class CodeDOMBuilder {
 					runtimeCheckMethod.getReturnType(),
 					new CodeThisReferenceExpression(),
 					runtimeCheckMethod.getName(),
-					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodeVariableReferenceExpression(Object.class, "data"),
 					new CodeVariableReferenceExpression(int.class, "index"),
 					new CodeVariableReferenceExpression(int.class, "count"),
@@ -757,7 +758,7 @@ public class CodeDOMBuilder {
 				Void.class,
 				encoderVar,
 				"write",
-				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodeVariableReferenceExpression(Object.class, "data"),
 				CodePrimitiveExpression.ONE));
 
@@ -773,7 +774,7 @@ public class CodeDOMBuilder {
 					Void.class,
 					encoderVar,
 					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodeVariableReferenceExpression(int.class, "index"),
 					CodePrimitiveExpression.ONE));
 
@@ -789,7 +790,7 @@ public class CodeDOMBuilder {
 						Void.class,
 						encoderVar,
 						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeVariableReferenceExpression(int.class, "count"),
 						CodePrimitiveExpression.ONE));
 
@@ -805,7 +806,7 @@ public class CodeDOMBuilder {
 							Void.class,
 							encoderVar,
 							"write",
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodeVariableReferenceExpression(String.class, "key"),
 							CodePrimitiveExpression.ONE));
 					}
@@ -955,7 +956,7 @@ public class CodeDOMBuilder {
 				Void.class,
 				encoderVar,
 				"write",
-				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodeVariableReferenceExpression(idVar),
 				CodePrimitiveExpression.ONE));
 		} else {
@@ -987,7 +988,7 @@ public class CodeDOMBuilder {
 				Void.class,
 				encoderVar,
 				"write",
-				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodeVariableReferenceExpression(Object.class, "data"),
 				CodePrimitiveExpression.ONE));
 
@@ -1003,7 +1004,7 @@ public class CodeDOMBuilder {
 					Void.class,
 					encoderVar,
 					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodeVariableReferenceExpression(int.class, "index"),
 					CodePrimitiveExpression.ONE));
 
@@ -1019,7 +1020,7 @@ public class CodeDOMBuilder {
 						Void.class,
 						encoderVar,
 						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeVariableReferenceExpression(int.class, "count"),
 						CodePrimitiveExpression.ONE));
 
@@ -1035,7 +1036,7 @@ public class CodeDOMBuilder {
 							Void.class,
 							encoderVar,
 							"write",
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodeVariableReferenceExpression(String.class, "key"),
 							CodePrimitiveExpression.ONE));
 					}
@@ -1093,7 +1094,7 @@ public class CodeDOMBuilder {
 			Void.class,
 			encoderVar,
 			"write",
-			new CodeVariableReferenceExpression(DuelContext.class, "output"),
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			new CodeVariableReferenceExpression(idVar),
 			CodePrimitiveExpression.ONE));
 		this.buffer.append(',');
@@ -1116,7 +1117,7 @@ public class CodeDOMBuilder {
 				Void.class,
 				encoderVar,
 				"write",
-				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodeVariableReferenceExpression(Object.class, "data"),
 				CodePrimitiveExpression.ONE));
 
@@ -1132,7 +1133,7 @@ public class CodeDOMBuilder {
 					Void.class,
 					encoderVar,
 					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "output"),
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodeVariableReferenceExpression(int.class, "index"),
 					CodePrimitiveExpression.ONE));
 
@@ -1148,7 +1149,7 @@ public class CodeDOMBuilder {
 						Void.class,
 						encoderVar,
 						"write",
-						new CodeVariableReferenceExpression(DuelContext.class, "output"),
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeVariableReferenceExpression(int.class, "count"),
 						CodePrimitiveExpression.ONE));
 
@@ -1164,7 +1165,7 @@ public class CodeDOMBuilder {
 							Void.class,
 							encoderVar,
 							"write",
-							new CodeVariableReferenceExpression(DuelContext.class, "output"),
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodeVariableReferenceExpression(String.class, "key"),
 							CodePrimitiveExpression.ONE));
 					}
@@ -1228,8 +1229,8 @@ public class CodeDOMBuilder {
 			new CodeMethodInvokeExpression(
 				Void.class,
 				new CodeThisReferenceExpression(),
-				"writeGlobalData",
-				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				"writeGlobals",
+				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), encoder),
 				new CodePrimitiveExpression(needsTags)));
 
@@ -1237,7 +1238,6 @@ public class CodeDOMBuilder {
 		// might prevent this from being emitted. if found do not mark.
 		// there is a runtime check as well which will prevent multiple.
 		for (CodeStatementCollection scope : this.scopeStack) {
-
 			// TODO: this is too naive. doesn't work with hybrid methods
 			if (!(scope.getOwner() instanceof CodeMethod)) {
 				return;

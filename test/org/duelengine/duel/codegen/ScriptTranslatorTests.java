@@ -34,7 +34,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -58,7 +58,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -86,7 +86,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -114,7 +114,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -142,7 +142,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -169,7 +169,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -219,7 +219,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -246,7 +246,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -273,7 +273,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -300,7 +300,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -327,7 +327,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -354,7 +354,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -381,7 +381,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -416,7 +416,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -469,7 +469,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -497,7 +497,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -530,7 +530,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -555,7 +555,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -586,7 +586,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -611,7 +611,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -636,7 +636,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -667,7 +667,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -692,7 +692,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),
@@ -717,7 +717,7 @@ public class ScriptTranslatorTests {
 				Object.class,
 				"code_1",
 				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "output"),
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
 					new CodeParameterDeclarationExpression(int.class, "index"),
 					new CodeParameterDeclarationExpression(int.class, "count"),

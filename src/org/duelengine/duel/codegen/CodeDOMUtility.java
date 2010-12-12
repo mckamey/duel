@@ -60,28 +60,24 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeVariableDeclarationStatement nextID(IdentifierScope scope) {
-		// String id_XXX = output.nextID();
+		// String id_XXX = this.nextID(context);
 		return new CodeVariableDeclarationStatement(
 			String.class,
 			scope.nextIdent("id_"),
 			new CodeMethodInvokeExpression(
 				String.class,
-				new CodeVariableReferenceExpression(DuelContext.class, "output"),
-				"nextID"));
+				new CodeThisReferenceExpression(),
+				"nextID",
+				new CodeVariableReferenceExpression(DuelContext.class, "context")));
 	}
 
 	public static CodeStatement emitLiteralValue(String literal) {
-		// output.append("literal");
-		return new CodeExpressionStatement(
-			new CodeMethodInvokeExpression(
-				Void.class,
-				new CodeVariableReferenceExpression(DuelContext.class, "output"),
-				"append",
-				new CodePrimitiveExpression((literal.length() == 1) ? literal.charAt(0) : literal)));
+		// this.write(context, "literal");
+		return emitExpression(new CodePrimitiveExpression((literal.length() == 1) ? literal.charAt(0) : literal));
 	}
 
 	public static CodeStatement emitVarValue(CodeVariableDeclarationStatement localVar) {
-		// output.append(varName);
+		// this.write(context, varName);
 		return emitExpression(new CodeVariableReferenceExpression(localVar));
 	}
 
@@ -101,18 +97,22 @@ final class CodeDOMUtility {
 				Void.class,
 				new CodeThisReferenceExpression(),
 				"htmlEncode",
-				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				expression));
 	}
 
 	public static CodeStatement emitExpression(CodeExpression expression) {
-		if (String.class.equals(expression.getResultType())) {
-			// output.append(expression);
+		Class<?> exprType = expression.getResultType();
+		if (String.class.equals(exprType) ||
+			Character.class.equals(exprType)) {
+
+			// this.write(output, expression);
 			return new CodeExpressionStatement(
 				new CodeMethodInvokeExpression(
 					Void.class,
-					new CodeVariableReferenceExpression(DuelContext.class, "output"),
-					"append",
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					expression));
 
 		}
@@ -123,7 +123,7 @@ final class CodeDOMUtility {
 				Void.class,
 				new CodeThisReferenceExpression(),
 				"write",
-				new CodeVariableReferenceExpression(DuelContext.class, "output"),
+				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				expression));
 	}
 
@@ -328,8 +328,9 @@ final class CodeDOMUtility {
 	public static CodeExpression lookupExternalVar(String ident) {
 		return new CodeMethodInvokeExpression(
 			Object.class,
-			new CodeVariableReferenceExpression(DuelContext.class, "output"),
-			"getGlobalData",
+			new CodeThisReferenceExpression(),
+			"getGlobal",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			new CodePrimitiveExpression(ident));
 	}
 

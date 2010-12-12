@@ -447,7 +447,7 @@ public class ScriptTranslator implements ErrorReporter {
 			null);
 
 		if (node.depth() == 1) {
-			method.addParameter(DuelContext.class, "output");
+			method.addParameter(DuelContext.class, "context");
 			method.addParameter(Object.class, "data");
 			method.addParameter(int.class, "index");
 			method.addParameter(int.class, "count");
