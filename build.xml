@@ -109,7 +109,7 @@
 	<target name="jar.runtime" depends="compile.src" description="Package runtime as a jar">
 		<jar destfile="${jarfile.runtime}" update="true">
 			<fileset dir="${bin.dir}" includes="org/duelengine/duel/*.class" />
-			<fileset dir="${bin.dir}" includes="/org/duelengine/duel/*.properties" />
+			<fileset dir="${bin.dir}" includes="org/duelengine/duel/*.properties" />
 		</jar>
 	</target>
 
@@ -123,7 +123,7 @@
 		<!-- debug="${javac.debug}" -->
 	</target>
 
-	<target name="test" depends="compile.src,compile.test" description="Run Java unit tests">
+	<target name="test" depends="compile.test" description="Run Java unit tests">
 		<mkdir dir="${reports.dir}" />
 
 		<junit fork="yes" printsummary="yes" haltonfailure="no" haltonerror="no">
