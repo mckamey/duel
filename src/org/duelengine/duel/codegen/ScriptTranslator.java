@@ -20,7 +20,7 @@ import org.mozilla.javascript.ast.*;
 public class ScriptTranslator implements ErrorReporter {
 
 	public static final String EXTERNAL_IDENTS = "EXTERNAL";
-	
+
 	private final IdentifierScope scope;
 	private List<String> externalIdents;
 
@@ -227,6 +227,7 @@ public class ScriptTranslator implements ErrorReporter {
 	private CodeExpression visitBinaryOp(InfixExpression node, CodeBinaryOperatorType operator) {
 		CodeExpression left = this.visitExpression(node.getLeft());
 		CodeExpression right = this.visitExpression(node.getRight());
+		
 		return new CodeBinaryOperatorExpression(operator, left, right);
 	}
 

@@ -1,6 +1,7 @@
 package org.duelengine.duel;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -281,7 +282,7 @@ public abstract class DuelView {
 	}
 
 	/**
-	 * Retrieves the property from the data object
+	 * Retrieves the value of a property from the data object
 	 * @param data
 	 * @return
 	 */
@@ -342,6 +343,52 @@ public abstract class DuelView {
 		}
 
 		return DuelData.asProxy(map.get(key), true);
+	}
+
+	/**
+	 * Stores the value for a property of the data object
+	 * @param data
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected void setProperty(Object data, Object property, Object value) {
+		if (data == null || property == null) {
+			// technically error if data is null
+			return;
+		}
+
+		Class<?> dataType = data.getClass(); 
+
+		if (Map.class.isAssignableFrom(dataType)) {
+			Map map = (Map)data;
+			map.put(DuelData.coerceString(property), value);
+			return;
+		}
+
+		if (dataType.isArray()) {
+			if (DuelData.isNumber(property.getClass())) {
+				int index = ((Number)DuelData.coerceNumber(property)).intValue();
+				if ((index < 0) || (index >= Array.getLength(data))) {
+					return;
+				}
+				Array.set(data, index, value);
+				return;
+			}
+			return;
+		}
+
+		if (List.class.isAssignableFrom(dataType)) {
+			List array = (List)data;
+			if (DuelData.isNumber(property.getClass())) {
+				int index = ((Number)DuelData.coerceNumber(property)).intValue();
+				if ((index < 0) || (index >= array.size())) {
+					return;
+				}
+				array.set(index, data);
+				return;
+			}
+			return;
+		}
 	}
 
 	/**
