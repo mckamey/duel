@@ -1924,30 +1924,34 @@ public class CodeDOMBuilderTests {
 						"hasGlobals",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("foo")),
-					new CodeMethodReturnStatement(
-						new CodePropertyReferenceExpression(
-							new ScriptVariableReferenceExpression("foo"),
-							new CodePrimitiveExpression("bar")).withParens())
-				),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("<script type=\"text/javascript\">"))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"writeGlobals",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(false))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("duel.write(function() { return (foo.bar); });</script>"))),
-				new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+					new CodeStatement[] {
+						new CodeMethodReturnStatement(
+							new CodePropertyReferenceExpression(
+								new ScriptVariableReferenceExpression("foo"),
+								new CodePrimitiveExpression("bar")).withParens())
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression("<script type=\"text/javascript\">"))),
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"writeGlobals",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression(false))),
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression("duel.write(function() { return (foo.bar); });</script>"))),
+						new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+					}
+				)
 			).withThrows(IOException.class)
 		);
 
@@ -2009,29 +2013,6 @@ public class CodeDOMBuilderTests {
 			new CodeMethod(
 				AccessModifierType.PRIVATE,
 				Object.class,
-				"code_2",
-				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
-					new CodeParameterDeclarationExpression(Object.class, "data"),
-					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count"),
-					new CodeParameterDeclarationExpression(String.class, "key")
-				},
-				new CodeExpressionStatement(
-					new CodeBinaryOperatorExpression(
-						CodeBinaryOperatorType.ASSIGN,
-						new CodePropertyReferenceExpression(
-							new ScriptVariableReferenceExpression("foo"),
-							new CodePrimitiveExpression("bar")),
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.ADD,
-							new ScriptVariableReferenceExpression("baz"),
-							new CodeVariableReferenceExpression(Object.class, "data")).withParens())),
-				new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
-			),
-			new CodeMethod(
-				AccessModifierType.PRIVATE,
-				Object.class,
 				"hybrid_3",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
@@ -2048,49 +2029,54 @@ public class CodeDOMBuilderTests {
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("foo"),
 						new CodePrimitiveExpression("baz")),
-					new CodeMethodReturnStatement(
-						new CodeMethodInvokeExpression(
-							Object.class,
+					new CodeStatement[] {
+						new CodeExpressionStatement(
+							new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.ASSIGN,
+								new CodePropertyReferenceExpression(
+									new ScriptVariableReferenceExpression("foo"),
+									new CodePrimitiveExpression("bar")),
+								new CodeBinaryOperatorExpression(
+									CodeBinaryOperatorType.ADD,
+									new ScriptVariableReferenceExpression("baz"),
+									new CodeVariableReferenceExpression(Object.class, "data")).withParens())),
+						new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+					},
+					new CodeStatement[] {
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
 							new CodeThisReferenceExpression(),
-							"code_2",
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression("<script type=\"text/javascript\">"))),
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"writeGlobals",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression(false))),
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression("duel.write(function(data) { foo.bar = (baz+data); }, "))),
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"dataEncode",
 							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodeVariableReferenceExpression(Object.class, "data"),
-							new CodeVariableReferenceExpression(int.class, "index"),
-							new CodeVariableReferenceExpression(int.class, "count"),
-							new CodeVariableReferenceExpression(String.class, "key")))
-				),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("<script type=\"text/javascript\">"))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"writeGlobals",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(false))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("duel.write(function(data) { foo.bar = (baz+data); }, "))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"dataEncode",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodeVariableReferenceExpression(Object.class, "data"),
-					CodePrimitiveExpression.ONE)),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(");</script>"))),
-				new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+							CodePrimitiveExpression.ONE)),
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression(");</script>"))),
+						new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+					}
+				)
 			).withThrows(IOException.class)
 		);
 

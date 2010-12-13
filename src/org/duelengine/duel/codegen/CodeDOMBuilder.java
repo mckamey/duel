@@ -666,8 +666,15 @@ public class CodeDOMBuilder {
 						boolean.class,
 						new CodeThisReferenceExpression(),
 						"hasGlobals",
-						args),
-					new CodeMethodReturnStatement(expression));
+						args));
+
+				if (firstIsMethod && expression instanceof CodeMethodInvokeExpression) {
+					CodeMethod method = (CodeMethod)members.get(0);
+					runtimeCheck.getTrueStatements().addAll(method.getStatements());
+					this.viewType.getMembers().remove(method);
+				} else {
+					runtimeCheck.getTrueStatements().add(new CodeMethodReturnStatement(expression));
+				}
 
 				CodeMethod runtimeCheckMethod = new CodeMethod(
 					AccessModifierType.PRIVATE,
@@ -686,7 +693,7 @@ public class CodeDOMBuilder {
 
 				// ensure a break in the write stream
 				this.flushBuffer();
-				this.scopeStack.push(runtimeCheckMethod.getStatements());
+				this.scopeStack.push(runtimeCheck.getFalseStatements());
 				try {
 					// defer blocks that cannot be fully processed server-side
 					this.buildDeferredWrite(node.getClientCode(), node.getArgSize());
@@ -696,8 +703,8 @@ public class CodeDOMBuilder {
 					this.scopeStack.pop();
 				}
 
-				// if was immediately writen, return null
-				runtimeCheckMethod.getStatements().add(new CodeMethodReturnStatement(CodePrimitiveExpression.NULL));
+				// return null if immediately writen
+				runtimeCheck.getFalseStatements().add(new CodeMethodReturnStatement(CodePrimitiveExpression.NULL));
 
 				// have the expression be a method invocation
 				expression = new CodeMethodInvokeExpression(

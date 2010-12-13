@@ -252,6 +252,10 @@ public abstract class DuelView {
 		return context.getGlobal(ident);
 	}
 
+	protected void putGlobal(DuelContext context, String ident, Object value) {
+		context.putGlobal(ident, value);
+	}
+
 	protected boolean hasGlobals(DuelContext context, String... idents) {
 		return context.hasGlobals(idents);
 	}
