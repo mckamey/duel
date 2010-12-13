@@ -45,6 +45,15 @@ public class CodeVariableDeclarationStatement extends CodeStatement {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.initExpression != null) {
+				this.initExpression.visit(visitor);
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeVariableDeclarationStatement)) {
 			// includes null

@@ -35,6 +35,18 @@ public class CodePropertyReferenceExpression extends CodeExpression {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.target != null) {
+				this.target.visit(visitor);
+			}
+			if (this.propertyName != null) {
+				this.propertyName.visit(visitor);
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodePropertyReferenceExpression)) {
 			// includes null

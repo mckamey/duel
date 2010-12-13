@@ -88,6 +88,22 @@ public class CodeMethod extends CodeMember {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			for (CodeParameterDeclarationExpression parameter : this.parameters) {
+				if (parameter != null) {
+					parameter.visit(visitor);
+				}
+			}
+			for (CodeStatement statement : this.statements) {
+				if (statement != null) {
+					statement.visit(visitor);
+				}
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeMethod)) {
 			// includes null

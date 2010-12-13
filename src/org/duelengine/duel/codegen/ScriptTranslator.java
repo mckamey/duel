@@ -213,7 +213,7 @@ public class ScriptTranslator implements ErrorReporter {
 	private CodeObject visitProperty(ElementGet node) {
 		CodeExpression target = this.visitExpression(node.getTarget());
 		CodeExpression property = this.visitExpression(node.getElement());
-		
+
 		return new CodePropertyReferenceExpression(target, property);
 	}
 
@@ -221,7 +221,7 @@ public class ScriptTranslator implements ErrorReporter {
 		CodeExpression target = this.visitExpression(node.getTarget());
 		CodeExpression property = new CodePrimitiveExpression(node.getProperty().getIdentifier());
 
-		return new CodePropertyReferenceExpression((CodeExpression)target, property);
+		return new CodePropertyReferenceExpression(target, property);
 	}
 
 	private CodeExpression visitBinaryOp(InfixExpression node, CodeBinaryOperatorType operator) {

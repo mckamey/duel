@@ -55,6 +55,21 @@ public class CodeTernaryOperatorExpression extends CodeExpression {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.testExpression != null) {
+				this.testExpression.visit(visitor);
+			}
+			if (this.trueExpression != null) {
+				this.trueExpression.visit(visitor);
+			}
+			if (this.falseExpression != null) {
+				this.falseExpression.visit(visitor);
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeTernaryOperatorExpression)) {
 			// includes null

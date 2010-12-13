@@ -53,6 +53,26 @@ public class CodeIterationStatement extends CodeStatement {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.initStatement != null) {
+				this.initStatement.visit(visitor);
+			}
+			if (this.testExpression != null) {
+				this.testExpression.visit(visitor);
+			}
+			if (this.incrementStatement != null) {
+				this.incrementStatement.visit(visitor);
+			}
+			for (CodeStatement statement : this.statements) {
+				if (statement != null) {
+					statement.visit(visitor);
+				}
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeIterationStatement)) {
 			// includes null

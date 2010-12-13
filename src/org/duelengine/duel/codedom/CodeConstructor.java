@@ -34,4 +34,75 @@ public class CodeConstructor extends CodeMethod {
 	public List<CodeExpression> getChainedCtorArgs() {
 		return this.chainedCtorArgs;
 	}
+
+	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			for (CodeParameterDeclarationExpression parameter : this.getParameters()) {
+				if (parameter != null) {
+					parameter.visit(visitor);
+				}
+			}
+			for (CodeExpression arg : this.baseCtorArgs) {
+				if (arg != null) {
+					arg.visit(visitor);
+				}
+			}
+			for (CodeExpression arg : this.chainedCtorArgs) {
+				if (arg != null) {
+					arg.visit(visitor);
+				}
+			}
+			for (CodeStatement statement : this.getStatements()) {
+				if (statement != null) {
+					statement.visit(visitor);
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean equals(Object arg) {
+		if (!(arg instanceof CodeConstructor)) {
+			// includes null
+			return false;
+		}
+
+		CodeConstructor that = (CodeConstructor)arg;
+
+		int length = this.baseCtorArgs.size();
+		if (length != that.baseCtorArgs.size()) {
+			return false;
+		}
+
+		for (int i=0; i<length; i++) {
+			CodeExpression thisArg = this.baseCtorArgs.get(i);
+			CodeExpression thatArg = that.baseCtorArgs.get(i);
+			if (thisArg == null ? thatArg != null : !thisArg.equals(thatArg)) {
+				return false;
+			}
+		}
+
+		length = this.chainedCtorArgs.size();
+		if (length != that.chainedCtorArgs.size()) {
+			return false;
+		}
+
+		for (int i=0; i<length; i++) {
+			CodeExpression thisArg = this.chainedCtorArgs.get(i);
+			CodeExpression thatArg = that.chainedCtorArgs.get(i);
+			if (thisArg == null ? thatArg != null : !thisArg.equals(thatArg)) {
+				return false;
+			}
+		}
+
+		return super.equals(that);
+	}
+
+	@Override
+	public int hashCode() {
+		final int HASH_PRIME = 1000003;
+
+		return ((super.hashCode() * HASH_PRIME) + this.baseCtorArgs.hashCode()) * HASH_PRIME + this.chainedCtorArgs.hashCode();
+	}
 }

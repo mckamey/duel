@@ -53,6 +53,15 @@ public class CodeFieldReferenceExpression extends CodeExpression {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.target != null) {
+				this.target.visit(visitor);
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeFieldReferenceExpression)) {
 			// includes null

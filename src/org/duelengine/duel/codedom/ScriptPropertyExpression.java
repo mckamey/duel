@@ -1,7 +1,7 @@
 package org.duelengine.duel.codedom;
 
 /**
- * Represents a built-in JavaScript object property
+ * Represents built-in JavaScript object properties
  */
 public class ScriptPropertyExpression extends ScriptExpression {
 

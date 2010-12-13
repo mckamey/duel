@@ -2,7 +2,6 @@ package org.duelengine.duel.codedom;
 
 import java.util.*;
 import org.duelengine.duel.DuelData;
-import org.duelengine.duel.ast.DuelNode;
 import org.duelengine.duel.codegen.ServerCodeGen;
 
 public abstract class CodeObject {
@@ -41,6 +40,10 @@ public abstract class CodeObject {
 			this.userData.put(key, value);
 		}
 		return this;
+	}
+
+	public void visit(CodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 	@Override

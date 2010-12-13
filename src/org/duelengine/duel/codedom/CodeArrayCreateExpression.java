@@ -50,6 +50,17 @@ public class CodeArrayCreateExpression extends CodeExpression {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			for (CodeExpression expression : this.initializers) {
+				if (expression != null) {
+					expression.visit(visitor);
+				}
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeArrayCreateExpression)) {
 			// includes null

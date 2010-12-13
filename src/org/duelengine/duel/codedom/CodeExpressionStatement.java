@@ -20,6 +20,15 @@ public class CodeExpressionStatement extends CodeStatement {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.expression != null) {
+				this.expression.visit(visitor);
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeExpressionStatement)) {
 			// includes null

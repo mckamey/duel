@@ -55,6 +55,20 @@ public class CodeMethodInvokeExpression extends CodeExpression {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.target != null) {
+				this.target.visit(visitor);
+			}
+			for (CodeExpression expression : this.arguments) {
+				if (expression != null) {
+					expression.visit(visitor);
+				}
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeMethodInvokeExpression)) {
 			// includes null

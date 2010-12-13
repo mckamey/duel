@@ -28,6 +28,17 @@ public class CodeStatementBlock extends CodeObject {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			for (CodeStatement statement : this.statements) {
+				if (statement != null) {
+					statement.visit(visitor);
+				}
+			}
+		}
+	}
+
+	@Override
 	public CodeStatementBlock withUserData(Object... pairs) {
 		return (CodeStatementBlock)super.withUserData(pairs);
 	}

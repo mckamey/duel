@@ -20,6 +20,14 @@ public class CodeCastExpression extends CodeExpression {
 		this.withParens();
 	}
 
+	public CodeExpression getExpression() {
+		return this.expression;
+	}
+
+	public void setExpression(CodeExpression value) {
+		this.expression = value;
+	}
+
 	@Override
 	public Class<?> getResultType() {
 		return this.type;
@@ -29,12 +37,13 @@ public class CodeCastExpression extends CodeExpression {
 		this.type = (value == null) ? Object.class : value;
 	}
 
-	public CodeExpression getExpression() {
-		return this.expression;
-	}
-
-	public void setExpression(CodeExpression value) {
-		this.expression = value;
+	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.expression != null) {
+				this.expression.visit(visitor);
+			}
+		}
 	}
 
 	@Override

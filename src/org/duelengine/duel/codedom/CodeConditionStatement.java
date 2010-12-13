@@ -44,7 +44,26 @@ public class CodeConditionStatement extends CodeStatement {
 	public CodeStatementCollection getFalseStatements() {
 		return this.falseStatements;
 	}
-	
+
+	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.condition != null) {
+				this.condition.visit(visitor);
+			}
+			for (CodeStatement statement : this.trueStatements) {
+				if (statement != null) {
+					statement.visit(visitor);
+				}
+			}
+			for (CodeStatement statement : this.falseStatements) {
+				if (statement != null) {
+					statement.visit(visitor);
+				}
+			}
+		}
+	}
+
 	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeConditionStatement)) {

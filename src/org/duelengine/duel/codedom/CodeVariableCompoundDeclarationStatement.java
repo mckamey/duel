@@ -38,6 +38,17 @@ public class CodeVariableCompoundDeclarationStatement extends CodeStatement {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			for (CodeVariableDeclarationStatement statement : this.vars) {
+				if (statement != null) {
+					statement.visit(visitor);
+				}
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeVariableCompoundDeclarationStatement)) {
 			// includes null

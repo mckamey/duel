@@ -44,6 +44,7 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 		switch (this.operator) {
 			case ADD:
 			case ADD_ASSIGN:
+				// TODO: ADD is ambiguous
 			case SUBTRACT:
 			case SUBTRACT_ASSIGN:
 			case MULTIPLY:
@@ -90,6 +91,18 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 
 			default:
 				return Object.class;
+		}
+	}
+
+	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.left != null) {
+				this.left.visit(visitor);
+			}
+			if (this.right != null) {
+				this.right.visit(visitor);
+			}
 		}
 	}
 

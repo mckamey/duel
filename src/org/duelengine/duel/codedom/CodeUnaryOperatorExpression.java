@@ -50,6 +50,15 @@ public class CodeUnaryOperatorExpression extends CodeExpression {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.expression != null) {
+				this.expression.visit(visitor);
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeUnaryOperatorExpression)) {
 			// includes null

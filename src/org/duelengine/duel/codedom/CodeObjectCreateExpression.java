@@ -38,6 +38,17 @@ public class CodeObjectCreateExpression extends CodeExpression {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			for (CodeExpression expression : this.arguments) {
+				if (expression != null) {
+					expression.visit(visitor);
+				}
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeObjectCreateExpression)) {
 			// includes null

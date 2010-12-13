@@ -107,6 +107,17 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			for (CodeMember member : this.members) {
+				if (member != null) {
+					member.visit(visitor);
+				}
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeTypeDeclaration)) {
 			// includes null

@@ -40,6 +40,15 @@ public class CodeField extends CodeMember {
 	}
 
 	@Override
+	public void visit(CodeVisitor visitor) {
+		if (visitor.visit(this)) {
+			if (this.initExpression != null) {
+				this.initExpression.visit(visitor);
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CodeField)) {
 			// includes null
