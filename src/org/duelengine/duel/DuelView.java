@@ -251,7 +251,7 @@ public abstract class DuelView {
 		return context.getGlobal(ident);
 	}
 
-	protected Object hasGlobals(DuelContext context, String... idents) {
+	protected boolean hasGlobals(DuelContext context, String... idents) {
 		return context.hasGlobals(idents);
 	}
 
