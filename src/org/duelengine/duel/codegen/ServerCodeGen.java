@@ -482,7 +482,6 @@ public class ServerCodeGen implements CodeGenerator {
 		throws IOException {
 
 		boolean asNumber = true,
-			asBoolean = false,
 			asString = false,
 			isAssign = false;
 
@@ -543,7 +542,6 @@ public class ServerCodeGen implements CodeGenerator {
 				// asString trumps asNumber
 				asString = DuelData.isString(leftType) || DuelData.isString(rightType);
 				asNumber = !asString;
-				asBoolean = false;
 				break;
 			case ADD_ASSIGN:
 				// asString trumps asNumber
@@ -637,14 +635,34 @@ public class ServerCodeGen implements CodeGenerator {
 				isAssign = true;
 				break;
 			case BOOLEAN_AND:
+				if (!DuelData.isBoolean(left.getResultType()) || !DuelData.isBoolean(right.getResultType())) {
+					// convert to JavaScript semantics for boolean AND
+					this.writeExpression(output,
+						new CodeMethodInvokeExpression(
+							Object.class,
+							new CodeThisReferenceExpression(),
+							"LogicalAND",
+							left,
+							right));
+					return;
+				}
 				operator = " && ";
 				asNumber = false;
-				asBoolean = true;
 				break;
 			case BOOLEAN_OR:
+				if (!DuelData.isBoolean(left.getResultType()) || !DuelData.isBoolean(right.getResultType())) {
+					// convert to JavaScript semantics for boolean OR
+					this.writeExpression(output,
+						new CodeMethodInvokeExpression(
+							Object.class,
+							new CodeThisReferenceExpression(),
+							"LogicalOR",
+							left,
+							right));
+					return;
+				}
 				operator = " || ";
 				asNumber = false;
-				asBoolean = true;
 				break;
 			case SHIFT_LEFT:
 				operator = " << ";
@@ -721,8 +739,6 @@ public class ServerCodeGen implements CodeGenerator {
 			this.writeExpression(output, CodeDOMUtility.ensureString(left));
 		} else if (asNumber) {
 			this.writeExpression(output, CodeDOMUtility.ensureNumber(left));
-		} else if (asBoolean) {
-			this.writeExpression(output, CodeDOMUtility.ensureBoolean(left));
 		} else {
 			this.writeExpression(output, left);
 		}
@@ -735,8 +751,6 @@ public class ServerCodeGen implements CodeGenerator {
 			this.writeExpression(output, CodeDOMUtility.ensureString(right));
 		} else if (asNumber) {
 			this.writeExpression(output, CodeDOMUtility.ensureNumber(right));
-		} else if (asBoolean) {
-			this.writeExpression(output, CodeDOMUtility.ensureBoolean(right));
 		} else {
 			this.writeExpression(output, right);
 		}

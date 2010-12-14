@@ -431,6 +431,14 @@ public abstract class DuelView {
 		return a.equals(b);
 	}
 
+	protected Object LogicalOR(Object left, Object right) {
+		return DuelData.coerceBoolean(left) ? left : right;
+	}
+
+	protected Object LogicalAND(Object left, Object right) {
+		return DuelData.coerceBoolean(left) ? right : left;
+	}
+
 	/**
 	 * A work-around for dynamic post-inc/dec operator semantics
 	 * @param value

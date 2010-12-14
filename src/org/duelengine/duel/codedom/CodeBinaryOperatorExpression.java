@@ -1,5 +1,7 @@
 package org.duelengine.duel.codedom;
 
+import org.duelengine.duel.DuelData;
+
 public class CodeBinaryOperatorExpression extends CodeExpression {
 
 	private CodeBinaryOperatorType operator;
@@ -69,6 +71,12 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 
 			case BOOLEAN_AND:
 			case BOOLEAN_OR:
+				if (this.left == null || !DuelData.isBoolean(this.left.getResultType()) ||
+					this.right == null || !DuelData.isBoolean(this.right.getResultType())) {
+					return Object.class;
+				}
+				return Boolean.class;
+
 			case GREATER_THAN:
 			case GREATER_THAN_OR_EQUAL:
 			case LESS_THAN:
