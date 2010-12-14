@@ -613,7 +613,7 @@ public class CodeDOMBuilder {
 		return condition.getFalseStatements();
 	}
 
-	private CodeExpression translateExpression(CodeBlockNode node, boolean isWrite) {
+	private CodeExpression translateExpression(CodeBlockNode node, boolean canWrite) {
 
 		try {
 			// convert from JavaScript source to CodeDOM
@@ -650,14 +650,14 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(String.class, "key"));
 			}
 
-			if (isWrite && members.size() > 0 &&
-				members.get(0).getUserData(ScriptTranslator.EXTERNAL_IDENTS) instanceof Object[]) {
+			if (canWrite && members.size() > 0 &&
+				members.get(0).getUserData(ScriptTranslator.EXTERNAL_REFS) instanceof Object[]) {
 
-				Object[] idents = (Object[])members.get(0).getUserData(ScriptTranslator.EXTERNAL_IDENTS);
-				CodeExpression[] args = new CodeExpression[idents.length+1];
+				Object[] refs = (Object[])members.get(0).getUserData(ScriptTranslator.EXTERNAL_REFS);
+				CodeExpression[] args = new CodeExpression[refs.length+1];
 				args[0] = new CodeVariableReferenceExpression(DuelContext.class, "context");
-				for (int i=0, length=idents.length; i<length; i++) {
-					args[i+1] = new CodePrimitiveExpression(idents[i]);
+				for (int i=0, length=refs.length; i<length; i++) {
+					args[i+1] = new CodePrimitiveExpression(refs[i]);
 				}
 
 				// if data present, then run server-side, else defer execution to client

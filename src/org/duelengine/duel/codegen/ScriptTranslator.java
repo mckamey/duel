@@ -19,10 +19,10 @@ import org.mozilla.javascript.ast.*;
  */
 public class ScriptTranslator implements ErrorReporter {
 
-	public static final String EXTERNAL_IDENTS = "EXTERNAL";
+	public static final String EXTERNAL_REFS = "EXTERNAL_REFS";
 
 	private final IdentifierScope scope;
-	private List<String> externalIdents;
+	private List<String> externalRefs;
 
 	public ScriptTranslator() {
 		this(new CodeTypeDeclaration());
@@ -41,7 +41,7 @@ public class ScriptTranslator implements ErrorReporter {
 	 */
 	public List<CodeMember> translate(String jsSource) {
 
-		this.externalIdents = null;
+		this.externalRefs = null;
 		String jsFilename = "anonymous.js";
 		ErrorReporter errorReporter = this;
 
@@ -72,9 +72,9 @@ public class ScriptTranslator implements ErrorReporter {
 		}
 
 		List<CodeMember> members = this.visitRoot(root);
-		if (this.externalIdents != null && members.size() > 0) {
+		if (this.externalRefs != null && members.size() > 0) {
 			// store external identifiers on the member to allow generation of a fallback block
-			members.get(0).withUserData(EXTERNAL_IDENTS, this.externalIdents.toArray());
+			members.get(0).withUserData(EXTERNAL_REFS, this.externalRefs.toArray());
 		}
 		return members;
 	}
@@ -415,11 +415,16 @@ public class ScriptTranslator implements ErrorReporter {
 			return new CodeVariableReferenceExpression(Object.class, ident);
 		}
 
-		// mark as potential to fail at runtime based upon data
-		if (this.externalIdents == null) {
-			this.externalIdents = new ArrayList<String>();
+		// mark as potential to fail at runtime based upon data but
+		// pure assignments do not need to first check for existence
+		if (!(node.getParent().getType() == Token.ASSIGN &&
+			((InfixExpression)node.getParent()).getLeft() == node)) {
+
+			if (this.externalRefs == null) {
+				this.externalRefs = new ArrayList<String>();
+			}
+			this.externalRefs.add(ident);
 		}
-		this.externalIdents.add(ident);
 
 		return new ScriptVariableReferenceExpression(ident);
 	}
