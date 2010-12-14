@@ -225,7 +225,7 @@ test("doctype node", function() {
 
 	var view = duel(
 		["",
-		 	["!doctype",
+		 	["!DOCTYPE",
 		 	 	"html"],
 	 	 	"\n",
 			["html",
@@ -237,7 +237,7 @@ test("doctype node", function() {
 	var actual = view().toString();
 
 	var expected = 
-		'<!doctype html>\n'+
+		'<!DOCTYPE html>\n'+
 		'<html>'+
 		'<body>'+
 		'Lorem ipsum.'+

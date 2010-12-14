@@ -1401,7 +1401,7 @@ public class CodeDOMBuilderTests {
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
-						new CodePrimitiveExpression("<!doctype html><html><head><title>The head.</title></head><body><h1>The body.</h1></body></html>")))
+						new CodePrimitiveExpression("<!DOCTYPE html><html><head><title>The head.</title></head><body><h1>The body.</h1></body></html>")))
 				).withOverride().withThrows(IOException.class)
 			);
 

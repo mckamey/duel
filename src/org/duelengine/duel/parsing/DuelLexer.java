@@ -628,7 +628,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 						if ((value != null) && (value.length() >= 7) &&
 							value.substring(0, 7).equalsIgnoreCase("doctype")) {
 							value = value.substring(7).trim();
-							begin = "<!doctype";
+							begin = "<!DOCTYPE";
 						}
 						break;
 				}

@@ -415,8 +415,8 @@ public class ScriptTranslator implements ErrorReporter {
 			return new CodeVariableReferenceExpression(Object.class, ident);
 		}
 
-		// mark as potential to fail at runtime based upon data but
-		// pure assignments do not need to first check for existence
+		// mark as potential to fail at runtime based upon data, unless
+		// pure assignments which do not need to first check for existence
 		if (!(node.getParent().getType() == Token.ASSIGN &&
 			((InfixExpression)node.getParent()).getLeft() == node)) {
 

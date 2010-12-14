@@ -952,9 +952,9 @@ var duel = (
 	 * @param {Array} node The result tree
 	 */
 	function renderComment(buffer, node) {
-		if (node[0] === '!doctype') {
+		if (node[0] === '!DOCTYPE') {
 			// emit doctype
-			buffer.append('<!doctype ', node[1], '>');
+			buffer.append('<!DOCTYPE ', node[1], '>');
 		} else {
 			// emit HTML comment
 			buffer.append('<!--', node[1], '-->');

@@ -825,10 +825,10 @@ public class DuelLexerTests {
 	@Test
 	public void doctypeHTML5Test() {
 
-		String input = "<!doctype html>\r\n<html></html>";
+		String input = "<!DOCTYPE html>\r\n<html></html>";
 
 		Object[] expected = {
-				DuelToken.block(new BlockValue("<!doctype", ">", "html")),
+				DuelToken.block(new BlockValue("<!DOCTYPE", ">", "html")),
 				DuelToken.literal("\n"),
 				DuelToken.elemBegin("html"),
 				DuelToken.elemEnd("html")
@@ -846,7 +846,7 @@ public class DuelLexerTests {
 			"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" />";
 
 		Object[] expected = {
-				DuelToken.block(new BlockValue("<!doctype", ">", "html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
+				DuelToken.block(new BlockValue("<!DOCTYPE", ">", "html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
 				DuelToken.literal("\n"),
 				DuelToken.elemBegin("html"),
 				DuelToken.attrName("xmlns"),
@@ -867,7 +867,7 @@ public class DuelLexerTests {
 		String input = "<!DocType>";
 
 		Object[] expected = {
-				DuelToken.block(new BlockValue("<!doctype", ">", ""))
+				DuelToken.block(new BlockValue("<!DOCTYPE", ">", ""))
 			};
 
 		Object[] actual = new DuelLexer(input).toList().toArray();

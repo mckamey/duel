@@ -38,7 +38,7 @@ public class HTMLFormatter {
 	public HTMLFormatter writeDocType(Appendable output, String value)
 		throws IOException {
 
-		final String OPEN = "<!doctype";
+		final String OPEN = "<!DOCTYPE";
 		final char CLOSE = '>';
 
 		output.append(OPEN);

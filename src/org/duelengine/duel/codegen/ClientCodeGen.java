@@ -131,7 +131,7 @@ public class ClientCodeGen implements CodeGenerator {
 			this.writeComment(output, ((CodeCommentNode)node).getValue());
 
 		} else if (node instanceof DocTypeNode) {
-			this.writeSpecialElement(output, "!doctype", ((DocTypeNode)node).getValue(), depth, preMode);
+			this.writeSpecialElement(output, "!DOCTYPE", ((DocTypeNode)node).getValue(), depth, preMode);
 
 		} else if (node != null) {
 			throw new UnsupportedOperationException("Node not yet implemented: "+node.getClass());
