@@ -492,8 +492,8 @@ public class DataEncoder {
 
 		// emit as a code block of var declarations
 		List<String> namespaces = new ArrayList<String>();
-		for (Map.Entry<String, Object> globalVar : vars.entrySet()) {
-			String key = globalVar.getKey();
+		for (Map.Entry<String, Object> externalVar : vars.entrySet()) {
+			String key = externalVar.getKey();
 			this.writeNamespace(output, namespaces, key);
 
 			if (key.indexOf('.') < 0) {
@@ -507,7 +507,7 @@ public class DataEncoder {
 			if (this.prettyPrint) {
 				output.append(' ');
 			}
-			this.write(output, globalVar.getValue());
+			this.write(output, externalVar.getValue());
 			output.append(';');
 			this.writeln(output, 0);
 		}

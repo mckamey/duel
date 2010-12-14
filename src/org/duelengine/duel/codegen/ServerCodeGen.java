@@ -450,7 +450,7 @@ public class ServerCodeGen implements CodeGenerator {
 			}
 
 		} else if (expression instanceof ScriptVariableReferenceExpression) {
-			this.writeGlobalDataReference(output, (ScriptVariableReferenceExpression)expression);
+			this.writeExternalDataReference(output, (ScriptVariableReferenceExpression)expression);
 			
 		} else if (expression != null) {
 			throw new UnsupportedOperationException("Unexpected expression: "+expression.getClass());
@@ -490,7 +490,7 @@ public class ServerCodeGen implements CodeGenerator {
 		CodeExpression right = expression.getRight();
 
 		boolean leftIsPropertyRef = (left instanceof CodePropertyReferenceExpression);
-		boolean leftIsGlobalRef = (left instanceof ScriptVariableReferenceExpression);
+		boolean leftIsExternalRef = (left instanceof ScriptVariableReferenceExpression);
 
 		String operator;
 		switch (expression.getOperator()) {
@@ -556,7 +556,7 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " - ";
 				break;
 			case SUBTRACT_ASSIGN:
-				if (leftIsPropertyRef || leftIsGlobalRef || !CodeDOMUtility.isNumber(left)) {
+				if (leftIsPropertyRef || leftIsExternalRef || !CodeDOMUtility.isNumber(left)) {
 					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SUBTRACT,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
@@ -568,7 +568,7 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " * ";
 				break;
 			case MULTIPLY_ASSIGN:
-				if (leftIsPropertyRef || leftIsGlobalRef || !CodeDOMUtility.isNumber(left)) {
+				if (leftIsPropertyRef || leftIsExternalRef || !CodeDOMUtility.isNumber(left)) {
 					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MULTIPLY,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
@@ -580,7 +580,7 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " / ";
 				break;
 			case DIVIDE_ASSIGN:
-				if (leftIsPropertyRef || leftIsGlobalRef || !CodeDOMUtility.isNumber(left)) {
+				if (leftIsPropertyRef || leftIsExternalRef || !CodeDOMUtility.isNumber(left)) {
 					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.DIVIDE,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
@@ -592,7 +592,7 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " % ";
 				break;
 			case MODULUS_ASSIGN:
-				if (leftIsPropertyRef || leftIsGlobalRef || !CodeDOMUtility.isNumber(left)) {
+				if (leftIsPropertyRef || leftIsExternalRef || !CodeDOMUtility.isNumber(left)) {
 					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MODULUS,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
@@ -604,7 +604,7 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " & ";
 				break;
 			case BITWISE_AND_ASSIGN:
-				if (leftIsPropertyRef || leftIsGlobalRef || !CodeDOMUtility.isNumber(left)) {
+				if (leftIsPropertyRef || leftIsExternalRef || !CodeDOMUtility.isNumber(left)) {
 					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_AND,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
@@ -616,7 +616,7 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " | ";
 				break;
 			case BITWISE_OR_ASSIGN:
-				if (leftIsPropertyRef || leftIsGlobalRef || !CodeDOMUtility.isNumber(left)) {
+				if (leftIsPropertyRef || leftIsExternalRef || !CodeDOMUtility.isNumber(left)) {
 					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_OR,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
@@ -628,7 +628,7 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " ^ ";
 				break;
 			case BITWISE_XOR_ASSIGN:
-				if (leftIsPropertyRef || leftIsGlobalRef || !CodeDOMUtility.isNumber(left)) {
+				if (leftIsPropertyRef || leftIsExternalRef || !CodeDOMUtility.isNumber(left)) {
 					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_XOR,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
@@ -650,7 +650,7 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " << ";
 				break;
 			case SHIFT_LEFT_ASSIGN:
-				if (leftIsPropertyRef || leftIsGlobalRef || !CodeDOMUtility.isNumber(left)) {
+				if (leftIsPropertyRef || leftIsExternalRef || !CodeDOMUtility.isNumber(left)) {
 					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_LEFT,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
@@ -662,7 +662,7 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " >> ";
 				break;
 			case SHIFT_RIGHT_ASSIGN:
-				if (leftIsPropertyRef || leftIsGlobalRef || !CodeDOMUtility.isNumber(left)) {
+				if (leftIsPropertyRef || leftIsExternalRef || !CodeDOMUtility.isNumber(left)) {
 					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_RIGHT,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
@@ -674,7 +674,7 @@ public class ServerCodeGen implements CodeGenerator {
 				operator = " >>> ";
 				break;
 			case USHIFT_RIGHT_ASSIGN:
-				if (leftIsPropertyRef || leftIsGlobalRef || !CodeDOMUtility.isNumber(left)) {
+				if (leftIsPropertyRef || leftIsExternalRef || !CodeDOMUtility.isNumber(left)) {
 					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.USHIFT_RIGHT,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
@@ -700,7 +700,7 @@ public class ServerCodeGen implements CodeGenerator {
 						leftPropRef.getPropertyName(),
 						right));
 				return;
-			} else if (leftIsGlobalRef) {
+			} else if (leftIsExternalRef) {
 				// translate into dynamic helper method call
 				ScriptVariableReferenceExpression leftVarRef = (ScriptVariableReferenceExpression)left; 
 				this.writeExpression(
@@ -708,7 +708,7 @@ public class ServerCodeGen implements CodeGenerator {
 					new CodeMethodInvokeExpression(
 						expression.getResultType(),
 						new CodeThisReferenceExpression(),
-						"putGlobal",
+						"putExternal",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression(leftVarRef.getIdent()),
 						right));
@@ -891,7 +891,7 @@ public class ServerCodeGen implements CodeGenerator {
 		return true;
 	}
 
-	private void writeGlobalDataReference(Appendable output, ScriptVariableReferenceExpression expression)
+	private void writeExternalDataReference(Appendable output, ScriptVariableReferenceExpression expression)
 		throws IOException {
 
 		this.writeExpression(output, CodeDOMUtility.lookupExternalVar(expression.getIdent()));

@@ -329,7 +329,7 @@ final class CodeDOMUtility {
 		return new CodeMethodInvokeExpression(
 			Object.class,
 			new CodeThisReferenceExpression(),
-			"getGlobal",
+			"getExternal",
 			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			new CodePrimitiveExpression(ident));
 	}

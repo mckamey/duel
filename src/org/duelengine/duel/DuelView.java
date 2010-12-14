@@ -248,22 +248,22 @@ public abstract class DuelView {
 		context.getEncoder().write(context.getOutput(), data, depth);
 	}
 
-	protected Object getGlobal(DuelContext context, String ident) {
-		return context.getGlobal(ident);
+	protected Object getExternal(DuelContext context, String ident) {
+		return context.getExternal(ident);
 	}
 
-	protected void putGlobal(DuelContext context, String ident, Object value) {
-		context.putGlobal(ident, value);
+	protected void putExternal(DuelContext context, String ident, Object value) {
+		context.putExternal(ident, value);
 	}
 
-	protected boolean hasGlobals(DuelContext context, String... idents) {
-		return context.hasGlobals(idents);
+	protected boolean hasExternals(DuelContext context, String... idents) {
+		return context.hasExternals(idents);
 	}
 
-	protected void writeGlobals(DuelContext context, boolean needsTags)
+	protected void writeExternals(DuelContext context, boolean needsTags)
 		throws IOException {
 
-		if (!context.isGlobalsPending()) {
+		if (!context.hasExternalsPending()) {
 			return;
 		}
 
@@ -274,11 +274,10 @@ public abstract class DuelView {
 				.writeAttribute(output, "type", "text/javascript")
 				.writeCloseElementBeginTag(output);
 		}
-		context.getEncoder().writeVars(output, context.getGlobals());
+		context.getEncoder().writeVars(output, context.getPendingExternals());
 		if (needsTags) {
 			formatter.writeElementEndTag(output, "script");
 		}
-		context.setGlobalsPending(false);
 	}
 
 	protected String nextID(DuelContext context) {

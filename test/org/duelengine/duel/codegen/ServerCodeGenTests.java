@@ -1734,7 +1734,7 @@ public class ServerCodeGenTests {
 			"\t\tthis.write(context, \"</div>\");\n"+
 			"\t}\n\n"+
 			"\tprivate Object code_2(DuelContext context, Object data, int index, int count, String key) {\n"+
-			"\t\tthis.putGlobal(context, \"foo\", data);\n"+
+			"\t\tthis.putExternal(context, \"foo\", data);\n"+
 			"\t\treturn null;\n"+
 			"\t}\n"+
 			"}\n";

@@ -20,9 +20,11 @@ import org.mozilla.javascript.ast.*;
 public class ScriptTranslator implements ErrorReporter {
 
 	public static final String EXTERNAL_REFS = "EXTERNAL_REFS";
+	public static final String EXTERNAL_ASSIGN = "EXTERNAL_ASSIGN";
 
 	private final IdentifierScope scope;
 	private List<String> externalRefs;
+	private boolean externalAssign;
 
 	public ScriptTranslator() {
 		this(new CodeTypeDeclaration());
@@ -42,6 +44,7 @@ public class ScriptTranslator implements ErrorReporter {
 	public List<CodeMember> translate(String jsSource) {
 
 		this.externalRefs = null;
+		this.externalAssign = false;
 		String jsFilename = "anonymous.js";
 		ErrorReporter errorReporter = this;
 
@@ -72,9 +75,16 @@ public class ScriptTranslator implements ErrorReporter {
 		}
 
 		List<CodeMember> members = this.visitRoot(root);
-		if (this.externalRefs != null && members.size() > 0) {
-			// store external identifiers on the member to allow generation of a fallback block
-			members.get(0).withUserData(EXTERNAL_REFS, this.externalRefs.toArray());
+		if (members.size() > 0) {
+			CodeMember method = members.get(0);
+			if (this.externalRefs != null) {
+				// store external identifiers on the member to allow generation of a fallback block
+				method.withUserData(EXTERNAL_REFS, this.externalRefs.toArray());
+			}
+			if (this.externalAssign) {
+				// flag as potentially modifying values
+				method.withUserData(EXTERNAL_ASSIGN, true);
+			}
 		}
 		return members;
 	}
@@ -424,6 +434,8 @@ public class ScriptTranslator implements ErrorReporter {
 				this.externalRefs = new ArrayList<String>();
 			}
 			this.externalRefs.add(ident);
+		} else {
+			this.externalAssign = true;
 		}
 
 		return new ScriptVariableReferenceExpression(ident);

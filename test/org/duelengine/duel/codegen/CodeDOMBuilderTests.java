@@ -861,7 +861,7 @@ public class CodeDOMBuilderTests {
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
-					"writeGlobals",
+					"writeExternals",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodePrimitiveExpression(true))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
@@ -1627,7 +1627,7 @@ public class CodeDOMBuilderTests {
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
-					"writeGlobals",
+					"writeExternals",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodePrimitiveExpression(false))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
@@ -1800,7 +1800,7 @@ public class CodeDOMBuilderTests {
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
-					"writeGlobals",
+					"writeExternals",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodePrimitiveExpression(false))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
@@ -1921,7 +1921,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						boolean.class,
 						new CodeThisReferenceExpression(),
-						"hasGlobals",
+						"hasExternals",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("foo")),
 					new CodeStatement[] {
@@ -1940,7 +1940,7 @@ public class CodeDOMBuilderTests {
 						new CodeExpressionStatement(new CodeMethodInvokeExpression(
 							Void.class,
 							new CodeThisReferenceExpression(),
-							"writeGlobals",
+							"writeExternals",
 							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodePrimitiveExpression(false))),
 						new CodeExpressionStatement(new CodeMethodInvokeExpression(
@@ -2025,7 +2025,7 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						boolean.class,
 						new CodeThisReferenceExpression(),
-						"hasGlobals",
+						"hasExternals",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("foo"),
 						new CodePrimitiveExpression("baz")),
@@ -2052,7 +2052,7 @@ public class CodeDOMBuilderTests {
 						new CodeExpressionStatement(new CodeMethodInvokeExpression(
 							Void.class,
 							new CodeThisReferenceExpression(),
-							"writeGlobals",
+							"writeExternals",
 							new CodeVariableReferenceExpression(DuelContext.class, "context"),
 							new CodePrimitiveExpression(false))),
 						new CodeExpressionStatement(new CodeMethodInvokeExpression(

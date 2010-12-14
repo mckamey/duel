@@ -1,5 +1,7 @@
 package org.duelengine.duel;
 
+import java.util.*;
+
 /**
  * Maintains context state for a single request/response cycle.
  * DuelContext is not thread-safe and not intended to be reusable.
@@ -11,10 +13,34 @@ public class DuelContext {
 	private DataEncoder encoder;
 	private String newline;
 	private String indent;
-	private boolean encodeNonASCII = true;
+	private boolean encodeNonASCII;
 
-	private boolean globalsPending;
-	private SparseMap globals;
+	private enum ExternalsState {
+
+		/**
+		 * No external data
+		 */
+		NONE,
+
+		/**
+		 * Never emitted
+		 */
+		PENDING,
+
+		/**
+		 * Emitted
+		 */
+		EMITTED,
+
+		/**
+		 * Changed after emitted 
+		 */
+		DIRTY
+	}
+
+	private ExternalsState externalsState = ExternalsState.NONE;
+	private SparseMap externals;
+	private SparseMap dirty;
 
 	public DuelContext(Appendable output) {
 		if (output == null) {
@@ -48,27 +74,41 @@ public class DuelContext {
 		this.encodeNonASCII = value;
 	}
 
-	public void putGlobal(String ident, Object value) {
+	public void putExternal(String ident, Object value) {
 		if (ident == null) {
 			throw new NullPointerException("ident");
 		}
 
-		if (this.globals == null) {
-			this.globals = new SparseMap();
+		if (this.externals == null) {
+			this.externals = new SparseMap();
 		}
+		this.externals.putSparse(ident, value);
 
-		this.globalsPending = true;
-		this.globals.putSparse(ident, value);
+		switch (this.externalsState) {
+			case NONE:
+			case PENDING:
+				this.externalsState = ExternalsState.PENDING;
+				break;
+			case EMITTED:
+			case DIRTY:
+				this.externalsState = ExternalsState.DIRTY;
+				if (this.dirty == null) {
+					this.dirty = new SparseMap();
+				}
+				// also add to dirty set
+				this.dirty.putSparse(ident, value);
+				break;
+		}
 	}
 
-	boolean hasGlobals(String... idents) {
-		if (this.globals == null) {
+	boolean hasExternals(String... idents) {
+		if (this.externals == null) {
 			return false;
 		}
 
 		if (idents != null) {
 			for (String ident : idents) {
-				if (!this.globals.containsKey(ident)) {
+				if (!this.externals.containsKey(ident)) {
 					return false;
 				}
 			}
@@ -77,28 +117,34 @@ public class DuelContext {
 		return true;
 	}
 
-	Object getGlobal(String ident) {
+	Object getExternal(String ident) {
 		if (ident == null) {
 			throw new NullPointerException("ident");
 		}
 
-		if (this.globals == null || !this.globals.containsKey(ident)) {
+		if (this.externals == null || !this.externals.containsKey(ident)) {
 			return null;
 		}
 
-		return this.globals.get(ident);
+		return this.externals.get(ident);
 	}
 
-	SparseMap getGlobals() {
-		return this.globals;
+	SparseMap getPendingExternals() {
+
+		SparseMap sparseMap = (this.externalsState == ExternalsState.DIRTY) ? this.dirty : this.externals;
+		this.externalsState = ExternalsState.EMITTED;
+		this.dirty = null;
+		return sparseMap;
 	}
 
-	boolean isGlobalsPending() {
-		return this.globalsPending;
-	}
-
-	void setGlobalsPending(boolean value) {
-		this.globalsPending = value;
+	boolean hasExternalsPending() {
+		switch (this.externalsState) {
+			case PENDING:
+			case DIRTY:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	Appendable getOutput() {

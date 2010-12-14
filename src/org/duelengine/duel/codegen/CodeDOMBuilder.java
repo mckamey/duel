@@ -25,7 +25,8 @@ public class CodeDOMBuilder {
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
 	private CodeTypeDeclaration viewType;
 	private TagMode tagMode;
-	private boolean globalsEmitted;
+	private boolean needsExternalsEmitted;
+	private boolean hasScripts;
 
 	public CodeDOMBuilder() {
 		this(null);
@@ -48,7 +49,8 @@ public class CodeDOMBuilder {
 
 			this.scopeStack.clear();
 			this.tagMode = TagMode.None;
-			this.globalsEmitted = false;
+			this.hasScripts = false;
+			this.needsExternalsEmitted = true;
 			this.viewType = CodeDOMUtility.createViewType(ns, name);
 
 			CodeMethod method = this.buildRenderMethod(viewNode.getChildren()).withOverride();
@@ -619,11 +621,12 @@ public class CodeDOMBuilder {
 			// convert from JavaScript source to CodeDOM
 			List<CodeMember> members = new ScriptTranslator(this.viewType).translate(node.getClientCode());
 			boolean firstIsMethod = (members.size() > 0) && members.get(0) instanceof CodeMethod;
+			CodeMethod method = firstIsMethod ? (CodeMethod)members.get(0) : null;
 
 			CodeExpression expression = null;
 			if (firstIsMethod) {
 				// attempt to extract single expression (inline the return expression)
-				expression = CodeDOMUtility.inlineMethod((CodeMethod)members.get(0));
+				expression = CodeDOMUtility.inlineMethod(method);
 			}
 
 			if (expression != null) {
@@ -635,8 +638,6 @@ public class CodeDOMBuilder {
 			} else if (firstIsMethod) {
 				// add all CodeDOM members to viewType
 				this.viewType.addAll(members);
-
-				CodeMethod method = (CodeMethod)members.get(0);
 
 				// have the expression be a method invocation
 				expression = new CodeMethodInvokeExpression(
@@ -650,8 +651,16 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(String.class, "key"));
 			}
 
-			if (canWrite && members.size() > 0 &&
-				members.get(0).getUserData(ScriptTranslator.EXTERNAL_REFS) instanceof Object[]) {
+			if (method.getUserData(ScriptTranslator.EXTERNAL_ASSIGN) != null) {
+				// flag as potentially modifying external values
+				this.needsExternalsEmitted = true;
+			}
+
+			if (canWrite && (method != null) &&
+				method.getUserData(ScriptTranslator.EXTERNAL_REFS) instanceof Object[]) {
+
+				// flag as potentially modifying external values
+				this.needsExternalsEmitted = true;
 
 				Object[] refs = (Object[])members.get(0).getUserData(ScriptTranslator.EXTERNAL_REFS);
 				CodeExpression[] args = new CodeExpression[refs.length+1];
@@ -665,11 +674,10 @@ public class CodeDOMBuilder {
 					new CodeMethodInvokeExpression(
 						boolean.class,
 						new CodeThisReferenceExpression(),
-						"hasGlobals",
+						"hasExternals",
 						args));
 
 				if (firstIsMethod && expression instanceof CodeMethodInvokeExpression) {
-					CodeMethod method = (CodeMethod)members.get(0);
 					runtimeCheck.getTrueStatements().addAll(method.getStatements());
 					this.viewType.getMembers().remove(method);
 				} else {
@@ -738,10 +746,12 @@ public class CodeDOMBuilder {
 		CodeStatementCollection scope = this.scopeStack.peek();
 
 		// use the script tag as its own replacement element
-		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
-		this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
-		this.formatter.writeCloseElementBeginTag(this.buffer);
-		this.ensureGlobalsEmitted(false);
+		this.hasScripts = true;
+		this.formatter
+			.writeOpenElementBeginTag(this.buffer, "script")
+			.writeAttribute(this.buffer, "type", "text/javascript")
+			.writeCloseElementBeginTag(this.buffer);
+		this.ensureExternalsEmitted(false);
 
 		// emit patch function call which serializes attributes into object
 		this.buffer.append("duel.write(");
@@ -828,7 +838,8 @@ public class CodeDOMBuilder {
 		String tagName = element.getTagName();
 
 		if ("script".equalsIgnoreCase(tagName)) {
-			this.ensureGlobalsEmitted(true);
+			this.hasScripts = true;
+			this.ensureExternalsEmitted(true);
 		}
 		
 		this.formatter.writeOpenElementBeginTag(this.buffer, tagName);
@@ -917,6 +928,11 @@ public class CodeDOMBuilder {
 				this.tagMode = prevMode;
 			}
 
+			// ensure changes emitted, if no scripts then no need
+			if (this.hasScripts && "body".equalsIgnoreCase(tagName)) {
+				this.ensureExternalsEmitted(true);
+				this.buffer.append(this.settings.getNewline());
+			}
 			this.formatter.writeElementEndTag(this.buffer, tagName);
 
 		} else {
@@ -939,11 +955,12 @@ public class CodeDOMBuilder {
 		CodeStatementCollection scope = this.scopeStack.peek();
 
 		// execute any deferred attributes using idVar
+		this.hasScripts = true;
 		this.formatter
 			.writeOpenElementBeginTag(this.buffer, "script")
 			.writeAttribute(this.buffer, "type", "text/javascript")
 			.writeCloseElementBeginTag(this.buffer);
-		this.ensureGlobalsEmitted(false);
+		this.ensureExternalsEmitted(false);
 
 		// emit patch function call which serializes attributes into object
 		this.buffer.append("duel.attr(");
@@ -1066,13 +1083,16 @@ public class CodeDOMBuilder {
 		CodeStatementCollection scope = this.scopeStack.peek();
 
 		// use the script tag as its own replacement element
-		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
-		this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
-		this.formatter.writeOpenAttribute(this.buffer, "id");
+		this.hasScripts = true;
+		this.formatter
+			.writeOpenElementBeginTag(this.buffer, "script")
+			.writeAttribute(this.buffer, "type", "text/javascript")
+			.writeOpenAttribute(this.buffer, "id");
 		CodeVariableDeclarationStatement idVar = this.emitClientID();
-		this.formatter.writeCloseAttribute(this.buffer);
-		this.formatter.writeCloseElementBeginTag(this.buffer);
-		this.ensureGlobalsEmitted(false);
+		this.formatter
+			.writeCloseAttribute(this.buffer)
+			.writeCloseElementBeginTag(this.buffer);
+		this.ensureExternalsEmitted(false);
 
 		// emit patch function call which serializes attributes into object
 		this.buffer.append("duel.replace(");
@@ -1205,8 +1225,8 @@ public class CodeDOMBuilder {
 			CodeDOMUtility.emitExpression(codeExpr);
 	}
 
-	private void ensureGlobalsEmitted(boolean needsTags) {
-		if (this.globalsEmitted) {
+	private void ensureExternalsEmitted(boolean needsTags) {
+		if (!this.needsExternalsEmitted) {
 			return;
 		}
 
@@ -1217,7 +1237,7 @@ public class CodeDOMBuilder {
 			new CodeMethodInvokeExpression(
 				Void.class,
 				new CodeThisReferenceExpression(),
-				"writeGlobals",
+				"writeExternals",
 				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodePrimitiveExpression(needsTags)));
 
@@ -1225,13 +1245,13 @@ public class CodeDOMBuilder {
 		// might prevent this from being emitted. if found do not mark.
 		// there is a runtime check as well which will prevent multiple.
 		for (CodeStatementCollection scope : this.scopeStack) {
-			// TODO: this is too naive. doesn't work with hybrid methods
+			// this is too naive. may not work with inlined methods
 			if (!(scope.getOwner() instanceof CodeMethod)) {
 				return;
 			}
 		}
 
-		this.globalsEmitted = true;
+		this.needsExternalsEmitted = false;
 	}
 
 	private CodeMethod ensureInitMethod() {
