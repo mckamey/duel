@@ -1,19 +1,10 @@
 package org.duelengine.duel;
 
-import java.util.*;
-
 /**
- * Maintains context state for a single request/response cycle.
- * DuelContext is not thread-safe and not intended to be reusable.
+ * Maintains context state for a single binding/render cycle.
+ * DuelContext is NOT thread-safe and not intended to be reusable.
  */
 public class DuelContext {
-
-	private final Appendable output;
-	private ClientIDStrategy clientID;
-	private DataEncoder encoder;
-	private String newline;
-	private String indent;
-	private boolean encodeNonASCII;
 
 	private enum ExternalsState {
 
@@ -38,9 +29,19 @@ public class DuelContext {
 		DIRTY
 	}
 
+	private Appendable output;
+	private ClientIDStrategy clientID;
+	private DataEncoder encoder;
+	private String newline;
+	private String indent;
+	private boolean encodeNonASCII;
+
 	private ExternalsState externalsState = ExternalsState.NONE;
 	private SparseMap externals;
 	private SparseMap dirty;
+
+	public DuelContext() {
+	}
 
 	public DuelContext(Appendable output) {
 		if (output == null) {
@@ -50,31 +51,60 @@ public class DuelContext {
 		this.output = output;
 	}
 
+	public Appendable getOutput() {
+		if (this.output == null) {
+			this.output = new StringBuilder();
+		}
+
+		return this.output;
+	}
+
+	public DuelContext setOutput(Appendable output) {
+		if (output == null) {
+			throw new NullPointerException("output");
+		}
+
+		this.output = output;
+		return this;
+	}
+
+	ClientIDStrategy getClientID() {
+		return this.clientID;
+	}
+
+	public DuelContext setClientID(ClientIDStrategy value) {
+		this.clientID = value;
+		return this;
+	}
+
 	String getNewline() {
 		return this.newline;
 	}
 
-	public void setNewline(String value) {
+	public DuelContext setNewline(String value) {
 		this.newline = value;
+		return this;
 	}
 
 	String getIndent() {
 		return this.indent;
 	}
 
-	public void setIndent(String value) {
+	public DuelContext setIndent(String value) {
 		this.indent = value;
+		return this;
 	}
 
 	boolean getEncodeNonASCII() {
 		return this.encodeNonASCII;
 	}
 
-	public void setEncodeNonASCII(boolean value) {
+	public DuelContext setEncodeNonASCII(boolean value) {
 		this.encodeNonASCII = value;
+		return this;
 	}
 
-	public void putExternal(String ident, Object value) {
+	public DuelContext putExternal(String ident, Object value) {
 		if (ident == null) {
 			throw new NullPointerException("ident");
 		}
@@ -99,6 +129,7 @@ public class DuelContext {
 				this.dirty.putSparse(ident, value);
 				break;
 		}
+		return this;
 	}
 
 	boolean hasExternals(String... idents) {
@@ -145,10 +176,6 @@ public class DuelContext {
 			default:
 				return false;
 		}
-	}
-
-	Appendable getOutput() {
-		return this.output;
 	}
 
 	DataEncoder getEncoder() {
