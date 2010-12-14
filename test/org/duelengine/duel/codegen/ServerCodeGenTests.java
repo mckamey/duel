@@ -1556,4 +1556,193 @@ public class ServerCodeGenTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void propertyAssignmentTest() throws IOException {
+
+		CodeTypeDeclaration input = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("<div>"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"htmlEncode",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodeMethodInvokeExpression(
+						Object.class,
+						new CodeThisReferenceExpression(),
+						"code_2",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key")))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("</div>")))
+			).withOverride().withThrows(IOException.class),
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_2",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.ASSIGN,
+						new CodePropertyReferenceExpression(new CodeVariableReferenceExpression(Object.class, "data"), new CodePrimitiveExpression("foo")),
+						new CodePrimitiveExpression(42))),
+				new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+			)
+		);
+
+		String expected =
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class foo extends DuelView {\n\n"+
+			"\tpublic foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic foo(DuelPart... parts) {\n"+
+			"\t\tsuper(parts);\n"+
+			"\t}\n"+
+			"\n"+
+			"\t@Override\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"<div>\");\n"+
+			"\t\tthis.htmlEncode(context, this.code_2(context, data, index, count, key));\n"+
+			"\t\tthis.write(context, \"</div>\");\n"+
+			"\t}\n\n"+
+			"\tprivate Object code_2(DuelContext context, Object data, int index, int count, String key) {\n"+
+			"\t\tthis.setProperty(data, \"foo\", 42);\n"+
+			"\t\treturn null;\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void externalRefAssignmentTest() throws IOException {
+
+		CodeTypeDeclaration input = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("<div>"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"htmlEncode",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodeMethodInvokeExpression(
+						Object.class,
+						new CodeThisReferenceExpression(),
+						"code_2",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key")))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("</div>")))
+			).withOverride().withThrows(IOException.class),
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_2",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.ASSIGN,
+						new ScriptVariableReferenceExpression("foo"),
+						new CodeVariableReferenceExpression(Object.class, "data"))),
+				new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+			)
+		);
+
+		String expected =
+			"import java.io.*;\n"+
+			"import java.util.*;\n"+
+			"import java.util.Map.Entry;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class foo extends DuelView {\n\n"+
+			"\tpublic foo() {\n"+
+			"\t}\n\n"+
+			"\tpublic foo(DuelPart... parts) {\n"+
+			"\t\tsuper(parts);\n"+
+			"\t}\n\n"+
+			"\t@Override\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.write(context, \"<div>\");\n"+
+			"\t\tthis.htmlEncode(context, this.code_2(context, data, index, count, key));\n"+
+			"\t\tthis.write(context, \"</div>\");\n"+
+			"\t}\n\n"+
+			"\tprivate Object code_2(DuelContext context, Object data, int index, int count, String key) {\n"+
+			"\t\tthis.putGlobal(context, \"foo\", data);\n"+
+			"\t\treturn null;\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new ServerCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
 }
