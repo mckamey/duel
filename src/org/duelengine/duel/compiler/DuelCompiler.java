@@ -141,12 +141,14 @@ public class DuelCompiler {
 
 			// TODO: allow setting properties from args
 			CodeGenSettings settings = new CodeGenSettings();
+			settings.setIndent("\t");
 			settings.setNewline(System.getProperty("line.separator"));
+			settings.setClientNamePrefix(this.clientPrefix);
+			settings.setServerNamePrefix(this.serverPrefix);
 
 			// compact client-side
 			settings.setConvertLineEndings(false);
 			settings.setNormalizeWhitespace(true);
-			settings.setNamePrefix(this.clientPrefix);
 
 			CodeGenerator codegen = new ClientCodeGen(settings);
 			try {
@@ -168,12 +170,11 @@ public class DuelCompiler {
 			// directly emit server-side
 			settings.setConvertLineEndings(true);
 			settings.setNormalizeWhitespace(false);
-			settings.setNamePrefix(this.serverPrefix);
 
 			codegen = new ServerCodeGen(settings);
 			for (VIEWCommandNode view : views) {
 				try {
-					File outputFile = new File(this.outputServerFolder, settings.getFullName(view.getName()).replace('.', '/')+codegen.getFileExtension());
+					File outputFile = new File(this.outputServerFolder, settings.getFullServerName(view.getName()).replace('.', '/')+codegen.getFileExtension());
 					outputFile.getParentFile().mkdirs();
 
 					FileWriter writer = new FileWriter(outputFile, false);

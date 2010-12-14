@@ -42,7 +42,7 @@ public class CodeDOMBuilder {
 	public CodeTypeDeclaration buildView(VIEWCommandNode viewNode) throws IOException {
 		try {
 			// prepend the server-side prefix
-			String fullName = this.settings.getFullName(viewNode.getName());
+			String fullName = this.settings.getFullServerName(viewNode.getName());
 			int lastDot = fullName.lastIndexOf('.');
 			String name = fullName.substring(lastDot+1);
 			String ns = (lastDot > 0) ? fullName.substring(0, lastDot) : null;
@@ -162,6 +162,11 @@ public class CodeDOMBuilder {
 	private void buildCall(CALLCommandNode node)
 		throws IOException {
 
+		if (node.isDefer()) {
+			this.buildDeferredCall(node);
+			return;
+		}
+		
 		// generate a field to hold the child template
 		CodeField field = new CodeField(
 				AccessModifierType.PRIVATE,
@@ -184,7 +189,7 @@ public class CodeDOMBuilder {
 		}
 
 		// prepend the server-side prefix
-		viewName = this.settings.getFullName(viewName);
+		viewName = this.settings.getFullServerName(viewName);
 
 		CodeExpression[] ctorArgs = new CodeExpression[node.getChildren().size()];
 
@@ -203,7 +208,7 @@ public class CodeDOMBuilder {
 					new CodeObjectCreateExpression(
 						viewName.trim(),
 						ctorArgs))));
-		
+
 		CodeExpression dataExpr;
 		DuelNode callData = node.getAttribute(CALLCommandNode.DATA);
 		if (callData instanceof CodeBlockNode) {
@@ -247,6 +252,173 @@ public class CodeDOMBuilder {
 			indexExpr,
 			countExpr,
 			keyExpr));
+	}
+
+	private void buildDeferredCall(CALLCommandNode node)
+		throws IOException {
+
+		boolean prettyPrint = this.encoder.isPrettyPrint();
+		CodeStatementCollection scope = this.scopeStack.peek();
+
+		// use the script tag as its own replacement element
+		this.hasScripts = true;
+		this.formatter
+			.writeOpenElementBeginTag(this.buffer, "script")
+			.writeAttribute(this.buffer, "type", "text/javascript")
+			.writeOpenAttribute(this.buffer, "id");
+		CodeVariableDeclarationStatement idVar = this.emitClientID();
+		this.formatter
+			.writeCloseAttribute(this.buffer)
+			.writeCloseElementBeginTag(this.buffer);
+		this.ensureExternalsEmitted(false);
+
+		// emit patch function call which serializes attributes into object
+		this.buffer.append("duel.replace(");
+
+		// emit id var or known value
+		this.flushBuffer();
+		scope.add(new CodeMethodInvokeExpression(
+			Void.class,
+			new CodeThisReferenceExpression(),
+			"dataEncode",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
+			new CodeVariableReferenceExpression(idVar),
+			CodePrimitiveExpression.ONE));
+		this.buffer.append(',');
+		if (prettyPrint) {
+			this.buffer.append(' ');
+		}
+
+		// determine the name of the template
+		String viewName = null;
+		DuelNode callView = node.getAttribute(CALLCommandNode.VIEW);
+		if (callView instanceof LiteralNode) {
+			viewName = ((LiteralNode)callView).getValue();
+		} else if (callView instanceof ExpressionNode) {
+			viewName = ((ExpressionNode)callView).getValue();
+		}
+
+		if (viewName != null) {
+			// prepend the server-side prefix
+			viewName = this.settings.getFullClientName(viewName);
+			this.buffer.append(viewName);
+
+		} else {
+			if (callView instanceof CodeBlockNode) {
+				CodeExpression viewExpr = this.translateExpression((CodeBlockNode)callView, false);
+
+				// emit view expression as a literal result of the expression
+				this.flushBuffer();
+				scope.add(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"dataEncode",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					viewExpr,
+					CodePrimitiveExpression.ONE));
+
+			} else {
+				// TODO: how to handle switcher method cases?
+				throw new InvalidNodeException("Unexpected Call command view attribute: "+callView, callView);
+			}
+		}
+
+		this.buffer.append(',');
+		if (prettyPrint) {
+			this.buffer.append(' ');
+		}
+		this.flushBuffer();
+
+		CodeExpression dataExpr;
+		DuelNode callData = node.getAttribute(CALLCommandNode.DATA);
+		if (callData instanceof CodeBlockNode) {
+			dataExpr = this.translateExpression((CodeBlockNode)callData, false);
+		} else {
+			dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
+		}
+
+		// emit data expression as a literal
+		scope.add(new CodeMethodInvokeExpression(
+			Void.class,
+			new CodeThisReferenceExpression(),
+			"dataEncode",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
+			dataExpr,
+			CodePrimitiveExpression.ONE));
+
+		this.buffer.append(',');
+		if (prettyPrint) {
+			this.buffer.append(' ');
+		}
+		this.flushBuffer();
+
+		CodeExpression indexExpr;
+		DuelNode callIndex = node.getAttribute(CALLCommandNode.INDEX);
+		if (callIndex instanceof CodeBlockNode) {
+			indexExpr = this.translateExpression((CodeBlockNode)callIndex, false);
+		} else {
+			indexExpr = new CodeVariableReferenceExpression(int.class, "index");
+		}
+
+		// emit index expression as a literal
+		scope.add(new CodeMethodInvokeExpression(
+			Void.class,
+			new CodeThisReferenceExpression(),
+			"dataEncode",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
+			indexExpr,
+			CodePrimitiveExpression.ONE));
+
+		this.buffer.append(',');
+		if (prettyPrint) {
+			this.buffer.append(' ');
+		}
+		this.flushBuffer();
+
+		CodeExpression countExpr;
+		DuelNode callCount = node.getAttribute(CALLCommandNode.COUNT);
+		if (callCount instanceof CodeBlockNode) {
+			countExpr = this.translateExpression((CodeBlockNode)callCount, false);
+		} else {
+			countExpr = new CodeVariableReferenceExpression(int.class, "count");
+		}
+
+		// emit count expression as a literal
+		scope.add(new CodeMethodInvokeExpression(
+			Void.class,
+			new CodeThisReferenceExpression(),
+			"dataEncode",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
+			countExpr,
+			CodePrimitiveExpression.ONE));
+
+		this.buffer.append(',');
+		if (prettyPrint) {
+			this.buffer.append(' ');
+		}
+		this.flushBuffer();
+
+		CodeExpression keyExpr;
+		DuelNode callKey = node.getAttribute(CALLCommandNode.KEY);
+		if (callKey instanceof CodeBlockNode) {
+			keyExpr = this.translateExpression((CodeBlockNode)callKey, false);
+		} else {
+			keyExpr = new CodeVariableReferenceExpression(String.class, "key");
+		}
+
+		// emit key expression as a literal
+		scope.add(new CodeMethodInvokeExpression(
+			Void.class,
+			new CodeThisReferenceExpression(),
+			"dataEncode",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
+			keyExpr,
+			CodePrimitiveExpression.ONE));
+
+		this.buffer.append(");");
+
+		// last parameter will be the current data
+		this.formatter.writeElementEndTag(this.buffer, "script");
 	}
 
 	private CodeObjectCreateExpression buildPart(PARTCommandNode node)

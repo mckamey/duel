@@ -12,7 +12,10 @@ public class CALLCommandNode extends CommandNode {
 	public static final String INDEX = "index";
 	public static final String COUNT = "count";
 	public static final String KEY = "key";
+	public static final String DEFER = "defer";
+
 	private PARTCommandNode defaultPart;
+	private boolean defer;
 
 	public CALLCommandNode(int index, int line, int column) {
 		super(CMD, NAME, true, index, line, column);
@@ -20,6 +23,14 @@ public class CALLCommandNode extends CommandNode {
 
 	public CALLCommandNode(AttributePair[] attr, DuelNode... children) {
 		super(CMD, NAME, true, attr, children);
+	}
+	
+	public void setDefer(boolean value) {
+		this.defer = value;
+	}
+
+	public boolean isDefer() {
+		return this.defer;
 	}
 
 	@Override
@@ -43,6 +54,12 @@ public class CALLCommandNode extends CommandNode {
 		if (name == null || name.length() == 0) {
 			throw new NullPointerException("name");
 		}
+		
+		if (name.equalsIgnoreCase(DEFER)) {
+			this.setDefer(true);
+			return;
+		}
+
 		if (!name.equalsIgnoreCase(VIEW) &&
 			!name.equalsIgnoreCase(DATA) &&
 			!name.equalsIgnoreCase(INDEX) &&
@@ -79,7 +96,7 @@ public class CALLCommandNode extends CommandNode {
 		this.defaultPart.appendChild(child);
 	}
 
-	public static boolean isNullOrWhiteSpace(String value) {
+	private static boolean isNullOrWhiteSpace(String value) {
 		if (value == null) {
 			return true;
 		}

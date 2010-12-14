@@ -5,27 +5,28 @@ package org.duelengine.duel.codegen;
  */
 public class CodeGenSettings {
 
-	private String namePrefix;
+	private String clientPrefix;
+	private String serverPrefix;
 	private String indent = "\t";
 	private String newline = "\n";
 	private boolean convertLineEndings;
 	private boolean normalizeWhitespace;
 	private boolean encodeNonASCII = true;
 
-	public void setNamePrefix(String value) {
-		this.namePrefix = (value == null) ? null : value.trim();
+	public void setClientNamePrefix(String value) {
+		this.clientPrefix = (value == null) ? null : value.trim();
 	}
 
-	public String getNamePrefix() {
-		return this.namePrefix;
+	public String getClientNamePrefix() {
+		return this.clientPrefix;
 	}
 
-	public boolean hasNamePrefix() {
-		return (this.namePrefix != null) && (this.namePrefix.length() > 0);
+	public boolean hasClientNamePrefix() {
+		return (this.clientPrefix != null) && (this.clientPrefix.length() > 0);
 	}
 
-	public String getFullName(String name) {
-		if ((this.namePrefix == null) || (this.namePrefix.length() < 1)) {
+	public String getFullClientName(String name) {
+		if ((this.clientPrefix == null) || (this.clientPrefix.length() < 1)) {
 			return name;
 		}
 
@@ -33,7 +34,31 @@ public class CodeGenSettings {
 			name = name.trim();
 		}
 
-		return this.namePrefix+'.'+name;
+		return this.clientPrefix+'.'+name;
+	}
+
+	public void setServerNamePrefix(String value) {
+		this.serverPrefix = value;
+	}
+
+	public String getServerNamePrefix() {
+		return this.serverPrefix;
+	}
+
+	public boolean hasServerNamePrefix() {
+		return (this.serverPrefix != null) && (this.serverPrefix.length() > 0);
+	}
+
+	public String getFullServerName(String name) {
+		if ((this.serverPrefix == null) || (this.serverPrefix.length() < 1)) {
+			return name;
+		}
+
+		if (name != null) {
+			name = name.trim();
+		}
+
+		return this.serverPrefix+'.'+name;
 	}
 
 	/**
