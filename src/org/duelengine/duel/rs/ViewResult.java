@@ -14,7 +14,7 @@ import org.duelengine.duel.DuelView;
  */
 public class ViewResult implements StreamingOutput {
 	
-	private final String DEFAULT_ENCODING = "utf-8";
+	private final String DEFAULT_ENCODING = "UTF-8";
 
 	private final DuelContext context;
 	private final DuelView view;

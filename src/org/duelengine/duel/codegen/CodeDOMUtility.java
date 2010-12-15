@@ -12,10 +12,10 @@ final class CodeDOMUtility {
 	// static class
 	private CodeDOMUtility() {}
 
-	public static CodeTypeDeclaration createViewType(String namespace, String typeName, CodeMember... members) {
+	public static CodeTypeDeclaration createViewType(String typeNS, String typeName, CodeMember... members) {
 		CodeTypeDeclaration viewType = new CodeTypeDeclaration(
 			AccessModifierType.PUBLIC,
-			namespace,
+			typeNS,
 			typeName,
 			DuelView.class);
 

@@ -12,7 +12,7 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 	private AccessModifierType access;
 	private Class<?> baseType;
 	private String typeName;
-	private String namespace;
+	private String typeNS;
 	private final List<CodeMember> members = new ArrayList<CodeMember>();
 
 	public CodeTypeDeclaration() {
@@ -20,10 +20,10 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 		this.access = AccessModifierType.DEFAULT;
 	}
 
-	public CodeTypeDeclaration(AccessModifierType access, String namespace, String typeName, Class<?> baseType, CodeMember... members) {
+	public CodeTypeDeclaration(AccessModifierType access, String typeNS, String typeName, Class<?> baseType, CodeMember... members) {
 		this.baseType = (baseType != null) ? baseType : Object.class;
 		this.access = (access != null) ? access : AccessModifierType.DEFAULT;
-		this.namespace = namespace;
+		this.typeNS = typeNS;
 		this.typeName = typeName;
 
 		if (members != null) {
@@ -58,11 +58,11 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 	}
 
 	public void setNamespace(String value) {
-		this.namespace = value;
+		this.typeNS = value;
 	}
 
 	public String getNamespace() {
-		return this.namespace;
+		return this.typeNS;
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 			return false;
 		}
 
-		if (this.namespace == null ? that.namespace != null : !this.namespace.equals(that.namespace)) {
+		if (this.typeNS == null ? that.typeNS != null : !this.typeNS.equals(that.typeNS)) {
 			return false;
 		}
 
@@ -161,8 +161,8 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 		if (this.baseType != null) {
 			hash = hash * HASH_PRIME + this.baseType.hashCode();
 		}
-		if (this.namespace != null) {
-			hash = hash * HASH_PRIME + this.namespace.hashCode();
+		if (this.typeNS != null) {
+			hash = hash * HASH_PRIME + this.typeNS.hashCode();
 		}
 		if (this.typeName != null) {
 			hash = hash * HASH_PRIME + this.typeName.hashCode();
