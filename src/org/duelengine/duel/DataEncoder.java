@@ -5,7 +5,7 @@ import java.util.*;
 
 /**
  * Utility for writing data as JavaScript literals
- * Inherently thread-safe as contains no instance data.
+ * Inherently thread-safe as contains no mutable instance data.
  */
 public class DataEncoder {
 

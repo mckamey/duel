@@ -6,7 +6,7 @@ import java.util.*;
 
 /**
  * The skeletal implementation of DUEL view runtime.
- * Inherently thread-safe as contains no instance data.
+ * Inherently thread-safe as contains no mutable instance data.
  */
 public abstract class DuelView {
 

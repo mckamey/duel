@@ -9,7 +9,7 @@ import org.duelengine.duel.parsing.InvalidNodeException;
 
 /**
  * Generates client-side code for views
- * Inherently thread-safe as contains no instance data.
+ * Inherently thread-safe as contains no mutable instance data.
  */
 public class ClientCodeGen implements CodeGenerator {
 

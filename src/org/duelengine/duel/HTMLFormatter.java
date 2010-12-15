@@ -4,7 +4,7 @@ import java.io.*;
 
 /**
  * A simple abstraction for writing HTML.
- * Inherently thread-safe as contains no instance data.
+ * Inherently thread-safe as contains no mutable instance data.
  */
 public class HTMLFormatter {
 
