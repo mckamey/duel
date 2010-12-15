@@ -2,7 +2,6 @@ package org.duelengine.duel.codedom;
 
 import java.util.*;
 import org.duelengine.duel.DuelData;
-import org.duelengine.duel.codegen.ServerCodeGen;
 
 public abstract class CodeObject {
 
@@ -83,7 +82,7 @@ public abstract class CodeObject {
 	public String toString() {
 		try {
 			StringBuilder buffer = new StringBuilder();
-			new ServerCodeGen().writeCode(buffer, this);
+			new org.duelengine.duel.codegen.JavaCodeGen().writeCode(buffer, this);
 			return buffer.toString();
 		} catch (Exception ex) {
 			return super.toString()+'\n'+ex.getMessage();

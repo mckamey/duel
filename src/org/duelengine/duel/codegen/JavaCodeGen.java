@@ -6,7 +6,11 @@ import org.duelengine.duel.*;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 
-public class ServerCodeGen implements CodeGenerator {
+/**
+ * Code generator which emits Java source from CodeDOM classes
+ * Inherently thread-safe as contains no mutable instance data.
+ */
+public class JavaCodeGen implements CodeGenerator {
 
 	private enum ParensSetting {
 		AUTO,
@@ -16,13 +20,12 @@ public class ServerCodeGen implements CodeGenerator {
 
 	private static final String DUEL_PACKAGE = DuelView.class.getPackage().getName();
 	private final CodeGenSettings settings;
-	private int depth;
 
-	public ServerCodeGen() {
+	public JavaCodeGen() {
 		this(null);
 	}
 
-	public ServerCodeGen(CodeGenSettings settings) {
+	public JavaCodeGen(CodeGenSettings settings) {
 		this.settings = (settings != null) ? settings : new CodeGenSettings();
 	}
 
@@ -66,17 +69,15 @@ public class ServerCodeGen implements CodeGenerator {
 			if (view != null) {
 				CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).buildView(view);
 
-				this.depth = 0;
-
 				if (importsWritten) {
-					this.writeln(output);
+					this.writeln(output, 0);
 				} else {
 					this.writePackage(output, viewType.getNamespace());
 					importsWritten = true;
 				}
 
-				this.writeTypeDeclaration(output, viewType);
-				this.writeln(output);
+				this.writeTypeDeclaration(output, viewType, 0);
+				this.writeln(output, 0);
 			}
 		}
 	}
@@ -87,26 +88,24 @@ public class ServerCodeGen implements CodeGenerator {
 		if (code instanceof CodeTypeDeclaration) {
 			CodeTypeDeclaration viewType = (CodeTypeDeclaration)code;
 			this.writePackage(output, viewType.getNamespace());
-			this.writeTypeDeclaration(output, viewType);
-			this.writeln(output);
+			this.writeTypeDeclaration(output, viewType, 0);
+			this.writeln(output, 0);
 
 		} else if (code instanceof CodeStatement) {
-			this.writeStatement(output, (CodeStatement)code);
+			this.writeStatement(output, (CodeStatement)code, 0);
 
 		} else if (code instanceof CodeExpression) {
 			this.writeExpression(output, (CodeExpression)code);
 
 		} else if (code instanceof CodeMember) {
-			this.writeMember(output, "Ctor", (CodeMember)code);
+			this.writeMember(output, "Ctor", (CodeMember)code, 0);
 
 		} else if (code instanceof CodeStatementBlock) {
 			output.append('{');
-			this.depth++;
 			for (CodeStatement statement : ((CodeStatementBlock)code).getStatements()) {
-				this.writeStatement(output, statement);
+				this.writeStatement(output, statement, 1);
 			}
-			this.depth--;
-			this.writeln(output);
+			this.writeln(output, 0);
 			output.append('}');
 
 		} else if (code != null) {
@@ -114,7 +113,7 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 	}
 
-	private void writeTypeDeclaration(Appendable output, CodeTypeDeclaration type)
+	private void writeTypeDeclaration(Appendable output, CodeTypeDeclaration type, int depth)
 		throws IOException {
 
 		// write intro
@@ -126,41 +125,41 @@ public class ServerCodeGen implements CodeGenerator {
 			this.writeTypeName(output, baseType);
 		}
 		output.append(" {");
-		this.depth++;
+		depth++;
 
 		String typeName = type.getTypeName();
 		for (CodeMember member : type.getMembers()) {
-			this.writeln(output, 2);
-			this.writeMember(output, typeName, member);
+			this.writeln(output, depth, 2);
+			this.writeMember(output, typeName, member, depth);
 		}
 
 		// write outro
-		this.depth--;
-		this.writeln(output);
+		depth--;
+		this.writeln(output, depth);
 		output.append('}');
 	}
 
-	private void writeMember(Appendable output, String typeName, CodeMember member)
+	private void writeMember(Appendable output, String typeName, CodeMember member, int depth)
 		throws IOException {
 
 		if (member instanceof CodeConstructor) {
-			this.writeConstructor(output, (CodeConstructor)member, typeName);
+			this.writeConstructor(output, (CodeConstructor)member, typeName, depth);
 
 		} else if (member instanceof CodeMethod) {
-			this.writeMethod(output, (CodeMethod)member);
+			this.writeMethod(output, (CodeMethod)member, depth);
 
 		} else if (member instanceof CodeField) {
 			this.writeField(output, (CodeField)member);
 
 		} else if (member instanceof CodeTypeDeclaration) {
-			this.writeTypeDeclaration(output, (CodeTypeDeclaration)member);
+			this.writeTypeDeclaration(output, (CodeTypeDeclaration)member, depth);
 
 		} else if (member != null) {
 			throw new UnsupportedOperationException("Not implemented: "+member.getClass());
 		}
 	}
 
-	private void writeConstructor(Appendable output, CodeConstructor ctor, String typeName)
+	private void writeConstructor(Appendable output, CodeConstructor ctor, String typeName, int depth)
 		throws IOException {
 
 		this.writeAccessModifier(output, ctor.getAccess());
@@ -176,10 +175,10 @@ public class ServerCodeGen implements CodeGenerator {
 			writeParameterDeclaration(output, param);
 		}
 		output.append(") {");
-		this.depth++;
+		depth++;
 		List<CodeExpression> args = ctor.getBaseCtorArgs();
 		if (args.size() > 0) {
-			this.writeln(output);
+			this.writeln(output, depth);
 			output.append("super(");
 			needsDelim = false;
 			for (CodeExpression expression : args) {
@@ -194,7 +193,7 @@ public class ServerCodeGen implements CodeGenerator {
 		} else {
 			args = ctor.getChainedCtorArgs();
 			if (args.size() > 0) {
-				this.writeln(output);
+				this.writeln(output, depth);
 				output.append("this(");
 				needsDelim = false;
 				for (CodeExpression expression : args) {
@@ -210,19 +209,19 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 
 		for (CodeStatement statement : ctor.getStatements()) {
-			this.writeStatement(output, statement);
+			this.writeStatement(output, statement, depth);
 		}
-		this.depth--;
-		this.writeln(output);
+		depth--;
+		this.writeln(output, depth);
 		output.append("}");
 	}
 
-	private void writeMethod(Appendable output, CodeMethod method)
+	private void writeMethod(Appendable output, CodeMethod method, int depth)
 		throws IOException {
 
 		if (method.isOverride()) {
 			output.append("@Override");
-			this.writeln(output);
+			this.writeln(output, depth);
 		}
 		this.writeAccessModifier(output, method.getAccess());
 		this.writeTypeName(output, method.getReturnType());
@@ -249,12 +248,12 @@ public class ServerCodeGen implements CodeGenerator {
 			this.writeTypeName(output, exception);
 		}
 		output.append(" {");
-		this.depth++;
+		depth++;
 		for (CodeStatement statement : method.getStatements()) {
-			this.writeStatement(output, statement);
+			this.writeStatement(output, statement, depth);
 		}
-		this.depth--;
-		this.writeln(output);
+		depth--;
+		this.writeln(output, depth);
 		output.append("}");
 	}
 
@@ -285,13 +284,13 @@ public class ServerCodeGen implements CodeGenerator {
 		output.append(param.getName());
 	}
 
-	private void writeStatement(Appendable output, CodeStatement statement)
+	private void writeStatement(Appendable output, CodeStatement statement, int depth)
 		throws IOException {
 
-		this.writeStatement(output, statement, false);
+		this.writeStatement(output, statement, depth, false);
 	}
 
-	private void writeStatement(Appendable output, CodeStatement statement, boolean inline)
+	private void writeStatement(Appendable output, CodeStatement statement, int depth, boolean inline)
 		throws IOException {
 
 		if (statement == null) {
@@ -299,7 +298,7 @@ public class ServerCodeGen implements CodeGenerator {
 		}
 
 		if (!inline) {
-			this.writeln(output);
+			this.writeln(output, depth);
 		}
 
 		boolean needsSemicolon; 
@@ -308,16 +307,16 @@ public class ServerCodeGen implements CodeGenerator {
 			needsSemicolon = true;
 
 		} else if (statement instanceof CodeConditionStatement) {
-			needsSemicolon = this.writeConditionStatement(output, (CodeConditionStatement)statement);
+			needsSemicolon = this.writeConditionStatement(output, (CodeConditionStatement)statement, depth);
 
 		} else if (statement instanceof CodeVariableDeclarationStatement) {
 			needsSemicolon = this.writeVariableDeclarationStatement(output, (CodeVariableDeclarationStatement)statement, inline);
 
 		} else if (statement instanceof CodeIterationStatement) {
-			needsSemicolon = this.writeIterationStatement(output, (CodeIterationStatement)statement);
+			needsSemicolon = this.writeIterationStatement(output, (CodeIterationStatement)statement, depth);
 
 		} else if (statement instanceof CodeVariableCompoundDeclarationStatement) {
-			needsSemicolon = this.writeVariableCompoundDeclarationStatement(output, (CodeVariableCompoundDeclarationStatement)statement, inline);
+			needsSemicolon = this.writeVariableCompoundDeclarationStatement(output, (CodeVariableCompoundDeclarationStatement)statement, depth, inline);
 
 		} else if (statement instanceof CodeMethodReturnStatement) {
 			needsSemicolon = this.writeMethodReturn(output, (CodeMethodReturnStatement)statement);
@@ -867,7 +866,7 @@ public class ServerCodeGen implements CodeGenerator {
 		return true;
 	}
 
-	private boolean writeVariableCompoundDeclarationStatement(Appendable output, CodeVariableCompoundDeclarationStatement statement, boolean inline)
+	private boolean writeVariableCompoundDeclarationStatement(Appendable output, CodeVariableCompoundDeclarationStatement statement, int depth, boolean inline)
 		throws IOException {
 
 		List<CodeVariableDeclarationStatement> vars = statement.getVars();
@@ -877,7 +876,7 @@ public class ServerCodeGen implements CodeGenerator {
 
 		this.writeTypeName(output, vars.get(0).getType());
 		output.append(' ');
-		this.depth++;
+		depth++;
 		boolean needsDelim = false;
 		for (CodeVariableDeclarationStatement varRef : vars) {
 			if (needsDelim) {
@@ -885,7 +884,7 @@ public class ServerCodeGen implements CodeGenerator {
 				if (inline) {
 					output.append(' ');
 				} else {
-					this.writeln(output);
+					this.writeln(output, depth);
 				}
 			} else {
 				needsDelim = true;
@@ -901,7 +900,7 @@ public class ServerCodeGen implements CodeGenerator {
 				this.writeExpression(output, initExpr);
 			}
 		}
-		this.depth--;
+		depth--;
 		return true;
 	}
 
@@ -911,20 +910,20 @@ public class ServerCodeGen implements CodeGenerator {
 		this.writeExpression(output, CodeDOMUtility.lookupExternalVar(expression.getIdent()));
 	}
 
-	private boolean writeConditionStatement(Appendable output, CodeConditionStatement statement)
+	private boolean writeConditionStatement(Appendable output, CodeConditionStatement statement, int depth)
 		throws IOException {
 
 		output.append("if (");
 		this.writeExpression(output, CodeDOMUtility.ensureBoolean(statement.getCondition()), ParensSetting.SUPPRESS);
 		output.append(") {");
-		this.depth++;
+		depth++;
 
 		for (CodeStatement trueStatement : statement.getTrueStatements()) {
-			this.writeStatement(output, trueStatement);
+			this.writeStatement(output, trueStatement, depth);
 		}
 
-		this.depth--;
-		this.writeln(output);
+		depth--;
+		this.writeln(output, depth);
 		output.append('}');
 
 		if (statement.getFalseStatements().size() > 0) {
@@ -935,39 +934,39 @@ public class ServerCodeGen implements CodeGenerator {
 			output.append(" else ");
 			if (!nestedConditionals) {
 				output.append('{');
-				this.depth++;
+				depth++;
 				for (CodeStatement falseStatement : statement.getFalseStatements()) {
-					this.writeStatement(output, falseStatement);
+					this.writeStatement(output, falseStatement, depth);
 				}
-				this.depth--;
-				this.writeln(output);
+				depth--;
+				this.writeln(output, depth);
 				output.append('}');
 			} else {
-				this.writeConditionStatement(output, (CodeConditionStatement)statement.getFalseStatements().getLastStatement());
+				this.writeConditionStatement(output, (CodeConditionStatement)statement.getFalseStatements().getLastStatement(), depth);
 			}
 		}
 
 		return false;
 	}
 
-	private boolean writeIterationStatement(Appendable output, CodeIterationStatement statement)
+	private boolean writeIterationStatement(Appendable output, CodeIterationStatement statement, int depth)
 		throws IOException {
 
 		output.append("for (");
 
-		this.writeStatement(output, statement.getInitStatement(), true);
+		this.writeStatement(output, statement.getInitStatement(), depth, true);
 		output.append("; ");
 		this.writeExpression(output, CodeDOMUtility.ensureBoolean(statement.getTestExpression()));
 		output.append("; ");
-		this.writeStatement(output, statement.getIncrementStatement(), true);
+		this.writeStatement(output, statement.getIncrementStatement(), depth, true);
 
 		output.append(") {");
-		this.depth++;
+		depth++;
 		for (CodeStatement childStatement : statement.getStatements()) {
-			this.writeStatement(output, childStatement);
+			this.writeStatement(output, childStatement, depth);
 		}
-		this.depth--;
-		this.writeln(output);
+		depth--;
+		this.writeln(output, depth);
 		output.append('}');
 
 		return false;
@@ -1088,17 +1087,17 @@ public class ServerCodeGen implements CodeGenerator {
 
 		if (ns != null && ns.length() > 0) {
 			output.append("package ").append(ns).append(";");
-			this.writeln(output, 2);
+			this.writeln(output, 0, 2);
 		}
 
 		output.append("import java.io.*;");
-		this.writeln(output);
+		this.writeln(output, 0);
 		output.append("import java.util.*;");
-		this.writeln(output);
+		this.writeln(output, 0);
 		output.append("import java.util.Map.Entry;");
-		this.writeln(output);
+		this.writeln(output, 0);
 		output.append("import ").append(DUEL_PACKAGE).append(".*;");
-		this.writeln(output, 2);
+		this.writeln(output, 0, 2);
 	}
 
 	private void writePrimitive(Appendable output, Object value)
@@ -1256,21 +1255,23 @@ public class ServerCodeGen implements CodeGenerator {
 		output.append('"');
 	}
 
-	private void writeln(Appendable output)
+	private void writeln(Appendable output, int depth)
 		throws IOException {
 
-		this.writeln(output, 1);
+		this.writeln(output, depth, 1);
 	}
 
-	private void writeln(Appendable output, int newlines)
+	private void writeln(Appendable output, int depth, int newlines)
 		throws IOException {
 
+		String newline = this.settings.getNewline();
 		for (int i=newlines; i>0; i--) {
-			output.append(this.settings.getNewline());
+			output.append(newline);
 		}
 
-		for (int i=this.depth; i>0; i--) {
-			output.append(this.settings.getIndent());
+		String indent = this.settings.getIndent();
+		for (int i=depth; i>0; i--) {
+			output.append(indent);
 		}
 	}
 }

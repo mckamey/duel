@@ -8,7 +8,7 @@ import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelData;
 import org.duelengine.duel.codedom.*;
 
-public class ServerCodeGenTests {
+public class JavaCodeGenTests {
 
 	@Test
 	public void stringSimpleTest() throws IOException {
@@ -55,7 +55,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -106,7 +106,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 		
 		assertEquals(expected, actual);
@@ -212,7 +212,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -312,7 +312,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -456,7 +456,7 @@ public class ServerCodeGenTests {
 			"\t}\n}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -612,7 +612,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -738,7 +738,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -792,7 +792,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -845,7 +845,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -898,7 +898,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -952,7 +952,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1001,7 +1001,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1050,7 +1050,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1131,7 +1131,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1252,7 +1252,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1439,7 +1439,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1490,7 +1490,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1551,7 +1551,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1646,7 +1646,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1740,7 +1740,7 @@ public class ServerCodeGenTests {
 			"}\n";
 
 		StringBuilder output = new StringBuilder();
-		new ServerCodeGen().writeCode(output, input);
+		new JavaCodeGen().writeCode(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);

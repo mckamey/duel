@@ -139,7 +139,7 @@ public class DuelCompiler {
 				return;
 			}
 
-			// TODO: allow setting properties from args
+			// TODO: allow setting of more properties from args
 			CodeGenSettings settings = new CodeGenSettings();
 			settings.setIndent("\t");
 			settings.setNewline(System.getProperty("line.separator"));
@@ -171,7 +171,7 @@ public class DuelCompiler {
 			settings.setConvertLineEndings(true);
 			settings.setNormalizeWhitespace(false);
 
-			codegen = new ServerCodeGen(settings);
+			codegen = new JavaCodeGen(settings);
 			for (VIEWCommandNode view : views) {
 				try {
 					File outputFile = new File(this.outputServerFolder, settings.getFullServerName(view.getName()).replace('.', '/')+codegen.getFileExtension());
