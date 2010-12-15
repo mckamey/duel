@@ -152,7 +152,7 @@
 		// emit children
 		for (; i<length; i++) {
 			child = node[i];
-			if (getType(child) === ARY) {
+			if (isArray(child)) {
 				renderElem(buffer, child);
 			} else {
 				// encode string literals

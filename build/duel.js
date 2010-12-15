@@ -108,6 +108,17 @@ var duel = (
 	};
 
 	/**
+	 * Determines if the value is an Array
+	 * 
+	 * @private
+	 * @param {*} val the object being tested
+	 * @return {boolean}
+	 */
+	var isArray = Array.isArray || function(val) {
+		return (val instanceof Array);
+	};
+	
+	/**
 	 * Determines the type of the value
 	 * 
 	 * @private
@@ -117,7 +128,7 @@ var duel = (
 	function getType(val) {
 		switch (typeof val) {
 			case "object":
-				return !val ? NUL : ((val instanceof Array) ? ARY : ((val instanceof Markup) ? RAW : ((val instanceof Date) ? VAL : OBJ)));
+				return !val ? NUL : (isArray(val) ? ARY : ((val instanceof Markup) ? RAW : ((val instanceof Date) ? VAL : OBJ)));
 			case "function":
 				return FUN;
 			case "undefined":
@@ -296,7 +307,7 @@ var duel = (
 	 * @constructor
 	 */
 	function Result(view) {
-		if (getType(view) !== ARY) {
+		if (!isArray(view)) {
 			// ensure is rooted element
 			view = ["", view];
 		}
@@ -1007,7 +1018,7 @@ var duel = (
 		// emit children
 		for (; i<length; i++) {
 			child = node[i];
-			if (getType(child) === ARY) {
+			if (isArray(child)) {
 				renderElem(buffer, child);
 			} else {
 				// encode string literals

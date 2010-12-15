@@ -79,6 +79,17 @@
 	};
 
 	/**
+	 * Determines if the value is an Array
+	 * 
+	 * @private
+	 * @param {*} val the object being tested
+	 * @return {boolean}
+	 */
+	var isArray = Array.isArray || function(val) {
+		return (val instanceof Array);
+	};
+	
+	/**
 	 * Determines the type of the value
 	 * 
 	 * @private
@@ -88,7 +99,7 @@
 	function getType(val) {
 		switch (typeof val) {
 			case "object":
-				return !val ? NUL : ((val instanceof Array) ? ARY : ((val instanceof Markup) ? RAW : ((val instanceof Date) ? VAL : OBJ)));
+				return !val ? NUL : (isArray(val) ? ARY : ((val instanceof Markup) ? RAW : ((val instanceof Date) ? VAL : OBJ)));
 			case "function":
 				return FUN;
 			case "undefined":
@@ -267,7 +278,7 @@
 	 * @constructor
 	 */
 	function Result(view) {
-		if (getType(view) !== ARY) {
+		if (!isArray(view)) {
 			// ensure is rooted element
 			view = ["", view];
 		}
