@@ -312,7 +312,10 @@ public class DuelParser {
 
 	/**
 	 * ElementNode factory method
-	 * @param name
+	 * @param tagName
+	 * @param index
+	 * @param line
+	 * @param column
 	 * @return
 	 */
 	public static ElementNode createElement(String tagName, int index, int line, int column) {
