@@ -26,13 +26,13 @@ public class DuelCompiler {
 		}
 
 		DuelCompiler compiler = new DuelCompiler();
-		compiler.setInputRoot(new File(args[0].replace('\\', '/')));
+		compiler.setInputRoot(args[0]);
 
 		if (args.length > 1) {
-			compiler.setOutputClientFolder(new File(args[1].replace('\\', '/')));
+			compiler.setOutputClientFolder(args[1]);
 
 			if (args.length > 2) {
-				compiler.setOutputServerFolder(new File(args[2].replace('\\', '/')));
+				compiler.setOutputServerFolder(args[2]);
 			}
 		}
 
@@ -51,28 +51,28 @@ public class DuelCompiler {
 	private String clientPrefix;
 	private String serverPrefix;
 
-	public File getInputRoot() {
-		return this.inputRoot;
+	public String getInputRoot() {
+		return this.inputRoot.getAbsolutePath();
 	}
 
-	public void setInputRoot(File value) {
-		this.inputRoot = value;
+	public void setInputRoot(String value) {
+		this.inputRoot = (value != null) ? new File(value.replace('\\', '/')) : null;
 	}
 
-	public File getOutputClientFolder() {
-		return this.outputClientFolder;
+	public String getOutputClientFolder() {
+		return this.outputServerFolder.getAbsolutePath();
 	}
 
-	public void setOutputClientFolder(File value) {
-		this.outputClientFolder = value;
+	public void setOutputClientFolder(String value) {
+		this.outputClientFolder = (value != null) ? new File(value.replace('\\', '/')) : null;
 	}
 
-	public File getOutputServerFolder() {
-		return this.outputServerFolder;
+	public String getOutputServerFolder() {
+		return this.outputServerFolder.getAbsolutePath();
 	}
 
-	public void setOutputServerFolder(File value) {
-		this.outputServerFolder = value;
+	public void setOutputServerFolder(String value) {
+		this.outputServerFolder = (value != null) ? new File(value.replace('\\', '/')) : null;
 	}
 
 	public String getClientPrefix() {

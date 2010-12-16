@@ -1043,7 +1043,7 @@ public class CodeDOMBuilder {
 				} catch (Exception ex) {
 					
 					// only defer attributes that cannot be processed server-side
-					deferredAttrs.put(attrName, DataEncoder.snippet(((CodeBlockNode)attrVal).getClientCode()));
+					deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode()));
 					argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
 				}
 

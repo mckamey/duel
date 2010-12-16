@@ -21,7 +21,7 @@ public class DataEncoder {
 		}
 	}
 
-	public static Snippet snippet(String text) {
+	public static Snippet asSnippet(String text) {
 		return new Snippet(text);
 	}
 
@@ -486,7 +486,7 @@ public class DataEncoder {
 	public void writeVars(Appendable output, SparseMap items)
 		throws IOException {
 
-		// begin by flattening the heirarchy whereever a SparseMap is encountered
+		// begin by flattening the heirarchy whenever a SparseMap is encountered
 		Map<String, Object> vars = new LinkedHashMap<String, Object>();
 		this.accumulateVars(items, vars, new StringBuilder());
 

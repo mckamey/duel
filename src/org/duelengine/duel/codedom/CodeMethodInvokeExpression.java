@@ -10,7 +10,7 @@ public class CodeMethodInvokeExpression extends CodeExpression {
 	private Class<?> resultType;
 	private CodeExpression target;
 	private String methodName;
-	private List<CodeExpression> arguments = new ArrayList<CodeExpression>();
+	private final List<CodeExpression> arguments = new ArrayList<CodeExpression>();
 
 	public CodeMethodInvokeExpression() {
 		this.setResultType(null);
