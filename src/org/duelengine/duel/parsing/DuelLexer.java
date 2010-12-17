@@ -773,13 +773,13 @@ public class DuelLexer implements Iterator<DuelToken> {
 	 * @throws IOException
 	 */
 	private void setMark(int bufferSize) throws IOException {
-		this.reader.mark(bufferSize);
-
 		// store current statistics
 		this.mark_line = this.line;
 		this.mark_column = this.column;
 		this.mark_index = this.index;
 		this.mark_ch = this.ch;
+
+		this.reader.mark(bufferSize);
 	}
 
 	/**
@@ -787,13 +787,13 @@ public class DuelLexer implements Iterator<DuelToken> {
 	 * @throws IOException
 	 */
 	private void resetMark() throws IOException {
-		this.reader.reset();
-
 		// restore current statistics
 		this.line = this.mark_line;
 		this.column = this.mark_column;
 		this.index = this.mark_index;
 		this.ch = this.mark_ch;
+
+		this.reader.reset();
 	}
 
 	/**
