@@ -84,4 +84,5 @@ public abstract class BlockNode extends DuelNode {
 			hash = hash * HASH_PRIME + this.value.hashCode();
 		}
 		return hash;
-	}}
+	}
+}

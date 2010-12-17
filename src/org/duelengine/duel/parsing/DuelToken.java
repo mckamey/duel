@@ -67,10 +67,10 @@ public class DuelToken {
 	public String toString() {
 		StringBuilder buffer = new StringBuilder(this.type.toString());
 		if (this.value != null) {
-			buffer.append(": "+this.value);
+			buffer.append(": ").append(this.value);
 		}
 		else if (this.block != null) {
-			buffer.append(": "+this.block);
+			buffer.append(": ").append(this.block);
 		}
 		return buffer.toString();
 	}

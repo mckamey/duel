@@ -1,5 +1,6 @@
 package org.duelengine.duel.parsing;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -1187,12 +1188,14 @@ public class DuelLexerTests {
 		assertArrayEquals(expected, actual);
 	}
 
-	private void dumpList(String label, Object[] tokens) {
-		System.out.println();
-		System.out.print(label+":");
-		for (Object token : tokens) {
-			System.out.print("\n\t"+token);
+	private void dumpLists(Object[] expected, Object[] actual) {
+
+		for (Object token : expected) {
+			System.out.println(token.toString());
 		}
-		System.out.println();
+
+		for (Object token : actual) {
+			System.err.println(token.toString());
+		}
 	}
 }

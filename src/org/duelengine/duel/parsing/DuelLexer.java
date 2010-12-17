@@ -682,10 +682,6 @@ public class DuelLexer implements Iterator<DuelToken> {
 			return false;
 		}
 
-		if (this.ch == DuelGrammar.OP_ELEM_END) {
-			this.nextChar();
-		}
-
 		if (this.suspendMode && !asAttr && (begin.equals(DuelGrammar.OP_COMMENT))) {
 
 			// always unwrap commented content of suspend-mode elements
@@ -719,7 +715,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 			this.nextChar();
 		}
 
-		// reset the buffer, mark start
+		// reset the buffer
 		this.buffer.setLength(0);
 
 		for (int i=0, length=end.length(); this.ch != EOF; ) {
@@ -729,6 +725,9 @@ public class DuelLexer implements Iterator<DuelToken> {
 				i++;
 				if (i >= length) {
 					length--;
+
+					// consume final char
+					this.nextChar();
 
 					// trim ending delim from buffer
 					this.buffer.setLength(this.buffer.length() - length);
@@ -743,8 +742,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 			this.nextChar();
 		}
 
-		// TODO: determine better exception type
-		throw new IOException("Unterminated block");
+		throw new SyntaxException("Unterminated block", this.token_index, this.token_line, this.token_column);
 	}
 
 	/**
