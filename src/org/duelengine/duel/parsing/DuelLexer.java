@@ -368,7 +368,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 	 */
 	private static String decodeEntityName(String name) {
 
-		if (name == null || name.length() == 0) {
+		if (name == null || name.isEmpty()) {
 			return null;
 		}
 

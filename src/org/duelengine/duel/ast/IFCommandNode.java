@@ -47,7 +47,7 @@ public class IFCommandNode extends CommandNode {
 
 	@Override
 	public void setAttribute(String name, DuelNode value) {
-		if (name == null || name.length() == 0) {
+		if (name == null || name.isEmpty()) {
 			throw new NullPointerException("name");
 		}
 		if (!name.equalsIgnoreCase(TEST) &&

@@ -300,7 +300,7 @@ public class ClientCodeGen implements CodeGenerator {
 		if (!preMode && this.settings.getNormalizeWhitespace() && value.length() > 0) {
 			// not very efficient but allows simple normalization
 			value = value.replaceAll("^[\\r\\n]+", "").replaceAll("[\\r\\n]+$", "").replaceAll("\\s+", " ");
-			if (value.length() == 0) {
+			if (value.isEmpty()) {
 				value = " ";
 			}
 

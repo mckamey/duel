@@ -63,7 +63,7 @@ public class DuelParser {
 
 				if (node instanceof LiteralNode) {
 					String text = ((LiteralNode)node).getValue();
-					if (text == null || text.trim().length() == 0) {
+					if (text == null || text.trim().isEmpty()) {
 						continue;
 					}
 				}
@@ -106,7 +106,7 @@ public class DuelParser {
 				}
 
 				// ignore extraneous close tags
-				// consume next
+				// consume token
 				this.next = null;
 				break;
 
@@ -144,7 +144,7 @@ public class DuelParser {
 			parent.appendChild(new LiteralNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 		}
 
-		// consume next
+		// consume token
 		this.next = null;
 	}
 
@@ -159,7 +159,7 @@ public class DuelParser {
 		ElementNode elem = createElement(tagName, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 		parent.appendChild(elem);
 
-		// consume next
+		// consume token
 		this.next = null;
 		String attrName = null;
 
@@ -170,7 +170,7 @@ public class DuelParser {
 					// set just in case no value
 					elem.setAttribute(attrName, null);
 
-					// consume next
+					// consume token
 					this.next = null;
 					break;
 
@@ -189,7 +189,7 @@ public class DuelParser {
 					elem.setAttribute(attrName, attrVal);
 					attrName = null;
 
-					// consume next
+					// consume token
 					this.next = null;
 					break;
 
@@ -198,7 +198,7 @@ public class DuelParser {
 					if (tag != null) {
 						tag = tag.toLowerCase();
 						if (elem.isSelf(tag)) {
-							// consume next
+							// consume token
 							this.next = null;
 
 							this.rewriteConditionalAttr(parent, elem);
@@ -213,7 +213,7 @@ public class DuelParser {
 					}
 
 					// ignore extraneous close tags
-					// consume next
+					// consume token
 					this.next = null;
 					break;
 
@@ -244,7 +244,7 @@ public class DuelParser {
 			}
 		}
 
-		// consume next
+		// consume token
 		this.next = null;
 	}
 
@@ -271,7 +271,7 @@ public class DuelParser {
 	}
 
 	private VIEWCommandNode scrubView(VIEWCommandNode node) {
-		if (node.getName() == null || node.getName().length() == 0) {
+		if (node.getName() == null || node.getName().isEmpty()) {
 			// syntax error
 			throw new InvalidNodeException("View is missing name attribute", node);
 		}

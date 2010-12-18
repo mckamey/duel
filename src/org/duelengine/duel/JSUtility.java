@@ -15,7 +15,7 @@ public final class JSUtility {
 	private JSUtility() {}
 
 	public static boolean isValidIdentifier(String ident, boolean nested) {
-		if (ident == null || ident.length() == 0) {
+		if (ident == null || ident.isEmpty()) {
 			return false;
 		}
 
@@ -64,7 +64,7 @@ public final class JSUtility {
 	}
 
 	public static boolean isGlobalIdent(String ident) {
-		if (ident == null || ident.length() == 0) {
+		if (ident == null || ident.isEmpty()) {
 			return false;
 		}
 
@@ -76,7 +76,7 @@ public final class JSUtility {
 	}
 
 	public static boolean isObjectProperty(String ident) {
-		if (ident == null || ident.length() == 0) {
+		if (ident == null || ident.isEmpty()) {
 			return false;
 		}
 

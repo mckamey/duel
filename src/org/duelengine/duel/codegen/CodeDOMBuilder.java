@@ -107,7 +107,7 @@ public class CodeDOMBuilder {
 
 					// not very efficient but allows simple normalization
 					literal = literal.replaceAll("^[\\r\\n]+", "").replaceAll("[\\r\\n]+$", "").replaceAll("\\s+", " ");
-					if (literal.length() == 0) {
+					if (literal.isEmpty()) {
 						literal = " ";
 					}
 				}
