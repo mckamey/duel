@@ -60,7 +60,7 @@ public class DuelCompiler {
 	}
 
 	public String getOutputClientFolder() {
-		return this.outputServerFolder.getAbsolutePath();
+		return this.outputClientFolder.getAbsolutePath();
 	}
 
 	public void setOutputClientFolder(String value) {
