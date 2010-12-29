@@ -570,6 +570,4 @@ test("call wrapper view", function() {
 	same(actual, expected, "");
 });
 
-} catch (ex) {
-	alert(ex);
-}
+}catch(ex){alert(ex);}

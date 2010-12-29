@@ -246,6 +246,4 @@ test("doctype node", function() {
 	same(actual, expected, "");
 });
 
-} catch (ex) {
-	alert(ex);
-}
+}catch(ex){alert(ex);}

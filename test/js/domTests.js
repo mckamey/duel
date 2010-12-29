@@ -231,6 +231,4 @@ test("deferred attribute binding", function() {
 	same(toHTML(actual), toHTML(expected), "");
 });
 
-} catch (ex) {
-	alert(ex);
-}
+}catch(ex){alert(ex);}
