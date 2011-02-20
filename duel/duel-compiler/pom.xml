@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.duelengine.duel</groupId>
-	<artifactId>duelengine</artifactId>
+	<artifactId>duel-compiler</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>DUEL (duelengine.jar)</name>
+	<name>DUEL Compiler</name>
+	<description>Dual-side template engine for the JVM, using 100% pure JavaScript as the binding language.</description>
 	<url>http://www.duelengine.org</url>
-
 	<licenses>
 		<license>
 			<name>MIT License</name>
