@@ -25,5 +25,6 @@
 		<module>duel-runtime</module>
 		<module>duel-compiler</module>
 		<module>duel-js</module>
+		<module>duel-maven-plugin</module>
 	</modules>
 </project>
