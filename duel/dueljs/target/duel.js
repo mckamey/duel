@@ -195,15 +195,13 @@ var duel = (
 		if (Buffer.FAST) {
 			this.value += v1;
 
-			/*jslint eqeqeq: false */
-			if (v2 != null) {
+			if (v2 !== null && v2 !== undefined) {
 				this.value += v2;
 
-				if (v3 != null) {
+				if (v3 !== null && v3 !== undefined) {
 					this.value += v3;
 				}
 			}
-			/*jslint eqeqeq: true */
 		} else {
 			this.value.push.apply(
 				// Closure Compiler type cast
