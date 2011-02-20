@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.duelengine.duel</groupId>
-	<artifactId>duel-compiler</artifactId>
+	<artifactId>duel-runtime</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>DUEL Compiler</name>
+	<name>DUEL Runtime</name>
 	<description>Dual-side template engine for the JVM, using 100% pure JavaScript as the binding language.</description>
 	<url>http://www.duelengine.org</url>
 	<licenses>
@@ -23,17 +23,10 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.duelengine.duel</groupId>
-			<artifactId>duel-runtime</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>rhino</groupId>
-			<artifactId>js</artifactId>
-			<version>1.7R3</version>
-			<!-- TODO: remove system scope once 1.7R3 is added to repo1.maven.org
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/rhino/js-1.7R3pre.jar</systemPath> -->
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>jsr311-api</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

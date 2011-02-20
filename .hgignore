@@ -1,3 +1,4 @@
+relre:duel/duel-runtime/target/*
 relre:duel/duel-compiler/target/*
 relre:duel/duel-js/target/*
 relre:duel/target/*
