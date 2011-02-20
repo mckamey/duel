@@ -1,0 +1,146 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.duelengine.duel</groupId>
+	<artifactId>dueljs</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>DUEL (duel.js)</name>
+	<url>http://www.duelengine.org</url>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.duelengine.org/LICENSE.txt</url>
+		</license>
+	</licenses>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<!-- http://code.google.com/p/closure-compiler/wiki/Maven -->
+			<groupId>com.google.javascript</groupId>
+			<artifactId>closure-compiler</artifactId>
+			<version>r706</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<!-- Source file concatenation -->
+                    <execution>
+						<id>source-concat</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <concat destfile="${basedir}/target/duel.js">
+									<fileset file="${basedir}/src/main/javascript/intro.js" />
+									<fileset file="${basedir}/src/main/javascript/types.js" />
+									<fileset file="${basedir}/src/main/javascript/bind.js" />
+									<fileset file="${basedir}/src/main/javascript/factory.js" />
+									<fileset file="${basedir}/src/main/javascript/render.js" />
+									<fileset file="${basedir}/src/main/javascript/dom.js" />
+									<fileset file="${basedir}/src/main/javascript/outro.js" />
+                                </concat>
+                            </target>
+                        </configuration>
+                    </execution>
+
+					<!-- JSLint static analysis -->
+					<execution>
+						<id>static-analysis</id>
+						<phase>test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<taskdef name="jslint" classname="com.googlecode.jslint4java.ant.JSLintTask" classpath="${settings.localRepository}/com/googlecode/jslint4java/jslint4java-ant/1.4.6/jslint4java-ant-1.4.6.jar" />
+								<jslint options="browser,undef,eqeqeq">
+									<formatter type="plain" />
+									<fileset file="${basedir}/target/duel.js" />
+								</jslint>
+							</target>
+						</configuration>
+					</execution>
+
+					<!-- QUnit unit tests -->
+					<execution>
+						<id>unit-tests</id>
+						<phase>test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<copy file="${basedir}/src/test/resources/index.html" tofile="${basedir}/target/index.html"/>
+								<copy file="${basedir}/src/test/resources/unit.html" tofile="${basedir}/target/js-unit.html"/>
+								<copy todir="${basedir}/target/js">
+									<fileset dir="${basedir}/src/test/javascript" />
+								</copy>
+								<copy file="${basedir}/lib/qunit/qunit.js" todir="${basedir}/target/js"/>
+								<copy file="${basedir}/lib/qunit/qunit.css" todir="${basedir}/target/js"/>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>com.googlecode.jslint4java</groupId>
+						<artifactId>jslint4java-ant</artifactId>
+						<version>1.4.6</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<!-- Closure Compiler configuration -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>java</executable>
+					<workingDirectory>${basedir}/target/</workingDirectory>
+					<arguments>
+						<argument>-classpath</argument>
+						<classpath>
+							<dependency>args4j:args4j</dependency>
+							<dependency>com.google.guava:guava</dependency>
+							<dependency>com.google.javascript:closure-compiler</dependency>
+						</classpath>
+						<argument>com.google.javascript.jscomp.CommandLineRunner</argument>
+						<argument>--compilation_level</argument>
+						<argument>SIMPLE_OPTIMIZATIONS</argument>
+						<argument>--js</argument>
+						<argument>${basedir}/target/duel.js</argument>
+						<argument>--js_output_file</argument>
+						<argument>${basedir}/target/duel.min.js</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>
