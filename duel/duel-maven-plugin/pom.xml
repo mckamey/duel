@@ -4,14 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>duel</artifactId>
 		<groupId>org.duelengine.duel</groupId>
-		<version>1.0-SNAPSHOT</version>
+		<artifactId>duel</artifactId>
+		<version>1.0</version>
 	</parent>
 
-	<groupId>org.duelengine.duel</groupId>
 	<artifactId>duel-maven-plugin</artifactId>
-	<version>1.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>DUEL Maven Plugin</name>

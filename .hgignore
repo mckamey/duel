@@ -3,3 +3,6 @@ relre:duel/duel-compiler/target/*
 relre:duel/duel-js/target/*
 relre:duel/duel-maven-plugin/target/*
 relre:duel/target/*
+relre:/*/*.iml
+relre:/*/*.ipr
+relre:/*/*.iws
