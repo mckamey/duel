@@ -1,55 +1,90 @@
 package org.duelengine.duel.maven;
 
+import java.io.IOException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import org.apache.maven.plugin.logging.Log;
+import org.duelengine.duel.compiler.*;
 
 /**
  * Goal which touches a timestamp file.
  *
- * @goal touch
+ * @goal compile
  * @phase process-sources
  */
-public class DuelMojo
-    extends AbstractMojo {
+public class DuelMojo extends AbstractMojo {
 
-    /**
-     * Location of the file.
-     * @parameter expression="${project.build.directory}"
-     * @required
-     */
-    private File outputDirectory;
+	// http://maven.apache.org/ref/3.0.2/maven-model/maven.html#class_build
+
+	/**
+	 * Location of the file.
+	 * @parameter expression="${project.build.sourceDirectory}"
+	 * @required
+	 */
+	private String inputRoot;
+
+	/**
+	 * Location of the file.
+	 * @parameter expression="${project.build.sourceDirectory}"
+	 * @required
+	 */
+	private String outputClientFolder;
+
+	/**
+	 * Location of the file.
+	 * @parameter expression="${project.build.sourceDirectory}"
+	 * @required
+	 */
+	private String outputServerFolder;
+
+	/**
+	 * Client-side package prefix
+	 * @parameter
+	 */
+	private String clientPrefix;
+
+	/**
+	 * Server-side class package prefix
+	 * @parameter
+	 */
+	private String serverPrefix;
 
     public void execute()
         throws MojoExecutionException {
 
-        File f = outputDirectory;
+	    Log log = this.getLog();
+	    /*
+	    log.info("\tinputRoot="+this.inputRoot);
+	    log.info("\toutputClientFolder="+this.outputClientFolder);
+	    log.info("\toutputServerFolder="+this.outputServerFolder);
+	    log.info("\tclientPrefix="+this.clientPrefix);
+	    log.info("\tserverPrefix="+this.serverPrefix);
+	    */
 
-        if (!f.exists()) {
-            f.mkdirs();
-        }
+	    DuelCompiler compiler = new DuelCompiler();
+	    compiler.setInputRoot(this.inputRoot);
 
-        File touch = new File(f, "touch.txt");
+	    if (this.outputClientFolder != null && !this.outputClientFolder.isEmpty()) {
+		    compiler.setOutputClientFolder(this.outputClientFolder);
+	    }
 
-        FileWriter w = null;
-        try {
-            w = new FileWriter( touch );
-            w.write("touch.txt");
+		if (this.outputServerFolder != null && !this.outputServerFolder.isEmpty()) {
+			compiler.setOutputServerFolder(this.outputServerFolder);
+		}
 
-        } catch (IOException e) {
-            throw new MojoExecutionException("Error creating file " + touch, e);
+	    if (this.clientPrefix != null && !this.clientPrefix.isEmpty()) {
+		    compiler.setClientPrefix(this.clientPrefix);
+	    }
 
-        } finally {
-            if (w != null) {
-                try {
-                    w.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
-        }
+	    if (this.serverPrefix != null && !this.serverPrefix.isEmpty()) {
+	        compiler.setServerPrefix(this.serverPrefix);
+	    }
+
+	    try {
+		    compiler.execute();
+
+	    } catch (IOException e) {
+		    log.error(e);
+	    }
     }
 }
