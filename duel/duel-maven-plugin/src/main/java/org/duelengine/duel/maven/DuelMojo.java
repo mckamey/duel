@@ -4,47 +4,59 @@ import java.io.IOException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.duelengine.duel.compiler.*;
 
 /**
- * Goal which touches a timestamp file.
+ * Compiles client-side and server-side templates.
  *
- * @goal compile
- * @phase process-sources
+ * @goal run
+ * @phase generate-sources
  */
 public class DuelMojo extends AbstractMojo {
 
 	// http://maven.apache.org/ref/3.0.2/maven-model/maven.html#class_build
 
 	/**
-	 * Location of the file.
-	 * @parameter expression="${project.build.sourceDirectory}"
+	 * The project currently being built.
+	 * 
+	 * @parameter default-value="${project}"
 	 * @required
+	 * @readonly
+	 */
+	private MavenProject project;
+
+	/**
+	 * Location of the template files.
+	 * 
+	 * @parameter default-value="${project.build.sourceDirectory}"
 	 */
 	private String inputRoot;
 
 	/**
-	 * Location of the file.
-	 * @parameter expression="${project.build.sourceDirectory}"
-	 * @required
+	 * Location of the generated client-side templates.
+	 * 
+	 * @parameter default-value="${project.build.directory}/generated-sources/duel/"
 	 */
 	private String outputClientFolder;
 
 	/**
-	 * Location of the file.
-	 * @parameter expression="${project.build.sourceDirectory}"
-	 * @required
+	 * Location of the generated server-side templates.
+	 * 
+	 * @parameter default-value="${project.build.directory}/generated-sources/duel/"
 	 */
 	private String outputServerFolder;
 
 	/**
-	 * Client-side package prefix
+	 * Client-side template package prefix
+	 * 
 	 * @parameter
 	 */
 	private String clientPrefix;
 
 	/**
-	 * Server-side class package prefix
+	 * Server-side template class package prefix
+	 * 
 	 * @parameter
 	 */
 	private String serverPrefix;
@@ -53,13 +65,11 @@ public class DuelMojo extends AbstractMojo {
         throws MojoExecutionException {
 
 	    Log log = this.getLog();
-	    /*
 	    log.info("\tinputRoot="+this.inputRoot);
 	    log.info("\toutputClientFolder="+this.outputClientFolder);
 	    log.info("\toutputServerFolder="+this.outputServerFolder);
 	    log.info("\tclientPrefix="+this.clientPrefix);
 	    log.info("\tserverPrefix="+this.serverPrefix);
-	    */
 
 	    DuelCompiler compiler = new DuelCompiler();
 	    compiler.setInputRoot(this.inputRoot);
@@ -82,6 +92,8 @@ public class DuelMojo extends AbstractMojo {
 
 	    try {
 		    compiler.execute();
+
+		    this.project.addCompileSourceRoot(compiler.getOutputServerFolder()); 
 
 	    } catch (IOException e) {
 		    log.error(e);

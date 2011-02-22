@@ -6,3 +6,4 @@ relre:duel/target/*
 relre:/*/*.iml
 relre:/*/*.ipr
 relre:/*/*.iws
+relre:/*/.DS_Store
