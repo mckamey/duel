@@ -10,7 +10,7 @@ import org.duelengine.duel.compiler.*;
 /**
  * Compiles client-side and server-side templates.
  *
- * @goal run
+ * @goal compile
  * @phase generate-sources
  */
 public class DuelMojo extends AbstractMojo {
@@ -31,7 +31,7 @@ public class DuelMojo extends AbstractMojo {
 	 * 
 	 * @parameter default-value="${project.build.sourceDirectory}"
 	 */
-	private String inputRoot;
+	private String inputFolder;
 
 	/**
 	 * Location of the generated client-side templates.
@@ -65,14 +65,14 @@ public class DuelMojo extends AbstractMojo {
         throws MojoExecutionException {
 
 	    Log log = this.getLog();
-	    log.info("\tinputRoot="+this.inputRoot);
+	    log.info("\tinputFolder="+this.inputFolder);
 	    log.info("\toutputClientFolder="+this.outputClientFolder);
 	    log.info("\toutputServerFolder="+this.outputServerFolder);
 	    log.info("\tclientPrefix="+this.clientPrefix);
 	    log.info("\tserverPrefix="+this.serverPrefix);
 
 	    DuelCompiler compiler = new DuelCompiler();
-	    compiler.setInputRoot(this.inputRoot);
+	    compiler.setInputFolder(this.inputFolder);
 
 	    if (this.outputClientFolder != null && !this.outputClientFolder.isEmpty()) {
 		    compiler.setOutputClientFolder(this.outputClientFolder);

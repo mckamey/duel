@@ -26,7 +26,7 @@ public class DuelCompiler {
 		}
 
 		DuelCompiler compiler = new DuelCompiler();
-		compiler.setInputRoot(args[0]);
+		compiler.setInputFolder(args[0]);
 
 		if (args.length > 1) {
 			compiler.setOutputClientFolder(args[1]);
@@ -45,18 +45,18 @@ public class DuelCompiler {
 	}
 
 	private boolean verbose;
-	private File inputRoot;
+	private File inputFolder;
 	private File outputClientFolder;
 	private File outputServerFolder;
 	private String clientPrefix;
 	private String serverPrefix;
 
-	public String getInputRoot() {
-		return this.inputRoot.getAbsolutePath();
+	public String getInputFolder() {
+		return this.inputFolder.getAbsolutePath();
 	}
 
-	public void setInputRoot(String value) {
-		this.inputRoot = (value != null) ? new File(value.replace('\\', '/')) : null;
+	public void setInputFolder(String value) {
+		this.inputFolder = (value != null) ? new File(value.replace('\\', '/')) : null;
 	}
 
 	public String getOutputClientFolder() {
@@ -92,17 +92,16 @@ public class DuelCompiler {
 	}
 
 	private boolean ensureSettings() {
-		if (this.inputRoot == null || !this.inputRoot.exists()) {
-			System.err.println("Error: no input files found: "+this.inputRoot);
-			return false;
+		if (this.inputFolder == null || !this.inputFolder.exists()) {
+			throw new IllegalArgumentException("Error: no input files found: "+this.inputFolder);
 		}
 
 		if (this.outputClientFolder == null) {
-			this.outputClientFolder = this.inputRoot.getParentFile();
+			this.outputClientFolder = this.inputFolder.getParentFile();
 		}
 
 		if (this.outputServerFolder == null) {
-			this.outputServerFolder = this.inputRoot.getParentFile();
+			this.outputServerFolder = this.inputFolder.getParentFile();
 		}
 
 		return true;
@@ -117,10 +116,9 @@ public class DuelCompiler {
 			return;
 		}
 
-		List<File> inputFiles = findFiles(this.inputRoot);
+		List<File> inputFiles = findFiles(this.inputFolder);
 		if (inputFiles.size() < 1) {
-			System.err.println("this.inputRoot.getAbsolutePath(): Error: no input files found");
-			return;
+			throw new IllegalArgumentException("this.inputFolder.getAbsolutePath(): Error: no input files found");
 		}
 
 		for (File inputFile : inputFiles) {
@@ -135,8 +133,7 @@ public class DuelCompiler {
 			}
 
 			if (views == null || views.size() < 1) {
-				System.err.println(inputFile.getAbsolutePath()+": Syntax error: no view found");
-				return;
+				throw new IllegalArgumentException(inputFile.getAbsolutePath()+": Syntax error: no view found");
 			}
 
 			// TODO: allow setting of more properties from args
@@ -238,11 +235,11 @@ public class DuelCompiler {
 		}
 	}
 
-	private static List<File> findFiles(File inputRoot) {
+	private static List<File> findFiles(File inputFolder) {
 
 		List<File> files = new ArrayList<File>();
 		Queue<File> folders = new LinkedList<File>();
-		folders.add(inputRoot);
+		folders.add(inputFolder);
 
 		while (!folders.isEmpty()) {
 			File file = folders.poll();
