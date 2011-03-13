@@ -1,7 +1,7 @@
 package org.duelengine.duel;
 
 /**
- * Maintains context state for a single binding/render cycle.
+ * Maintains context state for a single binding/render cycle (usually a request).
  * DuelContext is NOT thread-safe and not intended to be reusable.
  */
 public class DuelContext {

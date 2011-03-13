@@ -10,7 +10,7 @@ import java.util.*;
  */
 public abstract class DuelView {
 
-	private static final Object DEFAULT_DATA = Collections.EMPTY_MAP;
+	private static final Object DEFAULT_DATA = null;
 	private static final int DEFAULT_INDEX = 0;
 	private static final int DEFAULT_COUNT = 1;
 	private static final String DEFAULT_KEY = null;

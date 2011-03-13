@@ -147,9 +147,16 @@ public class DuelCompiler {
 			settings.setConvertLineEndings(false);
 			settings.setNormalizeWhitespace(true);
 
+			String outputName = inputFile.getName();
+			for (VIEWCommandNode view : views) {
+				// use the first view
+				outputName = settings.getFullClientName(view.getName()).replace('.', '/');
+				break;
+			}
+
 			CodeGenerator codegen = new ClientCodeGen(settings);
 			try {
-				File outputFile = new File(this.outputClientFolder, inputFile.getName()+codegen.getFileExtension());
+				File outputFile = new File(this.outputClientFolder, outputName+codegen.getFileExtension());
 				outputFile.getParentFile().mkdirs();
 
 				FileWriter writer = new FileWriter(outputFile, false);
