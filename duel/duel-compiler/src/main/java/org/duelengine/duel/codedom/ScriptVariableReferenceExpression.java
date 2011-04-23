@@ -1,7 +1,7 @@
 package org.duelengine.duel.codedom;
 
 /**
- * Represents an external variable which is defined outside the model data 
+ * Represents an extra variable which is defined outside the model data 
  */
 public class ScriptVariableReferenceExpression extends ScriptExpression {
 

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.duelengine.duel</groupId>
 		<artifactId>duel</artifactId>
-		<version>0.1.0</version>
+		<version>0.2.0</version>
 	</parent>
 
 	<artifactId>duel-runtime</artifactId>
@@ -14,11 +14,11 @@
 
 	<name>DUEL Runtime</name>
 	<description>Dual-side template engine for the JVM, using 100% pure JavaScript as the binding language.</description>
-	<url>http://www.duelengine.org</url>
+	<url>http://duelengine.org</url>
 	<licenses>
 		<license>
 			<name>MIT License</name>
-			<url>http://www.duelengine.org/LICENSE.txt</url>
+			<url>http://duelengine.org/license.txt</url>
 		</license>
 	</licenses>
 

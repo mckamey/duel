@@ -25,7 +25,7 @@ public class CodeDOMBuilder {
 	private final Stack<CodeStatementCollection> scopeStack = new Stack<CodeStatementCollection>();
 	private CodeTypeDeclaration viewType;
 	private TagMode tagMode;
-	private boolean needsExternalsEmitted;
+	private boolean needsExtrasEmitted;
 	private boolean hasScripts;
 
 	public CodeDOMBuilder() {
@@ -50,7 +50,7 @@ public class CodeDOMBuilder {
 			this.scopeStack.clear();
 			this.tagMode = TagMode.None;
 			this.hasScripts = false;
-			this.needsExternalsEmitted = true;
+			this.needsExtrasEmitted = true;
 			this.viewType = CodeDOMUtility.createViewType(ns, name);
 
 			CodeMethod method = this.buildRenderMethod(viewNode.getChildren()).withOverride();
@@ -270,7 +270,7 @@ public class CodeDOMBuilder {
 		this.formatter
 			.writeCloseAttribute(this.buffer)
 			.writeCloseElementBeginTag(this.buffer);
-		this.ensureExternalsEmitted(false);
+		this.ensureExtrasEmitted(false);
 
 		// emit patch function call which serializes attributes into object
 		this.buffer.append("duel.replace(");
@@ -823,18 +823,18 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(String.class, "key"));
 			}
 
-			if (method.getUserData(ScriptTranslator.EXTERNAL_ASSIGN) != null) {
-				// flag as potentially modifying external values
-				this.needsExternalsEmitted = true;
+			if (method.getUserData(ScriptTranslator.EXTRA_ASSIGN) != null) {
+				// flag as potentially modifying extra values
+				this.needsExtrasEmitted = true;
 			}
 
 			if (canWrite && (method != null) &&
-				method.getUserData(ScriptTranslator.EXTERNAL_REFS) instanceof Object[]) {
+				method.getUserData(ScriptTranslator.EXTRA_REFS) instanceof Object[]) {
 
-				// flag as potentially modifying external values
-				this.needsExternalsEmitted = true;
+				// flag as potentially modifying extra values
+				this.needsExtrasEmitted = true;
 
-				Object[] refs = (Object[])members.get(0).getUserData(ScriptTranslator.EXTERNAL_REFS);
+				Object[] refs = (Object[])members.get(0).getUserData(ScriptTranslator.EXTRA_REFS);
 				CodeExpression[] args = new CodeExpression[refs.length+1];
 				args[0] = new CodeVariableReferenceExpression(DuelContext.class, "context");
 				for (int i=0, length=refs.length; i<length; i++) {
@@ -846,7 +846,7 @@ public class CodeDOMBuilder {
 					new CodeMethodInvokeExpression(
 						boolean.class,
 						new CodeThisReferenceExpression(),
-						"hasExternals",
+						"hasExtras",
 						args));
 
 				if (firstIsMethod && expression instanceof CodeMethodInvokeExpression) {
@@ -923,7 +923,7 @@ public class CodeDOMBuilder {
 			.writeOpenElementBeginTag(this.buffer, "script")
 			.writeAttribute(this.buffer, "type", "text/javascript")
 			.writeCloseElementBeginTag(this.buffer);
-		this.ensureExternalsEmitted(false);
+		this.ensureExtrasEmitted(false);
 
 		// emit patch function call which serializes attributes into object
 		this.buffer.append("duel.write(");
@@ -1011,7 +1011,7 @@ public class CodeDOMBuilder {
 
 		if ("script".equalsIgnoreCase(tagName)) {
 			this.hasScripts = true;
-			this.ensureExternalsEmitted(true);
+			this.ensureExtrasEmitted(true);
 		}
 		
 		this.formatter.writeOpenElementBeginTag(this.buffer, tagName);
@@ -1102,7 +1102,7 @@ public class CodeDOMBuilder {
 
 			// ensure changes emitted, if no scripts then no need
 			if (this.hasScripts && "body".equalsIgnoreCase(tagName)) {
-				this.ensureExternalsEmitted(true);
+				this.ensureExtrasEmitted(true);
 				this.buffer.append(this.settings.getNewline());
 			}
 			this.formatter.writeElementEndTag(this.buffer, tagName);
@@ -1132,7 +1132,7 @@ public class CodeDOMBuilder {
 			.writeOpenElementBeginTag(this.buffer, "script")
 			.writeAttribute(this.buffer, "type", "text/javascript")
 			.writeCloseElementBeginTag(this.buffer);
-		this.ensureExternalsEmitted(false);
+		this.ensureExtrasEmitted(false);
 
 		// emit patch function call which serializes attributes into object
 		this.buffer.append("duel.attr(");
@@ -1264,7 +1264,7 @@ public class CodeDOMBuilder {
 		this.formatter
 			.writeCloseAttribute(this.buffer)
 			.writeCloseElementBeginTag(this.buffer);
-		this.ensureExternalsEmitted(false);
+		this.ensureExtrasEmitted(false);
 
 		// emit patch function call which serializes attributes into object
 		this.buffer.append("duel.replace(");
@@ -1397,8 +1397,8 @@ public class CodeDOMBuilder {
 			CodeDOMUtility.emitExpression(codeExpr);
 	}
 
-	private void ensureExternalsEmitted(boolean needsTags) {
-		if (!this.needsExternalsEmitted) {
+	private void ensureExtrasEmitted(boolean needsTags) {
+		if (!this.needsExtrasEmitted) {
 			return;
 		}
 
@@ -1409,7 +1409,7 @@ public class CodeDOMBuilder {
 			new CodeMethodInvokeExpression(
 				Void.class,
 				new CodeThisReferenceExpression(),
-				"writeExternals",
+				"writeExtras",
 				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodePrimitiveExpression(needsTags)));
 
@@ -1423,7 +1423,7 @@ public class CodeDOMBuilder {
 			}
 		}
 
-		this.needsExternalsEmitted = false;
+		this.needsExtrasEmitted = false;
 	}
 
 	private CodeMethod ensureInitMethod() {

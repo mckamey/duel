@@ -19,12 +19,12 @@ import org.mozilla.javascript.ast.*;
  */
 public class ScriptTranslator implements ErrorReporter {
 
-	public static final String EXTERNAL_REFS = "EXTERNAL_REFS";
-	public static final String EXTERNAL_ASSIGN = "EXTERNAL_ASSIGN";
+	public static final String EXTRA_REFS = "EXTRA_REFS";
+	public static final String EXTRA_ASSIGN = "EXTRA_ASSIGN";
 
 	private final IdentifierScope scope;
-	private List<String> externalRefs;
-	private boolean externalAssign;
+	private List<String> extraRefs;
+	private boolean extraAssign;
 
 	public ScriptTranslator() {
 		this(new CodeTypeDeclaration());
@@ -43,8 +43,8 @@ public class ScriptTranslator implements ErrorReporter {
 	 */
 	public List<CodeMember> translate(String jsSource) {
 
-		this.externalRefs = null;
-		this.externalAssign = false;
+		this.extraRefs = null;
+		this.extraAssign = false;
 		String jsFilename = "anonymous.js";
 		ErrorReporter errorReporter = this;
 
@@ -77,13 +77,13 @@ public class ScriptTranslator implements ErrorReporter {
 		List<CodeMember> members = this.visitRoot(root);
 		if (members.size() > 0) {
 			CodeMember method = members.get(0);
-			if (this.externalRefs != null) {
-				// store external identifiers on the member to allow generation of a fallback block
-				method.withUserData(EXTERNAL_REFS, this.externalRefs.toArray());
+			if (this.extraRefs != null) {
+				// store extra identifiers on the member to allow generation of a fallback block
+				method.withUserData(EXTRA_REFS, this.extraRefs.toArray());
 			}
-			if (this.externalAssign) {
+			if (this.extraAssign) {
 				// flag as potentially modifying values
-				method.withUserData(EXTERNAL_ASSIGN, true);
+				method.withUserData(EXTRA_ASSIGN, true);
 			}
 		}
 		return members;
@@ -430,12 +430,12 @@ public class ScriptTranslator implements ErrorReporter {
 		if (!(node.getParent().getType() == Token.ASSIGN &&
 			((InfixExpression)node.getParent()).getLeft() == node)) {
 
-			if (this.externalRefs == null) {
-				this.externalRefs = new ArrayList<String>();
+			if (this.extraRefs == null) {
+				this.extraRefs = new ArrayList<String>();
 			}
-			this.externalRefs.add(ident);
+			this.extraRefs.add(ident);
 		} else {
-			this.externalAssign = true;
+			this.extraAssign = true;
 		}
 
 		return new ScriptVariableReferenceExpression(ident);

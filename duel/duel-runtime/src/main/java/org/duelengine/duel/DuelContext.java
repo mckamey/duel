@@ -6,7 +6,7 @@ package org.duelengine.duel;
  */
 public class DuelContext {
 
-	private enum ExternalsState {
+	private enum ExtraState {
 
 		/**
 		 * No external data
@@ -32,22 +32,17 @@ public class DuelContext {
 	private Appendable output;
 	private ClientIDStrategy clientID;
 	private DataEncoder encoder;
-	private String newline;
-	private String indent;
-	private boolean encodeNonASCII;
 
-	private ExternalsState externalsState = ExternalsState.NONE;
-	private SparseMap externals;
+	private ExtraState extraState = ExtraState.NONE;
+	private SparseMap extras;
 	private SparseMap dirty;
+
+	private FormatPrefs format;
 
 	public DuelContext() {
 	}
 
 	public DuelContext(Appendable output) {
-		if (output == null) {
-			throw new NullPointerException("output");
-		}
-
 		this.output = output;
 	}
 
@@ -60,10 +55,6 @@ public class DuelContext {
 	}
 
 	public DuelContext setOutput(Appendable output) {
-		if (output == null) {
-			throw new NullPointerException("output");
-		}
-
 		this.output = output;
 		return this;
 	}
@@ -77,51 +68,38 @@ public class DuelContext {
 		return this;
 	}
 
-	String getNewline() {
-		return this.newline;
+	public FormatPrefs getFormat() {
+		if (this.format == null) {
+			this.format = new FormatPrefs();
+		}
+		return this.format;
 	}
 
-	public DuelContext setNewline(String value) {
-		this.newline = value;
+	public DuelContext setFormat(FormatPrefs value) {
+		this.format = value;
+		this.encoder = null;
+
 		return this;
 	}
 
-	String getIndent() {
-		return this.indent;
-	}
-
-	public DuelContext setIndent(String value) {
-		this.indent = value;
-		return this;
-	}
-
-	boolean getEncodeNonASCII() {
-		return this.encodeNonASCII;
-	}
-
-	public DuelContext setEncodeNonASCII(boolean value) {
-		this.encodeNonASCII = value;
-		return this;
-	}
-
-	public DuelContext putExternal(String ident, Object value) {
+	public DuelContext putExtra(String ident, Object value) {
 		if (ident == null) {
 			throw new NullPointerException("ident");
 		}
 
-		if (this.externals == null) {
-			this.externals = new SparseMap();
+		if (this.extras == null) {
+			this.extras = new SparseMap();
 		}
-		this.externals.putSparse(ident, value);
+		this.extras.putSparse(ident, value);
 
-		switch (this.externalsState) {
+		switch (this.extraState) {
 			case NONE:
 			case PENDING:
-				this.externalsState = ExternalsState.PENDING;
+				this.extraState = ExtraState.PENDING;
 				break;
 			case EMITTED:
 			case DIRTY:
-				this.externalsState = ExternalsState.DIRTY;
+				this.extraState = ExtraState.DIRTY;
 				if (this.dirty == null) {
 					this.dirty = new SparseMap();
 				}
@@ -132,14 +110,14 @@ public class DuelContext {
 		return this;
 	}
 
-	boolean hasExternals(String... idents) {
-		if (this.externals == null) {
+	boolean hasExtras(String... idents) {
+		if (this.extras == null) {
 			return false;
 		}
 
 		if (idents != null) {
 			for (String ident : idents) {
-				if (!this.externals.containsKey(ident)) {
+				if (!this.extras.containsKey(ident)) {
 					return false;
 				}
 			}
@@ -148,28 +126,28 @@ public class DuelContext {
 		return true;
 	}
 
-	Object getExternal(String ident) {
+	Object getExtra(String ident) {
 		if (ident == null) {
 			throw new NullPointerException("ident");
 		}
 
-		if (this.externals == null || !this.externals.containsKey(ident)) {
+		if (this.extras == null || !this.extras.containsKey(ident)) {
 			return null;
 		}
 
-		return this.externals.get(ident);
+		return this.extras.get(ident);
 	}
 
-	SparseMap getPendingExternals() {
+	SparseMap getPendingExtras() {
 
-		SparseMap sparseMap = (this.externalsState == ExternalsState.DIRTY) ? this.dirty : this.externals;
-		this.externalsState = ExternalsState.EMITTED;
+		SparseMap sparseMap = (this.extraState == ExtraState.DIRTY) ? this.dirty : this.extras;
+		this.extraState = ExtraState.EMITTED;
 		this.dirty = null;
 		return sparseMap;
 	}
 
-	boolean hasExternalsPending() {
-		switch (this.externalsState) {
+	boolean hasExtrasPending() {
+		switch (this.extraState) {
 			case PENDING:
 			case DIRTY:
 				return true;
@@ -180,7 +158,7 @@ public class DuelContext {
 
 	DataEncoder getEncoder() {
 		if (this.encoder == null) {
-			this.encoder = new DataEncoder(this.newline, this.indent);
+			this.encoder = new DataEncoder(this.getFormat().getNewline(), this.getFormat().getIndent());
 		}
 
 		return this.encoder;

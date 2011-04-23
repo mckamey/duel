@@ -1653,7 +1653,7 @@ public class JavaCodeGenTests {
 	}
 
 	@Test
-	public void externalRefAssignmentTest() throws IOException {
+	public void extraRefAssignmentTest() throws IOException {
 
 		CodeTypeDeclaration input = CodeDOMUtility.createViewType(
 			null,
@@ -1734,7 +1734,7 @@ public class JavaCodeGenTests {
 			"\t\tthis.write(context, \"</div>\");\n"+
 			"\t}\n\n"+
 			"\tprivate Object code_2(DuelContext context, Object data, int index, int count, String key) {\n"+
-			"\t\tthis.putExternal(context, \"foo\", data);\n"+
+			"\t\tthis.putExtra(context, \"foo\", data);\n"+
 			"\t\treturn null;\n"+
 			"\t}\n"+
 			"}\n";

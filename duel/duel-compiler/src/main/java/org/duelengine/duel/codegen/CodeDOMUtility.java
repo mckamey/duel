@@ -325,11 +325,11 @@ final class CodeDOMUtility {
 		return String.class;
 	}
 
-	public static CodeExpression lookupExternalVar(String ident) {
+	public static CodeExpression lookupExtraVar(String ident) {
 		return new CodeMethodInvokeExpression(
 			Object.class,
 			new CodeThisReferenceExpression(),
-			"getExternal",
+			"getExtra",
 			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			new CodePrimitiveExpression(ident));
 	}

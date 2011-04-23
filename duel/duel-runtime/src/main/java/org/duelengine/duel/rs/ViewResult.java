@@ -13,48 +13,31 @@ import org.duelengine.duel.DuelView;
  * Simple adapter for using DUEL views in JAX-RS
  */
 public class ViewResult implements StreamingOutput {
-	
-	private final String DEFAULT_ENCODING = "UTF-8";
 
 	private final DuelContext context;
 	private final DuelView view;
 	private final Object data;
-	private String encoding;
 
-	public ViewResult(DuelView view) {
-		this(view, null, null);
-	}
+	public ViewResult(Class<DuelView> view, Object data, DuelContext context) {
 
-	public ViewResult(DuelView view, DuelContext context) {
-		this(view, context, null);
-	}
-
-	public ViewResult(DuelView view, Object data) {
-		this(view, null, data);
-	}
-
-	public ViewResult(DuelView view, DuelContext context, Object data) {
 		if (view == null) {
 			throw new NullPointerException("view");
 		}
-		if (context == null) {
-			context = new DuelContext();
+
+		try {
+			this.view = view.newInstance();
+		} catch (Exception ex) {
+			throw new IllegalArgumentException("Error instantiating view: "+view.getSimpleName(), ex);
 		}
 
-		this.context = context;
-		this.view = view;
 		this.data = data;
+		this.context = (context != null) ? context : new DuelContext();
 	}
 
-	public String getEncoding() {
-		if (this.encoding == null) {
-			return DEFAULT_ENCODING;
-		}
-		return this.encoding;
-	}
+	public ViewResult putExtra(String ident, Object value) {
+		this.context.putExtra(ident, value);
 
-	public void setEncoding(String value) {
-		this.encoding = value;
+		return this;
 	}
 
 	public void writeError(Writer output, Exception ex)
@@ -68,7 +51,7 @@ public class ViewResult implements StreamingOutput {
 	public void write(OutputStream stream)
 		throws IOException, WebApplicationException {
 
-		Writer output = new OutputStreamWriter(stream, this.getEncoding());
+		Writer output = new OutputStreamWriter(stream, this.context.getFormat().getEncoding());
 		this.context.setOutput(output);
 
 		try {
@@ -79,10 +62,11 @@ public class ViewResult implements StreamingOutput {
 			}
 
 		} catch (Exception ex) {
-			writeError(output, ex);
+			this.writeError(output, ex);
 
-		} finally {
-			output.flush();
+ 		} finally {
+ 			output.flush();
+			this.context.setOutput(null);
 		}
 	}
 }

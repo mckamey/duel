@@ -197,7 +197,7 @@ public class ScriptTranslatorTests {
 	}
 
 	@Test
-	public void translateExternalMethodCallTest() {
+	public void translateExtraMethodCallTest() {
 		String input = "function(data) { return foo(5, 2); }";
 
 		try {
@@ -210,7 +210,7 @@ public class ScriptTranslatorTests {
 	}
 
 	@Test
-	public void translateExternalVarRefTest() {
+	public void translateExtraVarRefTest() {
 		String input = "function(data) { return foo.bar; }";
 
 		CodeMethod expected =

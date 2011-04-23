@@ -231,7 +231,7 @@ public abstract class DuelView {
 			context.getOutput().append(DuelData.coerceString(value));
 
 		} else {
-			formatter.writeLiteral(context.getOutput(), DuelData.coerceString(value), context.getEncodeNonASCII());
+			formatter.writeLiteral(context.getOutput(), DuelData.coerceString(value), context.getFormat().getEncodeNonASCII());
 		}
 	}
 
@@ -248,22 +248,22 @@ public abstract class DuelView {
 		context.getEncoder().write(context.getOutput(), data, depth);
 	}
 
-	protected Object getExternal(DuelContext context, String ident) {
-		return context.getExternal(ident);
+	protected Object getExtra(DuelContext context, String ident) {
+		return context.getExtra(ident);
 	}
 
-	protected void putExternal(DuelContext context, String ident, Object value) {
-		context.putExternal(ident, value);
+	protected void putExtra(DuelContext context, String ident, Object value) {
+		context.putExtra(ident, value);
 	}
 
-	protected boolean hasExternals(DuelContext context, String... idents) {
-		return context.hasExternals(idents);
+	protected boolean hasExtras(DuelContext context, String... idents) {
+		return context.hasExtras(idents);
 	}
 
-	protected void writeExternals(DuelContext context, boolean needsTags)
+	protected void writeExtras(DuelContext context, boolean needsTags)
 		throws IOException {
 
-		if (!context.hasExternalsPending()) {
+		if (!context.hasExtrasPending()) {
 			return;
 		}
 
@@ -274,7 +274,7 @@ public abstract class DuelView {
 				.writeAttribute(output, "type", "text/javascript")
 				.writeCloseElementBeginTag(output);
 		}
-		context.getEncoder().writeVars(output, context.getPendingExternals());
+		context.getEncoder().writeVars(output, context.getPendingExtras());
 		if (needsTags) {
 			formatter.writeElementEndTag(output, "script");
 		}
