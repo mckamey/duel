@@ -38,7 +38,7 @@
 			<version>1.7R3</version>
 			<!-- TODO: remove system scope once 1.7R3 is added to repo1.maven.org
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/rhino/js-1.7R3pre.jar</systemPath> -->
+			<systemPath>${basedir}/lib/rhino/js-1.7R3.jar</systemPath> -->
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
