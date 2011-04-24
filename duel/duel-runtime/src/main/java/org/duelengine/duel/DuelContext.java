@@ -1,5 +1,7 @@
 package org.duelengine.duel;
 
+import java.util.Map;
+
 /**
  * Maintains context state for a single binding/render cycle (usually a request).
  * DuelContext is NOT thread-safe and not intended to be reusable.
@@ -32,30 +34,23 @@ public class DuelContext {
 	private Appendable output;
 	private ClientIDStrategy clientID;
 	private DataEncoder encoder;
+	private FormatPrefs format;
 
+	private Object data;
 	private ExtraState extraState = ExtraState.NONE;
 	private SparseMap extras;
 	private SparseMap dirty;
-
-	private FormatPrefs format;
-
-	public DuelContext() {
-	}
-
-	public DuelContext(Appendable output) {
-		this.output = output;
-	}
 
 	public Appendable getOutput() {
 		if (this.output == null) {
 			this.output = new StringBuilder();
 		}
-
 		return this.output;
 	}
 
 	public DuelContext setOutput(Appendable output) {
 		this.output = output;
+
 		return this;
 	}
 
@@ -65,6 +60,7 @@ public class DuelContext {
 
 	public DuelContext setClientID(ClientIDStrategy value) {
 		this.clientID = value;
+
 		return this;
 	}
 
@@ -78,6 +74,35 @@ public class DuelContext {
 	public DuelContext setFormat(FormatPrefs value) {
 		this.format = value;
 		this.encoder = null;
+
+		return this;
+	}
+
+	public Object getData() {
+		return this.data;
+	}
+
+	public DuelContext setData(Object data) {
+		this.data = data;
+
+		return this;
+	}
+
+	public DuelContext clearExtras() {
+		this.extraState = ExtraState.NONE;
+		this.extras = null;
+		this.dirty = null;
+
+		return this;
+	}
+
+	public DuelContext putExtras(Map<String, ?> values) {
+		if (values == null) {
+			throw new NullPointerException("values");
+		}
+		for (String ident : values.keySet()) {
+			this.putExtra(ident, values.get(ident));
+		}
 
 		return this;
 	}
@@ -107,6 +132,7 @@ public class DuelContext {
 				this.dirty.putSparse(ident, value);
 				break;
 		}
+
 		return this;
 	}
 

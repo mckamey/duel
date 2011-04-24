@@ -10,11 +10,10 @@ import java.util.*;
  */
 public abstract class DuelView {
 
-	private static final Object DEFAULT_DATA = null;
 	private static final int DEFAULT_INDEX = 0;
 	private static final int DEFAULT_COUNT = 1;
 	private static final String DEFAULT_KEY = null;
-	
+
 	private static final HTMLFormatter formatter = new HTMLFormatter();
 	private Map<String, DuelPart> parts = null;
 
@@ -60,7 +59,8 @@ public abstract class DuelView {
 			throw new NullPointerException("output");
 		}
 
-		this.render(new DuelContext(output), DEFAULT_DATA, DEFAULT_INDEX, DEFAULT_COUNT, DEFAULT_KEY);
+		// build a context
+		this.render(new DuelContext().setOutput(output));
 	}
 
 	/**
@@ -75,11 +75,12 @@ public abstract class DuelView {
 			throw new NullPointerException("output");
 		}
 
-		this.render(new DuelContext(output), DuelData.asProxy(data, true), DEFAULT_INDEX, DEFAULT_COUNT, DEFAULT_KEY);
+		// build a context
+		this.render(new DuelContext().setOutput(output).setData(data));
 	}
 
 	/**
-	 * Renders the view to the output
+	 * Binds the view to any data and renders the view to the output
 	 * @param context
 	 */
 	public void render(DuelContext context)
@@ -89,22 +90,7 @@ public abstract class DuelView {
 			throw new NullPointerException("context");
 		}
 
-		this.render(context, DEFAULT_DATA, DEFAULT_INDEX, DEFAULT_COUNT, DEFAULT_KEY);
-	}
-
-	/**
-	 * Binds the view to the data and renders the view to the output
-	 * @param context
-	 * @param data
-	 */
-	public void render(DuelContext context, Object data)
-		throws IOException {
-
-		if (context == null) {
-			throw new NullPointerException("context");
-		}
-
-		this.render(context, DuelData.asProxy(data, true), DEFAULT_INDEX, DEFAULT_COUNT, DEFAULT_KEY);
+		this.render(context, DuelData.asProxy(context.getData(), true), DEFAULT_INDEX, DEFAULT_COUNT, DEFAULT_KEY);
 	}
 
 	/**

@@ -1,50 +1,54 @@
 package org.duelengine.duel.rs;
 
+import java.util.Map;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelView;
 
 /**
- * Simple adapter for using DUEL views in JAX-RS
+ * Simple adapter for rendering DUEL views in JAX-RS
  */
 public class ViewResult implements StreamingOutput {
 
 	private final DuelContext context;
 	private final DuelView view;
-	private final Object data;
 
-	public ViewResult(Class<DuelView> view, Object data, DuelContext context) {
+	public ViewResult(Class<? extends DuelView> view, DuelContext context) {
 
 		if (view == null) {
 			throw new NullPointerException("view");
 		}
-
 		try {
 			this.view = view.newInstance();
 		} catch (Exception ex) {
-			throw new IllegalArgumentException("Error instantiating view: "+view.getSimpleName(), ex);
+			throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 		}
 
-		this.data = data;
 		this.context = (context != null) ? context : new DuelContext();
 	}
 
-	public ViewResult putExtra(String ident, Object value) {
-		this.context.putExtra(ident, value);
+	public ViewResult data(Object data) {
+		this.context.setData(data);
 
 		return this;
 	}
 
-	public void writeError(Writer output, Exception ex)
-		throws IOException {
+	public ViewResult extras(Map<String, ?> extras) {
+		this.context.putExtras(extras);
 
-		output.append("Error:");
-		output.append(ex.toString());
+		return this;
+	}
+
+	public ViewResult extra(String ident, Object value) {
+		this.context.putExtra(ident, value);
+
+		return this;
 	}
 
 	@Override
@@ -52,20 +56,15 @@ public class ViewResult implements StreamingOutput {
 		throws IOException, WebApplicationException {
 
 		Writer output = new OutputStreamWriter(stream, this.context.getFormat().getEncoding());
-		this.context.setOutput(output);
 
 		try {
-			if (this.data == null) {
-				this.view.render(this.context);
-			} else {
-				this.view.render(this.context, data);
-			}
+			this.view.render(this.context.setOutput(output));
+ 			output.flush();
 
 		} catch (Exception ex) {
-			this.writeError(output, ex);
+			throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 
  		} finally {
- 			output.flush();
 			this.context.setOutput(null);
 		}
 	}
