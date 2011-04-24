@@ -8,10 +8,10 @@ import org.apache.maven.project.MavenProject;
 import org.duelengine.duel.compiler.*;
 
 /**
- * Compiles client-side and server-side templates.
+ * Generates client-side and server-side sources
  *
- * @goal compile
- * @phase generate-sources
+ * @goal generate
+ * @phase process-resources
  */
 public class DuelMojo extends AbstractMojo {
 
