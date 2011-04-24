@@ -449,7 +449,15 @@ public class DataEncoder {
 		}
 	}
 
-	private void writeln(Appendable output, int depth)
+	public void indent(Appendable output, int depth)
+		throws IOException {
+
+		while (depth-- > 0) {
+			output.append(this.indent);
+		}
+	}
+
+	public void writeln(Appendable output, int depth)
 		throws IOException {
 
 		output.append(this.newline);

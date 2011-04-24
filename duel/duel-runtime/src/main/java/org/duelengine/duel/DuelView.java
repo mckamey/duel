@@ -253,16 +253,23 @@ public abstract class DuelView {
 			return;
 		}
 
+		DataEncoder encoder = context.getEncoder();
 		Appendable output = context.getOutput();
 		if (needsTags) {
 			formatter
 				.writeOpenElementBeginTag(output, "script")
 				.writeAttribute(output, "type", "text/javascript")
 				.writeCloseElementBeginTag(output);
+			encoder.writeln(output, 0);
 		}
-		context.getEncoder().writeVars(output, context.getPendingExtras());
+		encoder.writeVars(output, context.getPendingExtras());
 		if (needsTags) {
+			// arbitrarily 1, ideally this would be the current depth
+			encoder.indent(output, 1);
 			formatter.writeElementEndTag(output, "script");
+			// arbitrarily 1, ideally this would be emitted as a literal in the AST
+			// this is emitted even if script block is compacted
+			output.append("\n\t");
 		}
 	}
 
