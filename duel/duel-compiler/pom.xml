@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.duelengine.duel</groupId>
 		<artifactId>duel</artifactId>
-		<version>0.2.1</version>
+		<version>0.2.2</version>
 	</parent>
 
 	<artifactId>duel-compiler</artifactId>
@@ -23,6 +23,7 @@
 	</licenses>
 
 	<properties>
+		<duel.deploy.dir>file://${basedir}/../../../duel-mvn-repo</duel.deploy.dir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -36,9 +37,6 @@
 			<groupId>rhino</groupId>
 			<artifactId>js</artifactId>
 			<version>1.7R3</version>
-			<!-- TODO: remove system scope once 1.7R3 is added to repo1.maven.org
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/rhino/js-1.7R3.jar</systemPath> -->
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -53,6 +51,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -61,8 +60,28 @@
 					</archive>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<updateReleaseInfo>true</updateReleaseInfo>
+				</configuration>
+				<goals>
+					<goal>deploy</goal>
+				</goals>
+			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>mvn.duelengine.org.local</id>
+			<url>${duel.deploy.dir}</url>
+			<layout>default</layout>
+		</repository>
+	</distributionManagement>
 
 	<reporting>
 		<plugins>

@@ -5,7 +5,7 @@
 	
 	<groupId>org.duelengine.duel</groupId>
 	<artifactId>duel</artifactId>
-	<version>0.2.1</version>
+	<version>0.2.2</version>
 	<packaging>pom</packaging>
 
 	<name>DUEL</name>
@@ -19,6 +19,7 @@
 	</licenses>
 
 	<properties>
+		<duel.deploy.dir>file://${basedir}/../../duel-mvn-repo</duel.deploy.dir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -50,7 +51,28 @@
 						</includes>
 					</configuration>
 				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.6</version>
+					<configuration>
+						<updateReleaseInfo>true</updateReleaseInfo>
+						<skip>true</skip>
+					</configuration>
+					<goals>
+						<goal>deploy</goal>
+					</goals>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>mvn.duelengine.org.local</id>
+			<url>${duel.deploy.dir}</url>
+			<layout>default</layout>
+		</repository>
+	</distributionManagement>
 </project>
