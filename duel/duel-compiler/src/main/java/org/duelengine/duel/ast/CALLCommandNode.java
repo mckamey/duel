@@ -96,6 +96,21 @@ public class CALLCommandNode extends CommandNode {
 		this.defaultPart.appendChild(child);
 	}
 
+	@Override
+	public boolean replaceChild(DuelNode newChild, DuelNode oldChild) {
+		if (oldChild == null || (oldChild instanceof PARTCommandNode && newChild instanceof PARTCommandNode)) {
+			// allow direct swap of PARTCommandNodes
+			return super.replaceChild(newChild, oldChild);
+		}
+
+		if (this.defaultPart == null) {
+			// fail
+			return false;
+		}
+
+		return this.defaultPart.replaceChild(newChild, oldChild);
+	}
+	
 	private static boolean isNullOrWhiteSpace(String value) {
 		if (value == null) {
 			return true;

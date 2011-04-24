@@ -75,10 +75,7 @@ public class ElementNode extends ContainerNode {
 		if (!this.attributes.containsKey(name)) {
 			return null;
 		}
-
-		DuelNode attr = this.attributes.get(name);;
-		this.attributes.remove(name);
-		return attr;
+		return this.attributes.remove(name);
 	}
 
 	public void clearAttributes() {

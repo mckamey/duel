@@ -1,8 +1,5 @@
 package org.duelengine.duel.parsing;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 

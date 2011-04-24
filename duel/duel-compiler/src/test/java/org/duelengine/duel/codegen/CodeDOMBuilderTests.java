@@ -6,7 +6,6 @@ import java.util.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.duelengine.duel.DataEncoder;
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelData;
 import org.duelengine.duel.ast.*;

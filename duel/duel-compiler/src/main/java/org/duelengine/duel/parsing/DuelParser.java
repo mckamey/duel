@@ -266,7 +266,9 @@ public class DuelParser {
 		conditional.setAttribute("test", attr);
 
 		// wrap element in parent
-		parent.replaceChild(conditional, elem);
+		if (!parent.replaceChild(conditional, elem)) {
+			throw new IllegalStateException("Conditial rewrite failed inside "+parent.getClass().getSimpleName());
+		}
 		conditional.appendChild(elem);
 	}
 
