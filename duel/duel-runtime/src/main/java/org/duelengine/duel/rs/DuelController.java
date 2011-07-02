@@ -3,7 +3,6 @@ package org.duelengine.duel.rs;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 import org.duelengine.duel.DuelContext;

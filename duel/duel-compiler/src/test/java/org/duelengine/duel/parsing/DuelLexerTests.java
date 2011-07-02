@@ -1185,14 +1185,14 @@ public class DuelLexerTests {
 		assertArrayEquals(expected, actual);
 	}
 
-	private void dumpLists(Object[] expected, Object[] actual) {
-
-		for (Object token : expected) {
-			System.out.println(token.toString());
-		}
-
-		for (Object token : actual) {
-			System.err.println(token.toString());
-		}
-	}
+//	private void dumpLists(Object[] expected, Object[] actual) {
+//
+//		for (Object token : expected) {
+//			System.out.println(token.toString());
+//		}
+//
+//		for (Object token : actual) {
+//			System.err.println(token.toString());
+//		}
+//	}
 }

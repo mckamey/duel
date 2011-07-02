@@ -1367,8 +1367,6 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement localVar = CodeDOMUtility.nextID(scope);
 		scope.add(localVar);
 
-		String id = localVar.getName();
-
 		// emit the value of the var
 		CodeStatement emitVar = CodeDOMUtility.emitVarValue(localVar);
 		scope.add(emitVar);
