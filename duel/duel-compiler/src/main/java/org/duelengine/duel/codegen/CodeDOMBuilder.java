@@ -96,7 +96,7 @@ public class CodeDOMBuilder {
 	private void buildNode(DuelNode node) throws IOException {
 		if (node instanceof LiteralNode) {
 			String literal = ((LiteralNode)node).getValue();
-			if (this.tagMode == TagMode.SuspendMode) {
+			if (this.tagMode == TagMode.SuspendMode || node instanceof UnknownNode) {
 				this.buffer.append(literal);
 
 			} else {
@@ -1020,9 +1020,37 @@ public class CodeDOMBuilder {
 		Map<String, DataEncoder.Snippet> deferredAttrs = new LinkedHashMap<String, DataEncoder.Snippet>();
 		for (String attrName : element.getAttributeNames()) {
 			DuelNode attrVal = element.getAttribute(attrName);
-
+			
 			if (attrVal == null) {
 				this.formatter.writeAttribute(this.buffer, attrName, null);
+
+			} else if (element.isLinkAttribute(attrName)) {
+				this.formatter.writeOpenAttribute(this.buffer, attrName);
+				this.flushBuffer();
+
+				CodeStatement writeStatement;
+				if (attrVal instanceof LiteralNode) {
+					writeStatement = this.buildLinkIntercept(((LiteralNode)attrVal).getValue());
+
+				} else if (attrVal instanceof CodeBlockNode) {
+					try {
+						writeStatement = this.buildLinkIntercept((CodeBlockNode)attrVal);
+
+					} catch (Exception ex) {
+						
+						// only defer attributes that cannot be processed server-side
+						deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode()));
+						argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
+						continue;
+					}
+
+				} else {
+					throw new InvalidNodeException("Invalid attribute node type: "+attrVal.getClass(), attrVal);
+				}
+
+				this.scopeStack.peek().add(writeStatement);
+
+				this.formatter.writeCloseAttribute(this.buffer);
 
 			} else if (attrVal instanceof LiteralNode) {
 				this.formatter.writeAttribute(this.buffer, attrName, ((LiteralNode)attrVal).getValue());
@@ -1045,6 +1073,7 @@ public class CodeDOMBuilder {
 					// only defer attributes that cannot be processed server-side
 					deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode()));
 					argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
+					continue;
 				}
 
 			} else {
@@ -1372,6 +1401,49 @@ public class CodeDOMBuilder {
 		scope.add(emitVar);
 
 		return localVar;
+	}
+
+	/**
+	 * @param literal
+	 * @return Code which emits the evaluated value of a link intercept
+	 */
+	private CodeStatement buildLinkIntercept(Object literal) {
+		CodeExpression codeExpr = new CodeMethodInvokeExpression(
+			String.class,
+			new CodeThisReferenceExpression(),
+			"interceptLink",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
+			CodeDOMUtility.ensureString(new CodePrimitiveExpression(literal)));
+
+		return CodeDOMUtility.emitExpressionSafe(codeExpr);
+	}
+
+	/**
+	 * @param block
+	 * @return Code which emits the evaluated value of a link intercept
+	 */
+	private CodeStatement buildLinkIntercept(CodeBlockNode block) {
+		boolean htmlEncode = true;
+		if (block instanceof MarkupExpressionNode) {
+			htmlEncode = false;
+			block = new ExpressionNode(block.getValue(), block.getIndex(), block.getLine(), block.getColumn());
+		}
+
+		CodeExpression codeExpr = this.translateExpression(block, true);
+		if (codeExpr == null) {
+			return null;
+		}
+
+		codeExpr = new CodeMethodInvokeExpression(
+			String.class,
+			new CodeThisReferenceExpression(),
+			"interceptLink",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
+			CodeDOMUtility.ensureString(codeExpr));
+
+		return htmlEncode ?
+			CodeDOMUtility.emitExpressionSafe(codeExpr) :
+			CodeDOMUtility.emitExpression(codeExpr);
 	}
 
 	/**

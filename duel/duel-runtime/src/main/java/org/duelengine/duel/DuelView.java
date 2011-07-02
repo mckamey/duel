@@ -198,7 +198,7 @@ public abstract class DuelView {
 
 		context.getOutput().append(value);
 	}
-
+	
 	/**
 	 * Ensures the value is properly encoded as HTML text
 	 * @param context
@@ -272,9 +272,18 @@ public abstract class DuelView {
 			output.append("\n\t");
 		}
 	}
-
+	
 	protected String nextID(DuelContext context) {
 		return context.nextID();
+	}
+
+	/**
+	 * Allows view to intercept and transform URLs within element attributes
+	 * @param url URL
+	 * @return transformed URL
+	 */
+	protected String interceptLink(DuelContext context, String url) {
+		return context.interceptLink(url);
 	}
 
 	/**

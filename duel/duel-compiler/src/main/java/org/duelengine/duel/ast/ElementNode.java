@@ -5,29 +5,70 @@ import java.util.*;
 public class ElementNode extends ContainerNode {
 
 	private static final String CONFIG_RESOURCE = "org.duelengine.duel.ast.HTMLTags";
-	private static Map<String, Boolean> voidTags;
+	private static final Map<String, Boolean> voidTags;
+	private static final Map<String, Boolean> linkTags;
+	private static final Map<String, Boolean> linkAttrs;
 
 	private final String tagName;
 	private final boolean isVoid;
+	private final boolean isLinkableTag;
 	private final Map<String, DuelNode> attributes = new LinkedHashMap<String, DuelNode>();
+
+	static {
+		// definitions maintained in HTMLTags.properties
+		ResourceBundle config = ResourceBundle.getBundle(CONFIG_RESOURCE);
+
+		String[] items = (config != null) && config.containsKey("voidTags") ?
+			config.getString("voidTags").split("\\s+") : new String[0];
+
+		Map<String, Boolean> map = new HashMap<String, Boolean>(items.length);
+		for (String value : items) {
+			map.put(value, true);
+		}
+
+		voidTags = map;
+
+		items = (config != null) && config.containsKey("linkTags") ?
+			config.getString("linkTags").split("\\s+") : new String[0];
+
+		map = new HashMap<String, Boolean>(items.length);
+		for (String value : items) {
+			map.put(value, true);
+		}
+
+		linkTags = map;
+
+		items = (config != null) && config.containsKey("linkAttrs") ?
+			config.getString("linkAttrs").split("\\s+") : new String[0];
+
+		map = new HashMap<String, Boolean>(items.length);
+		for (String value : items) {
+			map.put(value, true);
+		}
+
+		linkAttrs = map;
+	}
 
 	public ElementNode(String name, int index, int line, int column) {
 		super(index, line, column);
 
 		this.tagName = name;
-		this.isVoid = (name == null) || getVoidTags().containsKey(name);
+		this.isVoid = (name == null) || voidTags.containsKey(name);
+		this.isLinkableTag = (name != null) && linkTags.containsKey(name);
 	}
 
 	public ElementNode(String name) {
 		this.tagName = name;
-		this.isVoid = (name == null) || getVoidTags().containsKey(name);
+		this.isVoid = (name == null) || voidTags.containsKey(name);
+		this.isLinkableTag = (name != null) && linkTags.containsKey(name);
 	}
 
 	public ElementNode(String name, AttributePair[] attr, DuelNode... children) {
 		super(children);
 
 		this.tagName = name;
-		this.isVoid = (name == null) ? true : getVoidTags().containsKey(name);
+		this.isVoid = (name == null) || voidTags.containsKey(name);
+		this.isLinkableTag = (name != null) && linkTags.containsKey(name);
 
 		if (attr != null) {
 			for (AttributePair a : attr) {
@@ -42,6 +83,10 @@ public class ElementNode extends ContainerNode {
 
 	public boolean canHaveChildren() {
 		return !this.isVoid;
+	}
+
+	public boolean isLinkAttribute(String name) {
+		return this.isLinkableTag && linkAttrs.containsKey(name);
 	}
 
 	public boolean hasAttributes() {
@@ -101,26 +146,6 @@ public class ElementNode extends ContainerNode {
 
 	public boolean isAncestorOrSelf(String tag) {
 		return this.isSelf(tag) || this.isAncestor(tag);
-	}
-
-	private static Map<String, Boolean> getVoidTags() {
-
-		if (voidTags != null) {
-			return voidTags;
-		}
-
-		// definitions maintained in HTMLTags.properties
-		ResourceBundle config = ResourceBundle.getBundle(CONFIG_RESOURCE);
-
-		String[] tags = (config != null) && config.containsKey("voidTags") ?
-			config.getString("voidTags").split(",") : new String[0];
-
-		Map<String, Boolean> map = new HashMap<String, Boolean>(tags.length);
-		for (String value : tags) {
-			map.put(value, true);
-		}
-
-		return (voidTags = map);
 	}
 
 	@Override

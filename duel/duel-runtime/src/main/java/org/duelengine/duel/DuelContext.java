@@ -197,4 +197,9 @@ public class DuelContext {
 
 		return this.clientID.nextID();
 	}
+
+	String interceptLink(String url) {
+		// TODO: build mechanism for exposing URL transformation
+		return url;
+	}
 }
