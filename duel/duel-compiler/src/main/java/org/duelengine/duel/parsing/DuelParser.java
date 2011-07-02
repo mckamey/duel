@@ -380,18 +380,18 @@ public class DuelParser {
 		}
 
 		if (begin.equalsIgnoreCase(DocTypeNode.BEGIN)) {
-			return new DocTypeNode(block.getValue(), index, line, column);
+			return new DocTypeNode(value, index, line, column);
 		}
 
 		if (begin.equalsIgnoreCase(CommentNode.BEGIN)) {
-			return new CommentNode(block.getValue(), index, line, column);
+			return new CommentNode(value, index, line, column);
 		}
 
 		if (begin.equalsIgnoreCase(CodeCommentNode.BEGIN)) {
-			return new CodeCommentNode(block.getValue(), index, line, column);
+			return new CodeCommentNode(value, index, line, column);
 		}
 
-		// others are dropped
-		return null;
+		// others are emitted directly
+		return new UnknownNode(begin+value+block.getEnd(), column, column, column);
 	}
 }

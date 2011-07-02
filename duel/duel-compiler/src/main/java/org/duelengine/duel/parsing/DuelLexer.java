@@ -599,14 +599,26 @@ public class DuelLexer implements Iterator<DuelToken> {
 				break;
 
 			case '!':
+				// TODO: ideally scan these as single tokens <!--[if EXPR]>, <![endif]-->, <![if EXPR]>, <![endif]>
 				switch (this.nextChar()) {
-					case '-':	// "<!--", "-->"		XML/HTML/SGML comment or server-side include
-						begin = "<!--";
-						end = "-->";
-						value = this.tryScanBlockValue("--", end);
+					case '-':	// "<!--", "-->"		XML/HTML/SGML comment, IE conditional comment, or server-side include
+
+						// IE conditional comment (downlevel hidden)
+						// http://msdn.microsoft.com/en-us/library/ms537512.aspx#syntax
+						begin = "<!--[";
+						end = "]>";
+						value = this.tryScanBlockValue("--[", end);
+						if (value == null) {
+							this.resetMark();
+
+							// standard XML/HTML/SGML comment
+							begin = "<!--";
+							end = "-->";
+							value = this.tryScanBlockValue(begin, end);
+						}
 						break;
 
-					case '[':	// "<![CDATA[", "]]>"	CDATA section
+					case '[':	// "<![CDATA[", "]]>"	CDATA section, or IE conditional comment
 						value = this.tryScanBlockValue("[CDATA[", "]]>");
 						if (value != null) {
 							if (this.ch == DuelGrammar.OP_ELEM_END) {
@@ -619,6 +631,13 @@ public class DuelLexer implements Iterator<DuelToken> {
 								DuelToken.literal(value, this.token_index, this.token_line, this.token_column);
 							return true;
 						}
+						this.resetMark();
+
+						// IE conditional comment (downlevel revealed)
+						// http://msdn.microsoft.com/en-us/library/ms537512.aspx#syntax
+						begin = "<![";
+						end = ">";
+						value = this.tryScanBlockValue(begin, end);
 						break;
 
 					default:	// "<!", ">"			SGML declaration (e.g. DocType)
@@ -677,7 +696,6 @@ public class DuelLexer implements Iterator<DuelToken> {
 		}
 
 		if (value == null) {
-			// NOTE: this may throw an exception if block was unterminated
 			this.resetMark();
 			return false;
 		}
