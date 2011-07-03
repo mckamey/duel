@@ -2,7 +2,7 @@ package org.duelengine.duel;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class CDNLinkInterceptor implements LinkInterceptor {
@@ -10,6 +10,16 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 	private final boolean isDevMode;
 	private final String cdnHost;
 	private final Map<String, String> cdnMap;
+
+	/**
+	 * @param cdnHost the CDN server hostname (e.g., "cdn.example.com")
+	 * @param cdnMap a mapping of paths to their compacted form (e.g., "/foo.js" => "/foo.min.js")
+	 * @param isDevMode uses normal paths unless compacted form has a dev form (e.g., "/foo.js" => "/foo.min.js" => "/foo.test.js", else "/foo.js")
+	 * @throws URISyntaxException
+	 */
+	public CDNLinkInterceptor(String cdnHost, ResourceBundle cdnBundle, boolean isDevMode) throws URISyntaxException {
+		this(cdnHost, bundleAsMap(cdnBundle), isDevMode);
+	}
 
 	/**
 	 * @param cdnHost the CDN server hostname (e.g., "cdn.example.com")
@@ -53,5 +63,19 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 
 		// CDN resources are compacted and optionally served from a differen host
 		return this.cdnHost + cdnURL;
+	}
+
+	/**
+	 * Converts ResourceBundle to a Map<String, String>
+	 * @param cdnBundle
+	 * @return
+	 */
+	private static Map<String, String> bundleAsMap(ResourceBundle cdnBundle) {
+		Set<String> keys = cdnBundle.keySet();
+		Map<String, String> cdnMap = new HashMap<String, String>(keys.size());
+		for (String key : keys) {
+			cdnMap.put(key, cdnBundle.getString(key));
+		}
+		return cdnMap;
 	}
 }
