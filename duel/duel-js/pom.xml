@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.duelengine.duel</groupId>
 		<artifactId>duel</artifactId>
-		<version>0.3.0</version>
+		<version>0.3.1</version>
 	</parent>
 
 	<artifactId>duel-js</artifactId>
@@ -31,7 +31,7 @@
 			<!-- http://code.google.com/p/closure-compiler/wiki/Maven -->
 			<groupId>com.google.javascript</groupId>
 			<artifactId>closure-compiler</artifactId>
-			<version>r706</version>
+			<version>[r1043,)</version>
 		</dependency>
 	</dependencies>
 
