@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.duelengine.duel</groupId>
 		<artifactId>duel</artifactId>
-		<version>0.4.0</version>
+		<version>0.4.1</version>
 	</parent>
 
 	<artifactId>duel-runtime</artifactId>
@@ -28,10 +28,18 @@
 	</properties>
 
 	<dependencies>
+		<!-- JAX-RS interfaces -->
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>jsr311-api</artifactId>
 			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Servlet interfaces -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
