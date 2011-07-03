@@ -11,7 +11,7 @@ import org.duelengine.duel.compiler.*;
  * Generates client-side and server-side sources
  *
  * @goal generate
- * @phase process-resources
+ * @phase generate-sources
  */
 public class DuelMojo extends AbstractMojo {
 
