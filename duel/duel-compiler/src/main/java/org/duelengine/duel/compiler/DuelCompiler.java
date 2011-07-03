@@ -118,7 +118,7 @@ public class DuelCompiler {
 
 		List<File> inputFiles = findFiles(this.inputFolder);
 		if (inputFiles.size() < 1) {
-			throw new IllegalArgumentException("this.inputFolder.getAbsolutePath(): Error: no input files found");
+			throw new IllegalArgumentException("Error: no input files found: "+this.inputFolder);
 		}
 
 		for (File inputFile : inputFiles) {
