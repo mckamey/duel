@@ -33,7 +33,7 @@ public class DuelContext {
 
 	private Appendable output;
 	private ClientIDStrategy clientID;
-	private URLInterceptor interceptor;
+	private LinkInterceptor interceptor;
 	private DataEncoder encoder;
 	private FormatPrefs format;
 
@@ -55,7 +55,7 @@ public class DuelContext {
 		return this;
 	}
 
-	public DuelContext setURLInterceptor(URLInterceptor value) {
+	public DuelContext setLinkInterceptor(LinkInterceptor value) {
 		this.interceptor = value;
 
 		return this;
