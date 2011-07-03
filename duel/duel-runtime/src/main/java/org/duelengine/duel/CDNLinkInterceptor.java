@@ -3,6 +3,7 @@ package org.duelengine.duel;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class CDNLinkInterceptor implements LinkInterceptor {
 
@@ -22,7 +23,14 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 		this.cdnMap = cdnMap;
 
 		// use URI class to check for proper host syntax
-		this.cdnHost = (cdnHost == null || cdnHost.isEmpty()) ? "" : new URI("http", cdnHost, null, null).getRawSchemeSpecificPart();
+		this.cdnHost =
+			(cdnHost == null || cdnHost.isEmpty()) ?
+			"" :
+			new URI("http", cdnHost, null, null).getRawSchemeSpecificPart();
+
+		Logger log = Logger.getLogger(CDNLinkInterceptor.class.getCanonicalName());
+		log.config("cdnHost="+this.cdnHost);
+		log.config("isDevModet="+this.isDevMode);
 	}
 
 	public String transformURL(String url) {
@@ -40,7 +48,7 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 			}
 
 			// merge files serve generated placeholder
-			return this.cdnMap.get(cdnURL);
+			cdnURL = this.cdnMap.get(cdnURL);
 		}
 
 		// CDN resources are compacted and optionally served from a differen host
