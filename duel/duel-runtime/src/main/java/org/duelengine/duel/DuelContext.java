@@ -33,6 +33,7 @@ public class DuelContext {
 
 	private Appendable output;
 	private ClientIDStrategy clientID;
+	private URLInterceptor interceptor;
 	private DataEncoder encoder;
 	private FormatPrefs format;
 
@@ -54,8 +55,10 @@ public class DuelContext {
 		return this;
 	}
 
-	ClientIDStrategy getClientID() {
-		return this.clientID;
+	public DuelContext setURLInterceptor(URLInterceptor value) {
+		this.interceptor = value;
+
+		return this;
 	}
 
 	public DuelContext setClientID(ClientIDStrategy value) {
@@ -198,8 +201,11 @@ public class DuelContext {
 		return this.clientID.nextID();
 	}
 
-	String interceptLink(String url) {
-		// TODO: build mechanism for exposing URL transformation
-		return url;
+	String transformURL(String url) {
+		if (this.interceptor == null) {
+			return url;
+		}
+
+		return this.interceptor.transformURL(url);
 	}
 }

@@ -1411,7 +1411,7 @@ public class CodeDOMBuilder {
 		CodeExpression codeExpr = new CodeMethodInvokeExpression(
 			String.class,
 			new CodeThisReferenceExpression(),
-			"interceptLink",
+			"transformURL",
 			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			CodeDOMUtility.ensureString(new CodePrimitiveExpression(literal)));
 
@@ -1437,7 +1437,7 @@ public class CodeDOMBuilder {
 		codeExpr = new CodeMethodInvokeExpression(
 			String.class,
 			new CodeThisReferenceExpression(),
-			"interceptLink",
+			"transformURL",
 			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			CodeDOMUtility.ensureString(codeExpr));
 

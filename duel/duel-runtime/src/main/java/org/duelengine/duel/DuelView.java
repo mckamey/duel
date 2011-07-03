@@ -282,8 +282,8 @@ public abstract class DuelView {
 	 * @param url URL
 	 * @return transformed URL
 	 */
-	protected String interceptLink(DuelContext context, String url) {
-		return context.interceptLink(url);
+	protected String transformURL(DuelContext context, String url) {
+		return context.transformURL(url);
 	}
 
 	/**
