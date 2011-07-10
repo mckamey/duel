@@ -8,5 +8,5 @@
 duel/duel-runtime/target
 duel/duel-compiler/target
 duel/duel-js/target
-duel/duel-maven-plugin/target/*
-duel/target/*
+duel/duel-maven-plugin/target
+duel/target

@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.duelengine.duel</groupId>
+	<groupId>org.duelengine</groupId>
 	<artifactId>duel-runtime</artifactId>
-	<version>0.4.1</version>
+	<version>0.5.0</version>
 	<packaging>jar</packaging>
 
 	<name>DUEL Runtime</name>
-	<description>Dual-side template engine for the JVM, using 100% pure JavaScript as the binding language.</description>
+	<description>Dual-side template engine for the JVM</description>
 	<url>http://duelengine.org</url>
 	<licenses>
 		<license>
