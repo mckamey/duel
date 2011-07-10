@@ -95,6 +95,12 @@ public class CodeDOMBuilder {
 
 	private void buildNode(DuelNode node) throws IOException {
 		if (node instanceof LiteralNode) {
+			if (node instanceof UnknownNode) {
+				// IE conditional comments get parsed as an unknown literal
+				// this ensures if a script is within a conditional comment
+				// that extras are emitted before the opening of the comment 
+				this.ensureExtrasEmitted(true);
+			}
 			String literal = ((LiteralNode)node).getValue();
 			if (this.tagMode == TagMode.SuspendMode || node instanceof UnknownNode) {
 				this.buffer.append(literal);
