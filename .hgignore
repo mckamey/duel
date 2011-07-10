@@ -5,8 +5,8 @@
 \.iml
 \.ipr
 \.iws
-duel/duel-runtime/target
-duel/duel-compiler/target
-duel/duel-js/target
-duel/duel-maven-plugin/target
-duel/target
+duel-runtime/target
+duel-compiler/target
+duel-js/target
+duel-maven-plugin/target
+target
