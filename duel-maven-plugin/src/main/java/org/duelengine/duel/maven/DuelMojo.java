@@ -29,23 +29,32 @@ public class DuelMojo extends AbstractMojo {
 	/**
 	 * Location of the template files.
 	 * 
-	 * @parameter default-value="${project.build.sourceDirectory}"
+	 * @parameter default-value="${project.basedir}/src/main/resources/views/"
 	 */
-	private String inputFolder;
+	private String inputDir;
 
 	/**
-	 * Location of the generated client-side templates.
+	 * Directory where webapp is output..
 	 * 
-	 * @parameter default-value="${project.build.directory}/generated-sources/duel/"
+	 * @parameter default-value="${project.build.directory}/${project.build.finalName}/"
+	 * @readonly
+	 * @required
 	 */
-	private String outputClientFolder;
+	private String outputDir;
+
+	/**
+	 * App-relative path of the generated client-side templates.
+	 * 
+	 * @parameter default-value="/js/views/"
+	 */
+	private String outputClientPath;
 
 	/**
 	 * Location of the generated server-side templates.
 	 * 
 	 * @parameter default-value="${project.build.directory}/generated-sources/duel/"
 	 */
-	private String outputServerFolder;
+	private String outputServerDir;
 
 	/**
 	 * Client-side template package prefix
@@ -65,21 +74,30 @@ public class DuelMojo extends AbstractMojo {
         throws MojoExecutionException {
 
 	    Log log = this.getLog();
-	    log.info("\tinputFolder="+this.inputFolder);
-	    log.info("\toutputClientFolder="+this.outputClientFolder);
-	    log.info("\toutputServerFolder="+this.outputServerFolder);
+	    log.info("\tinputDir="+this.inputDir);
+	    log.info("\toutputServerDir="+this.outputServerDir);
+
+	    if (this.outputClientPath == null || this.outputClientPath.isEmpty()) {
+			this.outputClientPath = "/js/views/";
+		} else {
+			if (!this.outputClientPath.startsWith("/")) {
+				this.outputClientPath = '/'+this.outputClientPath;
+			}
+			if (!this.outputClientPath.endsWith("/")) {
+				this.outputClientPath += '/';
+			}
+		}
+	    log.info("\toutputClientDir="+this.outputDir+this.outputClientPath);
 	    log.info("\tclientPrefix="+this.clientPrefix);
 	    log.info("\tserverPrefix="+this.serverPrefix);
 
 	    DuelCompiler compiler = new DuelCompiler();
-	    compiler.setInputFolder(this.inputFolder);
+	    compiler.setInputDir(this.inputDir);
 
-	    if (this.outputClientFolder != null && !this.outputClientFolder.isEmpty()) {
-		    compiler.setOutputClientFolder(this.outputClientFolder);
-	    }
+	    compiler.setOutputClientDir(this.outputDir+this.outputClientPath);
 
-		if (this.outputServerFolder != null && !this.outputServerFolder.isEmpty()) {
-			compiler.setOutputServerFolder(this.outputServerFolder);
+		if (this.outputServerDir != null && !this.outputServerDir.isEmpty()) {
+			compiler.setOutputServerDir(this.outputServerDir);
 		}
 
 	    if (this.clientPrefix != null && !this.clientPrefix.isEmpty()) {
@@ -93,7 +111,7 @@ public class DuelMojo extends AbstractMojo {
 	    try {
 		    compiler.execute();
 
-		    this.project.addCompileSourceRoot(compiler.getOutputServerFolder()); 
+		    this.project.addCompileSourceRoot(compiler.getOutputServerDir()); 
 
 	    } catch (IOException e) {
 		    log.error(e);

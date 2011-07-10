@@ -62,7 +62,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.duelengine.duel.DuelCompiler</mainClass>
+							<mainClass>org.duelengine.duel.compiler.CLI</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

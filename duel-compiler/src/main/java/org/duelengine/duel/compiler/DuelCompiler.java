@@ -8,71 +8,35 @@ import org.duelengine.duel.parsing.*;
 
 public class DuelCompiler {
 
-	private static final String HELP =
-		"Usage:\n" +
-		"\tjava -jar duel.jar <input-file|input-folder>\n" +
-		"\tjava -jar duel.jar <input-file|input-folder> <output-folder>\n" +
-		"\tjava -jar duel.jar <input-file|input-folder> <output-client-folder> <output-server-folder>\n\n"+
-		"\tinput-file: path to the DUEL input file (e.g. foo.duel)\n"+
-		"\tinput-folder: path to the input folder containing DUEL files\n"+
-		"\toutput-folder: path to the output folder\n"+
-		"\toutput-client-folder: path to the view scripts folder\n"+
-		"\toutput-server-folder: path to the source code folder\n";
-
-	public static void main(String[] args) {
-		if (args.length < 1) {
-			System.out.println(HELP);
-			return;
-		}
-
-		DuelCompiler compiler = new DuelCompiler();
-		compiler.setInputFolder(args[0]);
-
-		if (args.length > 1) {
-			compiler.setOutputClientFolder(args[1]);
-
-			if (args.length > 2) {
-				compiler.setOutputServerFolder(args[2]);
-			}
-		}
-
-		try {
-			compiler.execute();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private boolean verbose;
-	private File inputFolder;
-	private File outputClientFolder;
-	private File outputServerFolder;
+	private File inputDir;
+	private File outputClientDir;
+	private File outputServerDir;
 	private String clientPrefix;
 	private String serverPrefix;
 
-	public String getInputFolder() {
-		return this.inputFolder.getAbsolutePath();
+	public String getInputDir() {
+		return this.inputDir.getAbsolutePath();
 	}
 
-	public void setInputFolder(String value) {
-		this.inputFolder = (value != null) ? new File(value.replace('\\', '/')) : null;
+	public void setInputDir(String value) {
+		this.inputDir = (value != null) ? new File(value.replace('\\', '/')) : null;
 	}
 
-	public String getOutputClientFolder() {
-		return this.outputClientFolder.getAbsolutePath();
+	public String getOutputClientDir() {
+		return this.outputClientDir.getAbsolutePath();
 	}
 
-	public void setOutputClientFolder(String value) {
-		this.outputClientFolder = (value != null) ? new File(value.replace('\\', '/')) : null;
+	public void setOutputClientDir(String value) {
+		this.outputClientDir = (value != null) ? new File(value.replace('\\', '/')) : null;
 	}
 
-	public String getOutputServerFolder() {
-		return this.outputServerFolder.getAbsolutePath();
+	public String getOutputServerDir() {
+		return this.outputServerDir.getAbsolutePath();
 	}
 
-	public void setOutputServerFolder(String value) {
-		this.outputServerFolder = (value != null) ? new File(value.replace('\\', '/')) : null;
+	public void setOutputServerDir(String value) {
+		this.outputServerDir = (value != null) ? new File(value.replace('\\', '/')) : null;
 	}
 
 	public String getClientPrefix() {
@@ -92,16 +56,16 @@ public class DuelCompiler {
 	}
 
 	private boolean ensureSettings() {
-		if (this.inputFolder == null || !this.inputFolder.exists()) {
-			throw new IllegalArgumentException("Error: no input files found: "+this.inputFolder);
+		if (this.inputDir == null || !this.inputDir.exists()) {
+			throw new IllegalArgumentException("ERROR: input directory is empty: "+this.inputDir);
 		}
 
-		if (this.outputClientFolder == null) {
-			this.outputClientFolder = this.inputFolder.getParentFile();
+		if (this.outputClientDir == null) {
+			this.outputClientDir = this.inputDir.getParentFile();
 		}
 
-		if (this.outputServerFolder == null) {
-			this.outputServerFolder = this.inputFolder.getParentFile();
+		if (this.outputServerDir == null) {
+			this.outputServerDir = this.inputDir.getParentFile();
 		}
 
 		return true;
@@ -116,9 +80,9 @@ public class DuelCompiler {
 			return;
 		}
 
-		List<File> inputFiles = findFiles(this.inputFolder);
+		List<File> inputFiles = findFiles(this.inputDir);
 		if (inputFiles.size() < 1) {
-			throw new IllegalArgumentException("Error: no input files found: "+this.inputFolder);
+			throw new IllegalArgumentException("ERROR: no input files found: "+this.inputDir);
 		}
 
 		for (File inputFile : inputFiles) {
@@ -127,13 +91,13 @@ public class DuelCompiler {
 				FileReader reader = new FileReader(inputFile);
 				views = new DuelParser().parse(new DuelLexer(reader));
 
+				if (views == null || views.size() < 1) {
+					throw new SyntaxException("Syntax error: no view found in "+inputFile, 0, 0, 0);
+				}
+
 			} catch (SyntaxException ex) {
 				this.reportSyntaxError(inputFile, ex);
 				continue;
-			}
-
-			if (views == null || views.size() < 1) {
-				throw new IllegalArgumentException(inputFile.getAbsolutePath()+": Syntax error: no view found");
 			}
 
 			// TODO: allow setting of more properties from args
@@ -156,7 +120,7 @@ public class DuelCompiler {
 
 			CodeGenerator codegen = new ClientCodeGen(settings);
 			try {
-				File outputFile = new File(this.outputClientFolder, outputName+codegen.getFileExtension());
+				File outputFile = new File(this.outputClientDir, outputName+codegen.getFileExtension());
 				outputFile.getParentFile().mkdirs();
 
 				FileWriter writer = new FileWriter(outputFile, false);
@@ -178,7 +142,7 @@ public class DuelCompiler {
 			codegen = new JavaCodeGen(settings);
 			for (VIEWCommandNode view : views) {
 				try {
-					File outputFile = new File(this.outputServerFolder, settings.getFullServerName(view.getName()).replace('.', '/')+codegen.getFileExtension());
+					File outputFile = new File(this.outputServerDir, settings.getFullServerName(view.getName()).replace('.', '/')+codegen.getFileExtension());
 					outputFile.getParentFile().mkdirs();
 
 					FileWriter writer = new FileWriter(outputFile, false);
@@ -242,16 +206,16 @@ public class DuelCompiler {
 		}
 	}
 
-	private static List<File> findFiles(File inputFolder) {
+	private static List<File> findFiles(File inputDir) {
 
 		List<File> files = new ArrayList<File>();
-		Queue<File> folders = new LinkedList<File>();
-		folders.add(inputFolder);
+		Queue<File> dirs = new LinkedList<File>();
+		dirs.add(inputDir);
 
-		while (!folders.isEmpty()) {
-			File file = folders.poll();
+		while (!dirs.isEmpty()) {
+			File file = dirs.poll();
 			if (file.isDirectory()) {
-				folders.addAll(Arrays.asList(file.listFiles()));
+				dirs.addAll(Arrays.asList(file.listFiles()));
 			} else if (file.getName().toLowerCase().endsWith(".duel")) {
 				files.add(file);
 			}
