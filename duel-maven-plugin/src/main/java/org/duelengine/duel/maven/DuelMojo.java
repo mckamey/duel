@@ -36,7 +36,7 @@ public class DuelMojo extends AbstractMojo {
 	/**
 	 * Directory where webapp is output..
 	 * 
-	 * @parameter default-value="${project.build.directory}/${project.build.finalName}/"
+	 * @parameter default-value="${project.build.directory}/${project.build.finalName}"
 	 * @readonly
 	 * @required
 	 */
