@@ -139,6 +139,7 @@ public class DataEncoder {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void writeDate(Appendable output, Date data)
 		throws IOException {
 
