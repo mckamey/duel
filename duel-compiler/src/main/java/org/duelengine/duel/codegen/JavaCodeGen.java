@@ -1010,10 +1010,10 @@ public class JavaCodeGen implements CodeGenerator {
 		} else {
 			Package pkg = type.getPackage();
 			String pkgName = (pkg == null) ? null : pkg.getName();
-			if (pkgName == null || "java.lang".equals(pkgName) || "java.io".equals(pkgName) || "java.util".equals(pkgName) || DUEL_PACKAGE.equals(pkgName)) {
+			if (pkgName == null || "java.lang".equals(pkgName) || "java.io".equals(pkgName) /*|| "java.util".equals(pkgName)*/ || DUEL_PACKAGE.equals(pkgName)) {
 				typeName = type.getSimpleName();
 			} else {
-				typeName = type.getName();
+				typeName = type.getName().replace('$', '.');
 			}
 		}
 		output.append(typeName);
@@ -1092,10 +1092,10 @@ public class JavaCodeGen implements CodeGenerator {
 
 		output.append("import java.io.*;");
 		this.writeln(output, 0);
-		output.append("import java.util.*;");
-		this.writeln(output, 0);
-		output.append("import java.util.Map.Entry;");
-		this.writeln(output, 0);
+//		output.append("import java.util.*;");
+//		this.writeln(output, 0);
+//		output.append("import java.util.Map.Entry;");
+//		this.writeln(output, 0);
 		output.append("import ").append(DUEL_PACKAGE).append(".*;");
 		this.writeln(output, 0, 2);
 	}
