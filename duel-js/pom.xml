@@ -5,7 +5,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-js</artifactId>
-	<version>0.5.2</version>
+	<version>0.6.0</version>
 	<packaging>pom</packaging>
 
 	<name>DUEL Client Scripts</name>
@@ -32,6 +32,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<closure.version>r1043</closure.version>
+		<jslint4java.version>1.4.6</jslint4java.version>
 	</properties>
 
 	<dependencies>
@@ -39,7 +42,7 @@
 			<!-- http://code.google.com/p/closure-compiler/wiki/Maven -->
 			<groupId>com.google.javascript</groupId>
 			<artifactId>closure-compiler</artifactId>
-			<version>[r1043,)</version>
+			<version>${closure.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -115,7 +118,7 @@
 					<dependency>
 						<groupId>com.googlecode.jslint4java</groupId>
 						<artifactId>jslint4java-ant</artifactId>
-						<version>1.4.6</version>
+						<version>${jslint4java.version}</version>
 					</dependency>
 				</dependencies>
 			</plugin>
