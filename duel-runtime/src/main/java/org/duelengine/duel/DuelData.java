@@ -132,9 +132,10 @@ public final class DuelData {
 		}
 
 		if (Date.class.equals(dataType)) {
+			// http://download.oracle.com/javase/6/docs/api/java/util/Formatter.html#dt
 			// YYYY-MM-DD HH:mm:ss Z
-			//return String.format("%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tLZ", data);
-			return String.format("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS Z", data);
+			//return String.format("%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tL%1$tz", data);
+			return String.format("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %1$tz", data);
 		}
 
 		if (isNumber(dataType)) {
