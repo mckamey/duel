@@ -213,7 +213,9 @@ public class ClientCodeGen implements CodeGenerator {
 				this.writeString(output, attr, preMode);
 				output.append(" : ");
 				DuelNode attrVal = node.getAttribute(attr);
-				if (attrVal instanceof CommentNode) {
+				if (attrVal == null) {
+					output.append("null");
+				} else if (attrVal instanceof CommentNode) {
 					output.append("\"\"");
 				} else {
 					if (addPrefix && "view".equalsIgnoreCase(attr) && attrVal instanceof ExpressionNode) {
