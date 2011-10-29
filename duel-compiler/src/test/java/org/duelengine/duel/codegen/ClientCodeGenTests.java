@@ -626,21 +626,26 @@ public class ClientCodeGenTests {
 			new AttributePair[] {
 				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 			},
+			new LiteralNode("BEFORE"),
 			new CALLCommandNode(
 				new AttributePair[] {
 					new AttributePair("view", new LiteralNode("foo.bar.Yada")),
 					new AttributePair("data", new ExpressionNode("data.foo"))
-				}));
+				}),
+			new LiteralNode("AFTER"));
 
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo = foo || {};\n"+
 			"foo.bar = foo.bar || {};\n\n"+
-			"foo.bar.Blah = duel(\n"+
+			"foo.bar.Blah = duel([\"\",\n"+
+			"\t\"BEFORE\",\n"+
 			"\t[\"$call\", {\n"+
 			"\t\t\t\"view\" : function() { return (foo.bar.Yada); },\n"+
 			"\t\t\t\"data\" : function(data) { return (data.foo); }\n"+
-			"\t\t}]);\n";
+			"\t\t}],\n"+
+			"\t\"AFTER\"\n"+
+			"]);\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);

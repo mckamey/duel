@@ -5,7 +5,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-js</artifactId>
-	<version>0.6.0</version>
+	<version>0.6.1</version>
 	<packaging>pom</packaging>
 
 	<name>DUEL Client Scripts</name>

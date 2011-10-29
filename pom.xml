@@ -5,7 +5,7 @@
 	
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-root</artifactId>
-	<version>0.6.0</version>
+	<version>0.0.0</version>
 	<packaging>pom</packaging>
 
 	<name>DUEL Root</name>

@@ -172,7 +172,7 @@ public class CodeDOMBuilder {
 			this.buildDeferredCall(node);
 			return;
 		}
-		
+
 		// generate a field to hold the child template
 		CodeField field = new CodeField(
 				AccessModifierType.PRIVATE,
@@ -247,6 +247,7 @@ public class CodeDOMBuilder {
 			keyExpr = new CodeVariableReferenceExpression(String.class, "key");
 		}
 
+		this.flushBuffer();
 		CodeStatementCollection scope = this.scopeStack.peek();
 		scope.add(new CodeMethodInvokeExpression(
 			Void.class,

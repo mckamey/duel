@@ -920,11 +920,13 @@ public class CodeDOMBuilderTests {
 			new AttributePair[] {
 				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
 			},
+			new LiteralNode("BEFORE"),
 			new CALLCommandNode(
 				new AttributePair[] {
 					new AttributePair("view", new LiteralNode("foo.bar.Yada")),
 					new AttributePair("data", new ExpressionNode("data.foo"))
-				}));
+				}),
+			new LiteralNode("AFTER"));
 
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			"foo.bar",
@@ -944,6 +946,13 @@ public class CodeDOMBuilderTests {
 					new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("BEFORE"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
 						"renderView",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodeFieldReferenceExpression(
@@ -955,7 +964,14 @@ public class CodeDOMBuilderTests {
 							new CodePrimitiveExpression("foo")).withParens(),
 						new CodeVariableReferenceExpression(int.class, "index"),
 						new CodeVariableReferenceExpression(int.class, "count"),
-						new CodeVariableReferenceExpression(String.class, "key")))
+						new CodeVariableReferenceExpression(String.class, "key"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("AFTER")))
 				).withOverride().withThrows(IOException.class),
 			new CodeField(
 				AccessModifierType.PRIVATE,

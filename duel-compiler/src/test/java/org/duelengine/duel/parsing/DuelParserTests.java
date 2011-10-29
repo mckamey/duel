@@ -768,18 +768,21 @@ public class DuelParserTests {
 			new AttributePair[] {
 				new AttributePair("name", new LiteralNode("foo"))
 			},
+			new LiteralNode("BEFORE"),
 			new CALLCommandNode(
 				new AttributePair[] {
 					new AttributePair("view", new ExpressionNode("Foo.Other")),
 					new AttributePair("data", new ExpressionNode("data.detail")),
 					new AttributePair("index", new ExpressionNode("1")),
 					new AttributePair("count", new ExpressionNode("42"))
-				}));
+				}),
+			new LiteralNode("AFTER"));
 
 		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
 			DuelToken.elemBegin("view"),
 			DuelToken.attrName("name"),
 			DuelToken.attrValue("foo"),
+			DuelToken.literal("BEFORE"),
 			DuelToken.elemBegin("call"),
 			DuelToken.attrName("view"),
 			DuelToken.attrValue("Foo.Other"),
@@ -789,7 +792,8 @@ public class DuelParserTests {
 			DuelToken.attrValue("1"),
 			DuelToken.attrName("count"),
 			DuelToken.attrValue("42"),
-			DuelToken.elemEnd("call")
+			DuelToken.elemEnd("call"),
+			DuelToken.literal("AFTER")
 		);
 
 		Iterator<VIEWCommandNode> iterator = actual.iterator();
