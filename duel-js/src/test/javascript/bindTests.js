@@ -32,7 +32,7 @@ test("simple expressions", function() {
 	        name: "Foo.js",
 	        url: "http://example.com/foo.js",
 	        size: 5.87,
-	        datestamp: new Date(1291486489939),
+	        datestamp: new Date(),
 	        details: "Lorem ipsum dolor sit amet"
 	    };
 
@@ -76,7 +76,7 @@ test("simple expressions", function() {
 			 	" (5.87KB)"
 		 	],
 			["p",
-			 	"DateStamp: 2010-12-04 18:14:49 Z"
+			 	"DateStamp: "+data.datestamp
 			],
 			["p",
 			 	"Description: Lorem ipsum dolor sit amet"

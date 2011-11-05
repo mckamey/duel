@@ -214,22 +214,13 @@
 	 * Formats the value as a string
 	 * 
 	 * @private
-	 * @param {*} val the object being tested
+	 * @param {*} val the object being rendered
 	 * @return {string|null}
 	 */
 	function asString(val) {
 		var buffer, needsDelim;
 		switch (getType(val)) {
 			case VAL:
-				if (val instanceof Date) {
-					// YYYY-MM-DD HH:mm:ss Z
-					return val.getUTCFullYear()+'-'+
-						digits(val.getUTCMonth()+1)+'-'+
-						digits(val.getUTCDate())+' '+
-						digits(val.getUTCHours())+':'+
-						digits(val.getUTCMinutes())+':'+
-						digits(val.getUTCSeconds())+" Z";
-				}
 				return ""+val;
 			case NUL:
 				return "";
