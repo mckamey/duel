@@ -243,22 +243,13 @@ var duel = (
 	 * Formats the value as a string
 	 * 
 	 * @private
-	 * @param {*} val the object being tested
+	 * @param {*} val the object being rendered
 	 * @return {string|null}
 	 */
 	function asString(val) {
 		var buffer, needsDelim;
 		switch (getType(val)) {
 			case VAL:
-				if (val instanceof Date) {
-					// YYYY-MM-DD HH:mm:ss Z
-					return val.getUTCFullYear()+'-'+
-						digits(val.getUTCMonth()+1)+'-'+
-						digits(val.getUTCDate())+' '+
-						digits(val.getUTCHours())+':'+
-						digits(val.getUTCMinutes())+':'+
-						digits(val.getUTCSeconds())+" Z";
-				}
 				return ""+val;
 			case NUL:
 				return "";
@@ -1158,39 +1149,6 @@ var duel = (
 	};
 
 	/**
-	 * Event names map
-	 * 
-	 * @private
-	 * @constant
-	 * @type {Object.<boolean>}
-	 */
-	var EVTS = {
-		"onblur" : true,
-		"onchange" : true,
-		"onclick" : true,
-		"ondblclick" : true,
-		"onerror" : true,
-		"onfocus" : true,
-		"onkeydown" : true,
-		"onkeypress" : true,
-		"onkeyup" : true,
-		"onload" : true,
-		"onmousedown" : true,
-		"onmouseenter" : true,
-		"onmouseleave" : true,
-		"onmousemove" : true,
-		"onmouseout" : true,
-		"onmouseover" : true,
-		"onmouseup" : true,
-		"onresize" : true,
-		"onscroll" : true,
-		"onselect" : true,
-		"onsubmit" : true,
-		"onunload" : true
-		// can add more events here as needed
-	};
-
-	/**
 	 * Leading SGML line ending pattern
 	 * 
 	 * @private
@@ -1306,14 +1264,21 @@ var duel = (
 	 * @param {function(Event)} handler The event handler
 	 */
 	function addHandler(elem, name, handler) {
-		if (isString(handler)) {
-			/*jslint evil:true */
-			handler = new Function("event", handler);
-			/*jslint evil:false */
-		}
-	
 		if (isFunction(handler)) {
-			elem[name] = handler;
+			if (elem.addEventListener) {
+				// DOM Level 2
+				elem.addEventListener((name.substr(0,2) === 'on') ? name.substr(2) : name, handler);
+			} else {
+				// DOM Level 0
+				elem[name] = handler;
+			}
+		}
+
+		else if (isString(handler)) {
+			// inline functions are DOM Level 0
+			/*jslint evil:true */
+			elem[name] = new Function("event", handler);
+			/*jslint evil:false */
 		}
 	}
 
@@ -1361,7 +1326,7 @@ var duel = (
 					} else if (name === "class") {
 						elem.className = value;
 
-					} else if (EVTS[name]) {
+					} else if (name.substr(0,2) === 'on') {
 						addHandler(elem, name, value);
 
 						// also set duplicated events
