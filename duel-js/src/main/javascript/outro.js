@@ -1,3 +1,3 @@
 	return duel;
 
-})(window);
+})(window, document);

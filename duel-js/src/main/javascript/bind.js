@@ -5,98 +5,98 @@
 	 * @constant
 	 * @type {string}
 	 */
-	var FOR = "$for";
+	var FOR = '$for';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var XOR = "$xor";
+	var XOR = '$xor';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var IF = "$if";
+	var IF = '$if';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var CALL = "$call";
+	var CALL = '$call';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var PART = "$part";
+	var PART = '$part';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var TEST = "test";
+	var TEST = 'test';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var EACH = "each";
+	var EACH = 'each';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var IN = "in";
+	var IN = 'in';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var VIEW = "view";
+	var VIEW = 'view';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var DATA = "data";
+	var DATA = 'data';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var INDEX = "index";
+	var INDEX = 'index';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var COUNT = "count";
+	var COUNT = 'count';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var KEY = "key";
+	var KEY = 'key';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var NAME = "name";
+	var NAME = 'name';
 
 	var bind;
 
@@ -110,7 +110,7 @@
 	function append(parent, child) {
 		switch (getType(child)) {
 			case ARY:
-				if (child[0] === "") {
+				if (child[0] === '') {
 					// child is documentFragment
 					// directly append children, skip fragment identifier
 					for (var i=1, length=child.length; i<length; i++) {
@@ -142,10 +142,10 @@
 				var last = parent.length-1;
 				if (last > 0 && getType(parent[last]) === VAL) {
 					// combine string literals
-					parent[last] = "" + parent[last] + child;
-				} else if (child !== "") {
+					parent[last] = '' + parent[last] + child;
+				} else if (child !== '') {
 					// convert primitive to string literal and append
-					parent.push("" + child);
+					parent.push('' + child);
 				}
 				break;
 	
@@ -182,7 +182,7 @@
 		}
 
 		// element array, make a doc frag
-		var result = [""];
+		var result = [''];
 
 		for (var i=hasAttr ? 2 : 1, length=node.length; i<length; i++) {
 			append(result, bind(node[i], data, index, count, key, parts));
@@ -205,7 +205,7 @@
 	 */
 	function loop(node, data, index, count, key, parts) {
 		var args = node[1] || {},
-			result = [""],
+			result = [''],
 			items, i, length;
 
 		if (args.hasOwnProperty(COUNT)) {
@@ -377,7 +377,7 @@
 	 */
 	function part(node, data, index, count, key, parts) {
 		var args = node[1] || {},
-			block = args[NAME] || "";
+			block = args[NAME] || '';
 
 		block = parts && parts.hasOwnProperty(block) ? parts[block] : node;
 
@@ -409,7 +409,7 @@
 				/**
 				 * @type {string}
 				 */
-				var tag = node[0] || "";
+				var tag = node[0] || '';
 				switch (tag) {
 					case FOR:
 						return loop(node, data, index, count, key, parts);

@@ -5,42 +5,42 @@
 	 * @constant
 	 * @type {string}
 	 */
-	var TODOM = "toDOM";
+	var TODOM = 'toDOM';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var RELOAD = "reload";
+	var RELOAD = 'reload';
 
 	/**
 	 * @private
 	 * @const
 	 * @type {string}
 	 */
-	var ATTR_EXTERN = "attr";
+	var ATTR_EXTERN = 'attr';
 
 	/**
 	 * @private
 	 * @const
 	 * @type {string}
 	 */
-	var REPLACE_EXTERN = "replace";
+	var REPLACE_EXTERN = 'replace';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var INIT = "$init";
+	var INIT = '$init';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var LOAD = "$load";
+	var LOAD = '$load';
 
 	/**
 	 * Attribute name map
@@ -50,17 +50,17 @@
 	 * @type {Object.<string>}
 	 */
 	var ATTRMAP = {
-		"rowspan" : "rowSpan",
-		"colspan" : "colSpan",
-		"cellpadding" : "cellPadding",
-		"cellspacing" : "cellSpacing",
-		"tabindex" : "tabIndex",
-		"accesskey" : "accessKey",
-		"hidefocus" : "hideFocus",
-		"usemap" : "useMap",
-		"maxlength" : "maxLength",
-		"readonly" : "readOnly",
-		"contenteditable" : "contentEditable"
+		'rowspan' : 'rowSpan',
+		'colspan' : 'colSpan',
+		'cellpadding' : 'cellPadding',
+		'cellspacing' : 'cellSpacing',
+		'tabindex' : 'tabIndex',
+		'accesskey' : 'accessKey',
+		'hidefocus' : 'hideFocus',
+		'usemap' : 'useMap',
+		'maxlength' : 'maxLength',
+		'readonly' : 'readOnly',
+		'contenteditable' : 'contentEditable'
 		// can add more attributes here as needed
 	};
 
@@ -72,8 +72,8 @@
 	 * @type {Object.<string>}
 	 */
 	var ATTRDUP = {
-		"enctype" : "encoding",
-		"onscroll" : "DOMMouseScroll"
+		'enctype' : 'encoding',
+		'onscroll' : 'DOMMouseScroll'
 		// can add more attributes here as needed
 	};
 
@@ -109,13 +109,13 @@
 				return document.createDocumentFragment();
 			}
 
-			tag = "";
+			tag = '';
 
 		} else if (tag.charAt(0) === '!') {
-			return document.createComment(tag === "!" ? "" : tag.substr(1)+' ');
+			return document.createComment(tag === '!' ? '' : tag.substr(1)+' ');
 		}
 
-		if (tag.toLowerCase() === "style" && document.createStyleSheet) {
+		if (tag.toLowerCase() === 'style' && document.createStyleSheet) {
 			// IE requires this interface for styles
 			return document.createStyleSheet();
 		}
@@ -132,12 +132,12 @@
 	 */
 	function appendDOM(elem, child) {
 		if (child) {
-			var tag = (elem.tagName||"").toLowerCase();
+			var tag = (elem.tagName||'').toLowerCase();
 			if (elem.nodeType === 8) { // comment
 				if (child.nodeType === 3) { // text node
 					elem.nodeValue += child.nodeValue;
 				}
-			} else if (tag === "table" && elem.tBodies) {
+			} else if (tag === 'table' && elem.tBodies) {
 				if (!child.tagName) {
 					// must unwrap documentFragment for tables
 					if (child.nodeType === 11) {
@@ -150,11 +150,11 @@
 
 				// in IE must explicitly nest TRs in TBODY
 				var childTag = child.tagName.toLowerCase();// child tagName
-				if (childTag && childTag !== "tbody" && childTag !== "thead") {
+				if (childTag && childTag !== 'tbody' && childTag !== 'thead') {
 					// insert in last tbody
 					var tBody = elem.tBodies.length > 0 ? elem.tBodies[elem.tBodies.length-1] : null;
 					if (!tBody) {
-						tBody = createElement(childTag === "th" ? "thead" : "tbody");
+						tBody = createElement(childTag === 'th' ? 'thead' : 'tbody');
 						elem.appendChild(tBody);
 					}
 					tBody.appendChild(child);
@@ -162,15 +162,15 @@
 					elem.appendChild(child);
 				}
 
-			} else if (tag === "style" && document.createStyleSheet) {
+			} else if (tag === 'style' && document.createStyleSheet) {
 				// IE requires this interface for styles
 				elem.cssText = child;
 
 			} else if (elem.canHaveChildren !== false) {
 				elem.appendChild(child);
 
-			} else if (tag === "object" &&
-				child.tagName && child.tagName.toLowerCase() === "param") {
+			} else if (tag === 'object' &&
+				child.tagName && child.tagName.toLowerCase() === 'param') {
 					// IE-only path
 					try {
 						elem.appendChild(child);
@@ -206,7 +206,7 @@
 		else if (isString(handler)) {
 			// inline functions are DOM Level 0
 			/*jslint evil:true */
-			elem[name] = new Function("event", handler);
+			elem[name] = new Function('event', handler);
 			/*jslint evil:false */
 		}
 	}
@@ -223,7 +223,7 @@
 		if (attr.name && document.attachEvent && !elem.parentNode) {
 			try {
 				// IE fix for not being able to programatically change the name attribute
-				var alt = createElement("<"+elem.tagName+" name='"+attr.name+"'>");
+				var alt = createElement('<'+elem.tagName+' name="'+attr.name+'">');
 				// fix for Opera 8.5 and Netscape 7.1 creating malformed elements
 				if (elem.tagName === alt.tagName) {
 					elem = alt;
@@ -240,19 +240,19 @@
 
 				if (name) {
 					if (type === NUL) {
-						value = "";
+						value = '';
 						type = VAL;
 					}
 
 					name = ATTRMAP[name.toLowerCase()] || name;
-					if (name === "style") {
-						if (typeof elem.style.cssText !== "undefined") {
+					if (name === 'style') {
+						if (typeof elem.style.cssText !== 'undefined') {
 							elem.style.cssText = value;
 						} else {
 							elem.style = value;
 						}
 
-					} else if (name === "class") {
+					} else if (name === 'class') {
 						elem.className = value;
 
 					} else if (name.substr(0,2) === 'on') {
@@ -305,7 +305,7 @@
 	 */
 	function trimPattern(node, pattern) {
 		if (!!node && (node.nodeType === 3) && pattern.exec(node.nodeValue)) {
-			node.nodeValue = node.nodeValue.replace(pattern, "");
+			node.nodeValue = node.nodeValue.replace(pattern, '');
 		}
 	}
 
@@ -340,8 +340,8 @@
 	 * @return {Node}
 	 */
 	function toDOM(value) {
-		var wrapper = createElement("div");
-		wrapper.innerHTML = ""+value;
+		var wrapper = createElement('div');
+		wrapper.innerHTML = ''+value;
 	
 		// trim extraneous whitespace
 		trimWhitespace(wrapper);
@@ -352,7 +352,7 @@
 		}
 
 		// create a document fragment to hold elements
-		var frag = createElement("");
+		var frag = createElement('');
 		while (wrapper.firstChild) {
 			frag.appendChild(wrapper.firstChild);
 		}
@@ -380,7 +380,7 @@
 			if (!isFunction(method)) {
 				try {
 					/*jslint evil:true */
-					method = new Function(""+method);
+					method = new Function(''+method);
 					/*jslint evil:false */
 				} catch (ex2) {
 					// filter
@@ -441,7 +441,7 @@
 					var childTag = child[0];
 					child = patchDOM(createElement(childTag), child);
 
-					if (childTag === "html") {
+					if (childTag === 'html') {
 						// trim extraneous whitespace
 						trimWhitespace(child);
 
@@ -456,9 +456,9 @@
 					appendDOM(elem, child);
 					break;
 				case VAL:
-					if (child !== "") {
+					if (child !== '') {
 						// append child value as text
-						appendDOM(elem, document.createTextNode(""+child));
+						appendDOM(elem, document.createTextNode(''+child));
 					}
 					break;
 				case OBJ:
@@ -530,13 +530,13 @@
 			if (doc.createStyleSheet) {
 				// IE requires link repair
 				var head = newRoot.firstChild;
-				while (head && (head.tagName||"") !== "HEAD") {
+				while (head && (head.tagName||'') !== 'HEAD') {
 					head = head.nextSibling;
 				}
 
 				var link = head && head.firstChild;
 				while (link) {
-					if ((link.tagName||"") === "LINK") {
+					if ((link.tagName||'') === 'LINK') {
 						// this seems to repair the link
 						link.href = link.href;
 					}
@@ -545,7 +545,7 @@
 			}
 		} catch (ex) {
 			/*jslint evil:true*/
-			doc = doc.open("text/html");
+			doc = doc.open('text/html');
 			doc.write(this.toString());
 			doc.close();
 			/*jslint evil:false*/

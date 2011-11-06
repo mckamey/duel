@@ -17,13 +17,9 @@
 var duel = (
 	/**
 	 * @param {Window} window Window reference
+	 * @param {Document} document Document reference
 	 */
-	function(window) {
+	function(window, document) {
 
-	"use strict";
-
-	/**
-	 * @type {Document} document Document reference
-	 */
-	var document = window.document;
+	'use strict';
 

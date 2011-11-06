@@ -8,22 +8,22 @@
 	 * @type {Object.<boolean>}
 	 */
 	var VOID_TAGS = {
-		"area" : true,
-		"base" : true,
-		"basefont" : true,
-		"br" : true,
-		"col" : true,
-		"frame" : true,
-		"hr" : true,
-		"img" : true,
-		"input" : true,
-		"isindex" : true,
-		"keygen" : true,
-		"link" : true,
-		"meta" : true,
-		"param" : true,
-		"source" : true,
-		"wbr" : true
+		'area' : true,
+		'base' : true,
+		'basefont' : true,
+		'br' : true,
+		'col' : true,
+		'frame' : true,
+		'hr' : true,
+		'img' : true,
+		'input' : true,
+		'isindex' : true,
+		'keygen' : true,
+		'link' : true,
+		'meta' : true,
+		'param' : true,
+		'source' : true,
+		'wbr' : true
 	};
 
 	/**
@@ -31,7 +31,7 @@
 	 * @const
 	 * @type {string}
 	 */
-	var WRITE_EXTERN = "write";
+	var WRITE_EXTERN = 'write';
 
 	/**
 	 * Encodes invalid literal characters in strings
@@ -49,11 +49,11 @@
 			function(ch) {
 				switch(ch) {
 					case '&':
-						return "&amp;";
+						return '&amp;';
 					case '<':
-						return "&lt;";
+						return '&lt;';
 					case '>':
-						return "&gt;";
+						return '&gt;';
 					default:
 						return ch;
 				}
@@ -76,13 +76,13 @@
 			function(ch) {
 				switch(ch) {
 					case '&':
-						return "&amp;";
+						return '&amp;';
 					case '<':
-						return "&lt;";
+						return '&lt;';
 					case '>':
-						return "&gt;";
+						return '&gt;';
 					case '"':
-						return "&quot;";
+						return '&quot;';
 					default:
 						return ch;
 				}
@@ -115,7 +115,7 @@
 	 */
 	function renderElem(buffer, node) {
 
-		var tag = node[0] || "",
+		var tag = node[0] || '',
 			length = node.length,
 			i = 1,
 			child,

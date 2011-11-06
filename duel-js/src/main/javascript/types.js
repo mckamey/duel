@@ -47,7 +47,7 @@
 	 * @constant
 	 * @type {string}
 	 */
-	var MSIE = "ScriptEngineMajorVersion";
+	var MSIE = 'ScriptEngineMajorVersion';
 
 	/**
 	 * Wraps a data value to maintain as raw markup in output
@@ -98,11 +98,11 @@
 	 */
 	function getType(val) {
 		switch (typeof val) {
-			case "object":
+			case 'object':
 				return !val ? NUL : (isArray(val) ? ARY : ((val instanceof Markup) ? RAW : ((val instanceof Date) ? VAL : OBJ)));
-			case "function":
+			case 'function':
 				return FUN;
-			case "undefined":
+			case 'undefined':
 				return NUL;
 			default:
 				return VAL;
@@ -117,7 +117,7 @@
 	 * @return {boolean}
 	 */
 	function isString(val) {
-		return (typeof val === "string");
+		return (typeof val === 'string');
 	}
 
 	/**
@@ -128,7 +128,7 @@
 	 * @return {boolean}
 	 */
 	function isFunction(val) {
-		return (typeof val === "function");
+		return (typeof val === 'function');
 	}
 
 	/**
@@ -143,7 +143,7 @@
 		 * @type {Array|string}
 		 * @private
 		 */
-		this.value = Buffer.FAST ? "" : [];
+		this.value = Buffer.FAST ? '' : [];
 	}
 
 	/**
@@ -188,7 +188,7 @@
 	 * @this {Buffer}
 	 */
 	Buffer.prototype.clear = function() {
-		this.value = Buffer.FAST ? "" : [];
+		this.value = Buffer.FAST ? '' : [];
 	};
 
 	/**
@@ -203,7 +203,7 @@
 		return Buffer.FAST ?
 			// Closure Compiler type cast
 			/** @type{string} */(this.value) :
-			this.value.join("");
+			this.value.join('');
 	};
 
 	function digits(n) {
@@ -221,15 +221,15 @@
 		var buffer, needsDelim;
 		switch (getType(val)) {
 			case VAL:
-				return ""+val;
+				return ''+val;
 			case NUL:
-				return "";
+				return '';
 			case ARY:
 				// flatten into simple list
 				buffer = new Buffer();
 				for (var i=0, length=val.length; i<length; i++) {
 					if (needsDelim) {
-						buffer.append(", ");
+						buffer.append(', ');
 					} else {
 						needsDelim = true;
 					}
@@ -243,7 +243,7 @@
 				for (var key in val) {
 					if (val.hasOwnProperty(key)) {
 						if (needsDelim) {
-							buffer.append(", ");
+							buffer.append(', ');
 						} else {
 							needsDelim = true;
 						}
@@ -269,7 +269,7 @@
 	function Result(view) {
 		if (!isArray(view)) {
 			// ensure is rooted element
-			view = ["", view];
+			view = ['', view];
 		}
 	
 		/**

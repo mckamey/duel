@@ -17,15 +17,11 @@
 var duel = (
 	/**
 	 * @param {Window} window Window reference
+	 * @param {Document} document Document reference
 	 */
-	function(window) {
+	function(window, document) {
 
-	"use strict";
-
-	/**
-	 * @type {Document} document Document reference
-	 */
-	var document = window.document;
+	'use strict';
 
 	/* types.js --------------------*/
 
@@ -76,7 +72,7 @@ var duel = (
 	 * @constant
 	 * @type {string}
 	 */
-	var MSIE = "ScriptEngineMajorVersion";
+	var MSIE = 'ScriptEngineMajorVersion';
 
 	/**
 	 * Wraps a data value to maintain as raw markup in output
@@ -127,11 +123,11 @@ var duel = (
 	 */
 	function getType(val) {
 		switch (typeof val) {
-			case "object":
+			case 'object':
 				return !val ? NUL : (isArray(val) ? ARY : ((val instanceof Markup) ? RAW : ((val instanceof Date) ? VAL : OBJ)));
-			case "function":
+			case 'function':
 				return FUN;
-			case "undefined":
+			case 'undefined':
 				return NUL;
 			default:
 				return VAL;
@@ -146,7 +142,7 @@ var duel = (
 	 * @return {boolean}
 	 */
 	function isString(val) {
-		return (typeof val === "string");
+		return (typeof val === 'string');
 	}
 
 	/**
@@ -157,7 +153,7 @@ var duel = (
 	 * @return {boolean}
 	 */
 	function isFunction(val) {
-		return (typeof val === "function");
+		return (typeof val === 'function');
 	}
 
 	/**
@@ -172,7 +168,7 @@ var duel = (
 		 * @type {Array|string}
 		 * @private
 		 */
-		this.value = Buffer.FAST ? "" : [];
+		this.value = Buffer.FAST ? '' : [];
 	}
 
 	/**
@@ -217,7 +213,7 @@ var duel = (
 	 * @this {Buffer}
 	 */
 	Buffer.prototype.clear = function() {
-		this.value = Buffer.FAST ? "" : [];
+		this.value = Buffer.FAST ? '' : [];
 	};
 
 	/**
@@ -232,7 +228,7 @@ var duel = (
 		return Buffer.FAST ?
 			// Closure Compiler type cast
 			/** @type{string} */(this.value) :
-			this.value.join("");
+			this.value.join('');
 	};
 
 	function digits(n) {
@@ -250,15 +246,15 @@ var duel = (
 		var buffer, needsDelim;
 		switch (getType(val)) {
 			case VAL:
-				return ""+val;
+				return ''+val;
 			case NUL:
-				return "";
+				return '';
 			case ARY:
 				// flatten into simple list
 				buffer = new Buffer();
 				for (var i=0, length=val.length; i<length; i++) {
 					if (needsDelim) {
-						buffer.append(", ");
+						buffer.append(', ');
 					} else {
 						needsDelim = true;
 					}
@@ -272,7 +268,7 @@ var duel = (
 				for (var key in val) {
 					if (val.hasOwnProperty(key)) {
 						if (needsDelim) {
-							buffer.append(", ");
+							buffer.append(', ');
 						} else {
 							needsDelim = true;
 						}
@@ -298,7 +294,7 @@ var duel = (
 	function Result(view) {
 		if (!isArray(view)) {
 			// ensure is rooted element
-			view = ["", view];
+			view = ['', view];
 		}
 	
 		/**
@@ -317,98 +313,98 @@ var duel = (
 	 * @constant
 	 * @type {string}
 	 */
-	var FOR = "$for";
+	var FOR = '$for';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var XOR = "$xor";
+	var XOR = '$xor';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var IF = "$if";
+	var IF = '$if';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var CALL = "$call";
+	var CALL = '$call';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var PART = "$part";
+	var PART = '$part';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var TEST = "test";
+	var TEST = 'test';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var EACH = "each";
+	var EACH = 'each';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var IN = "in";
+	var IN = 'in';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var VIEW = "view";
+	var VIEW = 'view';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var DATA = "data";
+	var DATA = 'data';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var INDEX = "index";
+	var INDEX = 'index';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var COUNT = "count";
+	var COUNT = 'count';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var KEY = "key";
+	var KEY = 'key';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var NAME = "name";
+	var NAME = 'name';
 
 	var bind;
 
@@ -422,7 +418,7 @@ var duel = (
 	function append(parent, child) {
 		switch (getType(child)) {
 			case ARY:
-				if (child[0] === "") {
+				if (child[0] === '') {
 					// child is documentFragment
 					// directly append children, skip fragment identifier
 					for (var i=1, length=child.length; i<length; i++) {
@@ -454,10 +450,10 @@ var duel = (
 				var last = parent.length-1;
 				if (last > 0 && getType(parent[last]) === VAL) {
 					// combine string literals
-					parent[last] = "" + parent[last] + child;
-				} else if (child !== "") {
+					parent[last] = '' + parent[last] + child;
+				} else if (child !== '') {
 					// convert primitive to string literal and append
-					parent.push("" + child);
+					parent.push('' + child);
 				}
 				break;
 	
@@ -494,7 +490,7 @@ var duel = (
 		}
 
 		// element array, make a doc frag
-		var result = [""];
+		var result = [''];
 
 		for (var i=hasAttr ? 2 : 1, length=node.length; i<length; i++) {
 			append(result, bind(node[i], data, index, count, key, parts));
@@ -517,7 +513,7 @@ var duel = (
 	 */
 	function loop(node, data, index, count, key, parts) {
 		var args = node[1] || {},
-			result = [""],
+			result = [''],
 			items, i, length;
 
 		if (args.hasOwnProperty(COUNT)) {
@@ -689,7 +685,7 @@ var duel = (
 	 */
 	function part(node, data, index, count, key, parts) {
 		var args = node[1] || {},
-			block = args[NAME] || "";
+			block = args[NAME] || '';
 
 		block = parts && parts.hasOwnProperty(block) ? parts[block] : node;
 
@@ -721,7 +717,7 @@ var duel = (
 				/**
 				 * @type {string}
 				 */
-				var tag = node[0] || "";
+				var tag = node[0] || '';
 				switch (tag) {
 					case FOR:
 						return loop(node, data, index, count, key, parts);
@@ -770,14 +766,14 @@ var duel = (
 	 * @const
 	 * @type {string}
 	 */
-	var DUEL_EXTERN = "duel";
+	var DUEL_EXTERN = 'duel';
 
 	/**
 	 * @private
 	 * @const
 	 * @type {string}
 	 */
-	var RAW_EXTERN = "raw";
+	var RAW_EXTERN = 'raw';
 
 	/**
 	 * Renders an error as text
@@ -787,7 +783,7 @@ var duel = (
 	 * @return {string}
 	 */
 	function onError(ex) {
-		return "["+ex+"]";
+		return '['+ex+']';
 	}
 
 	/**
@@ -800,7 +796,7 @@ var duel = (
 	function factory(view) {
 		if (getType(view) !== ARY) {
 			// ensure is rooted element
-			view = ["", view];
+			view = ['', view];
 		}
 
 		/**
@@ -863,22 +859,22 @@ var duel = (
 	 * @type {Object.<boolean>}
 	 */
 	var VOID_TAGS = {
-		"area" : true,
-		"base" : true,
-		"basefont" : true,
-		"br" : true,
-		"col" : true,
-		"frame" : true,
-		"hr" : true,
-		"img" : true,
-		"input" : true,
-		"isindex" : true,
-		"keygen" : true,
-		"link" : true,
-		"meta" : true,
-		"param" : true,
-		"source" : true,
-		"wbr" : true
+		'area' : true,
+		'base' : true,
+		'basefont' : true,
+		'br' : true,
+		'col' : true,
+		'frame' : true,
+		'hr' : true,
+		'img' : true,
+		'input' : true,
+		'isindex' : true,
+		'keygen' : true,
+		'link' : true,
+		'meta' : true,
+		'param' : true,
+		'source' : true,
+		'wbr' : true
 	};
 
 	/**
@@ -886,7 +882,7 @@ var duel = (
 	 * @const
 	 * @type {string}
 	 */
-	var WRITE_EXTERN = "write";
+	var WRITE_EXTERN = 'write';
 
 	/**
 	 * Encodes invalid literal characters in strings
@@ -904,11 +900,11 @@ var duel = (
 			function(ch) {
 				switch(ch) {
 					case '&':
-						return "&amp;";
+						return '&amp;';
 					case '<':
-						return "&lt;";
+						return '&lt;';
 					case '>':
-						return "&gt;";
+						return '&gt;';
 					default:
 						return ch;
 				}
@@ -931,13 +927,13 @@ var duel = (
 			function(ch) {
 				switch(ch) {
 					case '&':
-						return "&amp;";
+						return '&amp;';
 					case '<':
-						return "&lt;";
+						return '&lt;';
 					case '>':
-						return "&gt;";
+						return '&gt;';
 					case '"':
-						return "&quot;";
+						return '&quot;';
 					default:
 						return ch;
 				}
@@ -970,7 +966,7 @@ var duel = (
 	 */
 	function renderElem(buffer, node) {
 
-		var tag = node[0] || "",
+		var tag = node[0] || '',
 			length = node.length,
 			i = 1,
 			child,
@@ -1076,42 +1072,42 @@ var duel = (
 	 * @constant
 	 * @type {string}
 	 */
-	var TODOM = "toDOM";
+	var TODOM = 'toDOM';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var RELOAD = "reload";
+	var RELOAD = 'reload';
 
 	/**
 	 * @private
 	 * @const
 	 * @type {string}
 	 */
-	var ATTR_EXTERN = "attr";
+	var ATTR_EXTERN = 'attr';
 
 	/**
 	 * @private
 	 * @const
 	 * @type {string}
 	 */
-	var REPLACE_EXTERN = "replace";
+	var REPLACE_EXTERN = 'replace';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var INIT = "$init";
+	var INIT = '$init';
 
 	/**
 	 * @private
 	 * @constant
 	 * @type {string}
 	 */
-	var LOAD = "$load";
+	var LOAD = '$load';
 
 	/**
 	 * Attribute name map
@@ -1121,17 +1117,17 @@ var duel = (
 	 * @type {Object.<string>}
 	 */
 	var ATTRMAP = {
-		"rowspan" : "rowSpan",
-		"colspan" : "colSpan",
-		"cellpadding" : "cellPadding",
-		"cellspacing" : "cellSpacing",
-		"tabindex" : "tabIndex",
-		"accesskey" : "accessKey",
-		"hidefocus" : "hideFocus",
-		"usemap" : "useMap",
-		"maxlength" : "maxLength",
-		"readonly" : "readOnly",
-		"contenteditable" : "contentEditable"
+		'rowspan' : 'rowSpan',
+		'colspan' : 'colSpan',
+		'cellpadding' : 'cellPadding',
+		'cellspacing' : 'cellSpacing',
+		'tabindex' : 'tabIndex',
+		'accesskey' : 'accessKey',
+		'hidefocus' : 'hideFocus',
+		'usemap' : 'useMap',
+		'maxlength' : 'maxLength',
+		'readonly' : 'readOnly',
+		'contenteditable' : 'contentEditable'
 		// can add more attributes here as needed
 	};
 
@@ -1143,8 +1139,8 @@ var duel = (
 	 * @type {Object.<string>}
 	 */
 	var ATTRDUP = {
-		"enctype" : "encoding",
-		"onscroll" : "DOMMouseScroll"
+		'enctype' : 'encoding',
+		'onscroll' : 'DOMMouseScroll'
 		// can add more attributes here as needed
 	};
 
@@ -1180,13 +1176,13 @@ var duel = (
 				return document.createDocumentFragment();
 			}
 
-			tag = "";
+			tag = '';
 
 		} else if (tag.charAt(0) === '!') {
-			return document.createComment(tag === "!" ? "" : tag.substr(1)+' ');
+			return document.createComment(tag === '!' ? '' : tag.substr(1)+' ');
 		}
 
-		if (tag.toLowerCase() === "style" && document.createStyleSheet) {
+		if (tag.toLowerCase() === 'style' && document.createStyleSheet) {
 			// IE requires this interface for styles
 			return document.createStyleSheet();
 		}
@@ -1203,12 +1199,12 @@ var duel = (
 	 */
 	function appendDOM(elem, child) {
 		if (child) {
-			var tag = (elem.tagName||"").toLowerCase();
+			var tag = (elem.tagName||'').toLowerCase();
 			if (elem.nodeType === 8) { // comment
 				if (child.nodeType === 3) { // text node
 					elem.nodeValue += child.nodeValue;
 				}
-			} else if (tag === "table" && elem.tBodies) {
+			} else if (tag === 'table' && elem.tBodies) {
 				if (!child.tagName) {
 					// must unwrap documentFragment for tables
 					if (child.nodeType === 11) {
@@ -1221,11 +1217,11 @@ var duel = (
 
 				// in IE must explicitly nest TRs in TBODY
 				var childTag = child.tagName.toLowerCase();// child tagName
-				if (childTag && childTag !== "tbody" && childTag !== "thead") {
+				if (childTag && childTag !== 'tbody' && childTag !== 'thead') {
 					// insert in last tbody
 					var tBody = elem.tBodies.length > 0 ? elem.tBodies[elem.tBodies.length-1] : null;
 					if (!tBody) {
-						tBody = createElement(childTag === "th" ? "thead" : "tbody");
+						tBody = createElement(childTag === 'th' ? 'thead' : 'tbody');
 						elem.appendChild(tBody);
 					}
 					tBody.appendChild(child);
@@ -1233,15 +1229,15 @@ var duel = (
 					elem.appendChild(child);
 				}
 
-			} else if (tag === "style" && document.createStyleSheet) {
+			} else if (tag === 'style' && document.createStyleSheet) {
 				// IE requires this interface for styles
 				elem.cssText = child;
 
 			} else if (elem.canHaveChildren !== false) {
 				elem.appendChild(child);
 
-			} else if (tag === "object" &&
-				child.tagName && child.tagName.toLowerCase() === "param") {
+			} else if (tag === 'object' &&
+				child.tagName && child.tagName.toLowerCase() === 'param') {
 					// IE-only path
 					try {
 						elem.appendChild(child);
@@ -1267,7 +1263,7 @@ var duel = (
 		if (isFunction(handler)) {
 			if (elem.addEventListener) {
 				// DOM Level 2
-				elem.addEventListener((name.substr(0,2) === 'on') ? name.substr(2) : name, handler);
+				elem.addEventListener((name.substr(0,2) === 'on') ? name.substr(2) : name, handler, false);
 			} else {
 				// DOM Level 0
 				elem[name] = handler;
@@ -1277,7 +1273,7 @@ var duel = (
 		else if (isString(handler)) {
 			// inline functions are DOM Level 0
 			/*jslint evil:true */
-			elem[name] = new Function("event", handler);
+			elem[name] = new Function('event', handler);
 			/*jslint evil:false */
 		}
 	}
@@ -1294,7 +1290,7 @@ var duel = (
 		if (attr.name && document.attachEvent && !elem.parentNode) {
 			try {
 				// IE fix for not being able to programatically change the name attribute
-				var alt = createElement("<"+elem.tagName+" name='"+attr.name+"'>");
+				var alt = createElement('<'+elem.tagName+' name="'+attr.name+'">');
 				// fix for Opera 8.5 and Netscape 7.1 creating malformed elements
 				if (elem.tagName === alt.tagName) {
 					elem = alt;
@@ -1311,19 +1307,19 @@ var duel = (
 
 				if (name) {
 					if (type === NUL) {
-						value = "";
+						value = '';
 						type = VAL;
 					}
 
 					name = ATTRMAP[name.toLowerCase()] || name;
-					if (name === "style") {
-						if (typeof elem.style.cssText !== "undefined") {
+					if (name === 'style') {
+						if (typeof elem.style.cssText !== 'undefined') {
 							elem.style.cssText = value;
 						} else {
 							elem.style = value;
 						}
 
-					} else if (name === "class") {
+					} else if (name === 'class') {
 						elem.className = value;
 
 					} else if (name.substr(0,2) === 'on') {
@@ -1376,7 +1372,7 @@ var duel = (
 	 */
 	function trimPattern(node, pattern) {
 		if (!!node && (node.nodeType === 3) && pattern.exec(node.nodeValue)) {
-			node.nodeValue = node.nodeValue.replace(pattern, "");
+			node.nodeValue = node.nodeValue.replace(pattern, '');
 		}
 	}
 
@@ -1411,8 +1407,8 @@ var duel = (
 	 * @return {Node}
 	 */
 	function toDOM(value) {
-		var wrapper = createElement("div");
-		wrapper.innerHTML = ""+value;
+		var wrapper = createElement('div');
+		wrapper.innerHTML = ''+value;
 	
 		// trim extraneous whitespace
 		trimWhitespace(wrapper);
@@ -1423,7 +1419,7 @@ var duel = (
 		}
 
 		// create a document fragment to hold elements
-		var frag = createElement("");
+		var frag = createElement('');
 		while (wrapper.firstChild) {
 			frag.appendChild(wrapper.firstChild);
 		}
@@ -1451,7 +1447,7 @@ var duel = (
 			if (!isFunction(method)) {
 				try {
 					/*jslint evil:true */
-					method = new Function(""+method);
+					method = new Function(''+method);
 					/*jslint evil:false */
 				} catch (ex2) {
 					// filter
@@ -1512,7 +1508,7 @@ var duel = (
 					var childTag = child[0];
 					child = patchDOM(createElement(childTag), child);
 
-					if (childTag === "html") {
+					if (childTag === 'html') {
 						// trim extraneous whitespace
 						trimWhitespace(child);
 
@@ -1527,9 +1523,9 @@ var duel = (
 					appendDOM(elem, child);
 					break;
 				case VAL:
-					if (child !== "") {
+					if (child !== '') {
 						// append child value as text
-						appendDOM(elem, document.createTextNode(""+child));
+						appendDOM(elem, document.createTextNode(''+child));
 					}
 					break;
 				case OBJ:
@@ -1601,13 +1597,13 @@ var duel = (
 			if (doc.createStyleSheet) {
 				// IE requires link repair
 				var head = newRoot.firstChild;
-				while (head && (head.tagName||"") !== "HEAD") {
+				while (head && (head.tagName||'') !== 'HEAD') {
 					head = head.nextSibling;
 				}
 
 				var link = head && head.firstChild;
 				while (link) {
-					if ((link.tagName||"") === "LINK") {
+					if ((link.tagName||'') === 'LINK') {
 						// this seems to repair the link
 						link.href = link.href;
 					}
@@ -1616,7 +1612,7 @@ var duel = (
 			}
 		} catch (ex) {
 			/*jslint evil:true*/
-			doc = doc.open("text/html");
+			doc = doc.open('text/html');
 			doc.write(this.toString());
 			doc.close();
 			/*jslint evil:false*/
@@ -1683,4 +1679,4 @@ var duel = (
 
 	return duel;
 
-})(window);
+})(window, document);

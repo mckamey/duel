@@ -1,25 +1,25 @@
 try {
 
-module("Result.toString()");
+module('Result.toString()');
 
-test("nested elements with attributes", function() {
+test('nested elements with attributes', function() {
 
 	var view = duel(
-		["div", { "class" : "download" },
-			["h2",
-			 	"Filename: Foo.js"
+		['div', { 'class' : 'download' },
+			['h2',
+			 	'Filename: Foo.js'
 			],
-			["p",
-			 	"URL: ",
-			 	["br"],
-			 	["a", { "href" : "http://example.com/foo.js", "target" : "_blank", "title" : "Lorem ipsum dolor sit amet" },
-			 		"http://example.com/foo.js"
+			['p',
+			 	'URL: ',
+			 	['br'],
+			 	['a', { 'href' : 'http://example.com/foo.js', 'target' : '_blank', 'title' : 'Lorem ipsum dolor sit amet' },
+			 		'http://example.com/foo.js'
 		 		],
-			 	" (5.87KB)"
+			 	' (5.87KB)'
 		 	],
-		 	["hr"],
-			["p",
-			 	"Description: Lorem ipsum dolor sit amet"
+		 	['hr'],
+			['p',
+			 	'Description: Lorem ipsum dolor sit amet'
 			]
 		]);
 
@@ -32,31 +32,31 @@ test("nested elements with attributes", function() {
 		'<p>Description: Lorem ipsum dolor sit amet</p>'+
 		'</div>';
 
-	same(actual, expected, "");
+	same(actual, expected, '');
 });
 
-test("native toString", function() {
+test('native toString', function() {
 
 	var view = duel(
-		["div", { "class" : "download" },
-			["h2",
-			 	"Filename: Foo.js"
+		['div', { 'class' : 'download' },
+			['h2',
+			 	'Filename: Foo.js'
 			],
-			["p",
-			 	"URL: ",
-			 	["br"],
-			 	["a", { "href" : "http://example.com/foo.js", "target" : "_blank", "title" : "Lorem ipsum dolor sit amet" },
-			 		"http://example.com/foo.js"
+			['p',
+			 	'URL: ',
+			 	['br'],
+			 	['a', { 'href' : 'http://example.com/foo.js', 'target' : '_blank', 'title' : 'Lorem ipsum dolor sit amet' },
+			 		'http://example.com/foo.js'
 		 		],
-			 	" (5.87KB)"
+			 	' (5.87KB)'
 		 	],
-		 	["hr"],
-			["p",
-			 	"Description: Lorem ipsum dolor sit amet"
+		 	['hr'],
+			['p',
+			 	'Description: Lorem ipsum dolor sit amet'
 			]
 		]);
 
-	var actual = ""+view();
+	var actual = ''+view();
 
 	var expected =
 		'<div class="download"><h2>Filename: Foo.js</h2>'+
@@ -65,34 +65,34 @@ test("native toString", function() {
 		'<p>Description: Lorem ipsum dolor sit amet</p>'+
 		'</div>';
 
-	same(actual, expected, "");
+	same(actual, expected, '');
 });
 
-test("innerHTML toString", function() {
+test('innerHTML toString', function() {
 
 	var view = duel(
-		["div", { "class" : "download" },
-			["h2",
-			 	"Filename: Foo.js"
+		['div', { 'class' : 'download' },
+			['h2',
+			 	'Filename: Foo.js'
 			],
-			["p",
-			 	"URL: ",
-			 	["br"],
-			 	["a", { "href" : "http://example.com/foo.js", "target" : "_blank", "title" : "Lorem ipsum dolor sit amet" },
-			 		"http://example.com/foo.js"
+			['p',
+			 	'URL: ',
+			 	['br'],
+			 	['a', { 'href' : 'http://example.com/foo.js', 'target' : '_blank', 'title' : 'Lorem ipsum dolor sit amet' },
+			 		'http://example.com/foo.js'
 		 		],
-			 	" (5.87KB)"
+			 	' (5.87KB)'
 		 	],
-		 	["hr"],
-			["p",
-			 	"Description: Lorem ipsum dolor sit amet"
+		 	['hr'],
+			['p',
+			 	'Description: Lorem ipsum dolor sit amet'
 			]
 		]);
 
-	var actual = document.createElement("div");
+	var actual = document.createElement('div');
 	actual.innerHTML = view();
 
-	var expected = document.createElement("div");
+	var expected = document.createElement('div');
 	expected.innerHTML =
 		'<div class="download"><h2>Filename: Foo.js</h2>'+
 		'<p>URL: <br /><a href="http://example.com/foo.js" target="_blank" title="Lorem ipsum dolor sit amet">http://example.com/foo.js</a> (5.87KB)</p>'+
@@ -100,43 +100,43 @@ test("innerHTML toString", function() {
 		'<p>Description: Lorem ipsum dolor sit amet</p>'+
 		'</div>';
 
-	same(actual.innerHTML, expected.innerHTML, "");
+	same(actual.innerHTML, expected.innerHTML, '');
 });
 
-test("docFrag root", function() {
+test('docFrag root', function() {
 
 	var view = duel(
-		["",
-		 	["p", "Inner child one."],
-		 	["p", "Inner child two." ]
+		['',
+		 	['p', 'Inner child one.'],
+		 	['p', 'Inner child two.']
 		]);
 
 	var actual = view().toString();
 	var expected = '<p>Inner child one.</p><p>Inner child two.</p>';
 
-	same(actual, expected, "");
+	same(actual, expected, '');
 });
 
-test("docFrag inner", function() {
+test('docFrag inner', function() {
 
 	var view = duel(
-		["div",
-			["",
-			 	["p", "Inner child one."],
-			 	["p", "Inner child two." ]
+		['div',
+			['',
+			 	['p', 'Inner child one.'],
+			 	['p', 'Inner child two.']
 			]
 		]);
 
 	var actual = view().toString();
 	var expected = '<div><p>Inner child one.</p><p>Inner child two.</p></div>';
 
-	same(actual, expected, "");
+	same(actual, expected, '');
 });
 
-test("encoding literal", function() {
+test('encoding literal', function() {
 
 	var view = duel(
-		["p",
+		['p',
 		 	'&hello"foo<bar><&>'
 		]);
 
@@ -144,33 +144,33 @@ test("encoding literal", function() {
 
 	var expected =  '<p>&amp;hello"foo&lt;bar&gt;&lt;&amp;&gt;</p>';
 	
-	same(actual, expected, "");
+	same(actual, expected, '');
 });
 
-test("encoding attributes", function() {
+test('encoding attributes', function() {
 
 	var view = duel(
-		["p", { "title" : '&hello"foo<bar><&>' },
-		 	"Encoded attributes"
+		['p', { 'title' : '&hello"foo<bar><&>' },
+		 	'Encoded attributes'
 		]);
 
 	var actual = view().toString();
 
 	var expected =  '<p title="&amp;hello&quot;foo&lt;bar&gt;&lt;&amp;&gt;">Encoded attributes</p>';
 	
-	same(actual, expected, "");
+	same(actual, expected, '');
 });
 
-test("markup data", function() {
+test('markup data', function() {
 
 	var view = duel(
-		["div", { "class" : "test" },
-			["p",
-			 	"Description: ",
-			 	duel.raw("<b>Lorem </b>"),
-			 	duel.raw("<blink>ipsum</blink>"),
-			 	" ",
-			 	duel.raw("<i>dolor sit amet</i>")
+		['div', { 'class' : 'test' },
+			['p',
+			 	'Description: ',
+			 	duel.raw('<b>Lorem </b>'),
+			 	duel.raw('<blink>ipsum</blink>'),
+			 	' ',
+			 	duel.raw('<i>dolor sit amet</i>')
 			]
 		]);
 
@@ -180,14 +180,14 @@ test("markup data", function() {
 		'<div class="test">'+
 		'<p>Description: <b>Lorem </b><blink>ipsum</blink> <i>dolor sit amet</i></p>'+
 		'</div>';
-	same(actual, expected, "");
+	same(actual, expected, '');
 });
 
-test("falsey attribute values", function() {
+test('falsey attribute values', function() {
 
 	var view = duel(
-		["div", { "data-str" : "", "data-num" : 0, "data-bool" : false, "data-null" : null, "data-undef" : undefined },
-		 	"Lorem ipsum"
+		['div', { 'data-str' : '', 'data-num' : 0, 'data-bool' : false, 'data-null' : null, 'data-undef' : undefined },
+		 	'Lorem ipsum'
 		]);
 
 	var actual = view().toString();
@@ -196,18 +196,18 @@ test("falsey attribute values", function() {
 		'<div data-str="" data-num="0" data-bool="false" data-null data-undef>'+
 		'Lorem ipsum'+
 		'</div>';
-	same(actual, expected, "");
+	same(actual, expected, '');
 });
 
-test("comment nodes", function() {
+test('comment nodes', function() {
 
 	var view = duel(
-		["div",
-		 	["!",
-		 	 	"Comment before"],
-		 	"Lorem ipsum",
-		 	["!",
-		 	 	"Comment after"]
+		['div',
+		 	['!',
+		 	 	'Comment before'],
+		 	'Lorem ipsum',
+		 	['!',
+		 	 	'Comment after']
 		]);
 
 	var actual = view().toString();
@@ -218,19 +218,19 @@ test("comment nodes", function() {
 		'Lorem ipsum'+
 		'<!--Comment after-->'+
 		'</div>';
-	same(actual, expected, "");
+	same(actual, expected, '');
 });
 
-test("doctype node", function() {
+test('doctype node', function() {
 
 	var view = duel(
-		["",
-		 	["!DOCTYPE",
-		 	 	"html"],
-	 	 	"\n",
-			["html",
-			 	["body",
-			 	 	"Lorem ipsum."]
+		['',
+		 	['!DOCTYPE',
+		 	 	'html'],
+	 	 	'\n',
+			['html',
+			 	['body',
+			 	 	'Lorem ipsum.']
 			]
 	 	]);
 
@@ -243,7 +243,7 @@ test("doctype node", function() {
 		'Lorem ipsum.'+
 		'</body>'+
 		'</html>';
-	same(actual, expected, "");
+	same(actual, expected, '');
 });
 
 }catch(ex){alert(ex);}

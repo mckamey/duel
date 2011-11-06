@@ -5,14 +5,14 @@
 	 * @const
 	 * @type {string}
 	 */
-	var DUEL_EXTERN = "duel";
+	var DUEL_EXTERN = 'duel';
 
 	/**
 	 * @private
 	 * @const
 	 * @type {string}
 	 */
-	var RAW_EXTERN = "raw";
+	var RAW_EXTERN = 'raw';
 
 	/**
 	 * Renders an error as text
@@ -22,7 +22,7 @@
 	 * @return {string}
 	 */
 	function onError(ex) {
-		return "["+ex+"]";
+		return '['+ex+']';
 	}
 
 	/**
@@ -35,7 +35,7 @@
 	function factory(view) {
 		if (getType(view) !== ARY) {
 			// ensure is rooted element
-			view = ["", view];
+			view = ['', view];
 		}
 
 		/**
