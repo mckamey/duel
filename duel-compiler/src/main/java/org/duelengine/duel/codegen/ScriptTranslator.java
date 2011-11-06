@@ -199,6 +199,8 @@ public class ScriptTranslator implements ErrorReporter {
 				}
 				// unwrap expression node
 				return this.visit(voidExpr.getExpression());
+		    case Token.IN:
+		    	return this.visitIn((InfixExpression)node);
 			case Token.THIS:
 			case Token.THISFN:
 				// TODO: evaluate if should allow custom extensions via 'this'
@@ -232,6 +234,18 @@ public class ScriptTranslator implements ErrorReporter {
 		CodeExpression property = new CodePrimitiveExpression(node.getProperty().getIdentifier());
 
 		return new CodePropertyReferenceExpression(target, property);
+	}
+
+	private CodeExpression visitIn(InfixExpression node) {
+		CodeExpression key = this.visitExpression(node.getLeft());
+		CodeExpression map = this.visitExpression(node.getRight());
+
+		return new CodeMethodInvokeExpression(
+			Boolean.class,
+			new CodeTypeReferenceExpression(DuelData.class),
+			"containsKey",
+			map,
+			key);	
 	}
 
 	private CodeExpression visitBinaryOp(InfixExpression node, CodeBinaryOperatorType operator) {

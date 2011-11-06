@@ -277,6 +277,26 @@ public final class DuelData {
 	}
 
 	/**
+	 * Treats the object as a Map and calls containsKey
+	 * @param data
+	 * @param key
+	 * @return true if data contains property or key
+	 */
+	public static boolean containsKey(Object data, Object key) {
+		if (data == null) {
+			return false;
+		}
+
+		Class<?> dataType = data.getClass();
+		data = Map.class.isAssignableFrom(dataType) ? data : asProxy(data, true);
+		if (!Map.class.isAssignableFrom(dataType)) {
+			return false;
+		}
+		
+		return ((Map<?,?>)data).containsKey(key);
+	}
+	
+	/**
 	 * Ensures a data object is easily walked
 	 * @param data
 	 * @return

@@ -264,6 +264,36 @@ public class ScriptTranslatorTests {
 	}
 
 	@Test
+	public void translateMapContainsKeyTest() {
+		String input = "function(data) { return 'foo' in data; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodeMethodInvokeExpression(
+						Boolean.class,
+						new CodeTypeReferenceExpression(DuelData.class),
+						"containsKey",
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression("foo"))));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
 	public void translateArrayAccessTest() {
 		String input = "function(data) { return data[3]; }";
 
@@ -478,7 +508,7 @@ public class ScriptTranslatorTests {
 				new CodeMethodReturnStatement(
 					new CodeMethodInvokeExpression(
 						Map.class,
-						new CodeThisReferenceExpression(),
+						new CodeTypeReferenceExpression(DuelData.class),
 						"asMap")));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
@@ -506,7 +536,7 @@ public class ScriptTranslatorTests {
 				new CodeMethodReturnStatement(
 					new CodeMethodInvokeExpression(
 						Map.class,
-						new CodeThisReferenceExpression(),
+						new CodeTypeReferenceExpression(DuelData.class),
 						"asMap",
 						new CodePrimitiveExpression("a"), new CodeUnaryOperatorExpression(CodeUnaryOperatorType.NEGATION, new CodePrimitiveExpression(2)),
 						new CodePrimitiveExpression("count"), new CodeVariableReferenceExpression(Object.class, "data"),
