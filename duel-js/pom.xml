@@ -5,7 +5,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-js</artifactId>
-	<version>0.6.1</version>
+	<version>0.6.2</version>
 	<packaging>pom</packaging>
 
 	<name>DUEL Client Scripts</name>
@@ -33,7 +33,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<closure.version>r1043</closure.version>
+		<closure.version>r1459</closure.version>
 		<jslint4java.version>1.4.6</jslint4java.version>
 	</properties>
 
@@ -52,7 +52,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.6</version>
+				<version>1.7</version>
 				<executions>
 					<!-- Source file concatenation -->
                     <execution>
@@ -63,8 +63,16 @@
                         </goals>
                         <configuration>
                             <target>
+                            	<copy file="${basedir}/src/main/javascript/intro.js"
+                            		tofile="${basedir}/target/intro.js">
+                            		<filterchain>
+                            			<replacetokens>
+                            				<token key="duel-version" value="${project.version}" />
+                            			</replacetokens>
+                            		</filterchain>
+                            	</copy>
                                 <concat destfile="${basedir}/target/duel.js">
-									<fileset file="${basedir}/src/main/javascript/intro.js" />
+									<fileset file="${basedir}/target/intro.js" />
 									<fileset file="${basedir}/src/main/javascript/types.js" />
 									<fileset file="${basedir}/src/main/javascript/bind.js" />
 									<fileset file="${basedir}/src/main/javascript/factory.js" />
@@ -72,6 +80,7 @@
 									<fileset file="${basedir}/src/main/javascript/dom.js" />
 									<fileset file="${basedir}/src/main/javascript/outro.js" />
                                 </concat>
+                                <delete file="${basedir}/target/intro.js" quiet="true"/>
                             </target>
                         </configuration>
                     </execution>

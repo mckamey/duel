@@ -1,11 +1,10 @@
 /*global window */
 
 /**
- * @fileoverview duel.js: client-side template engine
+ * @fileoverview duel.js: client-side engine
+ * @version DUEL v0.6.2 http://duelengine.org
  * 
- * http://duelengine.org
- * 
- * Copyright (c) 2006-2010 Stephen M. McKamey
+ * Copyright (c) 2006-2011 Stephen M. McKamey
  * Licensed under the MIT License (http://duelengine.org/license.txt)
  */
 
