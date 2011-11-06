@@ -88,4 +88,33 @@ final class CharUtility {
 			(ch >= '\u0300' && ch <= '\u036F') ||
 			(ch >= '\u203F' && ch <= '\u2040');
 	}
+
+	/**
+	 * Checks for HTML attribute name char
+	 */
+	public static boolean isAttrNameChar(int ch) {
+		// http://www.w3.org/TR/html5/syntax.html#attributes-0
+		switch (ch) {
+			case '\0':
+			case '"':
+			case '\'':
+			case '>':
+			case '/':
+			case '=':
+				return false;
+			default:
+				return !isWhiteSpace(ch) && !isUnsafe(ch);
+		}
+	}
+
+	/**
+	 * Checks for Control chars and permanently undefined Unicode chars
+	 */
+	private static boolean isUnsafe(int ch) {
+		// http://www.w3.org/TR/xml/#char32
+		return
+			(ch >= '\u007F' && ch <= '\u0084') ||
+			(ch >= '\u0086' && ch <= '\u009F') ||
+			(ch >= '\uFDD0' && ch <= '\uFDEF');
+	}
 }

@@ -1329,7 +1329,7 @@ var duel = (
 							addHandler(elem, ATTRDUP[name], value);
 						}
 
-					} else if (type === VAL) {
+					} else if (type === VAL && name.charAt(0) !== '$') {
 						elem.setAttribute(name, value);
 	
 						// also set duplicated attributes
@@ -1464,7 +1464,7 @@ var duel = (
 	 * @private
 	 * @param {Node} elem The element
 	 */
-	function onInit(elem) {
+	function callbacks(elem) {
 		if (!elem) {
 			return;
 		}
@@ -1512,7 +1512,7 @@ var duel = (
 						trimWhitespace(child);
 
 						// trigger callbacks
-						onInit(child);
+						callbacks(child);
 
 						// unwrap HTML root, to simplify insertion
 						return child;
@@ -1543,7 +1543,7 @@ var duel = (
 		trimWhitespace(elem);
 
 		// trigger callbacks
-		onInit(elem);
+		callbacks(elem);
 
 		// eliminate wrapper for single nodes
 		if (elem.nodeType === 11 && elem.childNodes.length === 1) {

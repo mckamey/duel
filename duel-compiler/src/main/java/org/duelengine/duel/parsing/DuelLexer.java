@@ -452,17 +452,17 @@ public class DuelLexer implements Iterator<DuelToken> {
 		this.setMark(CAPACITY+1);
 		this.buffer.setLength(0);
 
-		if (CharUtility.isNameStartChar(this.ch)) {
+		// consume attribute name
+		if (CharUtility.isAttrNameChar(this.ch)) {
 			this.buffer.append((char)this.ch);
 
-			// consume tag name
-			while (CharUtility.isNameChar(this.nextChar()) && this.buffer.length() < CAPACITY) {
+			while (CharUtility.isAttrNameChar(this.nextChar()) && this.buffer.length() < CAPACITY) {
 				this.buffer.append((char)this.ch);
 			}
 		}
 
 		if (this.buffer.length() == 0) {
-			// not a valid tag name
+			// not a valid attribute name
 			this.resetMark();
 			return false;
 		}

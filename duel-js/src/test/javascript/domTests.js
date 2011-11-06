@@ -231,4 +231,124 @@ test('deferred attribute binding', function() {
 	same(toHTML(actual), toHTML(expected), '');
 });
 
+test('$init function callback', function() {
+
+	var callbackOninitResult;
+	
+	function callback() {
+		callbackOninitResult = toHTML(this);
+	}
+
+	var view = duel(
+		['div', { '$init' : function() { return callback; } },
+			['p',
+			 	'Lorem ipsum dolor sit amet']
+		]);
+
+	// initialize results
+	callbackOninitResult = null;
+
+	var actual = view().toDOM();
+
+	ok(!!callbackOninitResult, "$init was called");
+
+	var expected = document.createElement('div');
+
+	var temp = document.createElement('p');
+	temp.appendChild(document.createTextNode('Lorem ipsum dolor sit amet'));
+
+	expected.appendChild(temp);
+
+	same(callbackOninitResult, toHTML(expected), '');
+});
+
+test('$init string callback', function() {
+
+	var view = duel(
+		['div', { '$init' : 'document.callbackOninitResult = toHTML(this);' },
+			['p',
+			 	'Lorem ipsum dolor sit amet']
+		]);
+
+	// initialize results
+	document.callbackOninitResult = null;
+
+	var actual = view().toDOM();
+
+	ok(!!document.callbackOninitResult, "$init was called");
+
+	var expected = document.createElement('div');
+
+	var temp = document.createElement('p');
+	temp.appendChild(document.createTextNode('Lorem ipsum dolor sit amet'));
+
+	expected.appendChild(temp);
+
+	same(document.callbackOninitResult, toHTML(expected), '');
+});
+
+asyncTest('$load function callback', function() {
+
+	var callbackOnloadResult;
+
+	function callback() {
+		callbackOnloadResult = toHTML(this);
+	}
+
+	var view = duel(
+		['div', { '$load' : function() { return callback; } },
+			['p',
+			 	'Lorem ipsum dolor sit amet']
+		]);
+
+	// initialize results
+	callbackOnloadResult = null;
+
+	var actual = view().toDOM();
+
+	setTimeout(function() {
+		start();
+
+		ok(callbackOnloadResult, "$load was called");
+
+		var expected = document.createElement('div');
+	
+		var temp = document.createElement('p');
+		temp.appendChild(document.createTextNode('Lorem ipsum dolor sit amet'));
+	
+		expected.appendChild(temp);
+
+		same(callbackOnloadResult, toHTML(expected), '');
+	}, 100);
+});
+
+asyncTest('$load string callback', function() {
+
+	var view = duel(
+		['div', { '$load' : 'document.callbackOnloadResult = toHTML(this);' },
+			['p',
+			 	'Lorem ipsum dolor sit amet']
+		]);
+
+	// initialize results
+	document.callbackOnloadResult = null;
+
+	var actual = view().toDOM();
+
+	setTimeout(function() {
+		start();
+
+		ok(document.callbackOnloadResult, "$load was called");
+
+		var expected = document.createElement('div');
+	
+		var temp = document.createElement('p');
+		temp.appendChild(document.createTextNode('Lorem ipsum dolor sit amet'));
+	
+		expected.appendChild(temp);
+	
+		same(document.callbackOnloadResult, toHTML(expected), '');
+	}, 100);
+});
+
 }catch(ex){alert(ex);}

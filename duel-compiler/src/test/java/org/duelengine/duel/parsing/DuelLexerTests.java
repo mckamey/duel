@@ -742,6 +742,40 @@ public class DuelLexerTests {
 	}
 
 	@Test
+	public void attrCallbackTest() {
+
+		String input = "<div $init=\"alert('$init');return false;\"></div>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("div"),
+				DuelToken.attrName("$init"),
+				DuelToken.attrValue("alert('$init');return false;"),
+				DuelToken.elemEnd("div")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrPrefixCallbackTest() {
+
+		String input = "<div duel:oninit=\"alert('$init');return false;\"></div>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("div"),
+				DuelToken.attrName("duel:oninit"),
+				DuelToken.attrValue("alert('$init');return false;"),
+				DuelToken.elemEnd("div")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void codeSimpleTest() {
 
 		String input = "<% code block %>";
