@@ -30,7 +30,7 @@ public class SparseMapTests {
 				"bar", true));
 
 		String expected =
-			"var simple = \"Hello\";\n"+
+			"var simple = 'Hello';\n"+
 			"var nested = {\n"+
 			"\tfoo : 42,\n"+
 			"\tbar : true\n"+
@@ -51,7 +51,7 @@ public class SparseMapTests {
 			"nested.bar", true);
 
 		String expected =
-			"var simple = \"Hello\";\n"+
+			"var simple = 'Hello';\n"+
 			"var nested = nested || {};\n"+
 			"nested.foo = 42;\n"+
 			"nested.bar = true;\n";
@@ -74,7 +74,7 @@ public class SparseMapTests {
 		input.putSparse("nested.baz", DuelData.asList(1, 2, 3));
 
 		String expected =
-			"var simple = \"Hello\";\n"+
+			"var simple = 'Hello';\n"+
 			"var nested = nested || {};\n"+
 			"nested.foo = 42;\n"+
 			"nested.bar = true;\n"+
@@ -102,7 +102,7 @@ public class SparseMapTests {
 		input.putSparse("nested", DuelData.asList(1, 2, 3));
 
 		String expected =
-			"var simple = \"Hello\";\n"+
+			"var simple = 'Hello';\n"+
 			"var nested = [\n"+
 			"\t1,\n"+
 			"\t2,\n"+
@@ -124,7 +124,7 @@ public class SparseMapTests {
 			"nested.bar", new Object());
 
 		String expected =
-			"var simple=\"Hello\";"+
+			"var simple='Hello';"+
 			"var nested=nested||{};"+
 			"nested.foo=null;"+
 			"nested.bar={};";
@@ -144,7 +144,7 @@ public class SparseMapTests {
 			"nested.bar", new Object());
 
 		String expected =
-			"var simple = \"Hello\";\n"+
+			"var simple = 'Hello';\n"+
 			"var nested = nested || {};\n"+
 			"nested.foo = null;\n"+
 			"nested.bar = {};\n";
@@ -167,7 +167,7 @@ public class SparseMapTests {
 		input.putSparse("nested.bar", true);
 
 		String expected =
-			"var simple = \"Hello\";\n"+
+			"var simple = 'Hello';\n"+
 			"var nested = {\n"+
 			"\tfoo : [\n"+
 			"\t\t1,\n"+
@@ -197,7 +197,7 @@ public class SparseMapTests {
 			"nested.many=nested.many||{};"+
 			"nested.many.$levels={"+
 			"$:true,"+
-			"\"\":false,"+
+			"'':false,"+
 			"deep:["+
 			"1,"+
 			"2,"+
@@ -225,7 +225,7 @@ public class SparseMapTests {
 			"nested.many = nested.many || {};\n"+
 			"nested.many.$levels = {\n"+
 			"\t$ : true,\n"+
-			"\t\"\" : false,\n"+
+			"\t'' : false,\n"+
 			"\tdeep : [\n"+
 			"\t\t1,\n"+
 			"\t\t2,\n"+

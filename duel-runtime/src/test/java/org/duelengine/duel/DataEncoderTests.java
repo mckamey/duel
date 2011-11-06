@@ -127,7 +127,7 @@ public class DataEncoderTests {
 	public void writeNumberOverflowLongTest() throws IOException {
 		Object input = Long.MIN_VALUE;
 
-		String expected = "\"-9223372036854775808\"";
+		String expected = "'-9223372036854775808'";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
@@ -140,7 +140,7 @@ public class DataEncoderTests {
 	public void writeNumberOverflowLongMaxTest() throws IOException {
 		Object input = Long.MAX_VALUE;
 
-		String expected = "\"9223372036854775807\"";
+		String expected = "'9223372036854775807'";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
@@ -153,7 +153,7 @@ public class DataEncoderTests {
 	public void writeNumberOverflowLongBigTest() throws IOException {
 		Object input = 9223372036854775799L;
 
-		String expected = "\"9223372036854775799\"";
+		String expected = "'9223372036854775799'";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
@@ -166,7 +166,7 @@ public class DataEncoderTests {
 	public void writeNumberOverflowLongSmallTest() throws IOException {
 		Object input = -9223372036854775799L;
 
-		String expected = "\"-9223372036854775799\"";
+		String expected = "'-9223372036854775799'";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
@@ -244,7 +244,7 @@ public class DataEncoderTests {
 	public void writeStringEmptyTest() throws IOException {
 		Object input = "";
 
-		String expected = "\"\"";
+		String expected = "''";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
@@ -257,7 +257,7 @@ public class DataEncoderTests {
 	public void writeStringSimpleTest() throws IOException {
 		Object input = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
 
-		String expected = "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\"";
+		String expected = "'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
@@ -270,7 +270,7 @@ public class DataEncoderTests {
 	public void writeStringEscapedTest() throws IOException {
 		Object input = "\\\b\f\n\r\t\u0123\u4567\u89AB\uCDEF\uabcd\uef4A\"";
 
-		String expected = "\"\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\\\"\"";
+		String expected = "'\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\"'";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
@@ -309,7 +309,7 @@ public class DataEncoderTests {
 	public void writeArraySingleTest() throws IOException {
 		Object input = new String[] { "Test." };
 
-		String expected = "[\"Test.\"]";
+		String expected = "['Test.']";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
@@ -322,7 +322,7 @@ public class DataEncoderTests {
 	public void writeArraySinglePrettyPrintTest() throws IOException {
 		Object input = new String[] { "Test." };
 
-		String expected = "[ \"Test.\" ]";
+		String expected = "[ 'Test.' ]";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder("\n", "\t").write(output, input);
@@ -336,7 +336,7 @@ public class DataEncoderTests {
 	public void writeArrayMultipleTest() throws IOException {
 		Object input = Arrays.asList(false, null, true, 42, "Test");
 
-		String expected = "[false,null,true,42,\"Test\"]";
+		String expected = "[false,null,true,42,'Test']";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
@@ -356,7 +356,7 @@ public class DataEncoderTests {
 			"\tnull,\n"+
 			"\ttrue,\n"+
 			"\t42,\n"+
-			"\t\"Test\"\n"+
+			"\t'Test'\n"+
 			"]";
 
 		StringBuilder output = new StringBuilder();
@@ -434,7 +434,7 @@ public class DataEncoderTests {
 				false, false
 			);
 
-		String expected = "{\"\":\"\",One:1,\"2\":\"Too\",\".T.H.R.E.E.\":3.141592653589793,$:null,\" white space \":true,\"false\":false}";
+		String expected = "{'':'',One:1,'2':'Too','.T.H.R.E.E.':3.141592653589793,$:null,' white space ':true,'false':false}";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
@@ -457,13 +457,13 @@ public class DataEncoderTests {
 
 		String expected =
 			"{\n"+
-			"\t\"\" : \"\",\n"+
+			"\t'' : '',\n"+
 			"\tOne : 1,\n"+
-			"\t\"2\" : \"Too\",\n"+
-			"\t\".T.H.R.E.E.\" : 3.141592653589793,\n"+
+			"\t'2' : 'Too',\n"+
+			"\t'.T.H.R.E.E.' : 3.141592653589793,\n"+
 			"\t$ : null,\n"+
-			"\t\" white space \" : true,\n"+
-			"\t\"false\" : false\n"+
+			"\t' white space ' : true,\n"+
+			"\t'false' : false\n"+
 			"}";
 
 		StringBuilder output = new StringBuilder();

@@ -277,15 +277,15 @@ public class DataEncoder {
 		int start = 0,
 			length = data.length();
 
-		output.append('\"');
+		output.append('\'');
 
 		for (int i=start; i<length; i++) {
 			String escape;
 
 			char ch = data.charAt(i);
 			switch (ch) {
-				case '\"':
-					escape = "\\\"";
+				case '\'':
+					escape = "\\'";
 					break;
 				case '\\':
 					escape = "\\\\";
@@ -327,7 +327,7 @@ public class DataEncoder {
 			output.append(data, start, length);
 		}
 
-		output.append('\"');
+		output.append('\'');
 	}
 
 	/**
@@ -433,7 +433,7 @@ public class DataEncoder {
 			this.writeln(output, 0);
 			output.append("if (typeof ");
 			output.append(ns);
-			output.append(" === \"undefined\") {");
+			output.append(" === 'undefined') {");
 			this.writeln(output, 1);
 			output.append(ns);
 			output.append(" = {};");
