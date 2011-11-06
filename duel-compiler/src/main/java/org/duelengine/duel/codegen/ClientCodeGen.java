@@ -319,15 +319,15 @@ public class ClientCodeGen implements CodeGenerator {
 		int start = 0,
 			length = value.length();
 
-		output.append('\"');
+		output.append('\'');
 
 		for (int i=start; i<length; i++) {
 			String escape;
 
 			char ch = value.charAt(i);
 			switch (ch) {
-				case '\"':
-					escape = "\\\"";
+				case '\'':
+					escape = "\\\'";
 					break;
 				case '\\':
 					escape = "\\\\";
@@ -371,7 +371,7 @@ public class ClientCodeGen implements CodeGenerator {
 			output.append(value, start, length);
 		}
 
-		output.append('\"');
+		output.append('\'');
 	}
 
 	private void writeln(Appendable output, int depth)

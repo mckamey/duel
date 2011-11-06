@@ -17,7 +17,7 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel(\"A JSON payload should be an object or array, not a string.\");\n";
+			"var foo = duel('A JSON payload should be an object or array, not a string.');\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
@@ -36,7 +36,7 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel(\"\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\\\"\");\n";
+			"var foo = duel('\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\"');\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
@@ -152,16 +152,16 @@ public class ClientCodeGenTests {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo = duel(\n"+
-			"\t[\"div\",\n"+
-			"\t\t[\"$xor\",\n"+
-			"\t\t\t[\"$if\", { \"test\" : function(data) { return (data === 0); } },\n"+
-			"\t\t\t\t\"zero\"\n"+
+			"\t['div',\n"+
+			"\t\t['$xor',\n"+
+			"\t\t\t['$if', { 'test' : function(data) { return (data === 0); } },\n"+
+			"\t\t\t\t'zero'\n"+
 			"\t\t\t],\n"+
-			"\t\t\t[\"$if\", { \"test\" : function(data) { return (data === 1); } },\n"+
-			"\t\t\t\t\"one\"\n"+
+			"\t\t\t['$if', { 'test' : function(data) { return (data === 1); } },\n"+
+			"\t\t\t\t'one'\n"+
 			"\t\t\t],\n"+
-			"\t\t\t[\"$if\",\n"+
-			"\t\t\t\t\"many\"\n"+
+			"\t\t\t['$if',\n"+
+			"\t\t\t\t'many'\n"+
 			"\t\t\t]\n"+
 			"\t\t]\n"+
 			"\t]);\n";
@@ -192,9 +192,9 @@ public class ClientCodeGenTests {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo = duel(\n"+
-			"\t[\"div\",\n"+
-			"\t\t[\"$for\", { \"each\" : function(data) { return (data.items); } },\n"+
-			"\t\t\t\"item \",\n"+
+			"\t['div',\n"+
+			"\t\t['$for', { 'each' : function(data) { return (data.items); } },\n"+
+			"\t\t\t'item ',\n"+
 			"\t\t\tfunction(data, index) { return (index); }\n"+
 			"\t\t]\n"+
 			"\t]);\n";
@@ -225,9 +225,9 @@ public class ClientCodeGenTests {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo = duel(\n"+
-			"\t[\"div\",\n"+
-			"\t\t[\"$for\", { \"in\" : function(data) { return (data); } },\n"+
-			"\t\t\t\"property \",\n"+
+			"\t['div',\n"+
+			"\t\t['$for', { 'in' : function(data) { return (data); } },\n"+
+			"\t\t\t'property ',\n"+
 			"\t\t\tfunction(data, index) { return (index); }\n"+
 			"\t\t]\n"+
 			"\t]);\n";
@@ -259,9 +259,9 @@ public class ClientCodeGenTests {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo = duel(\n"+
-			"\t[\"div\",\n"+
-			"\t\t[\"$for\", {\n\t\t\t\t\"count\" : function() { return (4); },\n\t\t\t\t\"data\" : function(data) { return (data); }\n\t\t\t},\n"+
-			"\t\t\t\"item \",\n"+
+			"\t['div',\n"+
+			"\t\t['$for', {\n\t\t\t\t'count' : function() { return (4); },\n\t\t\t\t'data' : function(data) { return (data); }\n\t\t\t},\n"+
+			"\t\t\t'item ',\n"+
 			"\t\t\tfunction(data, index) { return (index); }\n"+
 			"\t\t]\n"+
 			"\t]);\n";
@@ -300,18 +300,18 @@ public class ClientCodeGenTests {
 		String expected =
 			"/*global duel */\n\n"+
 			"var foo = duel(\n"+
-			"\t[\"div\", {\n"+
-			"\t\t\t\"class\" : \"foo\",\n"+
-			"\t\t\t\"style\" : \"color:red\"\n"+
+			"\t['div', {\n"+
+			"\t\t\t'class' : 'foo',\n"+
+			"\t\t\t'style' : 'color:red'\n"+
 			"\t\t},\n"+
-			"\t\t[\"ul\", { \"class\" : \"foo\" },\n"+
-			"\t\t\t[\"li\",\n"+
-			"\t\t\t\t\"one\"\n\t\t\t],\n"+
-			"\t\t\t[\"li\",\n"+
-			"\t\t\t\t\"two\"\n"+
+			"\t\t['ul', { 'class' : 'foo' },\n"+
+			"\t\t\t['li',\n"+
+			"\t\t\t\t'one'\n\t\t\t],\n"+
+			"\t\t\t['li',\n"+
+			"\t\t\t\t'two'\n"+
 			"\t\t\t],\n"+
-			"\t\t\t[\"li\",\n"+
-			"\t\t\t\t\"three\"\n"+
+			"\t\t\t['li',\n"+
+			"\t\t\t\t'three'\n"+
 			"\t\t\t]\n"+
 			"\t\t]\n"+
 			"\t]);\n";
@@ -327,8 +327,8 @@ public class ClientCodeGenTests {
 	public void multiViewTest() throws IOException {
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel(\"First View\");\n\n"+
-			"var bar = duel(\"Second View\");\n";
+			"var foo = duel('First View');\n\n"+
+			"var bar = duel('Second View');\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, 
@@ -359,7 +359,7 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = foo || {};\n"+
 			"foo.bar = foo.bar || {};\n\n"+
-			"foo.bar.Blah = duel([\"div\"]);\n";
+			"foo.bar.Blah = duel(['div']);\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output, input);
@@ -374,8 +374,8 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = foo || {};\n"+
 			"foo.bar = foo.bar || {};\n\n"+
-			"foo.bar.Blah = duel(\"First View\");\n\n"+
-			"foo.bar.Yada = duel(\"Second View\");\n";
+			"foo.bar.Blah = duel('First View');\n\n"+
+			"foo.bar.Yada = duel('Second View');\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output,
@@ -401,9 +401,9 @@ public class ClientCodeGenTests {
 			"var foo = foo || {};\n"+
 			"foo.bar = foo.bar || {};\n"+
 			"foo.bar.one = foo.bar.one || {};\n\n"+
-			"foo.bar.one.Blah = duel(\"First View\");\n\n"+
+			"foo.bar.one.Blah = duel('First View');\n\n"+
 			"foo.bar.two = foo.bar.two || {};\n\n"+
-			"foo.bar.two.Yada = duel(\"Second View\");\n";
+			"foo.bar.two.Yada = duel('Second View');\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output,
@@ -428,10 +428,10 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = foo || {};\n"+
 			"foo.bar = foo.bar || {};\n\n"+
-			"foo.bar.Blah = duel(\"First View\");\n\n"+
+			"foo.bar.Blah = duel('First View');\n\n"+
 			"var com = com || {};\n"+
 			"com.example = com.example || {};\n\n"+
-			"com.example.Yada = duel(\"Second View\");\n";
+			"com.example.Yada = duel('Second View');\n";
 
 		StringBuilder output = new StringBuilder();
 		new ClientCodeGen().write(output,
@@ -462,12 +462,12 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel([\"\",\n"+
-			"\t\"Hello world.\",\n"+
-			"\t[\"!\",\n"+
-			"\t\t\"Comment Here\"\n"+
+			"var foo = duel(['',\n"+
+			"\t'Hello world.',\n"+
+			"\t['!',\n"+
+			"\t\t'Comment Here'\n"+
 			"\t],\n"+
-			"\t\"Lorem ipsum.\"\n"+
+			"\t'Lorem ipsum.'\n"+
 			"]);\n";
 
 		StringBuilder output = new StringBuilder();
@@ -489,10 +489,10 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel([\"\",\n"+
+			"var foo = duel(['',\n"+
 			"\t/*Code Comment Here*/\n"+
-			"\t\"Hello world.\",\n"+
-			"\t\"Lorem ipsum.\"\n"+
+			"\t'Hello world.',\n"+
+			"\t'Lorem ipsum.'\n"+
 			"]);\n";
 
 		StringBuilder output = new StringBuilder();
@@ -514,10 +514,10 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel([\"\",\n"+
-			"\t\"Hello world.\",\n"+
+			"var foo = duel(['',\n"+
+			"\t'Hello world.',\n"+
 			"\t/*Code Comment Here*/\n"+
-			"\t\"Lorem ipsum.\"\n"+
+			"\t'Lorem ipsum.'\n"+
 			"]);\n";
 
 		StringBuilder output = new StringBuilder();
@@ -539,9 +539,9 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel([\"\",\n"+
-			"\t\"Hello world.\",\n"+
-			"\t\"Lorem ipsum.\"\n"+
+			"var foo = duel(['',\n"+
+			"\t'Hello world.',\n"+
+			"\t'Lorem ipsum.'\n"+
 			"\t/*Code Comment Here*/\n"+
 			"]);\n";
 
@@ -564,7 +564,7 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel([\"\"\n"+
+			"var foo = duel([''\n"+
 			"\t/*Code Comment Here*/\n"+
 			"\t/*And Here*/\n"+
 			"\t/*Also Here*/\n"+
@@ -595,19 +595,19 @@ public class ClientCodeGenTests {
 
 		String expected =
 			"/*global duel */\n\n"+
-			"var foo = duel([\"\",\n"+
-			"\t[\"!DOCTYPE\",\n"+
-			"\t\t\"html\"\n"+
+			"var foo = duel(['',\n"+
+			"\t['!DOCTYPE',\n"+
+			"\t\t'html'\n"+
 			"\t],\n"+
-			"\t[\"html\",\n"+
-			"\t\t[\"head\",\n"+
-			"\t\t\t[\"title\",\n"+
-			"\t\t\t\t\"The head.\"\n"+
+			"\t['html',\n"+
+			"\t\t['head',\n"+
+			"\t\t\t['title',\n"+
+			"\t\t\t\t'The head.'\n"+
 			"\t\t\t]\n"+
 			"\t\t],\n"+
-			"\t\t[\"body\",\n"+
-			"\t\t\t[\"h1\",\n"+
-			"\t\t\t\t\"The body.\"\n"+
+			"\t\t['body',\n"+
+			"\t\t\t['h1',\n"+
+			"\t\t\t\t'The body.'\n"+
 			"\t\t\t]\n"+
 			"\t\t]\n"+
 			"\t]\n"+
@@ -638,13 +638,13 @@ public class ClientCodeGenTests {
 			"/*global duel */\n\n"+
 			"var foo = foo || {};\n"+
 			"foo.bar = foo.bar || {};\n\n"+
-			"foo.bar.Blah = duel([\"\",\n"+
-			"\t\"BEFORE\",\n"+
-			"\t[\"$call\", {\n"+
-			"\t\t\t\"view\" : function() { return (foo.bar.Yada); },\n"+
-			"\t\t\t\"data\" : function(data) { return (data.foo); }\n"+
+			"foo.bar.Blah = duel(['',\n"+
+			"\t'BEFORE',\n"+
+			"\t['$call', {\n"+
+			"\t\t\t'view' : function() { return (foo.bar.Yada); },\n"+
+			"\t\t\t'data' : function(data) { return (data.foo); }\n"+
 			"\t\t}],\n"+
-			"\t\"AFTER\"\n"+
+			"\t'AFTER'\n"+
 			"]);\n";
 
 		StringBuilder output = new StringBuilder();
@@ -676,13 +676,13 @@ public class ClientCodeGenTests {
 			"var foo = foo || {};\n"+
 			"foo.bar = foo.bar || {};\n\n"+
 			"foo.bar.Blah = duel(\n"+
-			"\t[\"$call\", {\n"+
-			"\t\t\t\"view\" : function() { return (foo.bar.Yada); },\n"+
-			"\t\t\t\"data\" : function(data) { return (data); }\n"+
+			"\t['$call', {\n"+
+			"\t\t\t'view' : function() { return (foo.bar.Yada); },\n"+
+			"\t\t\t'data' : function(data) { return (data); }\n"+
 			"\t\t},\n"+
-			"\t\t[\"$part\", { \"name\" : \"header\" },\n"+
-			"\t\t\t[\"div\",\n"+
-			"\t\t\t\t\"Lorem ipsum.\"\n"+
+			"\t\t['$part', { 'name' : 'header' },\n"+
+			"\t\t\t['div',\n"+
+			"\t\t\t\t'Lorem ipsum.'\n"+
 			"\t\t\t]\n"+
 			"\t\t]\n"+
 			"\t]);\n";
@@ -723,16 +723,16 @@ public class ClientCodeGenTests {
 			"var foo = foo || {};\n"+
 			"foo.bar = foo.bar || {};\n\n"+
 			"foo.bar.Blah = duel(\n"+
-			"\t[\"div\", { \"class\" : \"dialog\" },\n"+
-			"\t\t[\"$part\", { \"name\" : \"header\" },\n"+
-			"\t\t\t[\"h2\",\n"+
-			"\t\t\t\t\"Warning\"\n"+
+			"\t['div', { 'class' : 'dialog' },\n"+
+			"\t\t['$part', { 'name' : 'header' },\n"+
+			"\t\t\t['h2',\n"+
+			"\t\t\t\t'Warning'\n"+
 			"\t\t\t]\n"+
 			"\t\t],\n"+
-			"\t\t[\"hr\"],\n"+
-			"\t\t[\"$part\", { \"name\" : \"body\" },\n"+
-			"\t\t\t[\"div\",\n"+
-			"\t\t\t\t\"Lorem ipsum.\"\n"+
+			"\t\t['hr'],\n"+
+			"\t\t['$part', { 'name' : 'body' },\n"+
+			"\t\t\t['div',\n"+
+			"\t\t\t\t'Lorem ipsum.'\n"+
 			"\t\t\t]\n"+
 			"\t\t]\n"+
 			"\t]);\n";
