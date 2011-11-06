@@ -249,12 +249,12 @@ public class DuelParser {
 	}
 
 	private void rewriteConditionalAttr(ContainerNode parent, ElementNode elem) {
-		if (elem instanceof CommandNode) {
-			// only process normal HTML elements
+		if (elem instanceof CommandNode && !(elem instanceof CALLCommandNode) && !(elem instanceof FORCommandNode)) {
+			// only process normal CALL, FOR, and HTML elements
 			return;
 		}
 
-		DuelNode attr = elem.removeAttribute("if");
+		DuelNode attr = elem.removeAttribute(IFCommandNode.IF_ATTR);
 		if (attr == null) {
 			// nothing to do
 			return;
@@ -263,7 +263,7 @@ public class DuelParser {
 		// create a conditional wrapper and
 		// move attr over to the conditional
 		IFCommandNode conditional = new IFCommandNode(attr.getIndex(), attr.getLine(), attr.getColumn());
-		conditional.setAttribute("test", attr);
+		conditional.setAttribute(IFCommandNode.TEST, attr);
 
 		// wrap element in parent
 		if (!parent.replaceChild(conditional, elem)) {

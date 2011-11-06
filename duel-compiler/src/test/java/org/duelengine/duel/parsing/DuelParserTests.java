@@ -762,6 +762,40 @@ public class DuelParserTests {
 	}
 
 	@Test
+	public void conditionalAttrCallTest() throws Exception {
+
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("Foo"))
+			},
+			new IFCommandNode(
+				new AttributePair[] {
+					new AttributePair("test", new ExpressionNode("data"))
+				},
+				new CALLCommandNode(
+					new AttributePair[] {
+						new AttributePair("view", new ExpressionNode("Bar"))
+					})));
+
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
+			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("Foo"),
+			DuelToken.elemBegin("call"),
+			DuelToken.attrName("view"),
+			DuelToken.attrValue("Bar"),
+			DuelToken.attrName("if"),
+			DuelToken.attrValue("data"),
+			DuelToken.elemEnd("call")
+		);
+
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
+	}
+
+	@Test
 	public void callTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(

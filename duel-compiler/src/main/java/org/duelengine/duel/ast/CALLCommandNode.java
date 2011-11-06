@@ -64,7 +64,8 @@ public class CALLCommandNode extends CommandNode {
 			!name.equalsIgnoreCase(DATA) &&
 			!name.equalsIgnoreCase(INDEX) &&
 			!name.equalsIgnoreCase(COUNT) &&
-			!name.equalsIgnoreCase(KEY)) {
+			!name.equalsIgnoreCase(KEY) &&
+			!name.equalsIgnoreCase(IFCommandNode.IF_ATTR)) {
 
 			throw new InvalidNodeException("Attribute invalid on CALL command: "+name, value);
 		}

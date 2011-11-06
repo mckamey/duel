@@ -7,10 +7,11 @@ import org.duelengine.duel.parsing.InvalidNodeException;
  */
 public class IFCommandNode extends CommandNode {
 
+	public static final String IF_ATTR = "if";
 	public static final String EXT_NAME = "else";
 	private static final String NAME = "$if";
 	private static final CommandName CMD = CommandName.IF;
-	private static final String TEST = "test";
+	public static final String TEST = "test";
 
 	public IFCommandNode(int index, int line, int column) {
 		super(CMD, NAME, true, index, line, column);
