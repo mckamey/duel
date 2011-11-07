@@ -112,8 +112,14 @@
 						</goals>
 						<configuration>
 							<target>
-								<copy file="${basedir}/src/test/resources/index.html" tofile="${basedir}/target/index.html"/>
-								<copy file="${basedir}/src/test/resources/unit.html" tofile="${basedir}/target/js-unit.html"/>
+								<copy todir="${basedir}/target">
+									<fileset dir="${basedir}/src/test/resources" />
+                            		<filterchain>
+                            			<replacetokens>
+                            				<token key="duel-version" value="${project.version}" />
+                            			</replacetokens>
+                            		</filterchain>
+								</copy>
 								<copy todir="${basedir}/target/js">
 									<fileset dir="${basedir}/src/test/javascript" />
 								</copy>

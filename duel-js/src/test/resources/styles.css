@@ -1,0 +1,15 @@
+html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+html { background: #EEE; background: -webkit-gradient(linear, left top, left bottom, from(#F8F8F8), to(#DDD)); background: -moz-linear-gradient(top, #F8F8F8, #DDD); color: #000; height: 100%; }
+body { font-size: 1.0em; margin: 0 auto; padding: 0; width: 60%; min-width:600px; }
+body, button, input, select, textarea { font-family: 'Helvetica Neue Light', 'HelveticaNeue-Light', 'Helvetica Neue', Calibri, Helvetica, Arial; }
+h1, h1 a:link, h1 a:hover, h1 a:active, h1 a:visited { color: white; font-size: 1.5em; font-weight: bold; margin: 1em 0; padding: 0.25em; text-align: center; }
+h2 { font-size: 1.33333333333333em; text-transform: lowercase; }
+dl, ul { margin: 0; padding: 0.75em 0.25em; }
+dt { font-weight: bold; margin: 0 0 0 0.5em; padding: 0.25em 0 0.25em 0.5em; text-transform: lowercase; }
+dd { list-style-type: none; margin: 0 0 0 1.5em; padding: 0.25em 0 0.25em 1.5em; }
+li { list-style-type: none; margin: 0 0 0 0.5em; padding: 0.25em 0 0.25em 0.5em; }
+a:link, a:hover, a:active, a:visited { color: #336699; }
+.box { background-color: #F1F1F1; border: 1px solid silver; -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px; -moz-box-shadow: 0 0 4px #DDDDDD; -webkit-box-shadow: 0 0 4px #DDDDDD; box-shadow: 0 0 4px #DDDDDD; }
+h1.box { background-color: #336699; border: 1px solid #333333; -moz-box-shadow: 0 0 8px silver; -webkit-box-shadow: 0 0 8px silver; box-shadow: 0 0 8px silver; }
+.copyright, .copyright a:link, .copyright a:hover, .copyright a:active, .copyright a:visited { color: #999; }
+.copyright { font-size: 0.75em; text-align: right; }
