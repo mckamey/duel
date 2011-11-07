@@ -201,6 +201,10 @@ public class ScriptTranslator implements ErrorReporter {
 				return this.visit(voidExpr.getExpression());
 		    case Token.IN:
 		    	return this.visitIn((InfixExpression)node);
+		    case Token.INSTANCEOF:
+		    	return this.visitInstanceOf((InfixExpression)node);
+		    case Token.TYPEOF:
+		    	return this.visitTypeOf((UnaryExpression)node);
 			case Token.THIS:
 			case Token.THISFN:
 				// TODO: evaluate if should allow custom extensions via 'this'
@@ -238,14 +242,49 @@ public class ScriptTranslator implements ErrorReporter {
 
 	private CodeExpression visitIn(InfixExpression node) {
 		CodeExpression key = this.visitExpression(node.getLeft());
-		CodeExpression map = this.visitExpression(node.getRight());
+		CodeExpression target = this.visitExpression(node.getRight());
 
 		return new CodeMethodInvokeExpression(
 			Boolean.class,
 			new CodeTypeReferenceExpression(DuelData.class),
 			"containsKey",
-			map,
+			target,
 			key);	
+	}
+
+	private CodeExpression visitInstanceOf(InfixExpression node) {
+		CodeExpression target = this.visitExpression(node.getLeft());
+		AstNode type = node.getRight();
+		if (!(type instanceof Name)) {
+			throw new ScriptTranslationException("Unexpected type expression ("+type.getClass()+")", node);
+		}
+		String method, typeIdent = ((Name)type).getIdentifier();
+		if ("Array".equals(typeIdent)) {
+			method = "isArray";
+		} else if ("Date".equals(typeIdent)) {
+			method = "isDate";
+		} else {
+			throw new ScriptTranslationException("Translation for 'instanceof' token currently only supports Array and Date ("+typeIdent+")", node);
+		}
+
+		return new CodeTernaryOperatorExpression(
+			new CodeBinaryOperatorExpression(CodeBinaryOperatorType.IDENTITY_EQUALITY, target, CodePrimitiveExpression.NULL).withParens(),
+			CodePrimitiveExpression.FALSE,
+			new CodeMethodInvokeExpression(
+				Boolean.class,
+				new CodeTypeReferenceExpression(DuelData.class),
+				method,
+				new CodeMethodInvokeExpression(Class.class, target, "getClass")));
+	}
+
+	private CodeExpression visitTypeOf(UnaryExpression node) {
+		CodeExpression operand = this.visitExpression(node.getOperand());
+
+		return new CodeMethodInvokeExpression(
+			String.class,
+			new CodeTypeReferenceExpression(DuelData.class),
+			"typeOf",
+			operand);	
 	}
 
 	private CodeExpression visitBinaryOp(InfixExpression node, CodeBinaryOperatorType operator) {

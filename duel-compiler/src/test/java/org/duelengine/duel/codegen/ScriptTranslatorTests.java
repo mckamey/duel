@@ -294,6 +294,68 @@ public class ScriptTranslatorTests {
 	}
 
 	@Test
+	public void translateTypeofArrayTest() {
+		String input = "function(data) { return typeof data; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodeMethodInvokeExpression(
+						String.class,
+						new CodeTypeReferenceExpression(DuelData.class),
+						"typeOf",
+						new CodeVariableReferenceExpression(Object.class, "data"))));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
+	public void translateInstanceofArrayTest() {
+		String input = "function(data) { return data instanceof Array; }";
+
+		CodeMethod expected =
+			new CodeMethod(
+				AccessModifierType.PRIVATE,
+				Object.class,
+				"code_1",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeMethodReturnStatement(
+					new CodeTernaryOperatorExpression(
+						new CodeBinaryOperatorExpression(CodeBinaryOperatorType.IDENTITY_EQUALITY, new CodeVariableReferenceExpression(Object.class, "data"), CodePrimitiveExpression.NULL).withParens(),
+						CodePrimitiveExpression.FALSE,
+						new CodeMethodInvokeExpression(
+							Boolean.class,
+							new CodeTypeReferenceExpression(DuelData.class),
+							"isArray",
+							new CodeMethodInvokeExpression(Class.class, new CodeVariableReferenceExpression(Object.class, "data"), "getClass")))
+				));
+
+		List<CodeMember> actual = new ScriptTranslator().translate(input);
+		assertNotNull(actual);
+		assertEquals(1, actual.size());
+		assertEquals(expected, actual.get(0));
+	}
+
+	@Test
 	public void translateArrayAccessTest() {
 		String input = "function(data) { return data[3]; }";
 

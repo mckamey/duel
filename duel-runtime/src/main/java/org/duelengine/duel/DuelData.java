@@ -80,6 +80,37 @@ public final class DuelData {
 				Iterable.class.isAssignableFrom(exprType));
 	}
 
+	public static boolean isDate(Class<?> exprType) {
+		return (Date.class.isAssignableFrom(exprType));
+	}
+
+	/**
+	 * Simulates the typeof operator
+	 * @param data
+	 * @return type string
+	 */
+	public static String typeOf(Object data) {
+		if (data == null) {
+			// "null" is actually typeof "object" but Java has no way to
+			// represent "undefined" so "undefined" becomes null
+			return "undefined";
+		}
+		Class<?> exprType = data.getClass();
+		if (isString(exprType)) {
+			return "string";
+		}
+		if (isNumber(exprType)) {
+			return "number";
+		}
+		if (isBoolean(exprType)) {
+			return "boolean";
+		}
+//		if (isFunction(exprType)) {
+//			return "function";
+//		}
+		return "object";
+	}
+	
 	/**
 	 * Coerces any Object to a JS-style Boolean
 	 * @param data
