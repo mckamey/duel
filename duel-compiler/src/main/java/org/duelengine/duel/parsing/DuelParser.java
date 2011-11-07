@@ -201,11 +201,11 @@ public class DuelParser {
 							// consume token
 							this.next = null;
 
-							this.rewriteConditionalAttr(parent, elem);
+							this.rewriteConditionalAttr(elem);
 							return;
 						}
 						if (elem.isAncestor(tag)) {
-							this.rewriteConditionalAttr(parent, elem);
+							this.rewriteConditionalAttr(elem);
 
 							// pass next on up
 							return;
@@ -219,7 +219,7 @@ public class DuelParser {
 
 				default:
 					if (!elem.canHaveChildren()) {
-						this.rewriteConditionalAttr(parent, elem);
+						this.rewriteConditionalAttr(elem);
 
 						// pass next on up
 						return;
@@ -248,7 +248,7 @@ public class DuelParser {
 		this.next = null;
 	}
 
-	private void rewriteConditionalAttr(ContainerNode parent, ElementNode elem) {
+	private void rewriteConditionalAttr(ElementNode elem) {
 		if (elem instanceof CommandNode && !(elem instanceof CALLCommandNode) && !(elem instanceof FORCommandNode)) {
 			// only process normal CALL, FOR, and HTML elements
 			return;
@@ -265,9 +265,12 @@ public class DuelParser {
 		IFCommandNode conditional = new IFCommandNode(attr.getIndex(), attr.getLine(), attr.getColumn());
 		conditional.setAttribute(IFCommandNode.TEST, attr);
 
+		// use the actual parent node rather than the source parent
+		ContainerNode parent = elem.getParent();
+
 		// wrap element in parent
 		if (!parent.replaceChild(conditional, elem)) {
-			throw new IllegalStateException("Conditial rewrite failed inside "+parent.getClass().getSimpleName());
+			throw new IllegalStateException("Conditional rewrite failed inside "+parent.getClass().getSimpleName());
 		}
 		conditional.appendChild(elem);
 	}
