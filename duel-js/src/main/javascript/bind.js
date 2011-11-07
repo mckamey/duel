@@ -402,7 +402,7 @@
 			case FUN:
 				// execute code block
 				// Closure Compiler type cast
-				return asString((/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key));
+				return (/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key);
 
 			case ARY:
 				// inspect element name for template commands

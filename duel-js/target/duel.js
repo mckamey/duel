@@ -2,7 +2,7 @@
 
 /**
  * @fileoverview duel.js: client-side engine
- * @version DUEL v0.6.3 http://duelengine.org
+ * @version DUEL v0.6.4 http://duelengine.org
  * 
  * Copyright (c) 2006-2011 Stephen M. McKamey
  * Licensed under the MIT License (http://duelengine.org/license.txt)
@@ -709,7 +709,7 @@ var duel = (
 			case FUN:
 				// execute code block
 				// Closure Compiler type cast
-				return asString((/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key));
+				return (/** @type {function(*,*,*,*):(Object|null)} */ (node))(data, index, count, key);
 
 			case ARY:
 				// inspect element name for template commands
