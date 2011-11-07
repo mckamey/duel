@@ -120,6 +120,8 @@
                             			</replacetokens>
                             		</filterchain>
 								</copy>
+                            	<copy file="${basedir}/../LICENSE.txt"
+                            		tofile="${basedir}/target/license.txt" />
 								<copy todir="${basedir}/target/js">
 									<fileset dir="${basedir}/src/test/javascript" />
 								</copy>
