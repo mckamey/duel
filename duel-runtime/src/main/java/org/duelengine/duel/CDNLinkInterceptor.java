@@ -18,7 +18,7 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 	 * @throws URISyntaxException
 	 */
 	public CDNLinkInterceptor(String cdnHost, ResourceBundle cdnBundle, boolean isDevMode) throws URISyntaxException {
-		this(cdnHost, bundleAsMap(cdnBundle), isDevMode);
+		this(cdnHost, bundleAsMap(cdnBundle, isDevMode), isDevMode);
 	}
 
 	/**
@@ -70,12 +70,60 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 	 * @param cdnBundle
 	 * @return
 	 */
-	private static Map<String, String> bundleAsMap(ResourceBundle cdnBundle) {
-		Set<String> keys = cdnBundle.keySet();
-		Map<String, String> cdnMap = new HashMap<String, String>(keys.size());
-		for (String key : keys) {
-			cdnMap.put(key, cdnBundle.getString(key));
+	private static Map<String, String> bundleAsMap(final ResourceBundle bundle, boolean isDevMode) {
+
+		if (!isDevMode) {
+			// dump key-value pairs into simple map
+			Set<String> keys = bundle.keySet();
+			Map<String, String> map = new HashMap<String, String>(keys.size());
+			for (String key : keys) {
+				map.put(key, bundle.getString(key));
+			}
+			return map;
 		}
-		return cdnMap;
+
+		// wrap bundle with an adaptor to allow dynamic reloading of bundle
+		return new Map<String, String>() {
+
+			@Override
+			public void clear() {}
+
+			@Override
+			public boolean containsKey(Object arg0) {
+				return bundle.containsKey((String)arg0);
+			}
+
+			@Override
+			public boolean containsValue(Object arg0) { return false; }
+
+			@Override
+			public Set<java.util.Map.Entry<String, String>> entrySet() { return null; }
+
+			@Override
+			public String get(Object arg0) {
+				return (String)bundle.getObject((String)arg0);
+			}
+
+			@Override
+			public boolean isEmpty() { return false; }
+
+			@Override
+			public Set<String> keySet() { return null; }
+
+			@Override
+			public String put(String arg0, String arg1) { return null; }
+
+			@Override
+			public void putAll(Map<? extends String, ? extends String> arg0) {}
+
+			@Override
+			public String remove(Object arg0) { return null; }
+
+			@Override
+			public int size() { return 0; }
+
+			@Override
+			public Collection<String> values() { return null; }
+		};
 	}
 }
