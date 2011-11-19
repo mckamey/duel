@@ -5,9 +5,12 @@ import java.util.*;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codegen.*;
 import org.duelengine.duel.parsing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DuelCompiler {
 
+	private final Logger log = LoggerFactory.getLogger(DuelCompiler.class);
 	private boolean verbose;
 	private File inputDir;
 	private File outputClientDir;
@@ -171,7 +174,7 @@ public class DuelCompiler {
 				}
 			}
 
-			System.err.println(String.format(
+			log.error(String.format(
 				"%s:%d: %s",
 				inputFile.getAbsolutePath(),
 				ex.getLine(),
@@ -186,11 +189,11 @@ public class DuelCompiler {
 				text = reader.readLine();
 			}
 
-			System.err.println(text);
+			log.error(text);
 			if (col > 0) {
-				System.err.println(String.format("%"+col+"s", "^"));
+				log.error(String.format("%"+col+"s", "^"));
 			} else {
-				System.err.println("^");
+				log.error("^");
 			}
 
 			if (this.verbose) {

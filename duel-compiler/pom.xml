@@ -11,7 +11,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-compiler</artifactId>
-	<version>0.6.3</version>
+	<version>0.7.0</version>
 	<packaging>jar</packaging>
 
 	<name>DUEL Compiler</name>
@@ -40,6 +40,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<rhino.version>1.7R3</rhino.version>
+		<slf4j.version>1.6.4</slf4j.version>
 		<junit.version>4.8.2</junit.version>
 		<jvm.version>1.6</jvm.version>
 	</properties>
@@ -50,11 +51,25 @@
 			<artifactId>duel-runtime</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.mozilla</groupId>
 			<artifactId>rhino</artifactId>
 			<version>${rhino.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

@@ -3,7 +3,9 @@ package org.duelengine.duel;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CDNLinkInterceptor implements LinkInterceptor {
 
@@ -38,9 +40,9 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 			"" :
 			new URI("http", cdnHost, null, null).getRawSchemeSpecificPart();
 
-		Logger log = Logger.getLogger(CDNLinkInterceptor.class.getCanonicalName());
-		log.config("cdnHost="+this.cdnHost);
-		log.config("isDevModet="+this.isDevMode);
+		Logger log = LoggerFactory.getLogger(CDNLinkInterceptor.class);
+		log.info("cdnHost="+this.cdnHost);
+		log.info("isDevModet="+this.isDevMode);
 	}
 
 	public String transformURL(String url) {

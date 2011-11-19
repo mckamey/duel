@@ -1,11 +1,12 @@
 package org.duelengine.duel.maven;
 
 import java.io.IOException;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.duelengine.duel.compiler.*;
+import org.duelengine.duel.compiler.DuelCompiler;
 
 /**
  * Generates client-side and server-side sources
@@ -70,10 +71,18 @@ public class DuelMojo extends AbstractMojo {
 	 */
 	private String serverPrefix;
 
+	@Override
+	public void setLog(Log log) {
+		super.setLog(log);
+
+		MavenLoggerAdapterFactory.setMavenLogger(log);
+	};
+
     public void execute()
         throws MojoExecutionException {
 
 	    Log log = this.getLog();
+
 	    log.info("\tinputDir="+this.inputDir);
 	    log.info("\toutputServerDir="+this.outputServerDir);
 
