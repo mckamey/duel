@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import java.util.Date;
 import org.junit.Test;
 
-public class DuelDataTests {
+public class DuelDataTest {
 
 	@Test
 	public void coerceBooleanNullTest() {

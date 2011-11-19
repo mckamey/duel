@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.duelengine.duel.ast.*;
 
-public class ClientCodeGenTests {
+public class ClientCodeGenTest {
 
 	@Test
 	public void stringSimpleTest() throws IOException {

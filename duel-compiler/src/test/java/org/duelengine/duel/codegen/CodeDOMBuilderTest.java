@@ -11,7 +11,7 @@ import org.duelengine.duel.DuelData;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
 
-public class CodeDOMBuilderTests {
+public class CodeDOMBuilderTest {
 
 	@Test
 	public void stringSimpleTest() throws IOException {

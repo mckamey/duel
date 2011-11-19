@@ -8,7 +8,7 @@ import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelData;
 import org.duelengine.duel.codedom.*;
 
-public class JavaCodeGenTests {
+public class JavaCodeGenTest {
 
 	@Test
 	public void stringSimpleTest() throws IOException {

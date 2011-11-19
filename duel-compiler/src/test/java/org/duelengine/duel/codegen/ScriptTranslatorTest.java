@@ -7,7 +7,7 @@ import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelData;
 import org.duelengine.duel.codedom.*;
 
-public class ScriptTranslatorTests {
+public class ScriptTranslatorTest {
 
 	@Test
 	public void translateEmptyTest() {

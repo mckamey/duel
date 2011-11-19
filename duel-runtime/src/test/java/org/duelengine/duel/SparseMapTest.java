@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import org.junit.Test;
 
-public class SparseMapTests {
+public class SparseMapTest {
 
 	@Test
 	public void putPrimitiveSingleTest() throws IOException {

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.*;
 import org.junit.Test;
 
-public class DataEncoderTests {
+public class DataEncoderTest {
 
 	@Test
 	public void writeNullTest() throws IOException {

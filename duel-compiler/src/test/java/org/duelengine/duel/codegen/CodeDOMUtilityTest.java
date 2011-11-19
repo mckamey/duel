@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.duelengine.duel.codedom.*;
 import org.duelengine.duel.DuelContext;
 
-public class CodeDOMUtilityTests {
+public class CodeDOMUtilityTest {
 
 	@Test
 	public void inlineMethodVarRefTest() throws Exception {
