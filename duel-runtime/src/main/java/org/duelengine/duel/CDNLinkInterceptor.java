@@ -42,7 +42,7 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 
 		Logger log = LoggerFactory.getLogger(CDNLinkInterceptor.class);
 		log.info("cdnHost="+this.cdnHost);
-		log.info("isDevModet="+this.isDevMode);
+		log.info("isDevMode="+this.isDevMode);
 	}
 
 	public String transformURL(String url) {
