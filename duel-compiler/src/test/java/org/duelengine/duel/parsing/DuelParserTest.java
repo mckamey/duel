@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.duelengine.duel.ast.*;
 
-public class DuelParserTests {
+public class DuelParserTest {
 
 	@Test
 	public void literalSingleTest() throws Exception {

@@ -3,7 +3,7 @@ package org.duelengine.duel.parsing;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class DuelLexerTests {
+public class DuelLexerTest {
 
 	@Test
 	public void literalTest() {
