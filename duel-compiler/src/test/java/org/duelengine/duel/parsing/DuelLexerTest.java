@@ -977,6 +977,49 @@ public class DuelLexerTest {
 	}
 
 	@Test
+	public void scriptVoidTest() {
+
+		String input =
+			"<div class='content'>\r\n"+
+			"\t<script type='text/javascript' src='foo.js' />\r\n"+
+			"\t<script type='text/javascript' src='bar.js' />\r\n"+
+			"\t<script type='text/javascript'>go();</script>\r\n"+
+			"</div>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("div"),
+				DuelToken.attrName("class"),
+				DuelToken.attrValue("content"),
+				DuelToken.literal("\n\t"),
+				DuelToken.elemBegin("script"),
+				DuelToken.attrName("type"),
+				DuelToken.attrValue("text/javascript"),
+				DuelToken.attrName("src"),
+				DuelToken.attrValue("foo.js"),
+				DuelToken.elemEnd("script"),
+				DuelToken.literal("\n\t"),
+				DuelToken.elemBegin("script"),
+				DuelToken.attrName("type"),
+				DuelToken.attrValue("text/javascript"),
+				DuelToken.attrName("src"),
+				DuelToken.attrValue("bar.js"),
+				DuelToken.elemEnd("script"),
+				DuelToken.literal("\n\t"),
+				DuelToken.elemBegin("script"),
+				DuelToken.attrName("type"),
+				DuelToken.attrValue("text/javascript"),
+				DuelToken.literal("go();"),
+				DuelToken.elemEnd("script"),
+				DuelToken.literal("\n"),
+				DuelToken.elemEnd("div")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void scriptUnwrapMarkupTest() {
 
 		String input =
@@ -1219,14 +1262,16 @@ public class DuelLexerTest {
 		assertArrayEquals(expected, actual);
 	}
 
-//	private void dumpLists(Object[] expected, Object[] actual) {
-//
-//		for (Object token : expected) {
-//			System.out.println(token.toString());
-//		}
-//
-//		for (Object token : actual) {
-//			System.err.println(token.toString());
-//		}
-//	}
+	@SuppressWarnings("unused")
+	private void dumpLists(Object[] expected, Object[] actual) {
+
+		for (Object token : expected) {
+			System.out.println(token.toString());
+		}
+		System.out.flush();
+
+		for (Object token : actual) {
+			System.err.println(token.toString());
+		}
+	}
 }

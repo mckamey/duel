@@ -172,6 +172,8 @@ public class DuelLexer implements Iterator<DuelToken> {
 						switch (this.ch) {
 							case DuelGrammar.OP_ELEM_CLOSE:
 								if (this.nextChar() == DuelGrammar.OP_ELEM_END) {
+									// need to end suspendMode for void tags
+									this.suspendMode = false;
 									// immediately close the last tag
 									return (this.token = DuelToken.elemEnd(this.lastTag, this.token_index, this.token_line, this.token_column));
 								}
