@@ -43,12 +43,20 @@
 		 * 
 		 * @public
 		 * @param {*} data The data item being bound
+		 * @param {number} index The index of the current data item
+		 * @param {number} count The total number of data items
+		 * @param {string|null} key The current property name
 		 * @return {Result}
 		 */
-		var self = function(data) {
+		var self = function(data, index, count, key) {
 			try {
-				// Closure Compiler type cast
-				var result = bind(/** @type {Array} */(view), data, 0, 1, null);
+				var result = bind(
+					// Closure Compiler type cast
+					/** @type {Array} */(view),
+					data,
+					isFinite(index) ? index : 0,
+					isFinite(count) ? count : 1,
+					isString(key) ? key : null);
 				return new Result(result);
 			} catch (ex) {
 				// handle error with context

@@ -279,23 +279,6 @@ public class CodeDOMBuilder {
 			.writeCloseElementBeginTag(this.buffer);
 		this.ensureExtrasEmitted(false);
 
-		// emit patch function call which serializes attributes into object
-		this.buffer.append("duel.replace(");
-
-		// emit id var or known value
-		this.flushBuffer();
-		scope.add(new CodeMethodInvokeExpression(
-			Void.class,
-			new CodeThisReferenceExpression(),
-			"dataEncode",
-			new CodeVariableReferenceExpression(DuelContext.class, "context"),
-			new CodeVariableReferenceExpression(idVar),
-			CodePrimitiveExpression.ONE));
-		this.buffer.append(',');
-		if (prettyPrint) {
-			this.buffer.append(' ');
-		}
-
 		// determine the name of the template
 		String viewName = null;
 		DuelNode callView = node.getAttribute(CALLCommandNode.VIEW);
@@ -311,6 +294,8 @@ public class CodeDOMBuilder {
 			this.buffer.append(viewName);
 
 		} else {
+			// wrap the code block as an anonymous DUEL view
+			this.buffer.append("duel(");
 			if (callView instanceof CodeBlockNode) {
 				CodeExpression viewExpr = this.translateExpression((CodeBlockNode)callView, false);
 
@@ -328,12 +313,11 @@ public class CodeDOMBuilder {
 				// TODO: how to handle switcher method cases?
 				throw new InvalidNodeException("Unexpected Call command view attribute: "+callView, callView);
 			}
+			this.buffer.append(")");
 		}
 
-		this.buffer.append(',');
-		if (prettyPrint) {
-			this.buffer.append(' ');
-		}
+		// bind the view
+		this.buffer.append("(");
 		this.flushBuffer();
 
 		CodeExpression dataExpr;
@@ -420,6 +404,19 @@ public class CodeDOMBuilder {
 			"dataEncode",
 			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			keyExpr,
+			CodePrimitiveExpression.ONE));
+
+		// emit patch function call which replaces the DOM node with the result
+		this.buffer.append(").toDOM(");
+
+		// emit id var or known value
+		this.flushBuffer();
+		scope.add(new CodeMethodInvokeExpression(
+			Void.class,
+			new CodeThisReferenceExpression(),
+			"dataEncode",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
+			new CodeVariableReferenceExpression(idVar),
 			CodePrimitiveExpression.ONE));
 
 		this.buffer.append(");");
@@ -932,17 +929,16 @@ public class CodeDOMBuilder {
 			.writeCloseElementBeginTag(this.buffer);
 		this.ensureExtrasEmitted(false);
 
-		// emit patch function call which serializes attributes into object
-		this.buffer.append("duel.write(");
+		// wrap client code as an anonymous DUEL view
+		this.buffer.append("duel(");
 
 		// emit client code directly
 		this.buffer.append(clientCode);
 
+		// immediately invoke anonymous view
+		this.buffer.append(")(");
+
 		if (argSize > 0) {
-			this.buffer.append(',');
-			if (prettyPrint) {
-				this.buffer.append(' ');
-			}
 			this.flushBuffer();
 
 			// emit data var as literal
@@ -1005,7 +1001,8 @@ public class CodeDOMBuilder {
 				}
 			}
 		}
-		this.buffer.append(");");
+		// emit write function call which writes result directly to the current document
+		this.buffer.append(").write();");
 
 		// last parameter will be the current data
 		this.formatter.writeElementEndTag(this.buffer, "script");
@@ -1170,35 +1167,16 @@ public class CodeDOMBuilder {
 			.writeCloseElementBeginTag(this.buffer);
 		this.ensureExtrasEmitted(false);
 
-		// emit patch function call which serializes attributes into object
-		this.buffer.append("duel.attr(");
-
-		// emit id var or known value
-		if (idVar != null) {
-			this.flushBuffer();
-			scope.add(new CodeMethodInvokeExpression(
-				Void.class,
-				new CodeThisReferenceExpression(),
-				"dataEncode",
-				new CodeVariableReferenceExpression(DuelContext.class, "context"),
-				new CodeVariableReferenceExpression(idVar),
-				CodePrimitiveExpression.ONE));
-		} else {
-			this.encoder.write(this.buffer, idValue, 1);
-		}
-		this.buffer.append(',');
-		if (prettyPrint) {
-			this.buffer.append(' ');
-		}
+		// wrap attributes object as an anonymous DUEL view
+		this.buffer.append("duel(");
 
 		// emit deferredAttrs as a JS Object
 		this.encoder.write(this.buffer, deferredAttrs, 1);
 
+		// immediately invoke anonymous view
+		this.buffer.append(")(");
+
 		if (argSize > 0) {
-			this.buffer.append(',');
-			if (prettyPrint) {
-				this.buffer.append(' ');
-			}
 			this.flushBuffer();
 
 			// emit data var as literal
@@ -1260,6 +1238,30 @@ public class CodeDOMBuilder {
 					}
 				}
 			}
+		}
+
+		// emit patch function call which merges attributes into DOM node
+		this.buffer.append(").toDOM(");
+
+		// emit id var or known value
+		if (idVar != null) {
+			this.flushBuffer();
+			scope.add(new CodeMethodInvokeExpression(
+				Void.class,
+				new CodeThisReferenceExpression(),
+				"dataEncode",
+				new CodeVariableReferenceExpression(DuelContext.class, "context"),
+				new CodeVariableReferenceExpression(idVar),
+				CodePrimitiveExpression.ONE));
+		} else {
+			this.encoder.write(this.buffer, idValue, 1);
+		}
+
+		this.buffer.append(',');
+		if (prettyPrint) {
+			this.buffer.append(" true");
+		} else {
+			this.buffer.append('1');
 		}
 		this.buffer.append(");");
 
@@ -1302,31 +1304,16 @@ public class CodeDOMBuilder {
 			.writeCloseElementBeginTag(this.buffer);
 		this.ensureExtrasEmitted(false);
 
-		// emit patch function call which serializes attributes into object
-		this.buffer.append("duel.replace(");
-
-		// emit id var or known value
-		this.flushBuffer();
-		scope.add(new CodeMethodInvokeExpression(
-			Void.class,
-			new CodeThisReferenceExpression(),
-			"dataEncode",
-			new CodeVariableReferenceExpression(DuelContext.class, "context"),
-			new CodeVariableReferenceExpression(idVar),
-			CodePrimitiveExpression.ONE));
-		this.buffer.append(',');
-		if (prettyPrint) {
-			this.buffer.append(' ');
-		}
+		// wrap client code as an anonymous DUEL view
+		this.buffer.append("duel(");
 
 		// emit client code directly
 		this.buffer.append(clientCode);
 
+		// immediately invoke anonymous view
+		this.buffer.append(")(");
+
 		if (argSize > 0) {
-			this.buffer.append(',');
-			if (prettyPrint) {
-				this.buffer.append(' ');
-			}
 			this.flushBuffer();
 
 			// emit data var as literal
@@ -1389,6 +1376,20 @@ public class CodeDOMBuilder {
 				}
 			}
 		}
+
+		// emit patch function call which replaces DOM node with result
+		this.buffer.append(").toDOM(");
+
+		// emit id var or known value
+		this.flushBuffer();
+		scope.add(new CodeMethodInvokeExpression(
+			Void.class,
+			new CodeThisReferenceExpression(),
+			"dataEncode",
+			new CodeVariableReferenceExpression(DuelContext.class, "context"),
+			new CodeVariableReferenceExpression(idVar),
+			CodePrimitiveExpression.ONE));
+
 		this.buffer.append(");");
 
 		// last parameter will be the current data

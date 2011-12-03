@@ -1650,20 +1650,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("duel.attr("))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"dataEncode",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodeVariableReferenceExpression(String.class, "id_2"),
-					CodePrimitiveExpression.ONE)),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", { 'class' : function(data, index, count, key) { return (barCSS(key)); } }, "))),
+					new CodePrimitiveExpression("duel({ 'class' : function(data, index, count, key) { return (barCSS(key)); } })("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1715,20 +1702,20 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(");</script></div><script type=\"text/javascript\">duel.attr("))),
+					new CodePrimitiveExpression(").toDOM("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
 					"dataEncode",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodeVariableReferenceExpression(String.class, "id_1"),
+					new CodeVariableReferenceExpression(String.class, "id_2"),
 					CodePrimitiveExpression.ONE)),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", {\n\t\t'class' : function(data, index) { return (fooCSS(index)); },\n\t\tstyle : function(data) { return (customStyle(data)); }\n\t}, "))),
+					new CodePrimitiveExpression(", true);</script></div><script type=\"text/javascript\">duel({\n\t\t'class' : function(data, index) { return (fooCSS(index)); },\n\t\tstyle : function(data) { return (customStyle(data)); }\n\t})("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1754,7 +1741,20 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(");</script>")))
+					new CodePrimitiveExpression(").toDOM("))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"dataEncode",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodeVariableReferenceExpression(String.class, "id_1"),
+					CodePrimitiveExpression.ONE)),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression(", true);</script>")))
 			).withOverride().withThrows(IOException.class)
 		);
 
@@ -1823,20 +1823,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("duel.replace("))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"dataEncode",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodeVariableReferenceExpression(String.class, "id_1"),
-					CodePrimitiveExpression.ONE)),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", function(data, index) { return (foo(index)); }, "))),
+					new CodePrimitiveExpression("duel(function(data, index) { return (foo(index)); })("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1856,6 +1843,19 @@ public class CodeDOMBuilderTest {
 					"dataEncode",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodeVariableReferenceExpression(int.class, "index"),
+					CodePrimitiveExpression.ONE)),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression(").toDOM("))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"dataEncode",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodeVariableReferenceExpression(String.class, "id_1"),
 					CodePrimitiveExpression.ONE)),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
@@ -1963,7 +1963,7 @@ public class CodeDOMBuilderTest {
 							new CodeThisReferenceExpression(),
 							"write",
 							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression("duel.write(function() { return (foo.bar); });</script>"))),
+							new CodePrimitiveExpression("duel(function() { return (foo.bar); })().write();</script>"))),
 						new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
 					}
 				)
@@ -2075,7 +2075,7 @@ public class CodeDOMBuilderTest {
 							new CodeThisReferenceExpression(),
 							"write",
 							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression("duel.write(function(data) { foo.bar = (baz+data); }, "))),
+							new CodePrimitiveExpression("duel(function(data) { foo.bar = (baz+data); })("))),
 						new CodeExpressionStatement(new CodeMethodInvokeExpression(
 							Void.class,
 							new CodeThisReferenceExpression(),
@@ -2088,7 +2088,7 @@ public class CodeDOMBuilderTest {
 							new CodeThisReferenceExpression(),
 							"write",
 							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression(");</script>"))),
+							new CodePrimitiveExpression(").write();</script>"))),
 						new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
 					}
 				)

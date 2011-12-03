@@ -27,13 +27,6 @@
 	};
 
 	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var WRITE_EXTERN = 'write';
-
-	/**
 	 * Encodes invalid literal characters in strings
 	 * 
 	 * @private
@@ -197,20 +190,16 @@
 	};
 
 	/**
+	 * Immediately writes the resulting value to the document
+	 * 
 	 * @public
-	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} view The view to replace
-	 * @param {*} data The data item being bound
-	 * @param {number} index The index of the current data item
-	 * @param {number} count The total number of data items
-	 * @param {string|null} key The current property name
+	 * @override
+	 * @this {Result}
+	 * @param {Document} doc optional Document reference
 	 */
-	duel[WRITE_EXTERN] = duel.write = function(view, data, index, count, key) {
-		// bind node
-		view = duel(view).getView();
-		// Closure Compiler type cast
-		view = bind(/** @type {Array} */(view), data, index, count, key);
+	Result.prototype.write = function(doc) {
 		/*jslint evil:true*/
-		document.write(render(view));
+		(doc||document).write(''+this);
 		/*jslint evil:false*/
 	};
 

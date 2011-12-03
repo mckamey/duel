@@ -5,7 +5,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-js</artifactId>
-	<version>0.7.1</version>
+	<version>0.8.0</version>
 	<packaging>pom</packaging>
 
 	<name>DUEL Client Scripts</name>
@@ -33,7 +33,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<closure.version>r1459</closure.version>
+		<closure.version>r1592</closure.version>
 		<jslint4java.version>1.4.6</jslint4java.version>
 	</properties>
 

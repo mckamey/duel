@@ -5,7 +5,7 @@
 	 * @constant
 	 * @type {string}
 	 */
-	var TODOM = 'toDOM';
+	var TO_DOM = 'toDOM';
 
 	/**
 	 * @private
@@ -13,20 +13,6 @@
 	 * @type {string}
 	 */
 	var RELOAD = 'reload';
-
-	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var ATTR_EXTERN = 'attr';
-
-	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var REPLACE_EXTERN = 'replace';
 
 	/**
 	 * @private
@@ -503,15 +489,35 @@
 	 * 
 	 * @public
 	 * @this {Result}
-	 * @return {Node}
+	 * @param {Node|string} elem An optional element or element ID to be replaced or merged
+	 * @param {boolean} merge Optionally merge result into elem
+	 * @return {Node|null}
 	 */
-	Result.prototype[TODOM] = Result.prototype.toDOM = function() {
+	Result.prototype[TO_DOM] = Result.prototype.toDOM = function(elem, merge) {
+		// resolve the element ID
+		if (getType(elem) === VAL) {
+			elem = document.getElementById(elem);
+		}
+
+		var view;
 		try {
-			return patchDOM(createElement(this.value[0]), this.value);
+			if (merge) {
+				view = elem;
+				elem = null;
+			}
+			view = patchDOM(view || createElement(this.value[0]), this.value);
+
 		} catch (ex) {
 			// handle error with context
-			return onErrorDOM(ex);
+			view = onErrorDOM(ex);
 		}
+
+		if (elem && elem.parentNode) {
+			// replace existing element with result
+			elem.parentNode.replaceChild(view, elem);
+		}
+
+		return view;
 	};
 
 	/**
@@ -543,70 +549,13 @@
 					link = link.nextSibling;
 				}
 			}
+
 		} catch (ex) {
 			/*jslint evil:true*/
 			doc = doc.open('text/html');
 			doc.write(this.toString());
 			doc.close();
 			/*jslint evil:false*/
-		}
-	};
-
-	/**
-	 * @public
-	 * @param {Node} elem The element to affect 
-	 * @param {Object} node The attributes object to apply
-	 * @param {*} data The data item being bound
-	 * @param {number} index The index of the current data item
-	 * @param {number} count The total number of data items
-	 * @param {string|null} key The current property name
-	 */
-	duel[ATTR_EXTERN] = duel.attr = function(elem, attr, data, index, count, key) {
-		// resolve the element ID
-		if (getType(elem) === VAL) {
-			elem = document.getElementById(elem);
-		}
-
-		if (elem) {
-			// bind attribute nodes
-			attr = bind(attr, data, index, count, key);
-
-			// apply them to the existing element
-			// Closure Compiler type cast
-			addAttributes(elem, /** @type {Array} */(attr));
-		}
-	};
-
-	/**
-	 * @public
-	 * @param {Node} elem The element to be replaced
-	 * @param {Array|Object|string|number|function(*,*,*,*):(Object|null)} view The view to replace
-	 * @param {*} data The data item being bound
-	 * @param {number} index The index of the current data item
-	 * @param {number} count The total number of data items
-	 * @param {string|null} key The current property name
-	 */
-	duel[REPLACE_EXTERN] = duel.replace = function(elem, view, data, index, count, key) {
-		// resolve the element ID
-		if (getType(elem) === VAL) {
-			elem = document.getElementById(elem);
-		}
-
-		if (elem && elem.parentNode) {
-			// bind node
-			view = duel(view).getView();
-			// Closure Compiler type cast
-			view = bind(/** @type {Array} */(view), data, index, count, key);
-
-			try {
-				view = patchDOM(createElement(view[0]), view);
-			} catch (ex) {
-				// handle error with context
-				view = onErrorDOM(ex);
-			}
-
-			// replace existing element with result
-			elem.parentNode.replaceChild(view, elem);
 		}
 	};
 

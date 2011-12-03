@@ -214,7 +214,7 @@ test('deferred attribute binding', function() {
 		'data-foo' : function() { return 'foo'; }
 	};
 
-	var id = '__'+new Date().valueOf();
+	var id = '_'+new Date().valueOf().toString(36);
 
 	var expected = document.createElement('div');
 	expected.setAttribute('id', id);
@@ -226,8 +226,8 @@ test('deferred attribute binding', function() {
 	actual.setAttribute('id', id);
 	actual.appendChild(document.createTextNode('Lorem ipsum'));
 
-	duel.attr(actual, attrs);
-	
+	duel(attrs)().toDOM(actual, 1);
+
 	same(toHTML(actual), toHTML(expected), '');
 });
 
