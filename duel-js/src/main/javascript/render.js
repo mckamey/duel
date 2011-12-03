@@ -130,7 +130,8 @@
 						buffer.append(' ', name);
 						var val = child[name];
 						if (getType(val) !== NUL) {
-							buffer.append('="', attrEncode(val), '"');
+							// Closure Compiler type cast
+							buffer.append('="', /** @type{string} */(attrEncode(val)), '"');
 						}
 					}
 				}
@@ -149,7 +150,8 @@
 				renderElem(buffer, child);
 			} else {
 				// encode string literals
-				buffer.append(htmlEncode(child));
+				// Closure Compiler type cast
+				buffer.append(/** @type{string} */(htmlEncode(child)));
 			}
 		}
 
@@ -193,7 +195,6 @@
 	 * Immediately writes the resulting value to the document
 	 * 
 	 * @public
-	 * @override
 	 * @this {Result}
 	 * @param {Document} doc optional Document reference
 	 */

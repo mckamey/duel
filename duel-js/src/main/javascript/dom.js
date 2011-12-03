@@ -5,20 +5,6 @@
 	 * @constant
 	 * @type {string}
 	 */
-	var TO_DOM = 'toDOM';
-
-	/**
-	 * @private
-	 * @constant
-	 * @type {string}
-	 */
-	var RELOAD = 'reload';
-
-	/**
-	 * @private
-	 * @constant
-	 * @type {string}
-	 */
 	var INIT = '$init';
 
 	/**
@@ -360,7 +346,7 @@
 				delete elem[key];
 			} catch (ex) {
 				// sometimes IE doesn't like deleting from DOM
-				elem[key] = undefined;
+				elem[key] = undef;
 			}
 
 			if (!isFunction(method)) {
@@ -489,14 +475,16 @@
 	 * 
 	 * @public
 	 * @this {Result}
-	 * @param {Node|string} elem An optional element or element ID to be replaced or merged
-	 * @param {boolean} merge Optionally merge result into elem
+	 * @param {Node|string=} elem An optional element or element ID to be replaced or merged
+	 * @param {boolean=} merge Optionally merge result into elem
 	 * @return {Node|null}
 	 */
-	Result.prototype[TO_DOM] = Result.prototype.toDOM = function(elem, merge) {
+	Result.prototype.toDOM = function(elem, merge) {
 		// resolve the element ID
 		if (getType(elem) === VAL) {
-			elem = document.getElementById(elem);
+			elem = document.getElementById(
+				// Closure Compiler type cast
+				/** @type{string} */(elem));
 		}
 
 		var view;
@@ -505,7 +493,8 @@
 				view = elem;
 				elem = null;
 			}
-			view = patchDOM(view || createElement(this.value[0]), this.value);
+			// Closure Compiler type cast
+			view = patchDOM(/** @type{Node} */(view) || createElement(this.value[0]), this.value);
 
 		} catch (ex) {
 			// handle error with context
@@ -514,7 +503,8 @@
 
 		if (elem && elem.parentNode) {
 			// replace existing element with result
-			elem.parentNode.replaceChild(view, elem);
+			// Closure Compiler type cast
+			elem.parentNode.replaceChild(view, /** @type{Node} */(elem));
 		}
 
 		return view;
@@ -526,7 +516,7 @@
 	 * @public
 	 * @this {Result}
 	 */
-	Result.prototype[RELOAD] = Result.prototype.reload = function() {
+	Result.prototype.reload = function() {
 		// http://stackoverflow.com/questions/4297877
 		var doc = document;
 		try {

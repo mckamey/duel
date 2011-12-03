@@ -17,8 +17,9 @@ var duel = (
 	/**
 	 * @param {Window} window Window reference
 	 * @param {Document} document Document reference
+	 * @param {*=} undef undefined
 	 */
-	function(window, document) {
+	function(window, document, undef) {
 
 	'use strict';
 

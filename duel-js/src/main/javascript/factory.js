@@ -1,20 +1,6 @@
 	/* factory.js --------------------*/
 
 	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var DUEL_EXTERN = 'duel';
-
-	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var RAW_EXTERN = 'raw';
-
-	/**
 	 * Renders an error as text
 	 * 
 	 * @private
@@ -83,7 +69,7 @@
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
 	 * @return {Array|Object|string|number}
 	 */
-	var duel = window[DUEL_EXTERN] = function(view) {
+	var duel = function(view) {
 		return (isFunction(view) && isFunction(view.getView)) ? view : factory(view);
 	};
 
@@ -92,7 +78,7 @@
 	 * @param {string} value Markup text
 	 * @return {Markup}
 	 */
-	duel[RAW_EXTERN] = duel.raw = function(value) {
+	duel.raw = function(value) {
 		return new Markup(value);
 	};
 

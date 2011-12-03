@@ -17,8 +17,9 @@ var duel = (
 	/**
 	 * @param {Window} window Window reference
 	 * @param {Document} document Document reference
+	 * @param {*=} undef undefined
 	 */
-	function(window, document) {
+	function(window, document, undef) {
 
 	'use strict';
 
@@ -65,13 +66,6 @@ var duel = (
 	 * @type {number}
 	 */
 	var RAW = 5;
-
-	/**
-	 * @private
-	 * @constant
-	 * @type {string}
-	 */
-	var MSIE = 'ScriptEngineMajorVersion';
 
 	/**
 	 * Wraps a data value to maintain as raw markup in output
@@ -171,32 +165,37 @@ var duel = (
 	}
 
 	/**
+	 * Only IE<9 benefits from Array.join()
+	 * 
 	 * @private
 	 * @constant
 	 * @type {boolean}
 	 */
-	Buffer.FAST = !window[MSIE];
+	Buffer.FAST = !(window.ScriptEngineMajorVersion && window.ScriptEngineMajorVersion() < 9);
 
 	/**
 	 * Appends to the internal value
 	 * 
 	 * @public
 	 * @this {Buffer}
-	 * @param {string} v1
-	 * @param {string} v2
-	 * @param {string} v3
+	 * @param {null|string} v1
+	 * @param {null|string=} v2
+	 * @param {null|string=} v3
 	 */
 	Buffer.prototype.append = function(v1, v2, v3) {
 		if (Buffer.FAST) {
-			this.value += v1;
+			if (v1 !== null) {
+				this.value += v1;
 
-			if (v2 !== null && v2 !== undefined) {
-				this.value += v2;
+				if (v2 !== null && v2 !== undef) {
+					this.value += v2;
 
-				if (v3 !== null && v3 !== undefined) {
-					this.value += v3;
+					if (v3 !== null && v3 !== undef) {
+						this.value += v3;
+					}
 				}
 			}
+
 		} else {
 			this.value.push.apply(
 				// Closure Compiler type cast
@@ -776,20 +775,6 @@ var duel = (
 	/* factory.js --------------------*/
 
 	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var DUEL_EXTERN = 'duel';
-
-	/**
-	 * @private
-	 * @const
-	 * @type {string}
-	 */
-	var RAW_EXTERN = 'raw';
-
-	/**
 	 * Renders an error as text
 	 * 
 	 * @private
@@ -858,7 +843,7 @@ var duel = (
 	 * @param {Array|Object|string|number|function(*,number,number):Array|Object|string} view The view template
 	 * @return {Array|Object|string|number}
 	 */
-	var duel = window[DUEL_EXTERN] = function(view) {
+	var duel = function(view) {
 		return (isFunction(view) && isFunction(view.getView)) ? view : factory(view);
 	};
 
@@ -867,7 +852,7 @@ var duel = (
 	 * @param {string} value Markup text
 	 * @return {Markup}
 	 */
-	duel[RAW_EXTERN] = duel.raw = function(value) {
+	duel.raw = function(value) {
 		return new Markup(value);
 	};
 
@@ -1003,7 +988,8 @@ var duel = (
 						buffer.append(' ', name);
 						var val = child[name];
 						if (getType(val) !== NUL) {
-							buffer.append('="', attrEncode(val), '"');
+							// Closure Compiler type cast
+							buffer.append('="', /** @type{string} */(attrEncode(val)), '"');
 						}
 					}
 				}
@@ -1022,7 +1008,8 @@ var duel = (
 				renderElem(buffer, child);
 			} else {
 				// encode string literals
-				buffer.append(htmlEncode(child));
+				// Closure Compiler type cast
+				buffer.append(/** @type{string} */(htmlEncode(child)));
 			}
 		}
 
@@ -1066,7 +1053,6 @@ var duel = (
 	 * Immediately writes the resulting value to the document
 	 * 
 	 * @public
-	 * @override
 	 * @this {Result}
 	 * @param {Document} doc optional Document reference
 	 */
@@ -1077,20 +1063,6 @@ var duel = (
 	};
 
 	/* dom.js --------------------*/
-
-	/**
-	 * @private
-	 * @constant
-	 * @type {string}
-	 */
-	var TO_DOM = 'toDOM';
-
-	/**
-	 * @private
-	 * @constant
-	 * @type {string}
-	 */
-	var RELOAD = 'reload';
 
 	/**
 	 * @private
@@ -1438,7 +1410,7 @@ var duel = (
 				delete elem[key];
 			} catch (ex) {
 				// sometimes IE doesn't like deleting from DOM
-				elem[key] = undefined;
+				elem[key] = undef;
 			}
 
 			if (!isFunction(method)) {
@@ -1567,14 +1539,16 @@ var duel = (
 	 * 
 	 * @public
 	 * @this {Result}
-	 * @param {Node|string} elem An optional element or element ID to be replaced or merged
-	 * @param {boolean} merge Optionally merge result into elem
+	 * @param {Node|string=} elem An optional element or element ID to be replaced or merged
+	 * @param {boolean=} merge Optionally merge result into elem
 	 * @return {Node|null}
 	 */
-	Result.prototype[TO_DOM] = Result.prototype.toDOM = function(elem, merge) {
+	Result.prototype.toDOM = function(elem, merge) {
 		// resolve the element ID
 		if (getType(elem) === VAL) {
-			elem = document.getElementById(elem);
+			elem = document.getElementById(
+				// Closure Compiler type cast
+				/** @type{string} */(elem));
 		}
 
 		var view;
@@ -1583,7 +1557,8 @@ var duel = (
 				view = elem;
 				elem = null;
 			}
-			view = patchDOM(view || createElement(this.value[0]), this.value);
+			// Closure Compiler type cast
+			view = patchDOM(/** @type{Node} */(view) || createElement(this.value[0]), this.value);
 
 		} catch (ex) {
 			// handle error with context
@@ -1592,7 +1567,8 @@ var duel = (
 
 		if (elem && elem.parentNode) {
 			// replace existing element with result
-			elem.parentNode.replaceChild(view, elem);
+			// Closure Compiler type cast
+			elem.parentNode.replaceChild(view, /** @type{Node} */(elem));
 		}
 
 		return view;
@@ -1604,7 +1580,7 @@ var duel = (
 	 * @public
 	 * @this {Result}
 	 */
-	Result.prototype[RELOAD] = Result.prototype.reload = function() {
+	Result.prototype.reload = function() {
 		// http://stackoverflow.com/questions/4297877
 		var doc = document;
 		try {

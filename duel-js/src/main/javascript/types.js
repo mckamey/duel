@@ -43,13 +43,6 @@
 	var RAW = 5;
 
 	/**
-	 * @private
-	 * @constant
-	 * @type {string}
-	 */
-	var MSIE = 'ScriptEngineMajorVersion';
-
-	/**
 	 * Wraps a data value to maintain as raw markup in output
 	 * 
 	 * @private
@@ -147,32 +140,37 @@
 	}
 
 	/**
+	 * Only IE<9 benefits from Array.join()
+	 * 
 	 * @private
 	 * @constant
 	 * @type {boolean}
 	 */
-	Buffer.FAST = !window[MSIE];
+	Buffer.FAST = !(window.ScriptEngineMajorVersion && window.ScriptEngineMajorVersion() < 9);
 
 	/**
 	 * Appends to the internal value
 	 * 
 	 * @public
 	 * @this {Buffer}
-	 * @param {string} v1
-	 * @param {string} v2
-	 * @param {string} v3
+	 * @param {null|string} v1
+	 * @param {null|string=} v2
+	 * @param {null|string=} v3
 	 */
 	Buffer.prototype.append = function(v1, v2, v3) {
 		if (Buffer.FAST) {
-			this.value += v1;
+			if (v1 !== null) {
+				this.value += v1;
 
-			if (v2 !== null && v2 !== undefined) {
-				this.value += v2;
+				if (v2 !== null && v2 !== undef) {
+					this.value += v2;
 
-				if (v3 !== null && v3 !== undefined) {
-					this.value += v3;
+					if (v3 !== null && v3 !== undef) {
+						this.value += v3;
+					}
 				}
 			}
+
 		} else {
 			this.value.push.apply(
 				// Closure Compiler type cast
