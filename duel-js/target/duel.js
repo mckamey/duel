@@ -15,11 +15,11 @@
  */
 var duel = (
 	/**
-	 * @param {Window} window Window reference
 	 * @param {Document} document Document reference
+	 * @param {function()} scriptEngine script engine version
 	 * @param {*=} undef undefined
 	 */
-	function(window, document, undef) {
+	function(document, scriptEngine, undef) {
 
 	'use strict';
 
@@ -171,7 +171,7 @@ var duel = (
 	 * @constant
 	 * @type {boolean}
 	 */
-	Buffer.FAST = !(window.ScriptEngineMajorVersion && window.ScriptEngineMajorVersion() < 9);
+	Buffer.FAST = !(scriptEngine && scriptEngine() < 9);
 
 	/**
 	 * Appends to the internal value
@@ -1615,4 +1615,4 @@ var duel = (
 
 	return duel;
 
-})(window, document);
+})(document, window.ScriptEngineMajorVersion);

@@ -146,7 +146,7 @@
 	 * @constant
 	 * @type {boolean}
 	 */
-	Buffer.FAST = !(window.ScriptEngineMajorVersion && window.ScriptEngineMajorVersion() < 9);
+	Buffer.FAST = !(scriptEngine && scriptEngine() < 9);
 
 	/**
 	 * Appends to the internal value
