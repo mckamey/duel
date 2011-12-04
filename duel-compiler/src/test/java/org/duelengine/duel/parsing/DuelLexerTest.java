@@ -744,12 +744,29 @@ public class DuelLexerTest {
 	@Test
 	public void attrCallbackTest() {
 
-		String input = "<div $init=\"alert('$init');return false;\"></div>";
+		String input = "<div init=\"alert('$init');\"></div>";
+
+		Object[] expected = {
+				DuelToken.elemBegin("div"),
+				DuelToken.attrName("init"),
+				DuelToken.attrValue("alert('$init');"),
+				DuelToken.elemEnd("div")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void attrRawCallbackTest() {
+
+		String input = "<div $init=\"alert('$init');\"></div>";
 
 		Object[] expected = {
 				DuelToken.elemBegin("div"),
 				DuelToken.attrName("$init"),
-				DuelToken.attrValue("alert('$init');return false;"),
+				DuelToken.attrValue("alert('$init');"),
 				DuelToken.elemEnd("div")
 			};
 
@@ -761,12 +778,12 @@ public class DuelLexerTest {
 	@Test
 	public void attrPrefixCallbackTest() {
 
-		String input = "<div duel:oninit=\"alert('$init');return false;\"></div>";
+		String input = "<div duel:oninit=\"alert('duel:oninit');\"></div>";
 
 		Object[] expected = {
 				DuelToken.elemBegin("div"),
 				DuelToken.attrName("duel:oninit"),
-				DuelToken.attrValue("alert('$init');return false;"),
+				DuelToken.attrValue("alert('duel:oninit');"),
 				DuelToken.elemEnd("div")
 			};
 

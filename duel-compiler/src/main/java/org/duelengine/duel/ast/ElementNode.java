@@ -4,6 +4,11 @@ import java.util.*;
 
 public class ElementNode extends ContainerNode {
 
+	private static final String EXT_INIT = "init";
+	private static final String CMD_INIT = "$init";
+	private static final String EXT_LOAD = "load";
+	private static final String CMD_LOAD = "$load";
+
 	private static final String CONFIG_RESOURCE = "org.duelengine.duel.ast.HTMLTags";
 	private static final Map<String, Boolean> voidTags;
 	private static final Map<String, Boolean> linkTags;
@@ -72,7 +77,7 @@ public class ElementNode extends ContainerNode {
 
 		if (attr != null) {
 			for (AttributePair a : attr) {
-				this.attributes.put(a.getName(), a.getValue());
+				this.attributes.put(mapAttrName(a.getName()), a.getValue());
 			}
 		}
 	}
@@ -102,7 +107,7 @@ public class ElementNode extends ContainerNode {
 		if (attr == null) {
 			throw new NullPointerException("attr");
 		}
-		this.attributes.put(attr.getName(), attr.getValue());
+		this.attributes.put(mapAttrName(attr.getName()), attr.getValue());
 	}
 
 	public DuelNode getAttribute(String name) {
@@ -113,7 +118,7 @@ public class ElementNode extends ContainerNode {
 	}
 
 	public void setAttribute(String name, DuelNode value) {
-		this.attributes.put(name, value);
+		this.attributes.put(mapAttrName(name), value);
 	}
 
 	public DuelNode removeAttribute(String name) {
@@ -148,6 +153,23 @@ public class ElementNode extends ContainerNode {
 		return this.isSelf(tag) || this.isAncestor(tag);
 	}
 
+	/**
+	 * Maps the human-entered attribute to output command
+	 * 
+	 * @param name
+	 * @return
+	 */
+	protected String mapAttrName(String name) {
+		if (EXT_INIT.equalsIgnoreCase(name)) {
+			return CMD_INIT;
+		}
+		if (EXT_LOAD.equalsIgnoreCase(name)) {
+			return CMD_LOAD;
+		}
+
+		return name;
+	}
+	
 	@Override
 	StringBuilder toString(StringBuilder buffer) {
 		buffer.append("<").append(this.tagName);

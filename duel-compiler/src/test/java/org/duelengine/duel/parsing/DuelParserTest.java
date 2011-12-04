@@ -173,6 +173,37 @@ public class DuelParserTest {
 	}
 
 	@Test
+	public void elemAttribCallbackTest() throws Exception {
+
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div",
+				new AttributePair[] {
+					new AttributePair("$init", new LiteralNode("alert('init');")),
+					new AttributePair("$load", new LiteralNode("alert('load');"))
+				}));
+
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
+			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
+			DuelToken.elemBegin("div"),
+			DuelToken.attrName("init"),
+			DuelToken.attrValue("alert('init');"),
+			DuelToken.attrName("load"),
+			DuelToken.attrValue("alert('load');"),
+			DuelToken.elemEnd("div")
+		);
+
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
+	}
+
+	@Test
 	public void elemNestedTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(
