@@ -27,6 +27,24 @@
 	};
 
 	/**
+	 * Boolean attribute map
+	 * 
+	 * @private
+	 * @constant
+	 * @type {Object.<number>}
+	 */
+	var ATTR_BOOL = {
+		'async': 1,
+		'checked': 1,
+		'defer': 1,
+		'disabled': 1,
+		'hidden': 1,
+		'novalidate': 1,
+		'formnovalidate': 1
+		// can add more attributes here as needed
+	};
+
+	/**
 	 * Encodes invalid literal characters in strings
 	 * 
 	 * @private
@@ -127,8 +145,17 @@
 				// emit attributes
 				for (var name in child) {
 					if (child.hasOwnProperty(name)) {
-						buffer.append(' ', name);
 						var val = child[name];
+						if (ATTR_BOOL[name]) {
+							if (val) {
+								val = name;
+							} else {
+								// falsey boolean attributes must not be present
+								continue;
+							}
+						}
+
+						buffer.append(' ', name);
 						if (getType(val) !== NUL) {
 							// Closure Compiler type cast
 							buffer.append('="', /** @type{string} */(attrEncode(val)), '"');

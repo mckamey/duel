@@ -883,6 +883,24 @@ var duel = (
 	};
 
 	/**
+	 * Boolean attribute map
+	 * 
+	 * @private
+	 * @constant
+	 * @type {Object.<number>}
+	 */
+	var ATTR_BOOL = {
+		'async': 1,
+		'checked': 1,
+		'defer': 1,
+		'disabled': 1,
+		'hidden': 1,
+		'novalidate': 1,
+		'formnovalidate': 1
+		// can add more attributes here as needed
+	};
+
+	/**
 	 * Encodes invalid literal characters in strings
 	 * 
 	 * @private
@@ -983,8 +1001,17 @@ var duel = (
 				// emit attributes
 				for (var name in child) {
 					if (child.hasOwnProperty(name)) {
-						buffer.append(' ', name);
 						var val = child[name];
+						if (ATTR_BOOL[name]) {
+							if (val) {
+								val = name;
+							} else {
+								// falsey boolean attributes must not be present
+								continue;
+							}
+						}
+
+						buffer.append(' ', name);
 						if (getType(val) !== NUL) {
 							// Closure Compiler type cast
 							buffer.append('="', /** @type{string} */(attrEncode(val)), '"');
@@ -1083,18 +1110,18 @@ var duel = (
 	 * @constant
 	 * @type {Object.<string>}
 	 */
-	var ATTRMAP = {
-		'rowspan' : 'rowSpan',
-		'colspan' : 'colSpan',
-		'cellpadding' : 'cellPadding',
-		'cellspacing' : 'cellSpacing',
-		'tabindex' : 'tabIndex',
-		'accesskey' : 'accessKey',
-		'hidefocus' : 'hideFocus',
-		'usemap' : 'useMap',
-		'maxlength' : 'maxLength',
-		'readonly' : 'readOnly',
-		'contenteditable' : 'contentEditable'
+	var ATTR_MAP = {
+		'rowspan': 'rowSpan',
+		'colspan': 'colSpan',
+		'cellpadding': 'cellPadding',
+		'cellspacing': 'cellSpacing',
+		'tabindex': 'tabIndex',
+		'accesskey': 'accessKey',
+		'hidefocus': 'hideFocus',
+		'usemap': 'useMap',
+		'maxlength': 'maxLength',
+		'readonly': 'readOnly',
+		'contenteditable': 'contentEditable'
 		// can add more attributes here as needed
 	};
 
@@ -1105,9 +1132,10 @@ var duel = (
 	 * @constant
 	 * @type {Object.<string>}
 	 */
-	var ATTRDUP = {
-		'enctype' : 'encoding',
-		'onscroll' : 'DOMMouseScroll'
+	var ATTR_DUP = {
+		'enctype': 'encoding',
+		'onscroll': 'DOMMouseScroll',
+		'checked': 'defaultChecked'
 		// can add more attributes here as needed
 	};
 
@@ -1280,8 +1308,16 @@ var duel = (
 						type = VAL;
 					}
 
-					name = ATTRMAP[name.toLowerCase()] || name;
-					if (name === 'style') {
+					name = ATTR_MAP[name.toLowerCase()] || name;
+					if (ATTR_BOOL[name]) {
+						elem[name] = !!value;
+
+						// also set duplicated attributes
+						if (ATTR_DUP[name]) {
+							elem[ATTR_DUP[name]] = !!value;
+						}
+
+					} else if (name === 'style') {
 						if (typeof elem.style.cssText !== 'undefined') {
 							elem.style.cssText = value;
 						} else {
@@ -1295,25 +1331,25 @@ var duel = (
 						addHandler(elem, name, value);
 
 						// also set duplicated events
-						if (ATTRDUP[name]) {
-							addHandler(elem, ATTRDUP[name], value);
+						if (ATTR_DUP[name]) {
+							addHandler(elem, ATTR_DUP[name], value);
 						}
 
 					} else if (type === VAL && name.charAt(0) !== '$') {
 						elem.setAttribute(name, value);
 	
 						// also set duplicated attributes
-						if (ATTRDUP[name]) {
-							elem.setAttribute(ATTRDUP[name], value);
+						if (ATTR_DUP[name]) {
+							elem.setAttribute(ATTR_DUP[name], value);
 						}
 
 					} else {
 						// allow direct setting of complex properties
 						elem[name] = value;
-	
+
 						// also set duplicated attributes
-						if (ATTRDUP[name]) {
-							elem[ATTRDUP[name]] = value;
+						if (ATTR_DUP[name]) {
+							elem[ATTR_DUP[name]] = value;
 						}
 					}
 				}

@@ -21,18 +21,18 @@
 	 * @constant
 	 * @type {Object.<string>}
 	 */
-	var ATTRMAP = {
-		'rowspan' : 'rowSpan',
-		'colspan' : 'colSpan',
-		'cellpadding' : 'cellPadding',
-		'cellspacing' : 'cellSpacing',
-		'tabindex' : 'tabIndex',
-		'accesskey' : 'accessKey',
-		'hidefocus' : 'hideFocus',
-		'usemap' : 'useMap',
-		'maxlength' : 'maxLength',
-		'readonly' : 'readOnly',
-		'contenteditable' : 'contentEditable'
+	var ATTR_MAP = {
+		'rowspan': 'rowSpan',
+		'colspan': 'colSpan',
+		'cellpadding': 'cellPadding',
+		'cellspacing': 'cellSpacing',
+		'tabindex': 'tabIndex',
+		'accesskey': 'accessKey',
+		'hidefocus': 'hideFocus',
+		'usemap': 'useMap',
+		'maxlength': 'maxLength',
+		'readonly': 'readOnly',
+		'contenteditable': 'contentEditable'
 		// can add more attributes here as needed
 	};
 
@@ -43,9 +43,10 @@
 	 * @constant
 	 * @type {Object.<string>}
 	 */
-	var ATTRDUP = {
-		'enctype' : 'encoding',
-		'onscroll' : 'DOMMouseScroll'
+	var ATTR_DUP = {
+		'enctype': 'encoding',
+		'onscroll': 'DOMMouseScroll',
+		'checked': 'defaultChecked'
 		// can add more attributes here as needed
 	};
 
@@ -218,8 +219,16 @@
 						type = VAL;
 					}
 
-					name = ATTRMAP[name.toLowerCase()] || name;
-					if (name === 'style') {
+					name = ATTR_MAP[name.toLowerCase()] || name;
+					if (ATTR_BOOL[name]) {
+						elem[name] = !!value;
+
+						// also set duplicated attributes
+						if (ATTR_DUP[name]) {
+							elem[ATTR_DUP[name]] = !!value;
+						}
+
+					} else if (name === 'style') {
 						if (typeof elem.style.cssText !== 'undefined') {
 							elem.style.cssText = value;
 						} else {
@@ -233,25 +242,25 @@
 						addHandler(elem, name, value);
 
 						// also set duplicated events
-						if (ATTRDUP[name]) {
-							addHandler(elem, ATTRDUP[name], value);
+						if (ATTR_DUP[name]) {
+							addHandler(elem, ATTR_DUP[name], value);
 						}
 
 					} else if (type === VAL && name.charAt(0) !== '$') {
 						elem.setAttribute(name, value);
 	
 						// also set duplicated attributes
-						if (ATTRDUP[name]) {
-							elem.setAttribute(ATTRDUP[name], value);
+						if (ATTR_DUP[name]) {
+							elem.setAttribute(ATTR_DUP[name], value);
 						}
 
 					} else {
 						// allow direct setting of complex properties
 						elem[name] = value;
-	
+
 						// also set duplicated attributes
-						if (ATTRDUP[name]) {
-							elem[ATTRDUP[name]] = value;
+						if (ATTR_DUP[name]) {
+							elem[ATTR_DUP[name]] = value;
 						}
 					}
 				}

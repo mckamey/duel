@@ -199,6 +199,24 @@ test('falsey attribute values', function() {
 	same(actual, expected, '');
 });
 
+test('boolean attributes', function() {
+
+	var view = duel(['form',
+		['input', { 'type': 'checkbox', checked: false } ],
+		['input', { 'type': 'checkbox', checked: '' } ],
+		['input', { 'type': 'checkbox', checked: null } ],
+		['input', { 'type': 'checkbox', checked: true } ],
+		['input', { 'type': 'checkbox', checked: 'checked' } ],
+		['input', { 'type': 'checkbox', checked: 'yes' } ]
+	]);
+
+	var actual = view().toString();
+
+	var expected = '<form><input type="checkbox" /><input type="checkbox" /><input type="checkbox" /><input type="checkbox" checked="checked" /><input type="checkbox" checked="checked" /><input type="checkbox" checked="checked" /></form>';
+
+	same(actual, expected, '');
+});
+
 test('comment nodes', function() {
 
 	var view = duel(

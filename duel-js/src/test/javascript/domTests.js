@@ -53,6 +53,56 @@ test('nested elements with attributes', function() {
 	same(toHTML(actual), toHTML(expected), '');
 });
 
+test('boolean attributes', function() {
+
+	var view = duel(['form',
+		['input', { 'type': 'checkbox', checked: false } ],
+		['input', { 'type': 'checkbox', checked: '' } ],
+		['input', { 'type': 'checkbox', checked: null } ],
+		['input', { 'type': 'checkbox', checked: true } ],
+		['input', { 'type': 'checkbox', checked: 'checked' } ],
+		['input', { 'type': 'checkbox', checked: 'yes' } ]
+	]);
+
+	var actual = view().toDOM();
+
+	var temp, expected = document.createElement('form');
+
+	temp = document.createElement('input');
+	temp.type = 'checkbox';
+	expected.appendChild(temp);
+
+	temp = document.createElement('input');
+	temp.type = 'checkbox';
+	expected.appendChild(temp);
+
+	temp = document.createElement('input');
+	temp.type = 'checkbox';
+	expected.appendChild(temp);
+
+	temp = document.createElement('input');
+	temp.type = 'checkbox';
+	temp.defaultChecked = true;
+	expected.appendChild(temp);
+
+	temp = document.createElement('input');
+	temp.type = 'checkbox';
+	temp.defaultChecked = 'checked';
+	expected.appendChild(temp);
+
+	temp = document.createElement('input');
+	temp.type = 'checkbox';
+	temp.defaultChecked = 'yes';
+	expected.appendChild(temp);
+
+	same(toHTML(actual), toHTML(expected), '');
+
+	var inputs = actual.getElementsByTagName('input');
+	for (var i=inputs.length-1; i>=0; i--) {
+		same(inputs[i].checked, i>=3);
+	}
+});
+
 test('docFrag root', function() {
 
 	var view = duel(
