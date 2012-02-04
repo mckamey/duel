@@ -1,5 +1,5 @@
 # robots.txt
 # 2010-10-11 @ 14:15
 
-User-agent: *
-Disallow: /			# still volatile
+# User-agent: *
+# Disallow: /			# still volatile

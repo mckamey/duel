@@ -1,11 +1,9 @@
 /*global window */
 
 /**
- * @fileoverview duel.js: client-side engine
- * @version DUEL v0.8.0 http://duelengine.org
- * 
- * Copyright (c) 2006-2011 Stephen M. McKamey
- * Licensed under the MIT License (http://duelengine.org/license.txt)
+ * @license DUEL v0.8.0 http://duelengine.org
+ * Copyright (c)2006-2012 Stephen M. McKamey.
+ * Licensed under The MIT License.
  */
 
 /**
@@ -1221,7 +1219,7 @@ var duel = (
 	}
 
 	/**
-	 * Appends a child to an element
+	 * Adds an event handler to an element
 	 * 
 	 * @private
 	 * @param {Node} elem The element
@@ -1229,21 +1227,23 @@ var duel = (
 	 * @param {function(Event)} handler The event handler
 	 */
 	function addHandler(elem, name, handler) {
-		if (isFunction(handler)) {
-			if (elem.addEventListener) {
-				// DOM Level 2
-				elem.addEventListener((name.substr(0,2) === 'on') ? name.substr(2) : name, handler, false);
-			} else {
-				// DOM Level 0
-				elem[name] = handler;
-			}
-		}
+		switch (typeof handler) {
+			case 'function':
+				if (elem.addEventListener) {
+					// DOM Level 2
+					elem.addEventListener((name.substr(0,2) === 'on') ? name.substr(2) : name, handler, false);
+				} else {
+					// DOM Level 0
+					elem[name] = handler;
+				}
+				break;
 
-		else if (isString(handler)) {
-			// inline functions are DOM Level 0
-			/*jslint evil:true */
-			elem[name] = new Function('event', handler);
-			/*jslint evil:false */
+			case 'string':
+				// inline functions are DOM Level 0
+				/*jslint evil:true */
+				elem[name] = new Function('event', handler);
+				/*jslint evil:false */
+				break;
 		}
 	}
 
