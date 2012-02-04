@@ -1,7 +1,5 @@
 package org.duelengine.duel.compiler;
 
-import java.io.IOException;
-
 public class CLI {
 
 	private static final String SEPARATOR = "========================================";

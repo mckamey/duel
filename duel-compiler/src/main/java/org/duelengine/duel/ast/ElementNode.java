@@ -13,6 +13,7 @@ public class ElementNode extends ContainerNode {
 	private static final Map<String, Boolean> voidTags;
 	private static final Map<String, Boolean> linkTags;
 	private static final Map<String, Boolean> linkAttrs;
+	private static final Map<String, Boolean> boolAttrs;
 
 	private final String tagName;
 	private final boolean isVoid;
@@ -52,6 +53,16 @@ public class ElementNode extends ContainerNode {
 		}
 
 		linkAttrs = map;
+
+		items = (config != null) && config.containsKey("boolAttrs") ?
+			config.getString("boolAttrs").split("\\s+") : new String[0];
+
+		map = new HashMap<String, Boolean>(items.length);
+		for (String value : items) {
+			map.put(value, true);
+		}
+
+		boolAttrs = map;
 	}
 
 	public ElementNode(String name, int index, int line, int column) {
@@ -92,6 +103,10 @@ public class ElementNode extends ContainerNode {
 
 	public boolean isLinkAttribute(String name) {
 		return this.isLinkableTag && linkAttrs.containsKey(name);
+	}
+
+	public boolean isBoolAttribute(String name) {
+		return boolAttrs.containsKey(name);
 	}
 
 	public boolean hasAttributes() {

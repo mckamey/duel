@@ -1028,6 +1028,35 @@ public class CodeDOMBuilder {
 			if (attrVal == null) {
 				this.formatter.writeAttribute(this.buffer, attrName, null);
 
+			} else if (element.isBoolAttribute(attrName)) {
+				if (attrVal instanceof LiteralNode) {
+					if (DuelData.coerceBoolean(((LiteralNode)attrVal).getValue())) {
+						this.formatter.writeAttribute(this.buffer, attrName, attrName);
+					}
+
+				} else if (attrVal instanceof CodeBlockNode) {
+					try {
+						this.flushBuffer();
+						CodeConditionStatement condition = new CodeConditionStatement();
+						this.scopeStack.peek().add(condition);
+
+						condition.setCondition(this.translateExpression((CodeBlockNode)attrVal, false));
+
+						// write attribute if truthy
+						this.scopeStack.push(condition.getTrueStatements());
+						this.formatter.writeAttribute(this.buffer, attrName, attrName);
+						this.flushBuffer();
+						this.scopeStack.pop();
+
+					} catch (Exception ex) {
+						
+						// only defer attributes that cannot be processed server-side
+						deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode()));
+						argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
+						continue;
+					}
+				}
+
 			} else if (element.isLinkAttribute(attrName)) {
 				this.formatter.writeOpenAttribute(this.buffer, attrName);
 				this.flushBuffer();

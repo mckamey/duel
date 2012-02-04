@@ -172,7 +172,6 @@ public class CodeDOMBuilderTest {
 			},
 			new MarkupExpressionNode("data"));
 
-
 		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
 			null,
 			"foo",
@@ -1552,6 +1551,89 @@ public class CodeDOMBuilderTest {
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodePrimitiveExpression("\"><ul class=\"bar\"><li>one</li><li>two</li><li>three</li></ul></div>")))
+				).withOverride().withThrows(IOException.class)
+			);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void attributesBooleanExpressionsTest() throws IOException {
+
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new ElementNode("form",
+				null,
+				new ElementNode("input",
+					new AttributePair[] {
+						new AttributePair("type", new LiteralNode("checkbox")),
+						new AttributePair("checked", new ExpressionNode(" data.isChecked "))
+					}),
+				new ElementNode("input",
+					new AttributePair[] {
+						new AttributePair("type", new LiteralNode("checkbox")),
+						new AttributePair("disabled", new ExpressionNode(" data.isDisabled "))
+					})
+			));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("<form><input type=\"checkbox\""))),
+				new CodeConditionStatement(
+					new CodePropertyReferenceExpression(
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression("isChecked")).withParens(),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(" checked=\"checked\"")))
+				),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression(" /><input type=\"checkbox\""))),
+				new CodeConditionStatement(
+					new CodePropertyReferenceExpression(
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression("isDisabled")).withParens(),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(" disabled=\"disabled\"")))
+				),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression(" /></form>")))
 				).withOverride().withThrows(IOException.class)
 			);
 
