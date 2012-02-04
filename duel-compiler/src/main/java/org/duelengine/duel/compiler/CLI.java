@@ -4,16 +4,14 @@ import java.io.IOException;
 
 public class CLI {
 
-	private static final String HELP =
-		"Usage:\n" +
-		"\tjava -jar duel-compiler.jar <input-file|input-folder>\n" +
-		"\tjava -jar duel-compiler.jar <input-file|input-folder> <output-folder>\n" +
-		"\tjava -jar duel-compiler.jar <input-file|input-folder> <output-client-folder> <output-server-folder>\n\n"+
-		"\tinput-file: path to the DUEL input file (e.g. foo.duel)\n"+
-		"\tinput-folder: path to the input folder containing DUEL files\n"+
-		"\toutput-folder: path to the output folder\n"+
-		"\toutput-client-folder: path to the view scripts folder\n"+
-		"\toutput-server-folder: path to the source code folder\n";
+	private static final String SEPARATOR = "========================================";
+	private static final String HELP = "java -jar duel-compiler.jar\n"+
+			"  --help                       : this help text\n"+
+			"  -in <source-file|source-dir> : file path to the source file or folder (required)\n"+
+			"  -client-out <target-dir>     : file path to the target output directory (default: <source-dir>)\n"+
+			"  -server-out <target-dir>     : file path to the target output directory (default: <source-dir>)\n"+
+			"  -client-prefix <package>     : client-side package name\n"+
+			"  -server-prefix <package>     : server-side package name\n";
 
 	public static void main(String[] args) {
 		if (args.length < 1) {
@@ -22,22 +20,44 @@ public class CLI {
 		}
 
 		DuelCompiler compiler = new DuelCompiler();
-		compiler.setInputDir(args[0]);
+		System.out.println(SEPARATOR);
+		System.out.println("DUEL compiler");
+		for (int i=0; i<args.length; i++) {
+			String arg = args[i];
 
-		if (args.length > 1) {
-			compiler.setOutputClientDir(args[1]);
+			if ("-in".equals(arg)) {
+				compiler.setInputDir(args[++i]);
 
-			if (args.length > 2) {
-				compiler.setOutputServerDir(args[2]);
+			} else if ("-client-out".equals(arg)) {
+				compiler.setOutputClientDir(args[++i]);
+
+			} else if ("-server-out".equals(arg)) {
+				compiler.setOutputServerDir(args[++i]);
+
+			} else if ("-client-prefix".equals(arg)) {
+				compiler.setClientPrefix(args[++i]);
+
+			} else if ("-server-prefix".equals(arg)) {
+				compiler.setServerPrefix(args[++i]);
+
+			} else if ("--help".equalsIgnoreCase(arg)) {
+				System.out.println(HELP);
+				System.out.println(SEPARATOR);
+				return;
+
+			} else {
+				System.out.println(HELP);
+				System.out.println(SEPARATOR);
+				return;
 			}
 		}
 
 		try {
 			compiler.execute();
 
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			ex.printStackTrace(System.err);
 		}
+		System.out.println(SEPARATOR);
 	}
-
 }

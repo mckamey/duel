@@ -64,11 +64,11 @@ public class DuelCompiler {
 		}
 
 		if (this.outputClientDir == null) {
-			this.outputClientDir = this.inputDir.getParentFile();
+			this.outputClientDir = this.inputDir.isDirectory() ? this.inputDir :  this.inputDir.getParentFile();
 		}
 
 		if (this.outputServerDir == null) {
-			this.outputServerDir = this.inputDir.getParentFile();
+			this.outputServerDir = this.inputDir.isDirectory() ? this.inputDir :  this.inputDir.getParentFile();
 		}
 
 		return true;

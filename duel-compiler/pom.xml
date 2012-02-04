@@ -11,7 +11,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-compiler</artifactId>
-	<version>0.8.0</version>
+	<version>0.8.1</version>
 	<packaging>jar</packaging>
 
 	<name>DUEL Compiler</name>
@@ -87,6 +87,7 @@
 				<configuration>
 					<archive>
 						<manifest>
+							<addClasspath>true</addClasspath>
 							<mainClass>org.duelengine.duel.compiler.CLI</mainClass>
 						</manifest>
 					</archive>
