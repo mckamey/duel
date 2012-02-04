@@ -157,7 +157,7 @@
 	}
 
 	/**
-	 * Appends a child to an element
+	 * Adds an event handler to an element
 	 * 
 	 * @private
 	 * @param {Node} elem The element
@@ -165,21 +165,23 @@
 	 * @param {function(Event)} handler The event handler
 	 */
 	function addHandler(elem, name, handler) {
-		if (isFunction(handler)) {
-			if (elem.addEventListener) {
-				// DOM Level 2
-				elem.addEventListener((name.substr(0,2) === 'on') ? name.substr(2) : name, handler, false);
-			} else {
-				// DOM Level 0
-				elem[name] = handler;
-			}
-		}
+		switch (typeof handler) {
+			case 'function':
+				if (elem.addEventListener) {
+					// DOM Level 2
+					elem.addEventListener((name.substr(0,2) === 'on') ? name.substr(2) : name, handler, false);
+				} else {
+					// DOM Level 0
+					elem[name] = handler;
+				}
+				break;
 
-		else if (isString(handler)) {
-			// inline functions are DOM Level 0
-			/*jslint evil:true */
-			elem[name] = new Function('event', handler);
-			/*jslint evil:false */
+			case 'string':
+				// inline functions are DOM Level 0
+				/*jslint evil:true */
+				elem[name] = new Function('event', handler);
+				/*jslint evil:false */
+				break;
 		}
 	}
 
