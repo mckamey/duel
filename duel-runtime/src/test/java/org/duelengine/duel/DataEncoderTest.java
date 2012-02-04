@@ -241,6 +241,32 @@ public class DataEncoderTest {
 	}
 
 	@Test
+	public void writeJSONDate2010UTCTest() throws IOException {
+		Object input = new Date(1291422018285L);
+
+		String expected = "\"2010-12-04T00:20:18.285Z\"";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder().writeJSON(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeJSONDate1968UTCTest() throws IOException {
+		Object input = new Date(-34963200000L);
+
+		String expected = "\"1968-11-22T08:00:00.000Z\"";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder().writeJSON(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void writeStringEmptyTest() throws IOException {
 		Object input = "";
 
@@ -248,6 +274,19 @@ public class DataEncoderTest {
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeJSONStringEmptyTest() throws IOException {
+		Object input = "";
+
+		String expected = "\"\"";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder().writeJSON(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -267,13 +306,39 @@ public class DataEncoderTest {
 	}
 
 	@Test
-	public void writeStringEscapedTest() throws IOException {
-		Object input = "\\\b\f\n\r\t\u0123\u4567\u89AB\uCDEF\uabcd\uef4A\"";
+	public void writeJSONStringSimpleTest() throws IOException {
+		Object input = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
 
-		String expected = "'\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\"'";
+		String expected = "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\"";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder().writeJSON(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeStringEscapedTest() throws IOException {
+		Object input = "\\\b\f\n\r\t\u0123\u4567\u89AB\uCDEF\uabcd\uef4A'\"";
+
+		String expected = "'\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A\\'\"'";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeJSONStringEscapedTest() throws IOException {
+		Object input = "\\\b\f\n\r\t\u0123\u4567\u89AB\uCDEF\uabcd\uef4A'\"";
+
+		String expected = "\"\\\\\\b\\f\\n\\r\\t\\u0123\\u4567\\u89AB\\uCDEF\\uABCD\\uEF4A'\\\"\"";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder().writeJSON(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -313,6 +378,19 @@ public class DataEncoderTest {
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeJSONArraySingleTest() throws IOException {
+		Object input = new String[] { "Test." };
+
+		String expected = "[\"Test.\"]";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder().writeJSON(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -366,6 +444,27 @@ public class DataEncoderTest {
 		assertEquals(expected, actual);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void writeJSONArrayMultiplePrettyPrintTest() throws IOException {
+		Object input = Arrays.asList(false, null, true, 42, "Test");
+
+		String expected =
+			"[\n"+
+			"\tfalse,\n"+
+			"\tnull,\n"+
+			"\ttrue,\n"+
+			"\t42,\n"+
+			"\t\"Test\"\n"+
+			"]";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder("\n", "\t").writeJSON(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
 	@Test
 	public void writeObjectEmptyTest() throws IOException {
 		Object input = Collections.EMPTY_MAP;
@@ -408,6 +507,21 @@ public class DataEncoderTest {
 	}
 
 	@Test
+	public void writeJSONObjectSingleTest() throws IOException {
+		Object input = DuelData.asMap(
+				"One", 1
+			);
+
+		String expected = "{\"One\":1}";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder().writeJSON(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void writeObjectSinglePrettyPrintTest() throws IOException {
 		Object input = DuelData.asMap(
 				"One", 1
@@ -417,6 +531,21 @@ public class DataEncoderTest {
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder("\n", "\t").write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeJSONObjectSinglePrettyPrintTest() throws IOException {
+		Object input = DuelData.asMap(
+				"One", 1
+			);
+
+		String expected = "{ \"One\" : 1 }";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder("\n", "\t").writeJSON(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -438,6 +567,27 @@ public class DataEncoderTest {
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeJSONObjectMultipleTest() throws IOException {
+		Object input = DuelData.asMap(
+				"", "",
+				"One", 1,
+				2, "Too",
+				".T.H.R.E.E.", Math.PI,
+				"$", null,
+				" white space ", true,
+				false, false
+			);
+
+		String expected = "{\"\":\"\",\"One\":1,\"2\":\"Too\",\".T.H.R.E.E.\":3.141592653589793,\"$\":null,\" white space \":true,\"false\":false}";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder().writeJSON(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -468,6 +618,36 @@ public class DataEncoderTest {
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder("\n", "\t").write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeJSONObjectMultiplePrettyPrintTest() throws IOException {
+		Object input = DuelData.asMap(
+				"", "",
+				"One", 1,
+				2, "Too",
+				".T.H.R.E.E.", Math.PI,
+				"$", null,
+				" white space ", true,
+				false, false
+			);
+
+		String expected =
+			"{\n"+
+			"\t\"\" : \"\",\n"+
+			"\t\"One\" : 1,\n"+
+			"\t\"2\" : \"Too\",\n"+
+			"\t\".T.H.R.E.E.\" : 3.141592653589793,\n"+
+			"\t\"$\" : null,\n"+
+			"\t\" white space \" : true,\n"+
+			"\t\"false\" : false\n"+
+			"}";
+
+		StringBuilder output = new StringBuilder();
+		new DataEncoder("\n", "\t").writeJSON(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);

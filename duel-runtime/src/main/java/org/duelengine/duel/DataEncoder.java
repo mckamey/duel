@@ -1,10 +1,19 @@
 package org.duelengine.duel;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 
 /**
- * Utility for writing data as JavaScript literals
+ * Utility for writing data as ECMAScript literals or JSON
  * Inherently thread-safe as contains no mutable instance data.
  */
 public class DataEncoder {
@@ -15,7 +24,7 @@ public class DataEncoder {
 		public Snippet(String snippet) {
 			this.snippet = snippet;
 		}
-
+		
 		public String getSnippet() {
 			return this.snippet;
 		}
@@ -25,10 +34,20 @@ public class DataEncoder {
 		return new Snippet(text);
 	}
 
+	private enum EncodingFormat {
+		ECMASCRIPT,
+		JSON
+	}
+
+	private final static DateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 	private final boolean prettyPrint;
 	private final String indent;
 	private final String newline;
 
+	static {
+		ISO8601.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
+	
 	public DataEncoder() {
 		this(null, null);
 	}
@@ -44,7 +63,54 @@ public class DataEncoder {
 	}
 
 	/**
-	 * Serializes the data as JavaScript literals
+	 * Serializes the data as ECMAScript literals
+	 * @param data Data to serialize
+	 * @return encoded data
+	 */
+	public String encode(Object data) {
+
+		StringBuilder buffer = new StringBuilder();
+		try {
+			this.write(buffer, data, EncodingFormat.ECMASCRIPT, 0);
+
+		} catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+
+		return buffer.toString();
+	}
+
+	/**
+	 * Serializes the data as JSON
+	 * @param data Data to serialize
+	 * @return encoded data
+	 */
+	public String encodeJSON(Object data) {
+
+		StringBuilder buffer = new StringBuilder();
+		try {
+			this.write(buffer, data, EncodingFormat.JSON, 0);
+
+		} catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+		return buffer.toString();
+	}
+
+	/**
+	 * Serializes the data as JSON
+	 * @param output
+	 * @param data Data to serialize
+	 * @throws IOException
+	 */
+	public void writeJSON(Appendable output, Object data)
+		throws IOException {
+
+		this.write(output, data, EncodingFormat.JSON, 0);
+	}
+
+	/**
+	 * Serializes the data as ECMAScript literals
 	 * @param output
 	 * @param data Data to serialize
 	 * @throws IOException
@@ -53,13 +119,14 @@ public class DataEncoder {
 		throws IOException {
 
 		if (data instanceof SparseMap) {
+			// TODO: describe why
 			return;
 		}
-		this.write(output, data, 0);
+		this.write(output, data, EncodingFormat.ECMASCRIPT, 0);
 	}
 
 	/**
-	 * Serializes the data as JavaScript literals
+	 * Serializes the data as ECMAScript literals
 	 * @param output 
 	 * @param data Data to serialize
 	 * @param depth Starting indentation depth
@@ -68,9 +135,27 @@ public class DataEncoder {
 	public void write(Appendable output, Object data, int depth)
 		throws IOException {
 
+		this.write(output, data, EncodingFormat.ECMASCRIPT, depth);
+	}
+
+	/**
+	 * Serializes the data as ECMAScript literals or JSON
+	 * @param output 
+	 * @param data Data to serialize
+	 * @param format Encoding format compatibility mode
+	 * @param depth Starting indentation depth
+	 * @throws IOException
+	 */
+	private void write(Appendable output, Object data, EncodingFormat format, int depth)
+		throws IOException {
+
 		if (data == null) {
 			output.append("null");
 			return;
+		}
+
+		if (format == null) {
+			format = EncodingFormat.ECMASCRIPT;
 		}
 
 		Class<?> dataType = data.getClass();
@@ -79,37 +164,34 @@ public class DataEncoder {
 			output.append(((Snippet)data).getSnippet());
 
 		} else if (String.class.equals(dataType)) {
-			this.writeString(output, (String)data);
+			this.writeString(output, (String)data, format);
 
 		} else if (DuelData.isNumber(dataType)) {
-			this.writeNumber(output, data);
-
-		} else if (Date.class.equals(dataType)) {
-			this.writeDate(output, (Date)data);
+			this.writeNumber(output, data, format);
 
 		} else if (DuelData.isBoolean(dataType)) {
-			this.writeBoolean(output, DuelData.coerceBoolean(data));
+			this.writeBoolean(output, DuelData.coerceBoolean(data), format);
 
 		} else if (DuelData.isArray(dataType)) {
-			this.writeArray(output, DuelData.coerceCollection(data), depth);
+			this.writeArray(output, DuelData.coerceCollection(data), format, depth);
 
 		} else if (Date.class.equals(dataType)) {
-			this.writeDate(output, (Date)data);
+			this.writeDate(output, (Date)data, format);
 
 			// need to also serialize RegExp literals
 
 		} else {
-			this.writeObject(output, DuelData.coerceMap(data), depth);
+			this.writeObject(output, DuelData.coerceMap(data), format, depth);
 		}
 	}
 
-	private void writeBoolean(Appendable output, boolean data)
+	private void writeBoolean(Appendable output, boolean data, EncodingFormat format)
 		throws IOException {
 
 		output.append(data ? "true" : "false");
 	}
 
-	private void writeNumber(Appendable output, Object data)
+	private void writeNumber(Appendable output, Object data, EncodingFormat format)
 		throws IOException {
 
 		// format like JavaScript
@@ -123,13 +205,14 @@ public class DataEncoder {
 
 			// if overflows IEEE-754 precision then emit as String
 			if (invalidIEEE754(numberLong)) {
-				this.writeString(output, Long.toString(numberLong));
+				// TODO: allow disabling this behavior for non-ECMAScript clients
+				this.writeString(output, Long.toString(numberLong), format);
+
 			} else {
 				output.append(Long.toString(numberLong));
 			}
-		}
 
-		else if (number == (double)((long)number)) {
+		} else if (number == (double)((long)number)) {
 			// integers should be formatted without trailing decimals
 			output.append(Long.toString((long)number));
 
@@ -140,22 +223,28 @@ public class DataEncoder {
 	}
 
 	@SuppressWarnings("unused")
-	private void writeDate(Appendable output, Date data)
+	private void writeDate(Appendable output, Date data, EncodingFormat format)
 		throws IOException {
 
-		output.append("new Date(");
+		if (format == EncodingFormat.ECMASCRIPT) {
+			output.append("new Date(");
 
-		if (false) {
-			// TODO: allow formatting in browser's timezone
-			// new Date(yyyy, M, d, H, m, s, ms)
+			if (false) {
+				// TODO: allow formatting in browser's timezone
+				// new Date(yyyy, M, d, H, m, s, ms)
+
+			} else {
+				// format as UTC
+				output.append(Long.toString(data.getTime()));
+			}
+			output.append(")");
+
 		} else {
-			// format as UTC
-			output.append(Long.toString(data.getTime()));
+			this.writeString(output, ISO8601.format(data), format);
 		}
-		output.append(")");
 	}
 
-	private void writeArray(Appendable output, Collection<?> data, int depth)
+	private void writeArray(Appendable output, Collection<?> data, EncodingFormat format, int depth)
 		throws IOException {
 
 		output.append('[');
@@ -166,6 +255,7 @@ public class DataEncoder {
 		boolean needsDelim = false;
 		for (Object item : data) {
 			if (data instanceof SparseMap) {
+				// TODO: describe why
 				continue;
 			}
 
@@ -173,6 +263,7 @@ public class DataEncoder {
 				if (this.prettyPrint) {
 					output.append(' ');
 				}
+
 			} else {
 				// property delimiter
 				if (needsDelim) {
@@ -186,7 +277,7 @@ public class DataEncoder {
 				}
 			}
 
-			this.write(output, item, depth);
+			this.write(output, item, format, depth);
 		}
 
 		depth--;
@@ -201,7 +292,7 @@ public class DataEncoder {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void writeObject(Appendable output, Map<?, ?> data, int depth)
+	private void writeObject(Appendable output, Map<?, ?> data, EncodingFormat format, int depth)
 		throws IOException {
 
 		output.append('{');
@@ -214,6 +305,7 @@ public class DataEncoder {
 		for (Map.Entry<?, ?> property : (Set<Map.Entry<?, ?>>)properties) {
 			Object value = property.getValue();
 			if (value instanceof SparseMap) {
+				// TODO: describe why
 				continue;
 			}
 
@@ -234,13 +326,13 @@ public class DataEncoder {
 				}
 			}
 
-			this.writePropertyName(output, property.getKey());
+			this.writePropertyName(output, property.getKey(), format);
 			if (this.prettyPrint) {
 				output.append(" : ");
 			} else {
 				output.append(':');
 			}
-			this.write(output, value, depth);
+			this.write(output, value, format, depth);
 		}
 
 		depth--;
@@ -254,19 +346,20 @@ public class DataEncoder {
 		output.append('}');
 	}
 
-	private void writePropertyName(Appendable output, Object data)
+	private void writePropertyName(Appendable output, Object data, EncodingFormat format)
 		throws IOException {
 
 		String name = DuelData.coerceString(data);
 
-		if (JSUtility.isValidIdentifier(name, false)) {
+		if (format == EncodingFormat.ECMASCRIPT && JSUtility.isValidIdentifier(name, false)) {
 			output.append(name);
+
 		} else {
-			this.writeString(output, name);
+			this.writeString(output, name, format);
 		}
 	}
 
-	private void writeString(Appendable output, String data)
+	private void writeString(Appendable output, String data, EncodingFormat format)
 		throws IOException {
 
 		if (data == null) {
@@ -277,7 +370,12 @@ public class DataEncoder {
 		int start = 0,
 			length = data.length();
 
-		output.append('\'');
+		if (format == EncodingFormat.JSON) {
+			output.append('"');
+
+		} else {
+			output.append('\'');
+		}
 
 		for (int i=start; i<length; i++) {
 			String escape;
@@ -285,7 +383,16 @@ public class DataEncoder {
 			char ch = data.charAt(i);
 			switch (ch) {
 				case '\'':
+					if (format == EncodingFormat.JSON) {
+						continue;
+					}
 					escape = "\\'";
+					break;
+				case '"':
+					if (format != EncodingFormat.JSON) {
+						continue;
+					}
+					escape = "\\\"";
 					break;
 				case '\\':
 					escape = "\\\\";
@@ -307,7 +414,7 @@ public class DataEncoder {
 					break;
 				default:
 					if (ch >= ' ' && ch < '\u007F') {
-						// no need to escape ASCII chars
+						// no need to escape printable ASCII chars
 						continue;
 					}
 
@@ -327,7 +434,12 @@ public class DataEncoder {
 			output.append(data, start, length);
 		}
 
-		output.append('\'');
+		if (format == EncodingFormat.JSON) {
+			output.append('"');
+
+		} else {
+			output.append('\'');
+		}
 	}
 
 	/**
@@ -481,6 +593,7 @@ public class DataEncoder {
 
 		try {
 			return ((long)((double)value)) != value;
+
 		} catch (Exception ex) {
 			return true;
 		}
@@ -548,7 +661,7 @@ public class DataEncoder {
 						buffer.append(ROOT);
 					}
 					buffer.append('[');
-					this.writeString(buffer, key);
+					this.writeString(buffer, key, EncodingFormat.ECMASCRIPT);
 					buffer.append(']');
 				}
 				Object value = child.getValue();
@@ -566,7 +679,7 @@ public class DataEncoder {
 					buffer.append(ROOT);
 				}
 				buffer.append('[');
-				this.writeNumber(buffer, i++);
+				this.writeNumber(buffer, i++, EncodingFormat.ECMASCRIPT);
 				buffer.append(']');
 				this.accumulateVars(child, vars, buffer);
 				buffer.setLength(length);
