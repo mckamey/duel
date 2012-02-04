@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class CDNLinkInterceptor implements LinkInterceptor {
 
+	private static final Logger log = LoggerFactory.getLogger(CDNLinkInterceptor.class);
 	private final boolean isDevMode;
 	private final String cdnHost;
 	private final Map<String, String> cdnMap;
@@ -35,15 +36,42 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 		this.cdnMap = cdnMap;
 
 		// use URI class to check for proper host syntax
-		this.cdnHost =
-			(cdnHost == null || cdnHost.isEmpty()) ?
-			"" :
-			new URI("http", cdnHost, null, null).getRawSchemeSpecificPart();
+		this.cdnHost = formatURL(cdnHost);
 
-		Logger log = LoggerFactory.getLogger(CDNLinkInterceptor.class);
 		log.info("cdnHost="+this.cdnHost);
 		log.info("isDevMode="+this.isDevMode);
 	}
+
+	private static String formatURL(String path) {
+		path = path == null ? "" : path.trim();
+		if (path.isEmpty() || path.equals("/")) {
+			return "";
+		}
+
+		if (!path.startsWith(".")) {
+			try {
+				int index = path.indexOf('/');
+				if (index < 0) {
+					path = new URI("http", path, null, null).getRawSchemeSpecificPart();
+				} else {
+					path = new URI("http", path.substring(0, index), path.substring(index), null).getRawSchemeSpecificPart();
+				}
+	
+			} catch (URISyntaxException ex) {
+				log.error(ex.getMessage(), ex);
+			}
+
+			if (!path.startsWith("/")) {
+				path = "//"+path;
+			}
+		}
+
+		if (path.endsWith("/")) {
+			path = path.substring(0, path.length()-1);
+		}
+
+		return path;
+	 }
 
 	public String transformURL(String url) {
 		if (!this.cdnMap.containsKey(url)) {
@@ -63,7 +91,7 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 			cdnURL = this.cdnMap.get(cdnURL);
 		}
 
-		// CDN resources are compacted and optionally served from a differen host
+		// CDN resources are compacted and optionally served from a different root
 		return this.cdnHost + cdnURL;
 	}
 
