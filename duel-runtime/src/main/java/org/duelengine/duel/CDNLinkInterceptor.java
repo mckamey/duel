@@ -32,6 +32,10 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 	 */
 	public CDNLinkInterceptor(String cdnHost, Map<String, String> cdnMap, boolean isDevMode) throws URISyntaxException {
 
+		if (cdnMap == null) {
+			cdnMap = Collections.emptyMap();
+		}
+
 		this.isDevMode = isDevMode;
 		this.cdnMap = cdnMap;
 
@@ -100,8 +104,12 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 	 * @param cdnBundle
 	 * @return
 	 */
-	private static Map<String, String> bundleAsMap(final ResourceBundle bundle, boolean isDevMode) {
+	protected static Map<String, String> bundleAsMap(final ResourceBundle bundle, boolean isDevMode) {
 
+		if (bundle == null) {
+			return null;
+		}
+		
 		if (!isDevMode) {
 			// dump key-value pairs into simple map
 			Set<String> keys = bundle.keySet();
