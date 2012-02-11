@@ -11,6 +11,8 @@ class StaticLinkInterceptor extends CDNLinkInterceptor {
 
 	private final Map<String, String> cache = new HashMap<String, String>();
 	private final ResourceBundle linksBundle;
+	private final boolean isDevMode;
+	private final int cdnHostPrefix;
 
 	public StaticLinkInterceptor(String cdnHost, ResourceBundle cdnBundle, ResourceBundle linksBundle, boolean isDevMode)
 			throws URISyntaxException {
@@ -19,6 +21,10 @@ class StaticLinkInterceptor extends CDNLinkInterceptor {
 
 		// TODO: replace with: bundleAsMap(linksBundle, isDevMode)
 		this.linksBundle = linksBundle;
+		// TODO: replace with super.isDevMode
+		this.isDevMode = isDevMode;
+
+		this.cdnHostPrefix = (cdnHost == null) ? 0 : cdnHost.length();
 	}
 
 	public Map<String, String> getLinkCache() {
@@ -38,16 +44,33 @@ class StaticLinkInterceptor extends CDNLinkInterceptor {
 		cache.put(url, cdnURL);
 
 		// recursively transform and cache child links
-		if (linksBundle != null && linksBundle.containsKey(url)) {
-			String childLinks = linksBundle.getString(url);
-			if (childLinks != null && !childLinks.isEmpty()) {
-				for (String child : childLinks.split("\\|")) {
-					if (child == null || child.isEmpty()) {
-						continue;
-					}
+		if (linksBundle != null) {
+			if (linksBundle.containsKey(url)) {
+				String childLinks = linksBundle.getString(url);
+				if (childLinks != null && !childLinks.isEmpty()) {
+					for (String child : childLinks.split("\\|")) {
+						if (child == null || child.isEmpty()) {
+							continue;
+						}
 
-					// ignore result, we only care about caching
-					this.transformURL(child);
+						// ignore result, we only care about caching
+						this.transformURL(child);
+					}
+				}
+			}
+
+			if (isDevMode && cdnURL.length() > cdnHostPrefix && linksBundle.containsKey(cdnURL.substring(cdnHostPrefix))) {
+				// note must trim the CDN host to match
+				String childLinks = linksBundle.getString(cdnURL.substring(cdnHostPrefix));
+				if (childLinks != null && !childLinks.isEmpty()) {
+					for (String child : childLinks.split("\\|")) {
+						if (child == null || child.isEmpty()) {
+							continue;
+						}
+
+						// ignore result, we only care about caching
+						this.transformURL(child);
+					}
 				}
 			}
 		}
