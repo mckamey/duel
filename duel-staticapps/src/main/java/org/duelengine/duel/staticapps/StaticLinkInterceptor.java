@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 
 import org.duelengine.duel.CDNLinkInterceptor;
 
-public class StaticLinkInterceptor extends CDNLinkInterceptor {
+class StaticLinkInterceptor extends CDNLinkInterceptor {
 
 	private final Map<String, String> cache = new HashMap<String, String>();
 	private final ResourceBundle linksBundle;
