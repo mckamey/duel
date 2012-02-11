@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 public class CDNLinkInterceptor implements LinkInterceptor {
 
 	private static final Logger log = LoggerFactory.getLogger(CDNLinkInterceptor.class);
-	private final boolean isDevMode;
-	private final String cdnHost;
+	protected final boolean isDevMode;
+	protected final String cdnHost;
 	private final Map<String, String> cdnMap;
 
 	/**
@@ -20,7 +20,9 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 	 * @param isDevMode uses normal paths unless compacted form has a dev form (e.g., "/foo.js" => "/foo.min.js" => "/foo.test.js", else "/foo.js")
 	 * @throws URISyntaxException
 	 */
-	public CDNLinkInterceptor(String cdnHost, ResourceBundle cdnBundle, boolean isDevMode) throws URISyntaxException {
+	public CDNLinkInterceptor(String cdnHost, ResourceBundle cdnBundle, boolean isDevMode)
+			throws URISyntaxException {
+
 		this(cdnHost, bundleAsMap(cdnBundle, isDevMode), isDevMode);
 	}
 
@@ -30,7 +32,8 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 	 * @param isDevMode uses normal paths unless compacted form has a dev form (e.g., "/foo.js" => "/foo.min.js" => "/foo.test.js", else "/foo.js")
 	 * @throws URISyntaxException
 	 */
-	public CDNLinkInterceptor(String cdnHost, Map<String, String> cdnMap, boolean isDevMode) throws URISyntaxException {
+	public CDNLinkInterceptor(String cdnHost, Map<String, String> cdnMap, boolean isDevMode)
+			throws URISyntaxException {
 
 		if (cdnMap == null) {
 			cdnMap = Collections.emptyMap();
