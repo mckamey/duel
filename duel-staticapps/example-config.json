@@ -1,0 +1,36 @@
+{
+	"targetDir": "target/",
+	"sourceDir": "foo-web/target/foo-web/",
+	"serverPrefix": "com.example.web.views",
+	"cdnMap": "cdn",
+	"cdnLinksMap": "cdnLink",
+	"cdnHost": null,
+	"isDevMode": false,
+	"views": {
+		"index.html":
+			{
+				"view": "HomePage",
+				"data": {
+					"foo": "bar",
+					"blah": "yada"
+				},
+				"extras": null
+			},
+		"error.html":
+			{
+				"view": "ErrorPage",
+				"data": {
+					"foo": "bar",
+					"blah": "yada"
+				},
+				"extras": {
+					"App.foo": "bar",
+					"App.blah": "yada"
+				}
+			}
+	},
+	"files": [
+		"robots.txt",
+		"favicon.ico"
+	]
+}

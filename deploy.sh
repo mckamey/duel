@@ -12,3 +12,7 @@ cd ..
 
 cd duel-maven-plugin
 mvn clean deploy -U -DperformRelease=true -Dgpg.keyname=EE82F9AB
+cd ..
+
+cd duel-staticapps
+mvn clean deploy -U -DperformRelease=true -Dgpg.keyname=EE82F9AB
