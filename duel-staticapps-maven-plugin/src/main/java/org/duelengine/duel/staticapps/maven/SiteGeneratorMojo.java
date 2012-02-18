@@ -20,13 +20,11 @@ import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.duelengine.duel.staticapps.SiteBuilder;
 import org.duelengine.duel.staticapps.SiteConfig;
 
-//phase process-classes?
 /**
  * Generates static app from DUEL-based WAR
  *
  * @goal generate
- * @phase package
- * @requiresDependencyResolution
+ * @phase process-classes
  */
 public class SiteGeneratorMojo extends AbstractMojo {
 
