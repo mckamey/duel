@@ -11,5 +11,6 @@ duel-js/target
 duel-js/src/test/resources/ga.js
 duel-maven-plugin/target
 duel-staticapps/target
+duel-staticapps-maven-plugin/target
 target
 TODO.txt

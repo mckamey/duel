@@ -10,12 +10,12 @@
 	</parent>
 
 	<groupId>org.duelengine</groupId>
-	<artifactId>duel-maven-plugin</artifactId>
+	<artifactId>duel-staticapps-maven-plugin</artifactId>
 	<version>0.8.2</version>
 	<packaging>maven-plugin</packaging>
 
-	<name>DUEL Maven Plugin</name>
-	<description>Dual-side template engine for the JVM</description>
+	<name>DUEL Static Apps Maven Plugin</name>
+	<description>Maven Plugin for DUEL Static Site Generator</description>
 	<url>http://duelengine.org</url>
 	<licenses>
 		<license>
@@ -40,15 +40,15 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<slf4j.version>1.6.4</slf4j.version>
-		<maven.version>3.0.3</maven.version>
-		<junit.version>4.8.2</junit.version>
+		<maven.version>3.0.4</maven.version>
+		<junit.version>4.9</junit.version>
 		<jvm.version>1.6</jvm.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.duelengine</groupId>
-			<artifactId>duel-compiler</artifactId>
+			<artifactId>duel-staticapps</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -81,7 +81,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-plugin-plugin</artifactId>
-				<version>2.5.1</version>
+				<version>2.9</version>
 				<executions>
 					<execution>
 						<id>generated-helpmojo</id>

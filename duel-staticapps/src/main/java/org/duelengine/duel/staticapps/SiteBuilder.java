@@ -20,7 +20,16 @@ public class SiteBuilder {
 
 	private static final Logger log = LoggerFactory.getLogger(SiteBuilder.class);
 	private static final int BUFFER_SIZE = 64*1024;//64K
+	private final ClassLoader classLoader;
 	private final byte[] buffer = new byte[BUFFER_SIZE];
+
+	public SiteBuilder() {
+		this(Thread.currentThread().getContextClassLoader());
+	}
+
+	public SiteBuilder(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
 
 	public void build(SiteConfig config)
 			throws FileNotFoundException {
@@ -65,12 +74,12 @@ public class SiteBuilder {
 			String bundleName = config.cdnMap();
 			ResourceBundle cdnBundle =
 				(bundleName == null) || bundleName.isEmpty() ? null :
-				ResourceBundle.getBundle(bundleName, Locale.ROOT);
+				ResourceBundle.getBundle(bundleName, Locale.ROOT, classLoader);
 
 			bundleName = config.cdnLinksMap();
 			ResourceBundle cdnLinkBundle =
 				(bundleName == null) || bundleName.isEmpty() ? null :
-				ResourceBundle.getBundle(bundleName, Locale.ROOT);
+				ResourceBundle.getBundle(bundleName, Locale.ROOT, classLoader);
 
 			linkInterceptor = new StaticLinkInterceptor(config.cdnHost(), cdnBundle, cdnLinkBundle, config.isDevMode());
 
@@ -193,7 +202,7 @@ public class SiteBuilder {
 	 * @return the view class
 	 * @throws ClassNotFoundException 
 	 */
-	private static Class<? extends DuelView> viewClass(String serverPrefix, String viewName)
+	private Class<? extends DuelView> viewClass(String serverPrefix, String viewName)
 			throws ClassNotFoundException {
 
 		if (serverPrefix != null && !serverPrefix.isEmpty()) {
@@ -203,6 +212,6 @@ public class SiteBuilder {
 				viewName = serverPrefix + '.' + viewName;
 			}
 		}
-		return Class.forName(viewName).asSubclass(DuelView.class);
+		return Class.forName(viewName, true, classLoader).asSubclass(DuelView.class);
 	}
 }

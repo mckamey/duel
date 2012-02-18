@@ -38,7 +38,8 @@
 		<module>duel-js</module>
 		<module>duel-runtime</module>
 		<module>duel-compiler</module>
-		<module>duel-staticapps</module>
 		<module>duel-maven-plugin</module>
+		<module>duel-staticapps</module>
+		<module>duel-staticapps-maven-plugin</module>
 	</modules>
 </project>
