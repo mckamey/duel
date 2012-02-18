@@ -3,7 +3,7 @@
 	"sourceDir": "foo-web/target/foo-web/",
 	"serverPrefix": "com.example.web.views",
 	"cdnMap": "cdn",
-	"cdnLinksMap": "cdnLink",
+	"cdnLinksMap": "cdnLinks",
 	"cdnHost": null,
 	"isDevMode": false,
 	"views": {

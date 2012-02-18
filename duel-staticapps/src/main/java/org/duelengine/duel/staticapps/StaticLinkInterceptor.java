@@ -25,7 +25,7 @@ class StaticLinkInterceptor extends CDNLinkInterceptor {
 		super(cdnHost, cdnBundle, isDevMode);
 
 		this.linksBundle = linksBundle;
-		this.cdnHostPrefix = cdnHost.length();
+		this.cdnHostPrefix = (cdnHost == null) ? 0 : cdnHost.length();
 	}
 
 	public Map<String, String> getLinkCache() {
