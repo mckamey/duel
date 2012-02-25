@@ -95,31 +95,29 @@ public class SiteBuilder {
 		Map<String, SiteViewPage> views = config.views();
 		if (views != null) {
 			for (String targetPage : views.keySet()) {
-				SiteViewPage view = views.get(targetPage);
-				log.info("source view: "+view.view());
-				log.info("target page: "+targetPage);
+				SiteViewPage sitePage = views.get(targetPage);
+				log.info("Generating: "+sitePage.view()+" => "+targetPage);
 
 				FileWriter writer = null;
 				try {
-				File indexFile = new File(targetDir, targetPage);
-				FileUtil.prepSavePath(indexFile);
+					File targetFile = new File(targetDir, targetPage);
+					FileUtil.prepSavePath(targetFile);
 
-				writer = new FileWriter(indexFile);
+					writer = new FileWriter(targetFile);
 
-				DuelContext context = new DuelContext()
-					.setFormat(formatPrefs)
-					.setLinkInterceptor(linkInterceptor)
-					.setData(view.data())
-					.setOutput(writer);
+					DuelContext context = new DuelContext()
+						.setFormat(formatPrefs)
+						.setLinkInterceptor(linkInterceptor)
+						.setData(sitePage.data())
+						.setOutput(writer);
 
-				Map<String, Object> extras = view.extras();
-				if (extras != null && !extras.isEmpty()) {
-					// ambient client-side data
-					context.putExtras(extras);
-				}
+					Map<String, Object> extras = sitePage.extras();
+					if (extras != null) {
+						// ambient client-side data
+						context.putExtras(extras);
+					}
 
-				log.trace("Generating: "+targetPage);
-				viewClass(config.serverPrefix(), view.view()).newInstance().render(context);
+					viewClass(config.serverPrefix(), sitePage.view()).newInstance().render(context);
 
 				} catch (Exception ex) {
 					log.error(ex.getMessage(), ex);
@@ -141,6 +139,7 @@ public class SiteBuilder {
 			for (String staticFile : staticFiles) {
 				try {
 					copyResource(sourceDir, targetDir, staticFile, staticFile);
+
 				} catch (IOException ex) {
 					log.error(ex.getMessage(), ex);
 				}
@@ -151,6 +150,7 @@ public class SiteBuilder {
 		for (String key : linkCache.keySet()) {
 			try {
 				copyResource(sourceDir, targetDir, key, linkCache.get(key));
+
 			} catch (IOException ex) {
 				log.error(ex.getMessage(), ex);
 			}
@@ -167,11 +167,11 @@ public class SiteBuilder {
 			cdnPath = cdnPath.substring(0, cdnPath.indexOf('#'));
 		}
 
-		File resource = new File(sourceDir, cdnPath);
+		File source = new File(sourceDir, cdnPath);
 		File target = new File(targetDir, cdnPath);
-		if (!resource.exists()) {
+		if (!source.exists()) {
 			// report but still copy the rest
-			log.warn("Resource not found: "+resource.getAbsolutePath());
+			log.warn("Resource not found: "+source.getAbsolutePath());
 			try {
 				if (target.isFile() && target.exists() && target.delete()) {
 					log.info("Deleted existing: "+target.getAbsolutePath());
@@ -181,9 +181,9 @@ public class SiteBuilder {
 			}
 			return;
 		}
-		if (!resource.isFile()) {
+		if (!source.isFile()) {
 			// report but still copy the rest
-			log.warn("Resource not a file: "+resource.getPath());
+			log.warn("Resource not a file: "+source.getPath());
 			try {
 				if (target.isFile() && target.exists() && target.delete()) {
 					log.info("Deleted existing: "+target.getAbsolutePath());
@@ -195,7 +195,7 @@ public class SiteBuilder {
 		}
 
 		log.info("Copying "+path+" as "+cdnPath);
-		FileUtil.copy(resource, target, true, buffer);
+		FileUtil.copy(source, target, true, buffer);
 	}
 
 	/**

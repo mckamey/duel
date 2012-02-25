@@ -1,10 +1,10 @@
 {
-	"targetDir": "target/",
-	"sourceDir": "foo-web/target/foo-web/",
+	"targetDir": "target/www/",
+	"sourceDir": "target/foo-web/",
 	"serverPrefix": "com.example.web.views",
 	"cdnMap": "cdn",
 	"cdnLinksMap": "cdnLinks",
-	"cdnHost": null,
+	"cdnHost": ".",
 	"isDevMode": false,
 	"views": {
 		"index.html":

@@ -35,6 +35,27 @@ public class FileUtil {
 	public static final String SHA1 = "SHA-1";
 	public static final String MD5 = "MD5";
 
+	public static File getCanonicalFile(String path) {
+		if (path == null) {
+			throw new NullPointerException("path");
+		}
+
+		return getCanonicalFile(new File(path));
+	}
+
+	public static File getCanonicalFile(File file) {
+		if (file == null) {
+			throw new NullPointerException("file");
+		}
+
+		try {
+			return file.getCanonicalFile();
+
+		} catch (IOException e) {
+			return file.getAbsoluteFile();
+		}
+	}
+
 	public static void prepSavePath(File file) {
 		if (file == null) {
 			throw new NullPointerException("file");

@@ -19,12 +19,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.duelengine.duel.staticapps.SiteBuilder;
 import org.duelengine.duel.staticapps.SiteConfig;
+import org.duelengine.duel.utils.FileUtil;
 
 /**
  * Generates static app from DUEL-based WAR
  *
  * @goal generate
- * @phase process-classes
+ * @phase package
  */
 public class SiteGeneratorMojo extends AbstractMojo {
 
@@ -74,7 +75,7 @@ public class SiteGeneratorMojo extends AbstractMojo {
 			List<URL> runtimeUrls = new ArrayList<URL>(runtimeClasspathElements.size());
 			for (String element : runtimeClasspathElements) {
 				try {
-					URL elementURL = new File(element).toURI().toURL();
+					URL elementURL = FileUtil.getCanonicalFile(element).toURI().toURL();
 					runtimeUrls.add(elementURL);
 					if (realm != null) {
 						realm.addURL(elementURL);

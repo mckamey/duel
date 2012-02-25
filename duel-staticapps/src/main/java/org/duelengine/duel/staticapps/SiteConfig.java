@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.duelengine.duel.utils.FileUtil;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class SiteConfig {
@@ -43,7 +44,7 @@ public class SiteConfig {
 			targetDirFile = null;
 
 		} else {
-			targetDirFile = new File(targetDir);
+			targetDirFile = FileUtil.getCanonicalFile(targetDir);
 		}
 		return this;
 	}
@@ -67,7 +68,7 @@ public class SiteConfig {
 			sourceDirFile = null;
 
 		} else {
-			sourceDirFile = new File(sourceDir);
+			sourceDirFile = FileUtil.getCanonicalFile(sourceDir);
 		}
 		return this;
 	}
