@@ -34,6 +34,11 @@ class StaticLinkInterceptor extends CDNLinkInterceptor {
 
 	@Override
 	public String transformURL(String url) {
+		if (url.indexOf("://") > 0 || url.indexOf("//") == 0) {
+			// skip absolute URLs
+			return url;
+		}
+
 		if (cache.containsKey(url)) {
 			return cache.get(url);
 		}
