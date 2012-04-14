@@ -188,7 +188,10 @@ public class HTMLFormatter {
 					entity = "&shy;";
 					break;
 				case '\u00B7':
-					entity = "&moddot;";
+					entity = "&middot;";
+					break;
+				case '\u2022':
+					entity = "&bull;";
 					break;
 				default:
 					// encode control chars and optionally all non-ASCII
