@@ -3,6 +3,7 @@ package org.duelengine.duel.staticapps;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.duelengine.duel.DuelView;
 
 public class SiteViewPage {
 
@@ -59,5 +60,41 @@ public class SiteViewPage {
 	public SiteViewPage extras(Map<String, Object> value) {
 		extras = value;
 		return this;
+	}
+
+	/**
+	 * @return the view class
+	 * @throws ClassNotFoundException 
+	 */
+	protected Class<? extends DuelView> viewClass(String serverPrefix, ClassLoader classLoader)
+			throws ClassNotFoundException {
+
+		if (view == null) {
+			return null;
+		}
+
+		String type = view;
+		if (serverPrefix != null && !serverPrefix.isEmpty()) {
+			if (serverPrefix.endsWith(".")) {
+				type = serverPrefix + type;
+			} else {
+				type = serverPrefix + '.' + type;
+			}
+		}
+
+		return Class.forName(type, true, classLoader).asSubclass(DuelView.class);
+	}
+
+	/**
+	 * @return the view instance
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	protected DuelView viewInstance(String serverPrefix, ClassLoader classLoader)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		Class<? extends DuelView> viewClass = viewClass(serverPrefix, classLoader);
+
+		return (viewClass != null) ? viewClass.newInstance() : null;
 	}
 }

@@ -88,9 +88,9 @@ public class SiteBuilder {
 		}
 
 		FormatPrefs formatPrefs = new FormatPrefs()
-			.setEncoding("UTF-8")
-			.setIndent("")
-			.setNewline("");
+			.setEncoding(config.encoding())
+			.setIndent(config.isDevMode() ? "\t" : "")
+			.setNewline(config.isDevMode() ? "\n" : "");
 
 		Map<String, SiteViewPage> views = config.views();
 		if (views != null) {
@@ -117,7 +117,10 @@ public class SiteBuilder {
 						context.putExtras(extras);
 					}
 
-					viewClass(config.serverPrefix(), sitePage.view()).newInstance().render(context);
+					DuelView view = sitePage.viewInstance(config.serverPrefix(), classLoader);
+					if (view != null) {
+						view.render(context);
+					}
 
 				} catch (Exception ex) {
 					log.error(ex.getMessage(), ex);
@@ -196,22 +199,5 @@ public class SiteBuilder {
 
 		log.info("Copying "+path+" as "+cdnPath);
 		FileUtil.copy(source, target, true, buffer);
-	}
-
-	/**
-	 * @return the view class
-	 * @throws ClassNotFoundException 
-	 */
-	private Class<? extends DuelView> viewClass(String serverPrefix, String viewName)
-			throws ClassNotFoundException {
-
-		if (serverPrefix != null && !serverPrefix.isEmpty()) {
-			if (serverPrefix.endsWith(".")) {
-				viewName = serverPrefix + viewName;
-			} else {
-				viewName = serverPrefix + '.' + viewName;
-			}
-		}
-		return Class.forName(viewName, true, classLoader).asSubclass(DuelView.class);
 	}
 }

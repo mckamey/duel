@@ -10,6 +10,11 @@ import org.duelengine.duel.utils.FileUtil;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class SiteConfig {
 
+	private final static String TEXT_HTML = "text/html";
+	private final static String UTF8 = "UTF-8";
+
+	private String contentType;
+	private String encoding;
 	private String targetDir;
 	private String sourceDir;
 	private String serverPrefix;
@@ -24,6 +29,30 @@ public class SiteConfig {
 
 	private File sourceDirFile;
 	private File targetDirFile;
+
+	public String contentType() {
+		if (contentType == null || contentType.isEmpty()) {
+			return TEXT_HTML;
+		}
+		return contentType;
+	}
+
+	public SiteConfig contentType(String value) {
+		contentType = value;
+		return this;
+	}
+
+	public String encoding() {
+		if (encoding == null || encoding.isEmpty()) {
+			return UTF8;
+		}
+		return encoding;
+	}
+
+	public SiteConfig encoding(String value) {
+		encoding = value;
+		return this;
+	}
 
 	/**
 	 * Gets the target directory

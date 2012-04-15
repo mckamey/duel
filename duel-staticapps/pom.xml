@@ -11,7 +11,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-staticapps</artifactId>
-	<version>0.8.4</version>
+	<version>0.8.5</version>
 	<packaging>jar</packaging>
 
 	<name>DUEL Static Apps</name>
@@ -40,9 +40,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<duel.version>0.8.2</duel.version>
-		<jackson.version>1.9.4</jackson.version>
+		<jackson.version>1.9.6</jackson.version>
 		<codec.version>1.6</codec.version>
 		<slf4j.version>1.6.4</slf4j.version>
+		<servlet.version>2.5</servlet.version>
 		<junit.version>4.9</junit.version>
 		<jvm.version>1.6</jvm.version>
 	</properties>
@@ -85,6 +86,14 @@
 			<artifactId>slf4j-jdk14</artifactId>
 			<version>${slf4j.version}</version>
 			<scope>test</scope>
+		</dependency>
+
+		<!-- Servlet interfaces -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${servlet.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Unit test library -->

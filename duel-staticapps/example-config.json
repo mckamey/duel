@@ -1,11 +1,13 @@
 {
+	"isDevMode": false,
+	"contentType": "text/html",
+	"encoding": "UTF-8",
 	"targetDir": "target/www/",
 	"sourceDir": "target/foo-web/",
 	"serverPrefix": "com.example.web.views",
 	"cdnMap": "cdn",
 	"cdnLinksMap": "cdnLinks",
 	"cdnHost": ".",
-	"isDevMode": false,
 	"views": {
 		"index.html":
 			{
