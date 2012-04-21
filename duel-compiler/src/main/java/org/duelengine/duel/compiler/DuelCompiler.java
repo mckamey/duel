@@ -2,7 +2,8 @@ package org.duelengine.duel.compiler;
 
 import java.io.*;
 import java.util.*;
-import org.duelengine.duel.ast.*;
+
+import org.duelengine.duel.ast.VIEWCommandNode;
 import org.duelengine.duel.codegen.*;
 import org.duelengine.duel.parsing.*;
 import org.slf4j.Logger;
@@ -117,7 +118,7 @@ public class DuelCompiler {
 			String outputName = inputFile.getName();
 			for (VIEWCommandNode view : views) {
 				// use the first view
-				outputName = settings.getFullClientName(view.getName()).replace('.', '/');
+				outputName = settings.getClientPath(view.getName());
 				break;
 			}
 
@@ -145,7 +146,7 @@ public class DuelCompiler {
 			codegen = new JavaCodeGen(settings);
 			for (VIEWCommandNode view : views) {
 				try {
-					File outputFile = new File(this.outputServerDir, settings.getFullServerName(view.getName()).replace('.', '/')+codegen.getFileExtension());
+					File outputFile = new File(this.outputServerDir, settings.getServerPath(view.getName(), codegen));
 					outputFile.getParentFile().mkdirs();
 
 					FileWriter writer = new FileWriter(outputFile, false);

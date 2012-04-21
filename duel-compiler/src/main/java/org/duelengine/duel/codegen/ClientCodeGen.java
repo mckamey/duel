@@ -71,7 +71,7 @@ public class ClientCodeGen implements CodeGenerator {
 			this.writeln(output, 0);
 
 			// prepend the client-side prefix
-			String viewName = this.settings.getFullClientName(view.getName());
+			String viewName = this.settings.getClientName(view.getName());
 			try {
 				if (this.encoder.writeNamespace(output, namespaces, viewName)) {
 					this.writeln(output, 0);
@@ -221,7 +221,7 @@ public class ClientCodeGen implements CodeGenerator {
 					if (addPrefix && "view".equalsIgnoreCase(attr) && attrVal instanceof ExpressionNode) {
 						// prepend the client-side prefix
 						ExpressionNode nameAttr = (ExpressionNode)attrVal; 
-						attrVal = new ExpressionNode(this.settings.getFullClientName(nameAttr.getValue()), nameAttr.getIndex(), nameAttr.getLine(), nameAttr.getColumn());
+						attrVal = new ExpressionNode(this.settings.getClientName(nameAttr.getValue()), nameAttr.getIndex(), nameAttr.getLine(), nameAttr.getColumn());
 					}
 					this.writeNode(output, attrVal, depth, preMode);
 				}

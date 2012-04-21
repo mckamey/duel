@@ -2,6 +2,7 @@ package org.duelengine.duel.codegen;
 
 import java.io.IOException;
 import java.util.*;
+
 import org.duelengine.duel.*;
 import org.duelengine.duel.ast.*;
 import org.duelengine.duel.codedom.*;
@@ -42,7 +43,7 @@ public class CodeDOMBuilder {
 	public CodeTypeDeclaration buildView(VIEWCommandNode viewNode) throws IOException {
 		try {
 			// prepend the server-side prefix
-			String fullName = this.settings.getFullServerName(viewNode.getName());
+			String fullName = this.settings.getServerName(viewNode.getName());
 			int lastDot = fullName.lastIndexOf('.');
 			String name = fullName.substring(lastDot+1);
 			String ns = (lastDot > 0) ? fullName.substring(0, lastDot) : null;
@@ -195,7 +196,7 @@ public class CodeDOMBuilder {
 		}
 
 		// prepend the server-side prefix
-		viewName = this.settings.getFullServerName(viewName);
+		viewName = this.settings.getServerName(viewName);
 
 		CodeExpression[] ctorArgs = new CodeExpression[node.getChildren().size()];
 
@@ -290,7 +291,7 @@ public class CodeDOMBuilder {
 
 		if (viewName != null) {
 			// prepend the server-side prefix
-			viewName = this.settings.getFullClientName(viewName);
+			viewName = this.settings.getClientName(viewName);
 			this.buffer.append(viewName);
 
 		} else {

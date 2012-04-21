@@ -1,9 +1,13 @@
 package org.duelengine.duel.codegen;
 
+import java.util.Locale;
+
 /**
  * Settings which affect generated code
  */
 public class CodeGenSettings {
+	private static final char NAMESPACE_DELIM = '.';
+	private static final char DIR_DELIM = '/';
 
 	private String clientPrefix;
 	private String serverPrefix;
@@ -12,53 +16,30 @@ public class CodeGenSettings {
 	private boolean convertLineEndings;
 	private boolean normalizeWhitespace;
 	private boolean encodeNonASCII = true;
+	private boolean lowercaseClientPaths = true;
 
 	public void setClientNamePrefix(String value) {
-		this.clientPrefix = (value == null) ? null : value.trim();
+		clientPrefix = (value == null) ? null : value.trim();
 	}
 
 	public String getClientNamePrefix() {
-		return this.clientPrefix;
+		return clientPrefix;
 	}
 
 	public boolean hasClientNamePrefix() {
-		return (this.clientPrefix != null) && (this.clientPrefix.length() > 0);
-	}
-
-	public String getFullClientName(String name) {
-		if ((this.clientPrefix == null) || (this.clientPrefix.length() < 1)) {
-			return name;
-		}
-
-		if (name != null) {
-			name = name.trim();
-		}
-
-		return this.clientPrefix+'.'+name;
+		return (clientPrefix != null) && (clientPrefix.length() > 0);
 	}
 
 	public void setServerNamePrefix(String value) {
-		this.serverPrefix = value;
+		serverPrefix = value;
 	}
 
 	public String getServerNamePrefix() {
-		return this.serverPrefix;
+		return serverPrefix;
 	}
 
 	public boolean hasServerNamePrefix() {
-		return (this.serverPrefix != null) && (this.serverPrefix.length() > 0);
-	}
-
-	public String getFullServerName(String name) {
-		if ((this.serverPrefix == null) || (this.serverPrefix.length() < 1)) {
-			return name;
-		}
-
-		if (name != null) {
-			name = name.trim();
-		}
-
-		return this.serverPrefix+'.'+name;
+		return (serverPrefix != null) && (serverPrefix.length() > 0);
 	}
 
 	/**
@@ -66,7 +47,7 @@ public class CodeGenSettings {
 	 * @return
 	 */
 	public String getIndent() {
-		return this.indent;
+		return indent;
 	}
 
 	/**
@@ -74,7 +55,7 @@ public class CodeGenSettings {
 	 * @param value
 	 */
 	public void setIndent(String value) {
-		this.indent = (value != null) ? value : "";
+		indent = (value != null) ? value : "";
 	}
 
 	/**
@@ -82,7 +63,7 @@ public class CodeGenSettings {
 	 * @return
 	 */
 	public String getNewline() {
-		return this.newline;
+		return newline;
 	}
 
 	/**
@@ -90,7 +71,7 @@ public class CodeGenSettings {
 	 * @param value
 	 */
 	public void setNewline(String value) {
-		this.newline = (value != null) ? value : "";
+		newline = (value != null) ? value : "";
 	}
 
 	/**
@@ -99,7 +80,7 @@ public class CodeGenSettings {
 	 * @return
 	 */
 	public boolean getConvertLineEndings() {
-		return this.convertLineEndings;
+		return convertLineEndings;
 	}
 
 	/**
@@ -108,7 +89,7 @@ public class CodeGenSettings {
 	 * @param value
 	 */
 	public void setConvertLineEndings(boolean value) {
-		this.convertLineEndings = value;
+		convertLineEndings = value;
 	}
 
 	/**
@@ -116,7 +97,7 @@ public class CodeGenSettings {
 	 * @return
 	 */
 	public boolean getEncodeNonASCII() {
-		return this.encodeNonASCII;
+		return encodeNonASCII;
 	}
 
 	/**
@@ -124,7 +105,7 @@ public class CodeGenSettings {
 	 * @param value
 	 */
 	public void setEncodeNonASCII(boolean value) {
-		this.encodeNonASCII = value;
+		encodeNonASCII = value;
 	}
 
 	/**
@@ -132,7 +113,7 @@ public class CodeGenSettings {
 	 * @return
 	 */
 	public boolean getNormalizeWhitespace() {
-		return this.normalizeWhitespace;
+		return normalizeWhitespace;
 	}
 
 	/**
@@ -140,6 +121,67 @@ public class CodeGenSettings {
 	 * @param value
 	 */
 	public void setNormalizeWhitespace(boolean value) {
-		this.normalizeWhitespace = value;
+		normalizeWhitespace = value;
+	}
+
+	/**
+	 * Gets if client paths and filenames are forced to lowercase
+	 * @return
+	 */
+	public boolean getLowercaseClientPaths() {
+		return lowercaseClientPaths;
+	}
+
+	/**
+	 * Sets if client paths and filenames are forced to lowercase
+	 * @param value
+	 */
+	public void setLowercaseClientPaths(boolean value) {
+		lowercaseClientPaths = value;
+	}
+
+	String getServerName(String viewName) {
+		if (viewName != null) {
+			viewName = viewName.trim();
+		}
+
+		if ((serverPrefix == null) || (serverPrefix.length() < 1)) {
+			return viewName;
+		}
+		return serverPrefix+NAMESPACE_DELIM+viewName;
+	}
+
+	public String getServerPath(String viewName, CodeGenerator codegen) {
+		if (viewName == null) {
+			throw new NullPointerException("viewName");
+		}
+		if (codegen == null) {
+			throw new NullPointerException("codegen");
+		}
+		return getServerName(viewName).replace(NAMESPACE_DELIM, DIR_DELIM) + codegen.getFileExtension();
+	}
+
+	String getClientName(String viewName) {
+		if (viewName != null) {
+			viewName = viewName.trim();
+		}
+
+		if ((clientPrefix == null) || (clientPrefix.length() < 1)) {
+			return viewName;
+		}
+		return clientPrefix+NAMESPACE_DELIM+viewName;
+	}
+
+	public String getClientPath(String viewName) {
+		if (viewName == null) {
+			throw new NullPointerException("viewName");
+		}
+
+		String clientPath = getClientName(viewName);
+		if (lowercaseClientPaths) {
+			// important for case-sensitive web servers & file systems
+			clientPath = clientPath.toLowerCase(Locale.ROOT);
+		}
+		return clientPath.replace(NAMESPACE_DELIM, DIR_DELIM);
 	}
 }
