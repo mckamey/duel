@@ -1,12 +1,13 @@
 package org.duelengine.duel.codegen;
 
-import java.io.*;
-import java.util.*;
-import org.junit.Test;
 import static org.junit.Assert.*;
-import org.duelengine.duel.DuelContext;
-import org.duelengine.duel.DuelData;
+
+import java.io.IOException;
+import java.util.*;
+
+import org.duelengine.duel.*;
 import org.duelengine.duel.codedom.*;
+import org.junit.Test;
 
 public class JavaCodeGenTest {
 
@@ -39,8 +40,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -90,8 +89,6 @@ public class JavaCodeGenTest {
 
 		String expected =
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class foo extends DuelView {\n\n"+
 			"\tpublic foo() {\n"+
@@ -188,8 +185,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package example;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class foo extends DuelView {\n\n"+
 			"\tpublic foo() {\n"+
@@ -288,8 +283,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package example;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class foo2 extends DuelView {\n\n"+
 			"\tpublic foo2() {\n"+
@@ -430,8 +423,6 @@ public class JavaCodeGenTest {
 
 		String expected =
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class example extends DuelView {\n\n"+
 			"\tpublic example() {\n"+
@@ -584,8 +575,6 @@ public class JavaCodeGenTest {
 
 		String expected =
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class example extends DuelView {\n\n"+
 			"\tpublic example() {\n"+
@@ -713,8 +702,6 @@ public class JavaCodeGenTest {
 
 		String expected =
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class example extends DuelView {\n\n"+
 			"\tpublic example() {\n"+
@@ -776,8 +763,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -829,8 +814,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -882,8 +865,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -936,8 +917,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -985,8 +964,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -1034,8 +1011,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -1110,8 +1085,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package foo.bar;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Blah extends DuelView {\n\n"+
 			"\tpublic Blah() {\n"+
@@ -1221,8 +1194,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package foo.bar;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Blah extends DuelView {\n\n"+
 			"\tpublic Blah() {\n"+
@@ -1394,8 +1365,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package foo.bar;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Blah extends DuelView {\n\n"+
 			"\tpublic Blah() {\n"+
@@ -1474,8 +1443,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -1533,8 +1500,6 @@ public class JavaCodeGenTest {
 		String expected =
 			"package com.example;\n\n"+
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class Foo extends DuelView {\n\n"+
 			"\tpublic Foo() {\n"+
@@ -1623,8 +1588,6 @@ public class JavaCodeGenTest {
 
 		String expected =
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class foo extends DuelView {\n\n"+
 			"\tpublic foo() {\n"+
@@ -1718,8 +1681,6 @@ public class JavaCodeGenTest {
 
 		String expected =
 			"import java.io.*;\n"+
-//			"import java.util.*;\n"+
-//			"import java.util.Map.Entry;\n"+
 			"import org.duelengine.duel.*;\n\n"+
 			"public class foo extends DuelView {\n\n"+
 			"\tpublic foo() {\n"+

@@ -1,9 +1,10 @@
 package org.duelengine.duel.codegen;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.*;
+
 import org.duelengine.duel.*;
-import org.duelengine.duel.ast.*;
+import org.duelengine.duel.ast.VIEWCommandNode;
 import org.duelengine.duel.codedom.*;
 
 /**
@@ -1100,10 +1101,6 @@ public class JavaCodeGen implements CodeGenerator {
 
 		output.append("import java.io.*;");
 		this.writeln(output, 0);
-//		output.append("import java.util.*;");
-//		this.writeln(output, 0);
-//		output.append("import java.util.Map.Entry;");
-//		this.writeln(output, 0);
 		output.append("import ").append(DUEL_PACKAGE).append(".*;");
 		this.writeln(output, 0, 2);
 	}
