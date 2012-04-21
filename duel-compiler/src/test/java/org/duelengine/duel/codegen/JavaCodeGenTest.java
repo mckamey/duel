@@ -442,10 +442,10 @@ public class JavaCodeGenTest {
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\tthis.write(context, \"<div>\");\n"+
-			"\t\tjava.util.Collection items_1 = DuelData.coerceCollection(this.getProperty(data, \"items\"));\n"+
+			"\t\tjava.util.Collection<?> items_1 = DuelData.coerceCollection(this.getProperty(data, \"items\"));\n"+
 			"\t\tint index_2 = 0,\n" +
 			"\t\t\tcount_3 = items_1.size();\n"+
-			"\t\tfor (java.util.Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
+			"\t\tfor (java.util.Iterator<?> iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
 			"\t\t\tthis.render_2(context, iterator_4.next(), index_2, count_3, null);\n"+
 			"\t\t}\n"+
 			"\t\tthis.write(context, \"</div>\");\n"+
@@ -596,11 +596,11 @@ public class JavaCodeGenTest {
 			"\t@Override\n"+
 			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
 			"\t\tthis.write(context, \"<div>\");\n"+
-			"\t\tjava.util.Collection items_1 = DuelData.coerceMap(this.getProperty(data, \"foo\"));\n"+
+			"\t\tjava.util.Collection<?> items_1 = DuelData.coerceMap(this.getProperty(data, \"foo\"));\n"+
 			"\t\tint index_2 = 0,\n"+
 			"\t\t\tcount_3 = items_1.size();\n"+
-			"\t\tfor (java.util.Iterator iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
-			"\t\t\tjava.util.Map.Entry entry_5 = iterator_4.next();\n"+
+			"\t\tfor (java.util.Iterator<?> iterator_4=items_1.iterator(); iterator_4.hasNext(); index_2++) {\n"+
+			"\t\t\tjava.util.Map.Entry<?,?> entry_5 = iterator_4.next();\n"+
 			"\t\t\tthis.render_2(context, entry_5.getValue(), index_2, count_3, entry_5.getKey());\n"+
 			"\t\t}\n"+
 			"\t\tthis.write(context, \"</div>\");\n"+

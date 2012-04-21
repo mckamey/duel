@@ -1010,10 +1010,18 @@ public class JavaCodeGen implements CodeGenerator {
 		} else {
 			Package pkg = type.getPackage();
 			String pkgName = (pkg == null) ? null : pkg.getName();
-			if (pkgName == null || "java.lang".equals(pkgName) || "java.io".equals(pkgName) /*|| "java.util".equals(pkgName)*/ || DUEL_PACKAGE.equals(pkgName)) {
+			if (pkgName == null || "java.lang".equals(pkgName) || "java.io".equals(pkgName) || DUEL_PACKAGE.equals(pkgName)) {
 				typeName = type.getSimpleName();
 			} else {
 				typeName = type.getName().replace('$', '.');
+				if (type == Collection.class || type == Iterator.class) {
+					// quick fix for generic types that have annoying warnings
+					typeName += "<?>";
+
+				} else if (type == Map.Entry.class) {
+					// quick fix for generic types that have annoying warnings
+					typeName += "<?,?>";
+				}
 			}
 		}
 		output.append(typeName);
