@@ -11,7 +11,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-staticapps</artifactId>
-	<version>0.8.5</version>
+	<version>0.8.6</version>
 	<packaging>jar</packaging>
 
 	<name>DUEL Static Apps</name>
@@ -39,7 +39,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<duel.version>0.8.2</duel.version>
+		<duel.version>0.8.3</duel.version>
 		<jackson.version>1.9.6</jackson.version>
 		<codec.version>1.6</codec.version>
 		<slf4j.version>1.6.4</slf4j.version>
@@ -82,8 +82,8 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
+			<groupId>com.pseudocode</groupId>
+			<artifactId>slf4j-compact</artifactId>
 			<version>${slf4j.version}</version>
 			<scope>test</scope>
 		</dependency>

@@ -2,6 +2,7 @@ package org.duelengine.duel.staticapps;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -37,15 +38,37 @@ public class RoutingServlet extends HttpServlet {
 
 		super.init(servletConfig);
 
+		String configPath = null;
 		try {
 			// load from config file
-			String configPath = servletConfig.getInitParameter("config-path");
-			File configFile = new File(configPath);
-			config = new ObjectMapper().reader(SiteConfig.class).readValue(configFile);
+			configPath = servletConfig.getInitParameter("config-path");
+			if (configPath == null || configPath.isEmpty()) {
+				config = null;
+
+			} else {
+				File configFile = new File(configPath);
+				if (configFile.exists()) {
+					log.info("Loading config from file path: "+configFile.getPath());
+					config = new ObjectMapper().reader(SiteConfig.class).readValue(configFile);
+				}
+			}
 
 		} catch (Exception ex) {
-			log.error("Error loading staticapp config", ex);
-			config = new SiteConfig();
+			log.error("Error loading staticapp config from 'config-path' param in WEB-INF/web.xml: "+configPath, ex);
+			config = null;
+		}
+
+		if (config == null) {
+			try {
+				configPath = servletConfig.getInitParameter("config-resource");
+				log.info("Loading config from resource: "+configPath);
+				InputStream stream = getServletContext().getResourceAsStream(configPath);
+				config = new ObjectMapper().reader(SiteConfig.class).readValue(stream);
+
+			} catch (Exception ex) {
+				log.error("Error loading staticapp config from 'config-resource' param in WEB-INF/web.xml: "+configPath, ex);
+				config = new SiteConfig();
+			}
 		}
 
 		String devModeOverride = servletConfig.getInitParameter("dev-mode-override");
@@ -143,12 +166,10 @@ public class RoutingServlet extends HttpServlet {
 		// TODO: expand routing capabilities beyond exact match and default doc
 		
 		SiteViewPage page = config.views().get(servletPath.substring(1));
-		if (page == null) {
-			if (servletPath.endsWith("/")) {
-				// continue to attempt to resolve with default document
-				return route(servletPath+DEFAULT_DOC);
-			}
-			return null;
+		if (page == null && servletPath.endsWith("/")) {
+			// continue to attempt to resolve with default document
+			log.info("routing: "+servletPath+DEFAULT_DOC);
+			page = config.views().get(servletPath.substring(1)+DEFAULT_DOC);
 		}
 
 		return page;
