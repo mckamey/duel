@@ -62,7 +62,7 @@ public class RoutingServlet extends HttpServlet {
 			try {
 				configPath = servletConfig.getInitParameter("config-resource");
 				log.info("Loading config from resource: "+configPath);
-				InputStream stream = getServletContext().getResourceAsStream(configPath);
+				InputStream stream = getClass().getResourceAsStream(configPath);
 				config = new ObjectMapper().reader(SiteConfig.class).readValue(stream);
 
 			} catch (Exception ex) {
