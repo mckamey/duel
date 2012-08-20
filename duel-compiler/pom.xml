@@ -11,7 +11,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-compiler</artifactId>
-	<version>0.8.3</version>
+	<version>0.8.4</version>
 	<packaging>jar</packaging>
 
 	<name>DUEL Compiler</name>
@@ -40,8 +40,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<rhino.version>1.7R4</rhino.version>
-		<slf4j.version>1.6.4</slf4j.version>
-		<junit.version>4.9</junit.version>
+		<slf4j.version>1.6.6</slf4j.version>
+		<junit.version>4.10</junit.version>
 		<jvm.version>1.6</jvm.version>
 	</properties>
 

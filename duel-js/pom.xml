@@ -5,7 +5,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-js</artifactId>
-	<version>0.8.3</version>
+	<version>0.8.4</version>
 	<packaging>pom</packaging>
 
 	<name>DUEL Client Scripts</name>
@@ -33,8 +33,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<closure.version>r1592</closure.version>
-		<jslint4java.version>1.4.6</jslint4java.version>
+		<closure.version>rr2079.1</closure.version>
+		<jslint4java.version>1.4.6<!-- last sane version --></jslint4java.version>
 	</properties>
 
 	<dependencies>
@@ -55,23 +55,23 @@
 				<version>1.7</version>
 				<executions>
 					<!-- Source file concatenation -->
-                    <execution>
+					<execution>
 						<id>source-concat</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                            	<copy file="${basedir}/src/main/javascript/intro.js"
-                            		tofile="${basedir}/target/intro.js">
-                            		<filterchain>
-                            			<replacetokens>
-                            				<token key="duel-version" value="${project.version}" />
-                            			</replacetokens>
-                            		</filterchain>
-                            	</copy>
-                                <concat destfile="${basedir}/target/duel.js">
+						<phase>initialize</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<copy file="${basedir}/src/main/javascript/intro.js"
+									tofile="${basedir}/target/intro.js">
+									<filterchain>
+										<replacetokens>
+											<token key="duel-version" value="${project.version}" />
+										</replacetokens>
+									</filterchain>
+								</copy>
+								<concat destfile="${basedir}/target/duel.js">
 									<fileset file="${basedir}/target/intro.js" />
 									<fileset file="${basedir}/src/main/javascript/types.js" />
 									<fileset file="${basedir}/src/main/javascript/bind.js" />
@@ -79,11 +79,11 @@
 									<fileset file="${basedir}/src/main/javascript/render.js" />
 									<fileset file="${basedir}/src/main/javascript/dom.js" />
 									<fileset file="${basedir}/src/main/javascript/outro.js" />
-                                </concat>
-                                <delete file="${basedir}/target/intro.js" quiet="true"/>
-                            </target>
-                        </configuration>
-                    </execution>
+								</concat>
+								<delete file="${basedir}/target/intro.js" quiet="true"/>
+							</target>
+						</configuration>
+					</execution>
 
 					<!-- JSLint static analysis -->
 					<execution>
@@ -114,16 +114,16 @@
 							<target>
 								<copy todir="${basedir}/target">
 									<fileset dir="${basedir}/src/test/resources" />
-                            		<filterchain>
-                            			<replacetokens>
-                            				<token key="duel-version" value="${project.version}" />
-                            			</replacetokens>
-                            		</filterchain>
+									<filterchain>
+										<replacetokens>
+											<token key="duel-version" value="${project.version}" />
+										</replacetokens>
+									</filterchain>
 								</copy>
-                            	<copy file="${basedir}/../LICENSE.txt"
-                            		tofile="${basedir}/target/LICENSE.txt" />
-                            	<copy file="${basedir}/../LICENSE.txt"
-                            		tofile="${basedir}/target/license.txt" />
+								<copy file="${basedir}/../LICENSE.txt"
+									tofile="${basedir}/target/LICENSE.txt" />
+								<copy file="${basedir}/../LICENSE.txt"
+									tofile="${basedir}/target/license.txt" />
 								<copy todir="${basedir}/target/js">
 									<fileset dir="${basedir}/src/test/javascript" />
 								</copy>

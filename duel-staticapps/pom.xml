@@ -11,7 +11,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-staticapps</artifactId>
-	<version>0.8.6</version>
+	<version>0.9.0</version>
 	<packaging>jar</packaging>
 
 	<name>DUEL Static Apps</name>
@@ -39,12 +39,12 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<duel.version>0.8.3</duel.version>
-		<jackson.version>1.9.6</jackson.version>
+		<duel.version>0.8.4</duel.version>
+		<jackson.version>2.0.4</jackson.version>
 		<codec.version>1.6</codec.version>
-		<slf4j.version>1.6.4</slf4j.version>
-		<servlet.version>2.5</servlet.version>
-		<junit.version>4.9</junit.version>
+		<slf4j.version>1.6.6</slf4j.version>
+		<servlet.version>3.0.1</servlet.version>
+		<junit.version>4.10</junit.version>
 		<jvm.version>1.6</jvm.version>
 	</properties>
 
@@ -58,13 +58,18 @@
 
 		<!-- Jackson JSON runtime -->
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
 
@@ -91,7 +96,7 @@
 		<!-- Servlet interfaces -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
+			<artifactId>javax.servlet-api</artifactId>
 			<version>${servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>

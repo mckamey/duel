@@ -3,7 +3,7 @@ package org.duelengine.duel.staticapps;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CLI {
 

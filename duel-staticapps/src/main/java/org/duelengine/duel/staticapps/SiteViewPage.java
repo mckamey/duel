@@ -2,7 +2,7 @@ package org.duelengine.duel.staticapps;
 
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.duelengine.duel.DuelView;
 
 public class SiteViewPage {

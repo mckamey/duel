@@ -15,7 +15,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.duelengine.duel.staticapps.SiteBuilder;
 import org.duelengine.duel.staticapps.SiteConfig;

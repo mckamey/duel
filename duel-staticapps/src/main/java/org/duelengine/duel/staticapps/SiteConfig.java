@@ -3,8 +3,8 @@ package org.duelengine.duel.staticapps;
 import java.io.File;
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.duelengine.duel.utils.FileUtil;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
