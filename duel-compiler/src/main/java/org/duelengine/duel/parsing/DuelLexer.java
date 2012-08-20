@@ -376,7 +376,7 @@ public class DuelLexer implements Iterator<DuelToken> {
 
 		if (htmlConfig == null) {
 			// definitions maintained in HTMLCharRefs.properties
-			htmlConfig = ResourceBundle.getBundle(CONFIG_RESOURCE);
+			htmlConfig = ResourceBundle.getBundle(CONFIG_RESOURCE, Locale.ROOT);
 		}
 
 		if (htmlConfig.containsKey(name)) {

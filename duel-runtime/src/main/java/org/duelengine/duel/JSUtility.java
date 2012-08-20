@@ -93,7 +93,7 @@ public final class JSUtility {
 		Map<String, Boolean> map;
 
 		// definitions maintained in JSVocab.properties
-		ResourceBundle config = ResourceBundle.getBundle(CONFIG_RESOURCE);
+		ResourceBundle config = ResourceBundle.getBundle(CONFIG_RESOURCE, Locale.ROOT);
 
 		// reserved words
 		tags = (config != null) && config.containsKey("reserved") ?

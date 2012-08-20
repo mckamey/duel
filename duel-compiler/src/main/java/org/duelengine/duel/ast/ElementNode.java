@@ -22,7 +22,7 @@ public class ElementNode extends ContainerNode {
 
 	static {
 		// definitions maintained in HTMLTags.properties
-		ResourceBundle config = ResourceBundle.getBundle(CONFIG_RESOURCE);
+		ResourceBundle config = ResourceBundle.getBundle(CONFIG_RESOURCE, Locale.ROOT);
 
 		String[] items = (config != null) && config.containsKey("voidTags") ?
 			config.getString("voidTags").split("\\s+") : new String[0];
