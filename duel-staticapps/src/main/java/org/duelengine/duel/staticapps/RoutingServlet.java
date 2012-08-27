@@ -19,6 +19,7 @@ import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelView;
 import org.duelengine.duel.FormatPrefs;
 import org.duelengine.duel.LinkInterceptor;
+import org.duelengine.duel.utils.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,10 @@ public class RoutingServlet extends HttpServlet {
 		String configPath = null;
 		try {
 			// load from config file
-			configPath = servletConfig.getInitParameter("config-path");
+			configPath = System.getProperty("org.duelengine.duel.staticapps.configPath");
+			if (configPath == null || configPath.isEmpty()) {
+				configPath = servletConfig.getInitParameter("config-path");
+			}
 			if (configPath == null || configPath.isEmpty()) {
 				config = null;
 
@@ -53,28 +57,29 @@ public class RoutingServlet extends HttpServlet {
 				}
 			}
 
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			log.error("Error loading staticapp config from 'config-path' param in WEB-INF/web.xml: "+configPath, ex);
 			config = null;
 		}
 
 		if (config == null) {
 			try {
-				configPath = servletConfig.getInitParameter("config-resource");
+				configPath = System.getProperty("org.duelengine.duel.staticapps.configResource");
+				if (configPath == null || configPath.isEmpty()) {
+					configPath = servletConfig.getInitParameter("config-resource");
+				}
 				log.info("Loading config from resource: "+configPath);
 				InputStream stream = getClass().getResourceAsStream(configPath);
 				config = new ObjectMapper().reader(SiteConfig.class).readValue(stream);
 
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				log.error("Error loading staticapp config from 'config-resource' param in WEB-INF/web.xml: "+configPath, ex);
-				config = new SiteConfig();
+				config = null;
 			}
 		}
-
-		String devModeOverride = servletConfig.getInitParameter("dev-mode-override");
-		if (devModeOverride != null && !devModeOverride.isEmpty()) {
-			log.info("dev-mode-override="+devModeOverride);
-			config.isDevMode( Boolean.parseBoolean(devModeOverride) );
+		if (config == null) {
+			// dummy noop config
+			config = new SiteConfig();
 		}
 
 		format = new FormatPrefs()
@@ -114,8 +119,10 @@ public class RoutingServlet extends HttpServlet {
 			response.setContentType(config.contentType());
 			response.setCharacterEncoding(config.encoding());
 
-			SiteViewPage sitePage = route(request.getServletPath());
+			String servletPath = request.getServletPath();
+			SiteViewPage sitePage = route(servletPath);
 			if (sitePage == null) {
+				log.info("routing: "+servletPath+" (static)");
 				defaultServlet(request, response);
 				return;
 			}
@@ -157,19 +164,32 @@ public class RoutingServlet extends HttpServlet {
 	 * @return
 	 */
 	private SiteViewPage route(String servletPath) {
-		log.info("routing: "+servletPath);
-
 		if (config.views() == null) {
 			return null;
 		}
 
-		// TODO: expand routing capabilities beyond exact match and default doc
+		// TODO: expand routing capabilities beyond exact match, default-doc and catch-all
 		
 		SiteViewPage page = config.views().get(servletPath.substring(1));
-		if (page == null && servletPath.endsWith("/")) {
-			// continue to attempt to resolve with default document
-			log.info("routing: "+servletPath+DEFAULT_DOC);
-			page = config.views().get(servletPath.substring(1)+DEFAULT_DOC);
+		if (page != null) {
+			log.info("routing: "+servletPath);
+
+		} else {
+			if (servletPath.endsWith("/")) {
+				// continue to attempt to resolve with default document
+				page = config.views().get(servletPath.substring(1)+DEFAULT_DOC);
+			}
+			if (page != null) {
+				log.info("routing: "+servletPath+" (as "+servletPath+DEFAULT_DOC+")");
+
+			} else {
+				// continue to attempt to resolve with catch-all
+				String ext = servletPath.endsWith("/") ? FileUtil.getExtension(DEFAULT_DOC) : FileUtil.getExtension(servletPath);
+				page = config.views().get("*"+ext);
+				if (page != null) {
+					log.info("routing: "+servletPath+" (as *"+ext+")");
+				}
+			}
 		}
 
 		return page;
