@@ -40,7 +40,8 @@
 		'disabled': 1,
 		'hidden': 1,
 		'novalidate': 1,
-		'formnovalidate': 1
+		'formnovalidate': 1,
+		'multiple': 1
 		// can add more attributes here as needed
 	};
 

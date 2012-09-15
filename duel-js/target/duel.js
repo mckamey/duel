@@ -897,7 +897,8 @@ var duel = (
 		'disabled': 1,
 		'hidden': 1,
 		'novalidate': 1,
-		'formnovalidate': 1
+		'formnovalidate': 1,
+		'multiple': 1
 		// can add more attributes here as needed
 	};
 
@@ -1256,21 +1257,43 @@ var duel = (
 	 * @param {function(Event)} handler The event handler
 	 */
 	function addHandler(elem, name, handler) {
+		if (name.substr(0,2) === 'on') {
+			name = name.substr(2);
+		}
+
 		switch (typeof handler) {
 			case 'function':
 				if (elem.addEventListener) {
 					// DOM Level 2
-					elem.addEventListener((name.substr(0,2) === 'on') ? name.substr(2) : name, handler, false);
+					elem.addEventListener(name, handler, false);
+
+				} else if (isFunction(window.jQuery) && 'undefined' !== typeof elem[name]) {
+					// cop out and patch IE6-8 with jQuery
+					var $elem = window.jQuery(elem);
+					if (isFunction($elem.on)) {
+						$elem.on(name, handler);	// v1.7+
+					} else {
+						$elem.bind(name, handler);	// pre-1.7
+					}
+
+				} else if (elem.attachEvent && 'undefined' !== typeof elem[name]) {
+					// IE legacy events
+					elem.attachEvent('on'+name, handler);
+
 				} else {
 					// DOM Level 0
-					elem[name] = handler;
+					var old = elem['on'+name] || elem[name];
+					elem['on'+name] = elem[name] = ('function' !== typeof old) ? handler :
+						function(e) {
+							return (old.call(this, e) !== false) && (handler.call(this, e) !== false);
+						};
 				}
 				break;
 
 			case 'string':
 				// inline functions are DOM Level 0
 				/*jslint evil:true */
-				elem[name] = new Function('event', handler);
+				elem['on'+name] = new Function('event', handler);
 				/*jslint evil:false */
 				break;
 		}
