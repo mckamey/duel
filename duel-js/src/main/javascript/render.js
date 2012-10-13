@@ -35,13 +35,14 @@
 	 */
 	var ATTR_BOOL = {
 		'async': 1,
+		'autofocus': 1,
 		'checked': 1,
 		'defer': 1,
 		'disabled': 1,
-		'hidden': 1,
-		'novalidate': 1,
 		'formnovalidate': 1,
-		'multiple': 1
+		'hidden': 1,
+		'multiple': 1,
+		'novalidate': 1
 		// can add more attributes here as needed
 	};
 
