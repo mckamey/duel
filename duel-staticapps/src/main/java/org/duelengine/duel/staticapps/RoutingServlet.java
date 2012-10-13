@@ -175,16 +175,23 @@ public class RoutingServlet extends HttpServlet {
 			log.info("routing: "+servletPath);
 
 		} else {
-			if (servletPath.endsWith("/")) {
+			String aliasedPath = servletPath;
+
+			if ("".equals(FileUtil.getExtension(aliasedPath))) {
 				// continue to attempt to resolve with default document
-				page = config.views().get(servletPath.substring(1)+DEFAULT_DOC);
+				if (aliasedPath.endsWith("/")) {
+					aliasedPath += '/';
+				}
+				aliasedPath += DEFAULT_DOC;
+				page = config.views().get(aliasedPath.substring(1));
 			}
+
 			if (page != null) {
-				log.info("routing: "+servletPath+" (as "+servletPath+DEFAULT_DOC+")");
+				log.info("routing: "+servletPath+" (as "+aliasedPath+")");
 
 			} else {
 				// continue to attempt to resolve with catch-all
-				String ext = servletPath.endsWith("/") ? FileUtil.getExtension(DEFAULT_DOC) : FileUtil.getExtension(servletPath);
+				String ext = FileUtil.getExtension(aliasedPath);
 				page = config.views().get("*"+ext);
 				if (page != null) {
 					log.info("routing: "+servletPath+" (as *"+ext+")");

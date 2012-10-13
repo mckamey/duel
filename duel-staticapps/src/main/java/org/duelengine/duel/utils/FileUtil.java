@@ -204,7 +204,7 @@ public class FileUtil {
 	
 	public static String getExtension(String name) {
 		int dot = name.lastIndexOf('.');
-		if (dot < 0) {
+		if (dot < 0 || dot < name.lastIndexOf('/')) {
 			return "";
 		}
 
