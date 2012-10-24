@@ -81,26 +81,6 @@
 	var isArray = Array.isArray || function(val) {
 		return (val instanceof Array);
 	};
-	
-	/**
-	 * Determines the type of the value
-	 * 
-	 * @private
-	 * @param {*} val the object being tested
-	 * @return {number}
-	 */
-	function getType(val) {
-		switch (typeof val) {
-			case 'object':
-				return !val ? NUL : (isArray(val) ? ARY : ((val instanceof Markup) ? RAW : ((val instanceof Date) ? VAL : OBJ)));
-			case 'function':
-				return FUN;
-			case 'undefined':
-				return NUL;
-			default:
-				return VAL;
-		}
-	}
 
 	/**
 	 * Determines if the value is a string
@@ -122,6 +102,26 @@
 	 */
 	function isFunction(val) {
 		return (typeof val === 'function');
+	}
+
+	/**
+	 * Determines the type of the value
+	 * 
+	 * @private
+	 * @param {*} val the object being tested
+	 * @return {number}
+	 */
+	function getType(val) {
+		switch (typeof val) {
+			case 'object':
+				return !val ? NUL : (isArray(val) ? ARY : ((val instanceof Markup) ? RAW : ((val instanceof Date) ? VAL : OBJ)));
+			case 'function':
+				return FUN;
+			case 'undefined':
+				return NUL;
+			default:
+				return VAL;
+		}
 	}
 
 	/**

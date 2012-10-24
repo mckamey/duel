@@ -37,12 +37,19 @@
 		'async': 1,
 		'autofocus': 1,
 		'checked': 1,
+		'defaultchecked': 1,
 		'defer': 1,
 		'disabled': 1,
 		'formnovalidate': 1,
 		'hidden': 1,
+		'indeterminate': 1,
+		'ismap': 1,
 		'multiple': 1,
-		'novalidate': 1
+		'novalidate': 1,
+		'readonly': 1,
+		'required': 1,
+		'spellcheck': 1,
+		'willvalidate': 1
 		// can add more attributes here as needed
 	};
 
@@ -148,7 +155,7 @@
 				for (var name in child) {
 					if (child.hasOwnProperty(name)) {
 						var val = child[name];
-						if (ATTR_BOOL[name]) {
+						if (ATTR_BOOL[name.toLowerCase()]) {
 							if (val) {
 								val = name;
 							} else {

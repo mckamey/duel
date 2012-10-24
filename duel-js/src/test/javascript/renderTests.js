@@ -202,7 +202,8 @@ test('falsey attribute values', function() {
 test('boolean attributes', function() {
 
 	var view = duel(['form',
-		['input', { 'type': 'checkbox', checked: false } ],
+		['label', { 'for': 'cbx' }, 'click me' ],
+		['input', { 'id': 'cbx', 'type': 'checkbox', checked: false } ],
 		['input', { 'type': 'checkbox', checked: '' } ],
 		['input', { 'type': 'checkbox', checked: null } ],
 		['input', { 'type': 'checkbox', checked: true } ],
@@ -212,7 +213,7 @@ test('boolean attributes', function() {
 
 	var actual = view().toString();
 
-	var expected = '<form><input type="checkbox" /><input type="checkbox" /><input type="checkbox" /><input type="checkbox" checked="checked" /><input type="checkbox" checked="checked" /><input type="checkbox" checked="checked" /></form>';
+	var expected = '<form><label for="cbx">click me</label><input id="cbx" type="checkbox" /><input type="checkbox" /><input type="checkbox" /><input type="checkbox" checked="checked" /><input type="checkbox" checked="checked" /><input type="checkbox" checked="checked" /></form>';
 
 	same(actual, expected, '');
 });

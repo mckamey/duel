@@ -22,17 +22,27 @@
 	 * @type {Object.<string>}
 	 */
 	var ATTR_MAP = {
-		'rowspan': 'rowSpan',
-		'colspan': 'colSpan',
+		'accesskey': 'accessKey',
+		'bgcolor': 'bgColor',
 		'cellpadding': 'cellPadding',
 		'cellspacing': 'cellSpacing',
-		'tabindex': 'tabIndex',
-		'accesskey': 'accessKey',
+		'checked': 'defaultChecked',
+		'class': 'className',
+		'colspan': 'colSpan',
+		'contenteditable': 'contentEditable',
+		'defaultchecked': 'defaultChecked',
+		'for': 'htmlFor',
+		'formnovalidate': 'formNoValidate',
 		'hidefocus': 'hideFocus',
-		'usemap': 'useMap',
+		'ismap': 'isMap',
 		'maxlength': 'maxLength',
+		'novalidate': 'noValidate',
 		'readonly': 'readOnly',
-		'contenteditable': 'contentEditable'
+		'rowspan': 'rowSpan',
+		'spellcheck': 'spellCheck',
+		'tabindex': 'tabIndex',
+		'usemap': 'useMap',
+		'willvalidate': 'willValidate'
 		// can add more attributes here as needed
 	};
 
@@ -45,8 +55,7 @@
 	 */
 	var ATTR_DUP = {
 		'enctype': 'encoding',
-		'onscroll': 'DOMMouseScroll',
-		'checked': 'defaultChecked'
+		'onscroll': 'DOMMouseScroll'
 		// can add more attributes here as needed
 	};
 
@@ -176,7 +185,7 @@
 					// DOM Level 2
 					elem.addEventListener(name, handler, false);
 
-				} else if (isFunction(window.jQuery) && 'undefined' !== typeof elem[name]) {
+				} else if (isFunction(window.jQuery) && getType(elem[name]) !== NUL) {
 					// cop out and patch IE6-8 with jQuery
 					var $elem = window.jQuery(elem);
 					if (isFunction($elem.on)) {
@@ -185,14 +194,14 @@
 						$elem.bind(name, handler);	// pre-1.7
 					}
 
-				} else if (elem.attachEvent && 'undefined' !== typeof elem[name]) {
+				} else if (elem.attachEvent && getType(elem[name]) !== NUL) {
 					// IE legacy events
 					elem.attachEvent('on'+name, handler);
 
 				} else {
 					// DOM Level 0
 					var old = elem['on'+name] || elem[name];
-					elem['on'+name] = elem[name] = ('function' !== typeof old) ? handler :
+					elem['on'+name] = elem[name] = !isFunction(old) ? handler :
 						function(e) {
 							return (old.call(this, e) !== false) && (handler.call(this, e) !== false);
 						};
@@ -209,7 +218,7 @@
 	}
 
 	/**
-	 * Appends a child to an element
+	 * Appends an attribute to an element
 	 * 
 	 * @private
 	 * @param {Node} elem The element
@@ -242,47 +251,58 @@
 					}
 
 					name = ATTR_MAP[name.toLowerCase()] || name;
-					if (ATTR_BOOL[name]) {
-						elem[name] = !!value;
+					if (ATTR_BOOL[name.toLowerCase()]) {
+						value = !!value;
+					}
 
-						// also set duplicated attributes
-						if (ATTR_DUP[name]) {
-							elem[ATTR_DUP[name]] = !!value;
-						}
-
-					} else if (name === 'style') {
-						if (typeof elem.style.cssText !== 'undefined') {
+					if (name === 'style') {
+						if (getType(elem.style.cssText) !== NUL) {
 							elem.style.cssText = value;
 						} else {
 							elem.style = value;
 						}
 
-					} else if (name === 'class') {
-						elem.className = value;
-
 					} else if (name.substr(0,2) === 'on') {
 						addHandler(elem, name, value);
 
 						// also set duplicated events
-						if (ATTR_DUP[name]) {
-							addHandler(elem, ATTR_DUP[name], value);
+						name = ATTR_DUP[name];
+						if (name) {
+							addHandler(elem, name, value);
 						}
 
-					} else if (type === VAL && name.charAt(0) !== '$') {
-						elem.setAttribute(name, value);
-	
-						// also set duplicated attributes
-						if (ATTR_DUP[name]) {
-							elem.setAttribute(ATTR_DUP[name], value);
+					} else if (type !== VAL || name.charAt(0) === '$' || getType(elem[name]) !== NUL || getType(elem[ATTR_DUP[name]]) !== NUL) {
+						// direct setting of existing properties
+						elem[name] = value;
+
+						// also set duplicated properties
+						name = ATTR_DUP[name];
+						if (name) {
+							elem[name] = value;
+						}
+
+					} else if (ATTR_BOOL[name.toLowerCase()]) {
+						if (value) {
+							// boolean attributes
+							elem.setAttribute(name, name);
+
+							// also set duplicated attributes
+							name = ATTR_DUP[name];
+							if (name) {
+								elem.setAttribute(name, name);
+							}
 						}
 
 					} else {
-						// allow direct setting of complex properties
-						elem[name] = value;
+						// http://www.quirksmode.org/dom/w3c_core.html#attributes
+
+						// custom and 'data-*' attributes
+						elem.setAttribute(name, value);
 
 						// also set duplicated attributes
-						if (ATTR_DUP[name]) {
-							elem[ATTR_DUP[name]] = value;
+						name = ATTR_DUP[name];
+						if (name) {
+							elem.setAttribute(name, value);
 						}
 					}
 				}
@@ -378,8 +398,11 @@
 			try {
 				delete elem[key];
 			} catch (ex) {
-				// sometimes IE doesn't like deleting from DOM
-				elem[key] = undef;
+				try {
+					// IE7 doesn't like deleting from DOM
+					elem[key] = '';
+					elem.removeAttribute(key);
+				} catch (ex2) {}
 			}
 
 			if (!isFunction(method)) {
@@ -387,7 +410,7 @@
 					/*jslint evil:true */
 					method = new Function(''+method);
 					/*jslint evil:false */
-				} catch (ex2) {
+				} catch (ex3) {
 					// filter
 					method = null;
 				}

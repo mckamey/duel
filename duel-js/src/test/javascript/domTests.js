@@ -56,7 +56,8 @@ test('nested elements with attributes', function() {
 test('boolean attributes', function() {
 
 	var view = duel(['form',
-		['input', { 'type': 'checkbox', checked: false } ],
+		['label', { 'for': 'cbx' }, 'click me' ],
+		['input', { 'id': 'cbx', 'type': 'checkbox', checked: false } ],
 		['input', { 'type': 'checkbox', checked: '' } ],
 		['input', { 'type': 'checkbox', checked: null } ],
 		['input', { 'type': 'checkbox', checked: true } ],
@@ -68,7 +69,13 @@ test('boolean attributes', function() {
 
 	var temp, expected = document.createElement('form');
 
+	temp = document.createElement('label');
+	temp.htmlFor = 'cbx';
+	temp.appendChild(document.createTextNode('click me'));
+	expected.appendChild(temp);
+
 	temp = document.createElement('input');
+	temp.id = 'cbx';
 	temp.type = 'checkbox';
 	expected.appendChild(temp);
 
