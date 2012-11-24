@@ -218,6 +218,23 @@ test('boolean attributes', function() {
 	same(actual, expected, '');
 });
 
+test('autocapitalize, autocorrect', function() {
+
+	var view = duel(
+		['input', {
+			'type': 'text',
+			'name': 'email',
+			'autocapitalize': 'off',
+			'autocorrect': 'off'
+		}]);
+
+	var actual = view().toString();
+
+	var expected = '<input type="text" name="email" autocapitalize="off" autocorrect="off" />';
+
+	same(actual, expected, '');
+});
+
 test('comment nodes', function() {
 
 	var view = duel(

@@ -1,7 +1,7 @@
 /*global window */
 
 /**
- * @license DUEL v0.8.5 http://duelengine.org
+ * @license DUEL v0.8.6 http://duelengine.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -771,6 +771,33 @@ var duel = (
 		return node;
 	};
 
+	/**
+	 * Boolean attribute map (used by both render.js & dom.js)
+	 * 
+	 * @private
+	 * @constant
+	 * @type {Object.<number>}
+	 */
+	var ATTR_BOOL = {
+		'async': 1,
+		'autofocus': 1,
+		'checked': 1,
+		'defaultchecked': 1,
+		'defer': 1,
+		'disabled': 1,
+		'formnovalidate': 1,
+		'hidden': 1,
+		'indeterminate': 1,
+		'ismap': 1,
+		'multiple': 1,
+		'novalidate': 1,
+		'readonly': 1,
+		'required': 1,
+		'spellcheck': 1,
+		'willvalidate': 1
+		// can add more attributes here as needed
+	};
+
 	/* factory.js --------------------*/
 
 	/**
@@ -881,33 +908,6 @@ var duel = (
 		'param' : true,
 		'source' : true,
 		'wbr' : true
-	};
-
-	/**
-	 * Boolean attribute map
-	 * 
-	 * @private
-	 * @constant
-	 * @type {Object.<number>}
-	 */
-	var ATTR_BOOL = {
-		'async': 1,
-		'autofocus': 1,
-		'checked': 1,
-		'defaultchecked': 1,
-		'defer': 1,
-		'disabled': 1,
-		'formnovalidate': 1,
-		'hidden': 1,
-		'indeterminate': 1,
-		'ismap': 1,
-		'multiple': 1,
-		'novalidate': 1,
-		'readonly': 1,
-		'required': 1,
-		'spellcheck': 1,
-		'willvalidate': 1
-		// can add more attributes here as needed
 	};
 
 	/**
@@ -1159,6 +1159,20 @@ var duel = (
 	};
 
 	/**
+	 * Attributes to be set via DOM
+	 * 
+	 * @private
+	 * @constant
+	 * @type {Object.<number>}
+	 */
+	var ATTR_DOM = {
+		'autocapitalize': 1,
+		'autocomplete': 1,
+		'autocorrect': 1
+		// can add more attributes here as needed
+	};
+
+	/**
 	 * Leading SGML line ending pattern
 	 * 
 	 * @private
@@ -1350,9 +1364,6 @@ var duel = (
 					}
 
 					name = ATTR_MAP[name.toLowerCase()] || name;
-					if (ATTR_BOOL[name.toLowerCase()]) {
-						value = !!value;
-					}
 
 					if (name === 'style') {
 						if (getType(elem.style.cssText) !== NUL) {
@@ -1370,7 +1381,7 @@ var duel = (
 							addHandler(elem, name, value);
 						}
 
-					} else if (type !== VAL || name.charAt(0) === '$' || getType(elem[name]) !== NUL || getType(elem[ATTR_DUP[name]]) !== NUL) {
+					} else if (!ATTR_DOM[name.toLowerCase()] && (type !== VAL || name.charAt(0) === '$' || getType(elem[name]) !== NUL || getType(elem[ATTR_DUP[name]]) !== NUL)) {
 						// direct setting of existing properties
 						elem[name] = value;
 

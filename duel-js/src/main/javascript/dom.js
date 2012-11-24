@@ -60,6 +60,20 @@
 	};
 
 	/**
+	 * Attributes to be set via DOM
+	 * 
+	 * @private
+	 * @constant
+	 * @type {Object.<number>}
+	 */
+	var ATTR_DOM = {
+		'autocapitalize': 1,
+		'autocomplete': 1,
+		'autocorrect': 1
+		// can add more attributes here as needed
+	};
+
+	/**
 	 * Leading SGML line ending pattern
 	 * 
 	 * @private
@@ -251,9 +265,6 @@
 					}
 
 					name = ATTR_MAP[name.toLowerCase()] || name;
-					if (ATTR_BOOL[name.toLowerCase()]) {
-						value = !!value;
-					}
 
 					if (name === 'style') {
 						if (getType(elem.style.cssText) !== NUL) {
@@ -271,7 +282,7 @@
 							addHandler(elem, name, value);
 						}
 
-					} else if (type !== VAL || name.charAt(0) === '$' || getType(elem[name]) !== NUL || getType(elem[ATTR_DUP[name]]) !== NUL) {
+					} else if (!ATTR_DOM[name.toLowerCase()] && (type !== VAL || name.charAt(0) === '$' || getType(elem[name]) !== NUL || getType(elem[ATTR_DUP[name]]) !== NUL)) {
 						// direct setting of existing properties
 						elem[name] = value;
 

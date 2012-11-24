@@ -5,7 +5,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-js</artifactId>
-	<version>0.8.5</version>
+	<version>0.8.6</version>
 	<packaging>pom</packaging>
 
 	<name>DUEL Client Scripts</name>
@@ -78,6 +78,21 @@
 									<fileset file="${basedir}/src/main/javascript/factory.js" />
 									<fileset file="${basedir}/src/main/javascript/render.js" />
 									<fileset file="${basedir}/src/main/javascript/dom.js" />
+									<fileset file="${basedir}/src/main/javascript/outro.js" />
+								</concat>
+								<concat destfile="${basedir}/target/duel-dom.js">
+									<fileset file="${basedir}/target/intro.js" />
+									<fileset file="${basedir}/src/main/javascript/types.js" />
+									<fileset file="${basedir}/src/main/javascript/bind.js" />
+									<fileset file="${basedir}/src/main/javascript/factory.js" />
+									<fileset file="${basedir}/src/main/javascript/dom.js" />
+									<fileset file="${basedir}/src/main/javascript/outro.js" />
+								</concat>
+								<concat destfile="${basedir}/target/duel-render.js">
+									<fileset file="${basedir}/target/intro.js" />
+									<fileset file="${basedir}/src/main/javascript/types.js" />
+									<fileset file="${basedir}/src/main/javascript/bind.js" />
+									<fileset file="${basedir}/src/main/javascript/factory.js" />
 									<fileset file="${basedir}/src/main/javascript/outro.js" />
 								</concat>
 								<delete file="${basedir}/target/intro.js" quiet="true"/>

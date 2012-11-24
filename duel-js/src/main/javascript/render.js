@@ -27,33 +27,6 @@
 	};
 
 	/**
-	 * Boolean attribute map
-	 * 
-	 * @private
-	 * @constant
-	 * @type {Object.<number>}
-	 */
-	var ATTR_BOOL = {
-		'async': 1,
-		'autofocus': 1,
-		'checked': 1,
-		'defaultchecked': 1,
-		'defer': 1,
-		'disabled': 1,
-		'formnovalidate': 1,
-		'hidden': 1,
-		'indeterminate': 1,
-		'ismap': 1,
-		'multiple': 1,
-		'novalidate': 1,
-		'readonly': 1,
-		'required': 1,
-		'spellcheck': 1,
-		'willvalidate': 1
-		// can add more attributes here as needed
-	};
-
-	/**
 	 * Encodes invalid literal characters in strings
 	 * 
 	 * @private

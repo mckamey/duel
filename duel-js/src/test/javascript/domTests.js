@@ -220,6 +220,27 @@ test('falsey attribute values', function() {
 	same(toHTML(actual), toHTML(expected), '');
 });
 
+test('autocapitalize, autocorrect', function() {
+
+	var view = duel(
+		['input', {
+			'type': 'text',
+			'name': 'email',
+			'autocapitalize': 'off',
+			'autocorrect': 'off'
+		}]);
+
+	var actual = view().toDOM();
+
+	var expected = document.createElement('input');
+	expected.setAttribute('type', 'text');
+	expected.setAttribute('name', 'email');
+	expected.setAttribute('autocapitalize', 'off');
+	expected.setAttribute('autocorrect', 'off');
+
+	same(toHTML(actual), toHTML(expected), '');
+});
+
 test('comment nodes', function() {
 
 	var view = duel(
