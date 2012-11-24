@@ -10,6 +10,8 @@ s3cmd sync \
 	--exclude '.DS_Store' \
 	--exclude 'antrun/*' \
 	--exclude 'duel.js' \
+	--exclude 'duel-render.js' \
+	--exclude 'duel-dom.js' \
 	./duel-js/target/ \
 	s3://duel/
 
