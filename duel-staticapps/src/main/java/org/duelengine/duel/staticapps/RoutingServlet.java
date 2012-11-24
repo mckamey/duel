@@ -44,6 +44,7 @@ public class RoutingServlet extends HttpServlet {
 			// load from config file
 			configPath = System.getProperty("org.duelengine.duel.staticapps.configPath");
 			if (configPath == null || configPath.isEmpty()) {
+				log.info("Loading config-path from WEB-INF/web.xml");
 				configPath = servletConfig.getInitParameter("config-path");
 			}
 			if (configPath == null || configPath.isEmpty()) {
@@ -54,11 +55,14 @@ public class RoutingServlet extends HttpServlet {
 				if (configFile.exists()) {
 					log.info("Loading config from file path: "+configFile.getPath());
 					config = new ObjectMapper().reader(SiteConfig.class).readValue(configFile);
+				} else {
+					log.error("File not found from 'config-path' param: "+configPath);
+					configPath = null;
 				}
 			}
 
 		} catch (Throwable ex) {
-			log.error("Error loading staticapp config from 'config-path' param in WEB-INF/web.xml: "+configPath, ex);
+			log.error("Error loading staticapp config from 'config-path' param: "+configPath, ex);
 			config = null;
 		}
 
@@ -66,6 +70,7 @@ public class RoutingServlet extends HttpServlet {
 			try {
 				configPath = System.getProperty("org.duelengine.duel.staticapps.configResource");
 				if (configPath == null || configPath.isEmpty()) {
+					log.info("Loading config-resource from WEB-INF/web.xml");
 					configPath = servletConfig.getInitParameter("config-resource");
 				}
 				log.info("Loading config from resource: "+configPath);
@@ -73,7 +78,7 @@ public class RoutingServlet extends HttpServlet {
 				config = new ObjectMapper().reader(SiteConfig.class).readValue(stream);
 
 			} catch (Throwable ex) {
-				log.error("Error loading staticapp config from 'config-resource' param in WEB-INF/web.xml: "+configPath, ex);
+				log.error("Error loading staticapp config from 'config-resource' param: "+configPath, ex);
 				config = null;
 			}
 		}
