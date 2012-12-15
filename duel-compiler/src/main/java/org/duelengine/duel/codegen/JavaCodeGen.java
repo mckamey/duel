@@ -1030,7 +1030,7 @@ public class JavaCodeGen implements CodeGenerator {
 
 	private void writeAccessModifier(Appendable output, AccessModifierType access)
 		throws IOException {
-		
+
 		switch (access) {
 			case PRIVATE:
 				output.append("private ");
@@ -1041,6 +1041,8 @@ public class JavaCodeGen implements CodeGenerator {
 			case PUBLIC:
 				output.append("public ");
 				break;
+			case DEFAULT:
+				break;
 		}
 	}
 
@@ -1049,7 +1051,7 @@ public class JavaCodeGen implements CodeGenerator {
 
 		List<CodeExpression> args = expression.getInitializers();
 		if (args.size() < 1) {
-			output.append("new ArrayList<");
+			output.append("new java.util.ArrayList<");
 			this.writeTypeName(output, expression.getType());
 			output.append(">(");
 			if (expression.getSize() > 0) {
@@ -1059,7 +1061,7 @@ public class JavaCodeGen implements CodeGenerator {
 			return;
 		}
 
-		output.append("Arrays.asList(");
+		output.append("java.util.Arrays.asList(");
 		boolean needsDelim = false;
 		boolean singleArg = (args.size() == 1);
 		for (CodeExpression arg : args) {

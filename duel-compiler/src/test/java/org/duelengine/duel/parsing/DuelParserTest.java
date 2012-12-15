@@ -868,6 +868,37 @@ public class DuelParserTest {
 	}
 
 	@Test
+	public void callLiteralTest() throws Exception {
+
+		VIEWCommandNode expected = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new CALLCommandNode(
+				new AttributePair[] {
+					new AttributePair("view", new ExpressionNode("bar")),
+					new AttributePair("data", new ExpressionNode(" { name: 'bar', items: [ 1, 'too' ] } "))
+				}));
+
+		Iterable<VIEWCommandNode> actual = new DuelParser().parse(
+			DuelToken.elemBegin("view"),
+			DuelToken.attrName("name"),
+			DuelToken.attrValue("foo"),
+			DuelToken.elemBegin("call"),
+			DuelToken.attrName("view"),
+			DuelToken.attrValue("bar"),
+			DuelToken.attrName("data"),
+			DuelToken.attrValue(new BlockValue("<%=", "%>", " { name: 'bar', items: [ 1, 'too' ] } ")),
+			DuelToken.elemEnd("call")
+		);
+
+		Iterator<VIEWCommandNode> iterator = actual.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(expected, iterator.next());
+		assertFalse(iterator.hasNext());
+	}
+
+	@Test
 	public void callPartTest() throws Exception {
 
 		VIEWCommandNode expected = new VIEWCommandNode(

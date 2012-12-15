@@ -1111,6 +1111,95 @@ public class JavaCodeGenTest {
 	}
 
 	@Test
+	public void callLiteralTest() throws IOException {
+
+		CodeTypeDeclaration input = CodeDOMUtility.createViewType(
+			"foo.bar",
+			"Blah",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"renderView",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeFieldReferenceExpression(
+							new CodeThisReferenceExpression(),
+							org.duelengine.duel.DuelView.class,
+							"view_2"),
+						new CodeMethodInvokeExpression(
+							Map.class,
+							new CodeTypeReferenceExpression(DuelData.class),
+							"asMap",
+							new CodePrimitiveExpression("name"),
+							new CodePrimitiveExpression("bar"),
+							new CodePrimitiveExpression("items"),
+							new CodeArrayCreateExpression(
+								Object.class,
+								new CodePrimitiveExpression(1),
+								new CodePrimitiveExpression("too"))).withParens(),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key")))
+				).withOverride().withThrows(IOException.class),
+			new CodeField(
+				AccessModifierType.PRIVATE,
+				org.duelengine.duel.DuelView.class,
+				"view_2"),
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"init",
+				null,
+				new CodeExpressionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.ASSIGN,
+						new CodeFieldReferenceExpression(
+							new CodeThisReferenceExpression(),
+							org.duelengine.duel.DuelView.class,
+							"view_2"),
+						new CodeObjectCreateExpression("foo.bar.Yada")))
+				).withOverride());
+
+		String expected =
+			"package foo.bar;\n\n"+
+			"import java.io.*;\n"+
+			"import org.duelengine.duel.*;\n\n"+
+			"public class Blah extends DuelView {\n\n"+
+			"\tpublic Blah() {\n"+
+			"\t}\n\n"+
+			"\tpublic Blah(DuelPart... parts) {\n"+
+			"\t\tsuper(parts);\n"+
+			"\t}\n\n"+
+			"\t@Override\n"+
+			"\tprotected void render(DuelContext context, Object data, int index, int count, String key) throws IOException {\n"+
+			"\t\tthis.renderView(context, this.view_2, DuelData.asMap(\"name\", \"bar\", \"items\", java.util.Arrays.asList(1, \"too\")), index, count, key);\n"+
+			"\t}\n\n"+
+			"\tprivate DuelView view_2;\n\n"+
+			"\t@Override\n"+
+			"\tprotected void init() {\n"+
+			"\t\tthis.view_2 = new foo.bar.Yada();\n"+
+			"\t}\n"+
+			"}\n";
+
+		StringBuilder output = new StringBuilder();
+		new JavaCodeGen().writeCode(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void callWrapperTest() throws IOException {
 
 		CodeTypeDeclaration input = CodeDOMUtility.createViewType(

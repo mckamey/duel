@@ -1279,6 +1279,55 @@ public class DuelLexerTest {
 		assertArrayEquals(expected, actual);
 	}
 
+	@Test
+	public void callLiteralTest() {
+
+		String input =
+				"<view name=\"foo\">\n"+
+				"<call view=\"bar\" data=\"<%= { name: 'bar', items: [ 1, 'too' ] } %>\" />";
+
+		Object[] expected = {
+				DuelToken.elemBegin("view"),
+				DuelToken.attrName("name"),
+				DuelToken.attrValue("foo"),
+				DuelToken.literal("\n"),
+				DuelToken.elemBegin("call"),
+				DuelToken.attrName("view"),
+				DuelToken.attrValue("bar"),
+				DuelToken.attrName("data"),
+				DuelToken.attrValue(new BlockValue("<%=", "%>", " { name: 'bar', items: [ 1, 'too' ] } ")),
+				DuelToken.elemEnd("call")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void callLiteralAltTest() {
+
+		String input =
+				"<view name=\"foo\">"+
+				"<call view=\"bar\" data=\" { name: 'bar', items: [ 1, 'too' ] } \" />";
+
+		Object[] expected = {
+				DuelToken.elemBegin("view"),
+				DuelToken.attrName("name"),
+				DuelToken.attrValue("foo"),
+				DuelToken.elemBegin("call"),
+				DuelToken.attrName("view"),
+				DuelToken.attrValue("bar"),
+				DuelToken.attrName("data"),
+				DuelToken.attrValue(" { name: 'bar', items: [ 1, 'too' ] } "),
+				DuelToken.elemEnd("call")
+			};
+
+		Object[] actual = new DuelLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
 	@SuppressWarnings("unused")
 	private void dumpLists(Object[] expected, Object[] actual) {
 
