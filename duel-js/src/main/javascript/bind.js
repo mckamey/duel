@@ -375,7 +375,7 @@
 
 		return (v && isFunction(v.getView)) ?
 			// Closure Compiler type cast
-			bind(v.getView(), d, /** @type {number} */i, /** @type {number} */c, /** @type {string} */k, p) : null;
+			bind(v.getView(), d, (/** @type {number} */i), (/** @type {number} */c), (/** @type {string} */k), p) : null;
 	}
 
 	/**
