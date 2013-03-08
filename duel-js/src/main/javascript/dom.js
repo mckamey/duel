@@ -284,7 +284,17 @@
 
 					} else if (!ATTR_DOM[name.toLowerCase()] && (type !== VAL || name.charAt(0) === '$' || getType(elem[name]) !== NUL || getType(elem[ATTR_DUP[name]]) !== NUL)) {
 						// direct setting of existing properties
-						elem[name] = value;
+						try {
+							elem[name] = value;
+
+						} catch(ex2) {
+							if (name.toLowerCase() === 'type' && elem.tagName.toLowerCase() === 'input') {
+								// IE9 doesn't like HTML5 input types
+								continue;
+							} else {
+								throw ex2;
+							}
+						}
 
 						// also set duplicated properties
 						name = ATTR_DUP[name];
