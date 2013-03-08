@@ -5,10 +5,10 @@ import java.util.*;
 public final class JSUtility {
 
 	private static final String CONFIG_RESOURCE = "org.duelengine.duel.JSUtility";
-	private static Map<String, Boolean> reserved;
-	private static Map<String, Boolean> globals;
-	private static Map<String, Boolean> properties;
-	private static Map<String, Boolean> browser;
+	private static Set<String> reserved;
+	private static Set<String> globals;
+	private static Set<String> properties;
+	private static Set<String> browser;
 	private static boolean inited;
 
 	// static class
@@ -30,14 +30,14 @@ public final class JSUtility {
 				{
 					return false;
 				}
-				if (i == 0 && globals.containsKey(parts[i])) {
+				if (i == 0 && globals.contains(parts[i])) {
 					return false;
 				}
 			}
 			return true;
 		}
 
-		if (reserved.containsKey(ident)) {
+		if (reserved.contains(ident)) {
 			return false;
 		}
 
@@ -72,7 +72,7 @@ public final class JSUtility {
 			initLookups();
 		}
 
-		return globals.containsKey(ident) || browser.containsKey(ident);
+		return globals.contains(ident) || browser.contains(ident);
 	}
 
 	public static boolean isObjectProperty(String ident) {
@@ -84,13 +84,13 @@ public final class JSUtility {
 			initLookups();
 		}
 
-		return properties.containsKey(ident);
+		return properties.contains(ident);
 	}
 	
 	private static void initLookups() {
 
 		String[] tags;
-		Map<String, Boolean> map;
+		Set<String> set;
 
 		// definitions maintained in JSVocab.properties
 		ResourceBundle config = ResourceBundle.getBundle(CONFIG_RESOURCE, Locale.ROOT);
@@ -98,44 +98,44 @@ public final class JSUtility {
 		// reserved words
 		tags = (config != null) && config.containsKey("reserved") ?
 				config.getString("reserved").split(",") : new String[0];
-		map = new HashMap<String, Boolean>(tags.length);
+		set = new HashSet<String>(tags.length);
 		for (String value : tags) {
-			map.put(value, true);
+			set.add(value);
 		}
 
 		// add Object properties to reserved words
 		tags = (config != null) && config.containsKey("properties") ?
 				config.getString("properties").split(",") : new String[0];
 		for (String value : tags) {
-			map.put(value, true);
+			set.add(value);
 		}
-		reserved = map;
+		reserved = set;
 
 		// global objects
 		tags = (config != null) && config.containsKey("globals") ?
 				config.getString("globals").split(",") : new String[0];
-		map = new HashMap<String, Boolean>(tags.length);
+		set = new HashSet<String>(tags.length);
 		for (String value : tags) {
-			map.put(value, true);
+			set.add(value);
 		}
-		globals = map;
+		globals = set;
 
 		// object properties
 		tags = (config != null) && config.containsKey("properties") ?
 				config.getString("properties").split(",") : new String[0];
-		map = new HashMap<String, Boolean>(tags.length);
+		set = new HashSet<String>(tags.length);
 		for (String value : tags) {
-			map.put(value, true);
+			set.add(value);
 		}
-		properties = map;
+		properties = set;
 
 		// browser objects
 		tags = (config != null) && config.containsKey("browser") ?
 				config.getString("browser").split(",") : new String[0];
-		map = new HashMap<String, Boolean>(tags.length);
+		set = new HashSet<String>(tags.length);
 		for (String value : tags) {
-			map.put(value, true);
+			set.add(value);
 		}
-		browser = map;
+		browser = set;
 	}
 }

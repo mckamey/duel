@@ -10,10 +10,10 @@ public class ElementNode extends ContainerNode {
 	private static final String CMD_LOAD = "$load";
 
 	private static final String CONFIG_RESOURCE = "org.duelengine.duel.ast.HTMLTags";
-	private static final Map<String, Boolean> voidTags;
-	private static final Map<String, Boolean> linkTags;
-	private static final Map<String, Boolean> linkAttrs;
-	private static final Map<String, Boolean> boolAttrs;
+	private static final Set<String> voidTags;
+	private static final Set<String> linkTags;
+	private static final Set<String> linkAttrs;
+	private static final Set<String> boolAttrs;
 
 	private final String tagName;
 	private final boolean isVoid;
@@ -27,64 +27,64 @@ public class ElementNode extends ContainerNode {
 		String[] items = (config != null) && config.containsKey("voidTags") ?
 			config.getString("voidTags").split("\\s+") : new String[0];
 
-		Map<String, Boolean> map = new HashMap<String, Boolean>(items.length);
+		Set<String> set = new HashSet<String>(items.length);
 		for (String value : items) {
-			map.put(value, true);
+			set.add(value);
 		}
 
-		voidTags = map;
+		voidTags = set;
 
 		items = (config != null) && config.containsKey("linkTags") ?
 			config.getString("linkTags").split("\\s+") : new String[0];
 
-		map = new HashMap<String, Boolean>(items.length);
+		set = new HashSet<String>(items.length);
 		for (String value : items) {
-			map.put(value, true);
+			set.add(value);
 		}
 
-		linkTags = map;
+		linkTags = set;
 
 		items = (config != null) && config.containsKey("linkAttrs") ?
 			config.getString("linkAttrs").split("\\s+") : new String[0];
 
-		map = new HashMap<String, Boolean>(items.length);
+		set = new HashSet<String>(items.length);
 		for (String value : items) {
-			map.put(value, true);
+			set.add(value);
 		}
 
-		linkAttrs = map;
+		linkAttrs = set;
 
 		items = (config != null) && config.containsKey("boolAttrs") ?
 			config.getString("boolAttrs").split("\\s+") : new String[0];
 
-		map = new HashMap<String, Boolean>(items.length);
+		set = new HashSet<String>(items.length);
 		for (String value : items) {
-			map.put(value, true);
+			set.add(value);
 		}
 
-		boolAttrs = map;
+		boolAttrs = set;
 	}
 
 	public ElementNode(String name, int index, int line, int column) {
 		super(index, line, column);
 
 		this.tagName = name;
-		this.isVoid = (name == null) || voidTags.containsKey(name);
-		this.isLinkableTag = (name != null) && linkTags.containsKey(name);
+		this.isVoid = (name == null) || voidTags.contains(name);
+		this.isLinkableTag = (name != null) && linkTags.contains(name);
 	}
 
 	public ElementNode(String name) {
 		this.tagName = name;
-		this.isVoid = (name == null) || voidTags.containsKey(name);
-		this.isLinkableTag = (name != null) && linkTags.containsKey(name);
+		this.isVoid = (name == null) || voidTags.contains(name);
+		this.isLinkableTag = (name != null) && linkTags.contains(name);
 	}
 
 	public ElementNode(String name, AttributePair[] attr, DuelNode... children) {
 		super(children);
 
 		this.tagName = name;
-		this.isVoid = (name == null) || voidTags.containsKey(name);
-		this.isLinkableTag = (name != null) && linkTags.containsKey(name);
+		this.isVoid = (name == null) || voidTags.contains(name);
+		this.isLinkableTag = (name != null) && linkTags.contains(name);
 
 		if (attr != null) {
 			for (AttributePair a : attr) {
@@ -102,11 +102,11 @@ public class ElementNode extends ContainerNode {
 	}
 
 	public boolean isLinkAttribute(String name) {
-		return this.isLinkableTag && linkAttrs.containsKey(name);
+		return this.isLinkableTag && linkAttrs.contains(name);
 	}
 
 	public boolean isBoolAttribute(String name) {
-		return boolAttrs.containsKey(name);
+		return boolAttrs.contains(name);
 	}
 
 	public boolean hasAttributes() {
