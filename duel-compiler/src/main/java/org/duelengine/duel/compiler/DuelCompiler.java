@@ -117,6 +117,11 @@ public class DuelCompiler {
 
 			String outputName = inputFile.getName();
 			for (VIEWCommandNode view : views) {
+				if (view.isServerOnly()) {
+					// skip server-only views
+					continue;
+				}
+
 				// use the first view
 				outputName = settings.getClientPath(view.getName());
 				break;
@@ -145,6 +150,11 @@ public class DuelCompiler {
 
 			codegen = new JavaCodeGen(settings);
 			for (VIEWCommandNode view : views) {
+				if (view.isClientOnly()) {
+					// skip client-only views
+					continue;
+				}
+
 				try {
 					File outputFile = new File(this.outputServerDir, settings.getServerPath(view.getName(), codegen));
 					outputFile.getParentFile().mkdirs();

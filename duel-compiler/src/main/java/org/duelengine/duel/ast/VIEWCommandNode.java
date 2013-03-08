@@ -8,6 +8,8 @@ public class VIEWCommandNode extends CommandNode {
 	private static final String NAME = "$view";
 	private static final CommandName CMD = CommandName.VIEW;
 	private String name;
+	private boolean clientOnly;
+	private boolean serverOnly;
 
 	public VIEWCommandNode(int index, int line, int column) {
 		super(CMD, NAME, false, index, line, column);
@@ -23,6 +25,22 @@ public class VIEWCommandNode extends CommandNode {
 
 	public void setName(String value) {
 		this.name = value;
+	}
+
+	public boolean isClientOnly() {
+		return this.clientOnly;
+	}
+
+	public void setClientOnly(boolean value) {
+		this.clientOnly = value;
+	}
+
+	public boolean isServerOnly() {
+		return this.serverOnly;
+	}
+
+	public void setServerOnly(boolean value) {
+		this.serverOnly = value;
 	}
 
 	@Override
@@ -46,14 +64,22 @@ public class VIEWCommandNode extends CommandNode {
 		if (name == null || name.isEmpty()) {
 			throw new NullPointerException("name");
 		}
-		if (!"name".equalsIgnoreCase(name)) {
+		if ("name".equalsIgnoreCase(name)) {
+			if (value != null && !(value instanceof LiteralNode)) {
+				// Syntax error
+				throw new InvalidNodeException("VIEW name must be a string literal: "+value.getClass(), value);
+			}
+
+			this.name = (value == null ? null : ((LiteralNode)value).getValue());
+
+		} else if ("client-only".equalsIgnoreCase(name)) {
+			this.clientOnly = true;
+
+		} else if ("server-only".equalsIgnoreCase(name)) {
+			this.serverOnly = true;
+
+		} else {
 			throw new InvalidNodeException("Attribute invalid on VIEW declaration: "+name, value);
 		}
-		if (value != null && !(value instanceof LiteralNode)) {
-			// Syntax error
-			throw new InvalidNodeException("VIEW name must be a string literal: "+value.getClass(), value);
-		}
-
-		this.name = (value == null ? null : ((LiteralNode)value).getValue());
 	}
 }

@@ -67,19 +67,21 @@ public class JavaCodeGen implements CodeGenerator {
 
 		boolean importsWritten = false;
 		for (VIEWCommandNode view : views) {
-			if (view != null) {
-				CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).buildView(view);
-
-				if (importsWritten) {
-					this.writeln(output, 0);
-				} else {
-					this.writePackage(output, viewType.getNamespace());
-					importsWritten = true;
-				}
-
-				this.writeTypeDeclaration(output, viewType, 0);
-				this.writeln(output, 0);
+			if (view == null || view.isClientOnly()) {
+				continue;
 			}
+
+			CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).buildView(view);
+
+			if (importsWritten) {
+				this.writeln(output, 0);
+			} else {
+				this.writePackage(output, viewType.getNamespace());
+				importsWritten = true;
+			}
+
+			this.writeTypeDeclaration(output, viewType, 0);
+			this.writeln(output, 0);
 		}
 	}
 

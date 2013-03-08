@@ -65,9 +65,10 @@ public class ClientCodeGen implements CodeGenerator {
 
 		List<String> namespaces = new ArrayList<String>();
 		for (VIEWCommandNode view : views) {
-			if (view == null) {
+			if (view == null || view.isServerOnly()) {
 				continue;
 			}
+
 			this.writeln(output, 0);
 
 			// prepend the client-side prefix
