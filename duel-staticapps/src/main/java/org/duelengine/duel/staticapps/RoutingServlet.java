@@ -127,7 +127,7 @@ public class RoutingServlet extends HttpServlet {
 			String servletPath = request.getServletPath();
 			SiteViewPage sitePage = route(servletPath);
 			if (sitePage == null) {
-				log.info("routing: "+servletPath+" (static)");
+				log.debug("routing: "+servletPath+" (static)");
 				defaultServlet(request, response);
 				return;
 			}
@@ -192,14 +192,14 @@ public class RoutingServlet extends HttpServlet {
 			}
 
 			if (page != null) {
-				log.info("routing: "+servletPath+" (as "+aliasedPath+")");
+				log.info("routing: "+servletPath+" [as "+aliasedPath+"]");
 
 			} else {
 				// continue to attempt to resolve with catch-all
 				String ext = FileUtil.getExtension(aliasedPath);
 				page = config.views().get("*"+ext);
 				if (page != null) {
-					log.info("routing: "+servletPath+" (as *"+ext+")");
+					log.info("routing: "+servletPath+" [as *"+ext+"]");
 				}
 			}
 		}
