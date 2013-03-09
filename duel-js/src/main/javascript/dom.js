@@ -260,8 +260,8 @@
 
 				if (name) {
 					if (type === NUL) {
-						value = '';
-						type = VAL;
+						// null/undefined removes attributes
+						continue;
 					}
 
 					name = ATTR_MAP[name.toLowerCase()] || name;
@@ -287,19 +287,19 @@
 						try {
 							elem[name] = value;
 
+							// also set duplicated properties
+							name = ATTR_DUP[name];
+							if (name) {
+								elem[name] = value;
+							}
+
 						} catch(ex2) {
 							if (name.toLowerCase() === 'type' && elem.tagName.toLowerCase() === 'input') {
 								// IE9 doesn't like HTML5 input types
 								continue;
-							} else {
-								throw ex2;
 							}
-						}
 
-						// also set duplicated properties
-						name = ATTR_DUP[name];
-						if (name) {
-							elem[name] = value;
+							throw new Error('DOM property '+elem.tagName+'.'+name+': '+ex2);
 						}
 
 					} else if (ATTR_BOOL[name.toLowerCase()]) {
@@ -537,17 +537,6 @@
 	}
 
 	/**
-	 * Renders an error as a text node
-	 * 
-	 * @private
-	 * @param {Error} ex The exception
-	 * @return {Node}
-	 */
-	function onErrorDOM(ex) {
-		return document.createTextNode(onError(ex));
-	}
-
-	/**
 	 * Returns result as DOM objects
 	 * 
 	 * @public
@@ -575,7 +564,15 @@
 
 		} catch (ex) {
 			// handle error with context
-			view = onErrorDOM(ex);
+			var errValue = onError(ex);
+
+			if (errValue instanceof Result) {
+				return errValue.toDOM(elem || view);
+
+			} else {
+				// render the error as a text node
+				view = document.createTextNode(''+errValue);
+			}
 		}
 
 		if (elem && elem.parentNode) {

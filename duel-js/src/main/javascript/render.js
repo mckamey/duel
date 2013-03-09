@@ -37,20 +37,16 @@
 		if (!isString(val)) {
 			return val;
 		}
-	
-		return val.replace(/[&<>]/g,
-			function(ch) {
-				switch(ch) {
-					case '&':
-						return '&amp;';
-					case '<':
-						return '&lt;';
-					case '>':
-						return '&gt;';
-					default:
-						return ch;
-				}
-			});
+
+		var map = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;'
+		};
+
+		return val.replace(/[&<>]/g, function(ch) {
+			return map[ch] || ch;
+		});
 	}
 
 	/**
@@ -64,22 +60,17 @@
 		if (!isString(val)) {
 			return val;
 		}
-	
-		return val.replace(/[&<>"]/g,
-			function(ch) {
-				switch(ch) {
-					case '&':
-						return '&amp;';
-					case '<':
-						return '&lt;';
-					case '>':
-						return '&gt;';
-					case '"':
-						return '&quot;';
-					default:
-						return ch;
-				}
-			});
+
+		var map = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+			'"': '&quot;'
+		};
+
+		return val.replace(/[&<>"]/g, function(ch) {
+			return map[ch] || ch;
+		});
 	}
 
 	/**
@@ -136,12 +127,14 @@
 								continue;
 							}
 						}
+						if (getType(val) === NUL) {
+							// null/undefined removes attributes
+							continue;
+						}
 
 						buffer.append(' ', name);
-						if (getType(val) !== NUL) {
-							// Closure Compiler type cast
-							buffer.append('="', /** @type{string} */(attrEncode(val)), '"');
-						}
+						// Closure Compiler type cast
+						buffer.append('="', /** @type{string} */(attrEncode(val)), '"');
 					}
 				}
 				i++;
@@ -182,9 +175,18 @@
 			var buffer = new Buffer();
 			renderElem(buffer, view);
 			return buffer.toString();
+
 		} catch (ex) {
 			// handle error with context
-			return onError(ex);
+			var errValue = onError(ex);
+
+			if (errValue instanceof Result) {
+				return render(errValue.value);
+
+			} else {
+				// render the error as a string
+				return (''+errValue);
+			}
 		}
 	}
 

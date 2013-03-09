@@ -1,15 +1,15 @@
 	/* factory.js --------------------*/
 
 	/**
-	 * Renders an error as text
+	 * Renders an error directly as text
 	 * 
 	 * @private
 	 * @param {Error} ex The exception
-	 * @return {string}
+	 * @return {string|Result}
 	 */
-	function onError(ex) {
-		return '['+ex+']';
-	}
+	var onError = function(ex) {
+		return '[ '+ex+' ]';
+	};
 
 	/**
 	 * Wraps a view definition with binding method
@@ -44,9 +44,18 @@
 					isFinite(count) ? count : 1,
 					isString(key) ? key : null);
 				return new Result(result);
+
 			} catch (ex) {
 				// handle error with context
-				return new Result(onError(ex));
+				var errValue = onError(ex);
+
+				if (errValue instanceof Result) {
+					return errValue;
+
+				} else {
+					// render the error as a text node
+					return new Result(''+errValue);
+				}
 			}
 		};
 
@@ -71,6 +80,17 @@
 	 */
 	var duel = function(view) {
 		return (isFunction(view) && isFunction(view.getView)) ? view : factory(view);
+	};
+
+	/**
+	 * @public
+	 * @param {string} value Markup text
+	 * @return {Markup}
+	 */
+	duel.onerror = function(value) {
+		if (isFunction(value)) {
+			onError = value;
+		}
 	};
 
 	/**

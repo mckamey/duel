@@ -213,8 +213,8 @@ test('falsey attribute values', function() {
 	expected.setAttribute('data-str', '');
 	expected.setAttribute('data-num', 0);
 	expected.setAttribute('data-bool', false);
-	expected.setAttribute('data-null', '');
-	expected.setAttribute('data-undef', '');
+// 	expected.setAttribute('data-null', '');
+// 	expected.setAttribute('data-undef', '');
 	expected.appendChild(document.createTextNode('Lorem ipsum'));
 
 	same(toHTML(actual), toHTML(expected), '');

@@ -1,7 +1,7 @@
 /*global window */
 
 /**
- * @license DUEL v0.8.7 http://duelengine.org
+ * @license DUEL v0.8.8 http://duelengine.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -801,15 +801,15 @@ var duel = (
 	/* factory.js --------------------*/
 
 	/**
-	 * Renders an error as text
+	 * Renders an error directly as text
 	 * 
 	 * @private
 	 * @param {Error} ex The exception
-	 * @return {string}
+	 * @return {string|Result}
 	 */
-	function onError(ex) {
-		return '['+ex+']';
-	}
+	var onError = function(ex) {
+		return '[ '+ex+' ]';
+	};
 
 	/**
 	 * Wraps a view definition with binding method
@@ -844,9 +844,18 @@ var duel = (
 					isFinite(count) ? count : 1,
 					isString(key) ? key : null);
 				return new Result(result);
+
 			} catch (ex) {
 				// handle error with context
-				return new Result(onError(ex));
+				var errValue = onError(ex);
+
+				if (errValue instanceof Result) {
+					return errValue;
+
+				} else {
+					// render the error as a text node
+					return new Result(''+errValue);
+				}
 			}
 		};
 
@@ -871,6 +880,17 @@ var duel = (
 	 */
 	var duel = function(view) {
 		return (isFunction(view) && isFunction(view.getView)) ? view : factory(view);
+	};
+
+	/**
+	 * @public
+	 * @param {string} value Markup text
+	 * @return {Markup}
+	 */
+	duel.onerror = function(value) {
+		if (isFunction(value)) {
+			onError = value;
+		}
 	};
 
 	/**
@@ -921,20 +941,16 @@ var duel = (
 		if (!isString(val)) {
 			return val;
 		}
-	
-		return val.replace(/[&<>]/g,
-			function(ch) {
-				switch(ch) {
-					case '&':
-						return '&amp;';
-					case '<':
-						return '&lt;';
-					case '>':
-						return '&gt;';
-					default:
-						return ch;
-				}
-			});
+
+		var map = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;'
+		};
+
+		return val.replace(/[&<>]/g, function(ch) {
+			return map[ch] || ch;
+		});
 	}
 
 	/**
@@ -948,22 +964,17 @@ var duel = (
 		if (!isString(val)) {
 			return val;
 		}
-	
-		return val.replace(/[&<>"]/g,
-			function(ch) {
-				switch(ch) {
-					case '&':
-						return '&amp;';
-					case '<':
-						return '&lt;';
-					case '>':
-						return '&gt;';
-					case '"':
-						return '&quot;';
-					default:
-						return ch;
-				}
-			});
+
+		var map = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+			'"': '&quot;'
+		};
+
+		return val.replace(/[&<>"]/g, function(ch) {
+			return map[ch] || ch;
+		});
 	}
 
 	/**
@@ -1020,12 +1031,14 @@ var duel = (
 								continue;
 							}
 						}
+						if (getType(val) === NUL) {
+							// null/undefined removes attributes
+							continue;
+						}
 
 						buffer.append(' ', name);
-						if (getType(val) !== NUL) {
-							// Closure Compiler type cast
-							buffer.append('="', /** @type{string} */(attrEncode(val)), '"');
-						}
+						// Closure Compiler type cast
+						buffer.append('="', /** @type{string} */(attrEncode(val)), '"');
 					}
 				}
 				i++;
@@ -1066,9 +1079,18 @@ var duel = (
 			var buffer = new Buffer();
 			renderElem(buffer, view);
 			return buffer.toString();
+
 		} catch (ex) {
 			// handle error with context
-			return onError(ex);
+			var errValue = onError(ex);
+
+			if (errValue instanceof Result) {
+				return render(errValue.value);
+
+			} else {
+				// render the error as a string
+				return (''+errValue);
+			}
 		}
 	}
 
@@ -1359,8 +1381,8 @@ var duel = (
 
 				if (name) {
 					if (type === NUL) {
-						value = '';
-						type = VAL;
+						// null/undefined removes attributes
+						continue;
 					}
 
 					name = ATTR_MAP[name.toLowerCase()] || name;
@@ -1386,19 +1408,19 @@ var duel = (
 						try {
 							elem[name] = value;
 
+							// also set duplicated properties
+							name = ATTR_DUP[name];
+							if (name) {
+								elem[name] = value;
+							}
+
 						} catch(ex2) {
 							if (name.toLowerCase() === 'type' && elem.tagName.toLowerCase() === 'input') {
 								// IE9 doesn't like HTML5 input types
 								continue;
-							} else {
-								throw ex2;
 							}
-						}
 
-						// also set duplicated properties
-						name = ATTR_DUP[name];
-						if (name) {
-							elem[name] = value;
+							throw new Error('DOM property '+elem.tagName+'.'+name+': '+ex2);
 						}
 
 					} else if (ATTR_BOOL[name.toLowerCase()]) {
@@ -1636,17 +1658,6 @@ var duel = (
 	}
 
 	/**
-	 * Renders an error as a text node
-	 * 
-	 * @private
-	 * @param {Error} ex The exception
-	 * @return {Node}
-	 */
-	function onErrorDOM(ex) {
-		return document.createTextNode(onError(ex));
-	}
-
-	/**
 	 * Returns result as DOM objects
 	 * 
 	 * @public
@@ -1674,7 +1685,15 @@ var duel = (
 
 		} catch (ex) {
 			// handle error with context
-			view = onErrorDOM(ex);
+			var errValue = onError(ex);
+
+			if (errValue instanceof Result) {
+				return errValue.toDOM(elem || view);
+
+			} else {
+				// render the error as a text node
+				view = document.createTextNode(''+errValue);
+			}
 		}
 
 		if (elem && elem.parentNode) {

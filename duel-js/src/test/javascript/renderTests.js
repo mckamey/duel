@@ -193,7 +193,7 @@ test('falsey attribute values', function() {
 	var actual = view().toString();
 
 	var expected = 
-		'<div data-str="" data-num="0" data-bool="false" data-null data-undef>'+
+		'<div data-str="" data-num="0" data-bool="false">'+
 		'Lorem ipsum'+
 		'</div>';
 	same(actual, expected, '');
