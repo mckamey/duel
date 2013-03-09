@@ -421,6 +421,8 @@ public abstract class DuelView {
 		Class<?> aType = a.getClass();
 
 		if (DuelData.isNumber(aType)) {
+			// ensure both are Double
+			a = DuelData.coerceNumber(a);
 			b = DuelData.coerceNumber(b);
 
 		} else if (DuelData.isString(aType)) {
