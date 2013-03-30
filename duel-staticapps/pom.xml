@@ -11,7 +11,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-staticapps</artifactId>
-	<version>0.9.4</version>
+	<version>0.9.5</version>
 	<packaging>jar</packaging>
 
 	<name>DUEL Static Apps</name>
@@ -39,10 +39,10 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<duel.version>0.8.6</duel.version>
-		<jackson.version>2.1.4</jackson.version>
-		<codec.version>1.7</codec.version>
-		<slf4j.version>1.7.2</slf4j.version>
+		<duel.version>0.8.7</duel.version>
+		<jackson.version>2.2.2</jackson.version>
+		<codec.version>1.8</codec.version>
+		<slf4j.version>1.7.5</slf4j.version>
 		<servlet.version>3.0.1</servlet.version>
 		<junit.version>4.11</junit.version>
 		<jvm.version>1.6</jvm.version>
@@ -88,7 +88,7 @@
 		<!-- Jackson JSON runtime -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
+			<artifactId>jackson-core</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
@@ -98,7 +98,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
+			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
 
