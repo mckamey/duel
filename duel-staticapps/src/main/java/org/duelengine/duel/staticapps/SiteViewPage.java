@@ -2,14 +2,16 @@ package org.duelengine.duel.staticapps;
 
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.duelengine.duel.DuelView;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SiteViewPage {
 
 	private String view;
 	private Object data;
 	private Map<String, Object> extras;
+	private CacheManifest appCache;
 
 	/**
 	 * @return the view name
@@ -59,6 +61,17 @@ public class SiteViewPage {
 	@JsonProperty
 	public SiteViewPage extras(Map<String, Object> value) {
 		extras = value;
+		return this;
+	}
+
+	@JsonProperty
+	public CacheManifest appCache() {
+		return appCache;
+	}
+
+	@JsonProperty
+	public SiteViewPage appCache(CacheManifest value) {
+		appCache = value;
 		return this;
 	}
 

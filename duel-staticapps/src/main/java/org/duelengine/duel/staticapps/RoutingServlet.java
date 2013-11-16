@@ -174,7 +174,7 @@ public class RoutingServlet extends HttpServlet {
 		}
 
 		// TODO: expand routing capabilities beyond exact match, default-doc and catch-all
-		
+
 		SiteViewPage page = config.views().get(servletPath.substring(1));
 		if (page != null) {
 			log.info("routing: "+servletPath);

@@ -4,18 +4,18 @@ import org.duelengine.duel.staticapps.SiteBuilder;
 import org.duelengine.duel.staticapps.SiteConfig;
 
 /**
- * Generates static app from DUEL-based WAR
+ * Generates cache manifests from DUEL-based WAR
  *
- * @goal generate
+ * @goal manifests
  * @phase prepare-package
  */
-public class SiteGeneratorMojo extends SiteMojo {
+public class CacheManifestGeneratorMojo extends SiteMojo {
 
 	@Override
 	protected void execute(SiteConfig config, ClassLoader classLoader)
 			throws Exception {
 
-		// generate a static site defined by the config
-		new SiteBuilder(classLoader).build(config);
+		// generate any manifests defined by the config
+		new SiteBuilder(classLoader).generateManifests(config);
 	}
 }

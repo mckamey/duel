@@ -11,7 +11,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-staticapps</artifactId>
-	<version>0.9.5</version>
+	<version>0.9.6</version>
 	<packaging>jar</packaging>
 
 	<name>DUEL Static Apps</name>
@@ -40,7 +40,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<duel.version>0.8.7</duel.version>
-		<jackson.version>2.2.2</jackson.version>
+		<jackson.version>2.3.0</jackson.version>
 		<codec.version>1.8</codec.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<servlet.version>3.0.1</servlet.version>

@@ -16,7 +16,20 @@
 					"foo": "bar",
 					"blah": "yada"
 				},
-				"extras": null
+				"extras": null,
+				"appCache": {
+					"manifest": "home.appcache",
+					"version": "v2",
+					"cache": [
+						"/favicon.ico"
+					],
+					"fallback": {
+						"/": "/index.html"
+					},
+					"network": [
+						"*"
+					]
+				}
 			},
 		"error.html":
 			{

@@ -29,7 +29,7 @@ class MavenLoggerAdapter extends MarkerIgnoringBase {
 	}
 
 	@Override
-	public void debug(String format, Object[] arg1) {
+	public void debug(String format, Object... arg1) {
 		debug(String.format(format, arg1));
 	}
 
@@ -54,7 +54,7 @@ class MavenLoggerAdapter extends MarkerIgnoringBase {
 	}
 
 	@Override
-	public void error(String format, Object[] arg1) {
+	public void error(String format, Object... arg1) {
 		error(String.format(format, arg1));
 	}
 
@@ -79,7 +79,7 @@ class MavenLoggerAdapter extends MarkerIgnoringBase {
 	}
 
 	@Override
-	public void info(String format, Object[] arg1) {
+	public void info(String format, Object... arg1) {
 		info(String.format(format, arg1));
 	}
 
@@ -129,7 +129,7 @@ class MavenLoggerAdapter extends MarkerIgnoringBase {
 	}
 
 	@Override
-	public void trace(String msg, Object[] arg1) {
+	public void trace(String msg, Object... arg1) {
 		// NOOP
 	}
 
@@ -154,7 +154,7 @@ class MavenLoggerAdapter extends MarkerIgnoringBase {
 	}
 
 	@Override
-	public void warn(String format, Object[] arg1) {
+	public void warn(String format, Object... arg1) {
 		warn(String.format(format, arg1));
 	}
 

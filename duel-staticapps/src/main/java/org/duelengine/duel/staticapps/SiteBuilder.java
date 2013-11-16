@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -19,9 +20,20 @@ import org.slf4j.LoggerFactory;
 public class SiteBuilder {
 
 	private static final Logger log = LoggerFactory.getLogger(SiteBuilder.class);
-	private static final int BUFFER_SIZE = 64*1024;//64K
-	private final ClassLoader classLoader;
+	private static final Appendable NOOP_OUTPUT = new Appendable() {
+		@Override
+		public Appendable append(CharSequence value, int start, int end) throws IOException { return this; }
+
+		@Override
+		public Appendable append(char value) throws IOException { return this; }
+
+		@Override
+		public Appendable append(CharSequence value) throws IOException { return this; }
+	};
+
+	private static final int BUFFER_SIZE = 1024*1024;//1MB
 	private final byte[] buffer = new byte[BUFFER_SIZE];
+	private final ClassLoader classLoader;
 
 	public SiteBuilder() {
 		this(Thread.currentThread().getContextClassLoader());
@@ -68,35 +80,31 @@ public class SiteBuilder {
 			}
 		}
 
-		// link transformer which caches list of URLs
-		StaticLinkInterceptor linkInterceptor = null;
-		try {
-			String bundleName = config.cdnMap();
-			ResourceBundle cdnBundle =
-				(bundleName == null) || bundleName.isEmpty() ? null :
-				ResourceBundle.getBundle(bundleName, Locale.ROOT, classLoader);
-
-			bundleName = config.cdnLinksMap();
-			ResourceBundle cdnLinkBundle =
-				(bundleName == null) || bundleName.isEmpty() ? null :
-				ResourceBundle.getBundle(bundleName, Locale.ROOT, classLoader);
-
-			linkInterceptor = new StaticLinkInterceptor(config.cdnHost(), cdnBundle, cdnLinkBundle, config.isDevMode());
-
-		} catch (URISyntaxException ex) {
-			log.error(ex.getMessage(), ex);
-		}
+		// link transformer which also caches list of URLs
+		StaticLinkInterceptor linkInterceptor = createInterceptor(config);
 
 		FormatPrefs formatPrefs = new FormatPrefs()
 			.setEncoding(config.encoding())
 			.setIndent(config.isDevMode() ? "\t" : "")
 			.setNewline(config.isDevMode() ? "\n" : "");
 
+		Map<String, String> linkCache = null;
+
 		Map<String, SiteViewPage> views = config.views();
 		if (views != null) {
 			for (String targetPage : views.keySet()) {
 				SiteViewPage sitePage = views.get(targetPage);
 				log.info("Generating: "+sitePage.view()+" => "+targetPage);
+
+				if (sitePage.appCache() != null) {
+					if (linkCache == null) {
+						linkCache = new HashMap<String, String>();
+					}
+
+					// aggregate and reset so manifest only contains this page's resources
+					linkCache.putAll(linkInterceptor.getLinkCache());
+					linkInterceptor.getLinkCache().clear();
+				}
 
 				FileWriter writer = null;
 				try {
@@ -122,6 +130,12 @@ public class SiteBuilder {
 						view.render(context);
 					}
 
+					CacheManifest cacheManifest = sitePage.appCache();
+					if (cacheManifest != null) {
+						cacheManifest.addCachePaths(linkInterceptor.getLinkCache().values());
+						new CacheManifestWriter().write(targetDir, cacheManifest);
+					}
+
 				} catch (Exception ex) {
 					log.error(ex.getMessage(), ex);
 
@@ -136,6 +150,12 @@ public class SiteBuilder {
 			}
 		}
 
+		if ((linkCache != null) && !linkCache.isEmpty()) {
+			// restore any previously stored values
+			linkInterceptor.getLinkCache().putAll(linkCache);
+		}
+		linkCache = linkInterceptor.getLinkCache();
+
 		// copy static resources which are blindly requested by userAgents (e.g., "robots.txt", "favicon.ico")
 		String[] staticFiles = config.files();
 		if (staticFiles != null) {
@@ -149,7 +169,7 @@ public class SiteBuilder {
 			}
 		}
 
-		Map<String, String> linkCache = linkInterceptor.getLinkCache();
+		// ensure that all referenced files are copied
 		for (String key : linkCache.keySet()) {
 			try {
 				copyResource(sourceDir, targetDir, key, linkCache.get(key));
@@ -158,6 +178,74 @@ public class SiteBuilder {
 				log.error(ex.getMessage(), ex);
 			}
 		}
+	}
+
+	public void generateManifests(SiteConfig config)
+			throws FileNotFoundException  {
+
+		if (config == null) {
+			throw new NullPointerException("config");
+		}
+
+		StaticLinkInterceptor linkInterceptor = null;
+
+		for (SiteViewPage sitePage : config.views().values()) {
+			if (sitePage.appCache() == null) {
+				// only find dependencies if manifest needs generating
+				continue;
+			}
+
+			if (linkInterceptor == null) {
+				linkInterceptor = createInterceptor(config);
+
+			} else if (!linkInterceptor.getLinkCache().isEmpty()) {
+				linkInterceptor.getLinkCache().clear();
+			}
+
+			try {
+				DuelContext context = new DuelContext()
+					.setLinkInterceptor(linkInterceptor)
+					.setData(sitePage.data())
+					.setOutput(NOOP_OUTPUT);
+
+				Map<String, Object> extras = sitePage.extras();
+				if (extras != null) {
+					// ambient client-side data
+					context.putExtras(extras);
+				}
+
+				DuelView view = sitePage.viewInstance(config.serverPrefix(), classLoader);
+				if (view != null) {
+					view.render(context);
+				}
+
+				sitePage.appCache().addCachePaths(linkInterceptor.getLinkCache().values());
+				new CacheManifestWriter().write(config.targetDirFile(), sitePage.appCache());
+			} catch (Exception ex) {
+				log.error(ex.getMessage(), ex);
+			}
+		}
+	}
+
+	private StaticLinkInterceptor createInterceptor(SiteConfig config) {
+		StaticLinkInterceptor linkInterceptor = null;
+		try {
+			String bundleName = config.cdnMap();
+			ResourceBundle cdnBundle =
+				(bundleName == null) || bundleName.isEmpty() ? null :
+				ResourceBundle.getBundle(bundleName, Locale.ROOT, classLoader);
+
+			bundleName = config.cdnLinksMap();
+			ResourceBundle cdnLinkBundle =
+				(bundleName == null) || bundleName.isEmpty() ? null :
+				ResourceBundle.getBundle(bundleName, Locale.ROOT, classLoader);
+
+			linkInterceptor = new StaticLinkInterceptor(config.cdnHost(), cdnBundle, cdnLinkBundle, config.isDevMode());
+
+		} catch (URISyntaxException ex) {
+			log.error(ex.getMessage(), ex);
+		}
+		return linkInterceptor;
 	}
 
 	private void copyResource(File sourceDir, File targetDir, String path, String cdnPath)
