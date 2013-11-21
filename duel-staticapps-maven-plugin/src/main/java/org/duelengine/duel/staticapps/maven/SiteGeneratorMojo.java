@@ -7,7 +7,7 @@ import org.duelengine.duel.staticapps.SiteConfig;
  * Generates static app from DUEL-based WAR
  *
  * @goal generate
- * @phase prepare-package
+ * @phase package
  */
 public class SiteGeneratorMojo extends SiteMojo {
 
