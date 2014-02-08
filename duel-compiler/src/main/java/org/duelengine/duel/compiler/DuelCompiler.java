@@ -194,10 +194,15 @@ public class DuelCompiler {
 			int col = ex.getColumn(),
 				line=ex.getLine();
 
-			LineNumberReader reader = new LineNumberReader(new FileReader(inputFile));
 			String text = "";
-			for (int i=-1; i<line; i++) {
-				text = reader.readLine();
+			LineNumberReader reader = new LineNumberReader(new FileReader(inputFile));
+			try {
+				for (int i=-1; i<line; i++) {
+					text = reader.readLine();
+				}
+
+			} finally {
+				reader.close();
 			}
 
 			log.error(text);

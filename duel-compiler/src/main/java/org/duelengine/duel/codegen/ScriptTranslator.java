@@ -377,6 +377,8 @@ public class ScriptTranslator implements ErrorReporter {
 				case PRE_INCREMENT:
 					operator = CodeUnaryOperatorType.POST_INCREMENT;
 					break;
+				default:
+					break;
 			}
 		}
 
