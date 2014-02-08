@@ -82,4 +82,38 @@ public class VIEWCommandNode extends CommandNode {
 			throw new InvalidNodeException("Attribute invalid on VIEW declaration: "+name, value);
 		}
 	}
+
+	@Override
+	StringBuilder toString(StringBuilder buffer) {
+		buffer
+			.append("<")
+			.append(EXT_NAME);
+
+		if (this.name != null && !this.name.isEmpty()) {
+			buffer
+				.append(" name=\"")
+				.append(this.name)
+				.append('"');
+		}
+
+		if (this.clientOnly) {
+			buffer.append(" client-only");
+		}
+
+		if (this.serverOnly) {
+			buffer.append(" server-only");
+		}
+
+		if (this.hasChildren()) {
+			buffer.append('>');
+			for (DuelNode child : this.getChildren()) {
+				buffer.append(child);
+			}
+			buffer.append("</").append(EXT_NAME);
+		} else {
+			buffer.append(" /");
+		}
+
+		return buffer.append('>');
+	}
 }
