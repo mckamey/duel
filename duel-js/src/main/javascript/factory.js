@@ -84,12 +84,21 @@
 
 	/**
 	 * @public
-	 * @param {string} value Markup text
-	 * @return {Markup}
+	 * @param {string} value error callback
 	 */
 	duel.onerror = function(value) {
 		if (isFunction(value)) {
 			onError = value;
+		}
+	};
+
+	/**
+	 * @public
+	 * @param {string} value onbind filter callback
+	 */
+	duel.onbind = function(value) {
+		if (isFunction(value)) {
+			bindFilter = value;
 		}
 	};
 

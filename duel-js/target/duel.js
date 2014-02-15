@@ -1,7 +1,7 @@
 /*global window */
 
 /**
- * @license DUEL v0.8.8 http://duelengine.org
+ * @license DUEL v0.8.9 http://duelengine.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -403,6 +403,15 @@ var duel = (
 	 */
 	var NAME = 'name';
 
+	/**
+	 * Callback allowed to modify the bound node
+	 * 
+	 * @private
+	 * @param {Array} elem bound node
+	 * @return {Array}
+	 */
+	var bindFilter;
+
 	var bind;
 
 	/**
@@ -753,7 +762,7 @@ var duel = (
 				for (var i=1, length=node.length; i<length; i++) {
 					append(elem, bind(node[i], data, index, count, key, parts));
 				}
-				return elem;
+				return bindFilter ? bindFilter(elem) : elem;
 
 			case OBJ:
 				// attribute map
@@ -884,12 +893,21 @@ var duel = (
 
 	/**
 	 * @public
-	 * @param {string} value Markup text
-	 * @return {Markup}
+	 * @param {string} value error callback
 	 */
 	duel.onerror = function(value) {
 		if (isFunction(value)) {
 			onError = value;
+		}
+	};
+
+	/**
+	 * @public
+	 * @param {string} value onbind filter callback
+	 */
+	duel.onbind = function(value) {
+		if (isFunction(value)) {
+			bindFilter = value;
 		}
 	};
 

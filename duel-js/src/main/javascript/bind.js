@@ -98,6 +98,15 @@
 	 */
 	var NAME = 'name';
 
+	/**
+	 * Callback allowed to modify the bound node
+	 * 
+	 * @private
+	 * @param {Array} elem bound node
+	 * @return {Array}
+	 */
+	var bindFilter;
+
 	var bind;
 
 	/**
@@ -448,7 +457,7 @@
 				for (var i=1, length=node.length; i<length; i++) {
 					append(elem, bind(node[i], data, index, count, key, parts));
 				}
-				return elem;
+				return bindFilter ? bindFilter(elem) : elem;
 
 			case OBJ:
 				// attribute map
