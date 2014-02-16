@@ -120,10 +120,6 @@ public class RoutingServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) {
 		try {
-			// response headers
-			response.setContentType(config.contentType());
-			response.setCharacterEncoding(config.encoding());
-
 			String servletPath = request.getServletPath();
 			SiteViewPage sitePage = route(servletPath);
 			if (sitePage == null) {
@@ -145,9 +141,14 @@ public class RoutingServlet extends HttpServlet {
 
 			DuelView view = sitePage.viewInstance(config.serverPrefix(), Thread.currentThread().getContextClassLoader());
 			if (view == null) {
+				log.error("routing: "+servletPath+" view instance missing");
 				defaultServlet(request, response);
 				return;
 			}
+
+			// response headers
+			response.setContentType(config.contentType());
+			response.setCharacterEncoding(config.encoding());
 
 			// response body
 			view.render(context);
@@ -184,7 +185,7 @@ public class RoutingServlet extends HttpServlet {
 
 			if ("".equals(FileUtil.getExtension(aliasedPath))) {
 				// continue to attempt to resolve with default document
-				if (aliasedPath.endsWith("/")) {
+				if (!aliasedPath.endsWith("/")) {
 					aliasedPath += '/';
 				}
 				aliasedPath += DEFAULT_DOC;
