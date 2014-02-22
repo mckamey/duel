@@ -128,20 +128,31 @@ public class DuelCompiler {
 			}
 
 			CodeGenerator codegen = new ClientCodeGen(settings);
-			try {
-				File outputFile = new File(this.outputClientDir, outputName+codegen.getFileExtension());
-				outputFile.getParentFile().mkdirs();
 
-				FileWriter writer = new FileWriter(outputFile, false);
-				try {
-					codegen.write(writer, views);
-				} finally {
-					writer.flush();
-					writer.close();
+			// ensure has client-views before generating file
+			int clientViews = 0;
+			for (VIEWCommandNode view : views) {
+				if (!view.isServerOnly()) {
+					clientViews++;
 				}
+			}
 
-			} catch (SyntaxException ex) {
-				this.reportSyntaxError(inputFile, ex);
+			if (clientViews > 0) {
+				try {
+					File outputFile = new File(this.outputClientDir, outputName+codegen.getFileExtension());
+					outputFile.getParentFile().mkdirs();
+
+					FileWriter writer = new FileWriter(outputFile, false);
+					try {
+						codegen.write(writer, views);
+					} finally {
+						writer.flush();
+						writer.close();
+					}
+
+				} catch (SyntaxException ex) {
+					this.reportSyntaxError(inputFile, ex);
+				}
 			}
 
 			// directly emit server-side
