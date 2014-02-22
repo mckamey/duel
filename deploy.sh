@@ -12,19 +12,17 @@ set -e
 SCRIPT_PATH=$0
 SCRIPT_DIR=${SCRIPT_PATH%/*}
 
-if [ $1 != '' ]; then
+if [ "$1" != '' ]; then
 	PASSPHRASE=-Dgpg.passphrase=$1
 else
 	PASSPHRASE=''
 fi
 
-if [ $2 != '' ]; then
+if [ "$2" != '' ]; then
 	KEYNAME=-Dgpg.keyname=$2
 else
 	KEYNAME=-Dgpg.keyname=CCD1D109
 fi
-
-clear;clear
 
 pushd ${SCRIPT_DIR}/duel-runtime
 mvn clean deploy -DperformRelease=true ${KEYNAME} ${PASSPHRASE}
