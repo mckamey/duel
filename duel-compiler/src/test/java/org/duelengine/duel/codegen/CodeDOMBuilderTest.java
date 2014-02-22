@@ -1795,7 +1795,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("\">Lorem ipsum.</p><script type=\"text/javascript\">"))),
+					new CodePrimitiveExpression("\">Lorem ipsum.</p><script>"))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1872,7 +1872,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", true);</script></div><script type=\"text/javascript\">duel({\n\t\t'class' : function(data, index) { return (fooCSS(index)); },\n\t\tstyle : function(data) { return (customStyle(data)); }\n\t})("))),
+					new CodePrimitiveExpression(", true);</script></div><script>duel({\n\t\t'class' : function(data, index) { return (fooCSS(index)); },\n\t\tstyle : function(data) { return (customStyle(data)); }\n\t})("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1948,7 +1948,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("<div><script type=\"text/javascript\" id=\""))),
+					new CodePrimitiveExpression("<div><script id=\""))),
 				new CodeVariableDeclarationStatement(
 					String.class,
 					"id_1",
@@ -2108,7 +2108,7 @@ public class CodeDOMBuilderTest {
 							new CodeThisReferenceExpression(),
 							"write",
 							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression("<script type=\"text/javascript\">"))),
+							new CodePrimitiveExpression("<script>"))),
 						new CodeExpressionStatement(new CodeMethodInvokeExpression(
 							Void.class,
 							new CodeThisReferenceExpression(),
@@ -2220,7 +2220,7 @@ public class CodeDOMBuilderTest {
 							new CodeThisReferenceExpression(),
 							"write",
 							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression("<script type=\"text/javascript\">"))),
+							new CodePrimitiveExpression("<script>"))),
 						new CodeExpressionStatement(new CodeMethodInvokeExpression(
 							Void.class,
 							new CodeThisReferenceExpression(),
