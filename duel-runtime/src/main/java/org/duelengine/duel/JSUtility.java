@@ -4,6 +4,13 @@ import java.util.*;
 
 public final class JSUtility {
 
+	public final static Object UNDEFINED = new Object() {
+		@Override
+		public String toString() {
+			return "undefined";
+		};
+	};
+
 	private static final String CONFIG_RESOURCE = "org.duelengine.duel.JSUtility";
 	private static Set<String> reserved;
 	private static Set<String> globals;

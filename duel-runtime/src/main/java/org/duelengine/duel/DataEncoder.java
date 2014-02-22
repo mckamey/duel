@@ -119,7 +119,7 @@ public class DataEncoder {
 		throws IOException {
 
 		if (data instanceof SparseMap) {
-			// TODO: describe why
+			// TODO: need to describe why!
 			return;
 		}
 		this.write(output, data, EncodingFormat.ECMASCRIPT, 0);
@@ -151,6 +151,10 @@ public class DataEncoder {
 
 		if (data == null) {
 			output.append("null");
+			return;
+		}
+		if (data == JSUtility.UNDEFINED) {
+			output.append("undefined");
 			return;
 		}
 

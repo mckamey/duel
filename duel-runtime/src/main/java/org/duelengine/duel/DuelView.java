@@ -293,8 +293,8 @@ public abstract class DuelView {
 	 */
 	protected Object getProperty(Object data, Object property) {
 		if (data == null || property == null) {
-			// technically "undefined" or error if data is null
-			return null;
+			// technically runtime error if data is null
+			return JSUtility.UNDEFINED;
 		}
 
 		Class<?> dataType = data.getClass(); 
@@ -310,14 +310,12 @@ public abstract class DuelView {
 			if (DuelData.isNumber(property.getClass())) {
 				int index = ((Number)DuelData.coerceNumber(property)).intValue();
 				if ((index < 0) || (index >= str.length())) {
-					// technically "undefined"
-					return null;
+					return JSUtility.UNDEFINED;
 				}
 				return str.charAt(index);
 			}
 
-			// technically "undefined"
-			return null;
+			return JSUtility.UNDEFINED;
 		}
 
 		if (DuelData.isArray(dataType)) {
@@ -331,20 +329,18 @@ public abstract class DuelView {
 				array instanceof List<?>) {
 				int index = ((Number)DuelData.coerceNumber(property)).intValue();
 				if ((index < 0) || (index >= array.size())) {
-					// technically "undefined"
-					return null;
+					return JSUtility.UNDEFINED;
 				}
 				return DuelData.asProxy(((List<?>)array).get(index), true);
 			}
 
-			// technically "undefined"
-			return null;
+			return JSUtility.UNDEFINED;
 		}
 
 		Map<?,?> map = DuelData.coerceMap(data);
 		if (map == null || !map.containsKey(key)) {
-			// technically "undefined"
-			return null;
+			// technically may be runtime error if map is null
+			return JSUtility.UNDEFINED;
 		}
 
 		return DuelData.asProxy(map.get(key), true);
