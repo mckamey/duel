@@ -33,7 +33,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<closure.version>r2180</closure.version>
+		<closure.version>r2180<!-- r2388 is buggy --></closure.version>
 		<jslint4java.version>1.4.6<!-- last sane version --></jslint4java.version>
 	</properties>
 
