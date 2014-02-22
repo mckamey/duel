@@ -119,7 +119,12 @@ public class DataEncoder {
 		throws IOException {
 
 		if (data instanceof SparseMap) {
-			// TODO: need to describe why!
+			/**
+			 * SparseMap collections aren't true JS objects
+			 * but rather a set of property assignments which are
+			 * emitted over the top of existing intrinsic objects.
+			 * this is handled by the {@link #writeVars(Appendable, SparseMap)}
+			 */
 			return;
 		}
 		this.write(output, data, EncodingFormat.ECMASCRIPT, 0);

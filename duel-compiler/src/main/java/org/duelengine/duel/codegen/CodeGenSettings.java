@@ -16,6 +16,7 @@ public class CodeGenSettings {
 	private boolean convertLineEndings;
 	private boolean normalizeWhitespace;
 	private boolean encodeNonASCII = true;
+	private boolean scriptTypeAttr;
 	private boolean lowercaseClientPaths = true;
 
 	public void setClientNamePrefix(String value) {
@@ -106,6 +107,22 @@ public class CodeGenSettings {
 	 */
 	public void setEncodeNonASCII(boolean value) {
 		encodeNonASCII = value;
+	}
+
+	/**
+	 * Gets if script tags include verbose type="text/javascript" attributes
+	 * @return
+	 */
+	public boolean getScriptTypeAttr() {
+		return scriptTypeAttr;
+	}
+
+	/**
+	 * Sets if script tags include verbose type="text/javascript" attributes
+	 * @param value
+	 */
+	public void setScriptTypeAttr(boolean value) {
+		scriptTypeAttr = value;
 	}
 
 	/**

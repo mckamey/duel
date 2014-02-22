@@ -10,6 +10,7 @@ public class FormatPrefs {
 	private String newline = "";
 	private String indent = "";
 	private boolean encodeNonASCII;
+	private boolean scriptTypeAttr;
 
 	public String getEncoding() {
 		return this.encoding;
@@ -62,6 +63,16 @@ public class FormatPrefs {
 
 	public FormatPrefs setEncodeNonASCII(boolean value) {
 		this.encodeNonASCII = value;
+
+		return this;
+	}
+
+	public boolean getScriptTypeAttr() {
+		return this.scriptTypeAttr;
+	}
+
+	public FormatPrefs setScriptTypeAttr(boolean value) {
+		this.scriptTypeAttr = value;
 
 		return this;
 	}

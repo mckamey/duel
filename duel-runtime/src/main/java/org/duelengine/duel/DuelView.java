@@ -256,10 +256,11 @@ public abstract class DuelView {
 		DataEncoder encoder = context.getEncoder();
 		Appendable output = context.getOutput();
 		if (needsTags) {
-			formatter
-				.writeOpenElementBeginTag(output, "script")
-				.writeAttribute(output, "type", "text/javascript")
-				.writeCloseElementBeginTag(output);
+			formatter.writeOpenElementBeginTag(output, "script");
+			if (context.getFormat().getScriptTypeAttr()) {
+				formatter.writeAttribute(output, "type", "text/javascript");
+			}
+			formatter.writeCloseElementBeginTag(output);
 			encoder.writeln(output, 0);
 		}
 		encoder.writeVars(output, context.getPendingExtras());

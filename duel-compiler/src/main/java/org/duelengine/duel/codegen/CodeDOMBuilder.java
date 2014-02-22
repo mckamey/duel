@@ -270,10 +270,11 @@ public class CodeDOMBuilder {
 
 		// use the script tag as its own replacement element
 		this.hasScripts = true;
-		this.formatter
-			.writeOpenElementBeginTag(this.buffer, "script")
-			.writeAttribute(this.buffer, "type", "text/javascript")
-			.writeOpenAttribute(this.buffer, "id");
+		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
+		if (this.settings.getScriptTypeAttr()) {
+			this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+		}
+		this.formatter.writeOpenAttribute(this.buffer, "id");
 		CodeVariableDeclarationStatement idVar = this.emitClientID();
 		this.formatter
 			.writeCloseAttribute(this.buffer)
@@ -924,10 +925,11 @@ public class CodeDOMBuilder {
 
 		// use the script tag as its own replacement element
 		this.hasScripts = true;
-		this.formatter
-			.writeOpenElementBeginTag(this.buffer, "script")
-			.writeAttribute(this.buffer, "type", "text/javascript")
-			.writeCloseElementBeginTag(this.buffer);
+		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
+		if (this.settings.getScriptTypeAttr()) {
+			this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+		}
+		this.formatter.writeCloseElementBeginTag(this.buffer);
 		this.ensureExtrasEmitted(false);
 
 		// wrap client code as an anonymous DUEL view
@@ -1191,10 +1193,11 @@ public class CodeDOMBuilder {
 
 		// execute any deferred attributes using idVar
 		this.hasScripts = true;
-		this.formatter
-			.writeOpenElementBeginTag(this.buffer, "script")
-			.writeAttribute(this.buffer, "type", "text/javascript")
-			.writeCloseElementBeginTag(this.buffer);
+		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
+		if (this.settings.getScriptTypeAttr()) {
+			this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+		}
+		this.formatter.writeCloseElementBeginTag(this.buffer);
 		this.ensureExtrasEmitted(false);
 
 		// wrap attributes object as an anonymous DUEL view
@@ -1324,10 +1327,11 @@ public class CodeDOMBuilder {
 
 		// use the script tag as its own replacement element
 		this.hasScripts = true;
-		this.formatter
-			.writeOpenElementBeginTag(this.buffer, "script")
-			.writeAttribute(this.buffer, "type", "text/javascript")
-			.writeOpenAttribute(this.buffer, "id");
+		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
+		if (this.settings.getScriptTypeAttr()) {
+			this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+		}
+		this.formatter.writeOpenAttribute(this.buffer, "id");
 		CodeVariableDeclarationStatement idVar = this.emitClientID();
 		this.formatter
 			.writeCloseAttribute(this.buffer)
