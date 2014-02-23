@@ -184,7 +184,7 @@ public class DataEncoder {
 		} else if (Date.class.equals(dataType)) {
 			writeDate(output, (Date)data, format);
 
-			// need to also serialize RegExp literals
+			// TODO: serialize RegExp literals
 
 		} else {
 			writeObject(output, DuelData.coerceMap(data), format, depth);
@@ -228,21 +228,12 @@ public class DataEncoder {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void writeDate(Appendable output, Date data, EncodingFormat format)
 		throws IOException {
 
 		if (format == EncodingFormat.ECMASCRIPT) {
 			output.append("new Date(");
-
-			if (false) {
-				// TODO: allow formatting in browser's timezone
-				// new Date(yyyy, M, d, H, m, s, ms)
-
-			} else {
-				// format as UTC
-				output.append(Long.toString(data.getTime()));
-			}
+			output.append(Long.toString(data.getTime()));
 			output.append(")");
 
 		} else {
