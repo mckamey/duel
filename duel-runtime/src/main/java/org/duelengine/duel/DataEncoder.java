@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -39,14 +40,10 @@ public class DataEncoder {
 		JSON
 	}
 
-	private final static DateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	private final static TimeZone UTC = TimeZone.getTimeZone("UTC");
 	private final boolean prettyPrint;
 	private final String indent;
 	private final String newline;
-
-	static {
-		ISO8601.setTimeZone(TimeZone.getTimeZone("UTC"));
-	}
 	
 	public DataEncoder() {
 		this(null, null);
@@ -249,7 +246,12 @@ public class DataEncoder {
 			output.append(")");
 
 		} else {
-			writeString(output, ISO8601.format(data), format);
+			// http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
+			// Date formats are not synchronized. It is recommended to create separate format instances for each thread.
+			// If multiple threads access a format concurrently, it must be synchronized externally.
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT);
+			dateFormat.setTimeZone(UTC);
+			writeString(output, dateFormat.format(data), format);
 		}
 	}
 
