@@ -863,13 +863,15 @@ public class CodeDOMBuilder {
 			// convert from JavaScript source to CodeDOM
 			List<CodeMember> members = new ScriptTranslator(viewType).translate(node.getClientCode());
 			boolean firstIsMethod = (members.size() > 0) && members.get(0) instanceof CodeMethod;
-			CodeMethod method = firstIsMethod ? (CodeMethod)members.get(0) : null;
-
-			CodeExpression expression = null;
-			if (firstIsMethod) {
-				// attempt to extract single expression (inline the return expression)
-				expression = CodeDOMUtility.inlineMethod(method);
+			if (!firstIsMethod) {
+				// is this ever possible? code blocks should always translate to client-side functions
+				throw new InvalidNodeException("Node should start with method", node);
 			}
+
+			CodeMethod method = (CodeMethod)members.get(0);
+
+			// attempt to extract single expression (inline the return expression)
+			CodeExpression expression = CodeDOMUtility.inlineMethod(method);
 
 			if (expression != null) {
 				// add remaining CodeDOM members to viewType
@@ -877,7 +879,7 @@ public class CodeDOMBuilder {
 					viewType.add(members.get(i));
 				}
 
-			} else if (firstIsMethod) {
+			} else {
 				// add all CodeDOM members to viewType
 				viewType.addAll(members);
 
@@ -898,10 +900,12 @@ public class CodeDOMBuilder {
 				needsExtrasEmitted = true;
 			}
 
-			if (canWrite && (method != null) &&
-				method.getUserData(ScriptTranslator.EXTRA_REFS) instanceof Object[]) {
+			if (canWrite && method.getUserData(ScriptTranslator.EXTRA_REFS) instanceof Object[]) {
+				// THIS IS THE BUILDER OF HYBRID DEFERRED EXECUTION
+				// IT IS CURRENTLY BROKEN FOR ATTRIBUTES
+				// SINCE IT DOESN'T ACCOUNT FOR THE CONTEXT 
 
-				// flag as potentially modifying extra values
+				// flag as potentially needing extra values
 				needsExtrasEmitted = true;
 
 				Object[] refs = (Object[])members.get(0).getUserData(ScriptTranslator.EXTRA_REFS);
@@ -919,7 +923,7 @@ public class CodeDOMBuilder {
 						"hasExtras",
 						args));
 
-				if (firstIsMethod && expression instanceof CodeMethodInvokeExpression) {
+				if (expression instanceof CodeMethodInvokeExpression) {
 					runtimeCheck.getTrueStatements().addAll(method.getStatements());
 					viewType.getMembers().remove(method);
 				} else {
@@ -953,7 +957,7 @@ public class CodeDOMBuilder {
 					scopeStack.pop();
 				}
 
-				// return null if immediately writen
+				// return null if immediately written
 				runtimeCheck.getFalseStatements().add(new CodeMethodReturnStatement(CodePrimitiveExpression.NULL));
 
 				// have the expression be a method invocation
@@ -971,6 +975,9 @@ public class CodeDOMBuilder {
 
 		} catch (ScriptTranslationException ex) {
 			throw ex.adjustErrorStatistics(node);
+
+		} catch (InvalidNodeException ex) {
+			throw ex;
 
 		} catch (Exception ex) {
 			String message = ex.getMessage();
@@ -1102,26 +1109,28 @@ public class CodeDOMBuilder {
 					}
 
 				} else if (attrVal instanceof CodeBlockNode) {
+					CodeExpression attrExpr;
 					try {
-						flushBuffer();
-						CodeConditionStatement condition = new CodeConditionStatement();
-						scopeStack.peek().add(condition);
-
-						condition.setCondition(translateExpression((CodeBlockNode)attrVal, false));
-
-						// write attribute if truthy
-						scopeStack.push(condition.getTrueStatements());
-						formatter.writeAttribute(buffer, attrName, attrName);
-						flushBuffer();
-						scopeStack.pop();
+						attrExpr = translateExpression((CodeBlockNode)attrVal, false);
 
 					} catch (Exception ex) {
-						
-						// only defer attributes that cannot be processed server-side
+						// defer any attributes that cannot be processed server-side
 						deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode()));
 						argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
 						continue;
 					}
+
+					flushBuffer();
+					CodeConditionStatement condition = new CodeConditionStatement();
+					scopeStack.peek().add(condition);
+
+					condition.setCondition(attrExpr);
+
+					// write attribute if truthy
+					scopeStack.push(condition.getTrueStatements());
+					formatter.writeAttribute(buffer, attrName, attrName);
+					flushBuffer();
+					scopeStack.pop();
 				}
 
 			} else if (element.isLinkAttribute(attrName)) {
@@ -1157,23 +1166,25 @@ public class CodeDOMBuilder {
 
 			} else if (attrVal instanceof CodeBlockNode) {
 
+				CodeStatement writeStatement;
 				try {
-					CodeStatement writeStatement = processCodeBlock((CodeBlockNode)attrVal);
-					if (writeStatement != null) {
-						formatter.writeOpenAttribute(buffer, attrName);
-						flushBuffer();
-						scopeStack.peek().add(writeStatement);
-						formatter.writeCloseAttribute(buffer);
-					} else {
-						formatter.writeAttribute(buffer, attrName, null);
-					}
+					writeStatement = processCodeBlock((CodeBlockNode)attrVal);
 
 				} catch (Exception ex) {
-					
 					// only defer attributes that cannot be processed server-side
 					deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode()));
 					argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
 					continue;
+				}
+
+				if (writeStatement != null) {
+					formatter.writeOpenAttribute(buffer, attrName);
+					flushBuffer();
+					scopeStack.peek().add(writeStatement);
+					formatter.writeCloseAttribute(buffer);
+
+				} else {
+					formatter.writeAttribute(buffer, attrName, null);
 				}
 
 			} else {
@@ -1521,7 +1532,7 @@ public class CodeDOMBuilder {
 			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			CodeDOMUtility.ensureString(new CodePrimitiveExpression(literal)));
 
-		return CodeDOMUtility.emitExpressionSafe(codeExpr);
+		return CodeDOMUtility.emitExpressionSafe(codeExpr, formatter, settings);
 	}
 
 	/**
@@ -1548,7 +1559,7 @@ public class CodeDOMBuilder {
 			CodeDOMUtility.ensureString(codeExpr));
 
 		return htmlEncode ?
-			CodeDOMUtility.emitExpressionSafe(codeExpr) :
+			CodeDOMUtility.emitExpressionSafe(codeExpr, formatter, settings) :
 			CodeDOMUtility.emitExpression(codeExpr);
 	}
 
@@ -1569,7 +1580,7 @@ public class CodeDOMBuilder {
 		}
 
 		return htmlEncode ?
-			CodeDOMUtility.emitExpressionSafe(codeExpr) :
+			CodeDOMUtility.emitExpressionSafe(codeExpr, formatter, settings) :
 			CodeDOMUtility.emitExpression(codeExpr);
 	}
 

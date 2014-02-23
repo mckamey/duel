@@ -1,5 +1,6 @@
 package org.duelengine.duel.codegen;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelData;
 import org.duelengine.duel.DuelPart;
 import org.duelengine.duel.DuelView;
+import org.duelengine.duel.HTMLFormatter;
 import org.duelengine.duel.codedom.AccessModifierType;
 import org.duelengine.duel.codedom.CodeBinaryOperatorExpression;
 import org.duelengine.duel.codedom.CodeBinaryOperatorType;
@@ -106,7 +108,7 @@ final class CodeDOMUtility {
 		return emitExpression(new CodeVariableReferenceExpression(localVar));
 	}
 
-	public static CodeStatement emitExpressionSafe(CodeExpression expression) {
+	public static CodeStatement emitExpressionSafe(CodeExpression expression, HTMLFormatter formatter, CodeGenSettings settings) {
 		Class<?> exprType = expression.getResultType();
 		if (Boolean.class.equals(exprType) ||
 			Number.class.isAssignableFrom(exprType) ||
@@ -116,6 +118,24 @@ final class CodeDOMUtility {
 			return emitExpression(expression);
 		}
 
+		if (expression instanceof CodePrimitiveExpression) {
+			try {
+				// perform HTML encoding at compile time
+				Object value = ((CodePrimitiveExpression)expression).getValue();
+				if (!(value instanceof Boolean) && !(value instanceof Number)) {
+					StringBuilder output = new StringBuilder();
+					formatter.writeLiteral(output, DuelData.coerceString(value), settings.getEncodeNonASCII());
+					value = output.toString();
+				}
+
+				expression = new CodePrimitiveExpression(value);
+				return emitExpression(expression);
+
+			} catch (IOException ex) {
+				// ignore and encode at runtime
+			}
+		}
+		
 		// htmlEncode(output, expression);
 		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(
@@ -127,21 +147,6 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeStatement emitExpression(CodeExpression expression) {
-		Class<?> exprType = expression.getResultType();
-		if (String.class.equals(exprType) ||
-			Character.class.equals(exprType)) {
-
-			// write(output, expression);
-			return new CodeExpressionStatement(
-				new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					expression));
-
-		}
-
 		// write(output, expression);
 		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(

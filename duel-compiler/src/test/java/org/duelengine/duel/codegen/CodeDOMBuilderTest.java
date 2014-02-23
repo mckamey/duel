@@ -800,7 +800,7 @@ public class CodeDOMBuilderTest {
 						new CodeVariableDeclarationStatement(
 							int.class,
 							"count_3",// count
-							new CodePrimitiveExpression(4).withParens())),// initStatement
+							new CodePrimitiveExpression(4))),// initStatement
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.LESS_THAN,
 						new CodeVariableReferenceExpression(int.class, "index_2"),
@@ -1644,9 +1644,9 @@ public class CodeDOMBuilderTest {
 					new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
-						"htmlEncode",
+						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
-						new CodePrimitiveExpression("foo").withParens())),
+						new CodePrimitiveExpression("foo"))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
