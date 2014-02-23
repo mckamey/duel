@@ -1,15 +1,59 @@
 package org.duelengine.duel.codegen;
 
-import java.io.*;
-import java.util.*;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelData;
-import org.duelengine.duel.ast.*;
-import org.duelengine.duel.codedom.*;
+import org.duelengine.duel.ast.AttributePair;
+import org.duelengine.duel.ast.CALLCommandNode;
+import org.duelengine.duel.ast.CodeCommentNode;
+import org.duelengine.duel.ast.CommentNode;
+import org.duelengine.duel.ast.DocTypeNode;
+import org.duelengine.duel.ast.ElementNode;
+import org.duelengine.duel.ast.ExpressionNode;
+import org.duelengine.duel.ast.FORCommandNode;
+import org.duelengine.duel.ast.IFCommandNode;
+import org.duelengine.duel.ast.LiteralNode;
+import org.duelengine.duel.ast.MarkupExpressionNode;
+import org.duelengine.duel.ast.PARTCommandNode;
+import org.duelengine.duel.ast.StatementNode;
+import org.duelengine.duel.ast.VIEWCommandNode;
+import org.duelengine.duel.ast.XORCommandNode;
+import org.duelengine.duel.codedom.AccessModifierType;
+import org.duelengine.duel.codedom.CodeArrayCreateExpression;
+import org.duelengine.duel.codedom.CodeBinaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeBinaryOperatorType;
+import org.duelengine.duel.codedom.CodeCastExpression;
+import org.duelengine.duel.codedom.CodeCommentStatement;
+import org.duelengine.duel.codedom.CodeConditionStatement;
+import org.duelengine.duel.codedom.CodeExpressionStatement;
+import org.duelengine.duel.codedom.CodeField;
+import org.duelengine.duel.codedom.CodeFieldReferenceExpression;
+import org.duelengine.duel.codedom.CodeIterationStatement;
+import org.duelengine.duel.codedom.CodeMethod;
+import org.duelengine.duel.codedom.CodeMethodInvokeExpression;
+import org.duelengine.duel.codedom.CodeMethodReturnStatement;
+import org.duelengine.duel.codedom.CodeObjectCreateExpression;
+import org.duelengine.duel.codedom.CodeParameterDeclarationExpression;
+import org.duelengine.duel.codedom.CodePrimitiveExpression;
+import org.duelengine.duel.codedom.CodePropertyReferenceExpression;
+import org.duelengine.duel.codedom.CodeStatement;
+import org.duelengine.duel.codedom.CodeThisReferenceExpression;
+import org.duelengine.duel.codedom.CodeTypeDeclaration;
+import org.duelengine.duel.codedom.CodeTypeReferenceExpression;
+import org.duelengine.duel.codedom.CodeUnaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeUnaryOperatorType;
+import org.duelengine.duel.codedom.CodeVariableCompoundDeclarationStatement;
+import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
+import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
+import org.duelengine.duel.codedom.ScriptVariableReferenceExpression;
+import org.junit.Test;
 
 public class CodeDOMBuilderTest {
 
@@ -1807,7 +1851,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("duel({ 'class' : function(data, index, count, key) { return (barCSS(key)); } })("))),
+					new CodePrimitiveExpression("duel({ 'class': function(data, index, count, key) { return (barCSS(key)); } })("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1872,7 +1916,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", true);</script></div><script>duel({\n\t\t'class' : function(data, index) { return (fooCSS(index)); },\n\t\tstyle : function(data) { return (customStyle(data)); }\n\t})("))),
+					new CodePrimitiveExpression(", true);</script></div><script>duel({\n\t\t'class': function(data, index) { return (fooCSS(index)); },\n\t\tstyle: function(data) { return (customStyle(data)); }\n\t})("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),

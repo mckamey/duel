@@ -337,7 +337,7 @@ public class DataEncoder {
 
 			writePropertyName(output, property.getKey(), format);
 			if (prettyPrint) {
-				output.append(" : ");
+				output.append(": ");
 			} else {
 				output.append(':');
 			}
