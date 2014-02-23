@@ -1,7 +1,7 @@
 /*global window */
 
 /**
- * @license DUEL v0.8.9 http://duelengine.org
+ * @license DUEL v0.9.0 http://duelengine.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */

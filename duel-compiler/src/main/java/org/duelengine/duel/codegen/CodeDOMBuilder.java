@@ -66,11 +66,21 @@ import org.duelengine.duel.parsing.InvalidNodeException;
 public class CodeDOMBuilder {
 
 	private enum TagMode {
-		NONE,
 
-		PRE_MODE,
+		/**
+		 * Normalizes content
+		 */
+		NORMAL,
 
-		SUSPEND_MODE
+		/**
+		 * Respects whitespace
+		 */
+		PRE,
+
+		/**
+		 * Ignores content
+		 */
+		SUSPEND
 	}
 
 	private final CodeGenSettings settings;
@@ -103,7 +113,7 @@ public class CodeDOMBuilder {
 			String ns = (lastDot > 0) ? fullName.substring(0, lastDot) : null;
 
 			scopeStack.clear();
-			tagMode = TagMode.NONE;
+			tagMode = TagMode.NORMAL;
 			hasScripts = false;
 			needsExtrasEmitted = true;
 			viewType = CodeDOMUtility.createViewType(ns, name);
@@ -157,13 +167,13 @@ public class CodeDOMBuilder {
 				ensureExtrasEmitted(true);
 			}
 			String literal = ((LiteralNode)node).getValue();
-			if (tagMode == TagMode.SUSPEND_MODE || node instanceof UnknownNode) {
+			if (tagMode == TagMode.SUSPEND || node instanceof UnknownNode) {
 				buffer.append(literal);
 
 			} else {
 				if (literal != null &&
 					literal.length() > 0 &&
-					tagMode != TagMode.PRE_MODE &&
+					tagMode != TagMode.PRE &&
 					settings.getNormalizeWhitespace()) {
 
 					// not very efficient but allows simple normalization
@@ -1194,16 +1204,16 @@ public class CodeDOMBuilder {
 
 			TagMode prevMode = tagMode;
 			if ("script".equalsIgnoreCase(tagName) || "style".equalsIgnoreCase(tagName)) {
-				tagMode = TagMode.SUSPEND_MODE;
+				tagMode = TagMode.SUSPEND;
 
 			} else if ("pre".equalsIgnoreCase(tagName)) {
-				tagMode = TagMode.PRE_MODE;
+				tagMode = TagMode.PRE;
 			}
 
 			try {
 				for (DuelNode child : element.getChildren()) {
 					if (settings.getNormalizeWhitespace() &&
-						tagMode == TagMode.NONE &&
+						tagMode == TagMode.NORMAL &&
 						child instanceof LiteralNode &&
 						(child == element.getFirstChild() || child == element.getLastChild())) {
 
