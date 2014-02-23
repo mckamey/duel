@@ -93,6 +93,7 @@
 									<fileset file="${basedir}/src/main/javascript/types.js" />
 									<fileset file="${basedir}/src/main/javascript/bind.js" />
 									<fileset file="${basedir}/src/main/javascript/factory.js" />
+									<fileset file="${basedir}/src/main/javascript/render.js" />
 									<fileset file="${basedir}/src/main/javascript/outro.js" />
 								</concat>
 								<delete file="${basedir}/target/intro.js" quiet="true"/>

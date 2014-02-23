@@ -1756,7 +1756,7 @@ var duel = (
 		} catch (ex) {
 			/*jslint evil:true*/
 			doc = doc.open('text/html');
-			doc.write(this.toString());
+			doc.write(''+this);
 			doc.close();
 			/*jslint evil:false*/
 		}
