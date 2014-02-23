@@ -36,6 +36,23 @@ public class CodePrimitiveExpression extends CodeExpression {
 	}
 
 	@Override
+	public boolean hasParens() {
+		// primitives never emit parens
+		return false;
+	}
+
+	@Override
+	public void setParens(boolean value) {
+		// primitives never emit parens
+	}
+
+	@Override
+	public CodeExpression withParens() {
+		// primitives never emit parens
+		return this;
+	}
+	
+	@Override
 	public Class<?> getResultType() {
 		return (value == null) ? Object.class : value.getClass();
 	}
