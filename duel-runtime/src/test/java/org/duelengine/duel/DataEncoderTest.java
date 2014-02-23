@@ -527,7 +527,7 @@ public class DataEncoderTest {
 				"One", 1
 			);
 
-		String expected = "{ One : 1 }";
+		String expected = "{ One: 1 }";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder("\n", "\t").write(output, input);
@@ -542,7 +542,7 @@ public class DataEncoderTest {
 				"One", 1
 			);
 
-		String expected = "{ \"One\" : 1 }";
+		String expected = "{ \"One\": 1 }";
 
 		StringBuilder output = new StringBuilder();
 		new DataEncoder("\n", "\t").writeJSON(output, input);
@@ -607,13 +607,13 @@ public class DataEncoderTest {
 
 		String expected =
 			"{\n"+
-			"\t'' : '',\n"+
-			"\tOne : 1,\n"+
-			"\t'2' : 'Too',\n"+
-			"\t'.T.H.R.E.E.' : 3.141592653589793,\n"+
-			"\t$ : null,\n"+
-			"\t' white space ' : true,\n"+
-			"\t'false' : false\n"+
+			"\t'': '',\n"+
+			"\tOne: 1,\n"+
+			"\t'2': 'Too',\n"+
+			"\t'.T.H.R.E.E.': 3.141592653589793,\n"+
+			"\t$: null,\n"+
+			"\t' white space ': true,\n"+
+			"\t'false': false\n"+
 			"}";
 
 		StringBuilder output = new StringBuilder();
@@ -637,13 +637,13 @@ public class DataEncoderTest {
 
 		String expected =
 			"{\n"+
-			"\t\"\" : \"\",\n"+
-			"\t\"One\" : 1,\n"+
-			"\t\"2\" : \"Too\",\n"+
-			"\t\".T.H.R.E.E.\" : 3.141592653589793,\n"+
-			"\t\"$\" : null,\n"+
-			"\t\" white space \" : true,\n"+
-			"\t\"false\" : false\n"+
+			"\t\"\": \"\",\n"+
+			"\t\"One\": 1,\n"+
+			"\t\"2\": \"Too\",\n"+
+			"\t\".T.H.R.E.E.\": 3.141592653589793,\n"+
+			"\t\"$\": null,\n"+
+			"\t\" white space \": true,\n"+
+			"\t\"false\": false\n"+
 			"}";
 
 		StringBuilder output = new StringBuilder();

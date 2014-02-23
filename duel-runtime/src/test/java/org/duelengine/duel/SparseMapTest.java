@@ -32,8 +32,8 @@ public class SparseMapTest {
 		String expected =
 			"var simple = 'Hello';\n"+
 			"var nested = {\n"+
-			"\tfoo : 42,\n"+
-			"\tbar : true\n"+
+			"\tfoo: 42,\n"+
+			"\tbar: true\n"+
 			"};\n";
 
 		StringBuilder output = new StringBuilder();
@@ -169,12 +169,12 @@ public class SparseMapTest {
 		String expected =
 			"var simple = 'Hello';\n"+
 			"var nested = {\n"+
-			"\tfoo : [\n"+
+			"\tfoo: [\n"+
 			"\t\t1,\n"+
 			"\t\t2,\n"+
 			"\t\t3\n"+
 			"\t],\n"+
-			"\tbar : true\n"+
+			"\tbar: true\n"+
 			"};\n";
 
 		StringBuilder output = new StringBuilder();
@@ -224,9 +224,9 @@ public class SparseMapTest {
 			"var nested = nested || {};\n"+
 			"nested.many = nested.many || {};\n"+
 			"nested.many.$levels = {\n"+
-			"\t$ : true,\n"+
-			"\t'' : false,\n"+
-			"\tdeep : [\n"+
+			"\t$: true,\n"+
+			"\t'': false,\n"+
+			"\tdeep: [\n"+
 			"\t\t1,\n"+
 			"\t\t2,\n"+
 			"\t\t3\n"+
