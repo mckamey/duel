@@ -16,14 +16,14 @@ public class CodeExpressionStatement extends CodeStatement {
 	}
 
 	public void setIdent(CodeExpression value) {
-		this.expression = value;
+		expression = value;
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.expression != null) {
-				this.expression.visit(visitor);
+			if (expression != null) {
+				expression.visit(visitor);
 			}
 		}
 	}
@@ -41,6 +41,6 @@ public class CodeExpressionStatement extends CodeStatement {
 
 	@Override
 	public int hashCode() {
-		return (this.expression == null) ? 0 : this.expression.hashCode();
+		return (expression == null) ? 0 : expression.hashCode();
 	}
 }

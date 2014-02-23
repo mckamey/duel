@@ -9,16 +9,16 @@ public class IncClientIDStrategy implements ClientIDStrategy {
 		this("_");
 	}
 
-	public IncClientIDStrategy(String prefix) {
-		this.prefix = prefix;
+	public IncClientIDStrategy(String value) {
+		prefix = value;
 	}
 
 	public void resetID() {
-		this.counter = 0;
+		counter = 0;
 	}
 
 	@Override
 	public String nextID() {
-		return this.prefix + (this.counter++);
+		return prefix + (counter++);
 	}
 }

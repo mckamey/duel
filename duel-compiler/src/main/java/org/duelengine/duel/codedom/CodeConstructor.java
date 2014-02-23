@@ -1,6 +1,7 @@
 package org.duelengine.duel.codedom;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CodeConstructor extends CodeMethod {
 
@@ -8,7 +9,7 @@ public class CodeConstructor extends CodeMethod {
 	private final List<CodeExpression> chainedCtorArgs = new ArrayList<CodeExpression>();
 
 	public CodeConstructor() {
-		this.setName(".ctor");
+		setName(".ctor");
 	}
 
 	public CodeConstructor(AccessModifierType access, CodeParameterDeclarationExpression[] parameters, CodeExpression[] baseCtorArgs, CodeExpression[] chainedCtorArgs, CodeStatement[] statements) {
@@ -28,32 +29,32 @@ public class CodeConstructor extends CodeMethod {
 	}
 
 	public List<CodeExpression> getBaseCtorArgs() {
-		return this.baseCtorArgs;
+		return baseCtorArgs;
 	}
 
 	public List<CodeExpression> getChainedCtorArgs() {
-		return this.chainedCtorArgs;
+		return chainedCtorArgs;
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			for (CodeParameterDeclarationExpression parameter : this.getParameters()) {
+			for (CodeParameterDeclarationExpression parameter : getParameters()) {
 				if (parameter != null) {
 					parameter.visit(visitor);
 				}
 			}
-			for (CodeExpression arg : this.baseCtorArgs) {
+			for (CodeExpression arg : baseCtorArgs) {
 				if (arg != null) {
 					arg.visit(visitor);
 				}
 			}
-			for (CodeExpression arg : this.chainedCtorArgs) {
+			for (CodeExpression arg : chainedCtorArgs) {
 				if (arg != null) {
 					arg.visit(visitor);
 				}
 			}
-			for (CodeStatement statement : this.getStatements()) {
+			for (CodeStatement statement : getStatements()) {
 				if (statement != null) {
 					statement.visit(visitor);
 				}
@@ -103,6 +104,6 @@ public class CodeConstructor extends CodeMethod {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		return ((super.hashCode() * HASH_PRIME) + this.baseCtorArgs.hashCode()) * HASH_PRIME + this.chainedCtorArgs.hashCode();
+		return ((super.hashCode() * HASH_PRIME) + baseCtorArgs.hashCode()) * HASH_PRIME + chainedCtorArgs.hashCode();
 	}
 }

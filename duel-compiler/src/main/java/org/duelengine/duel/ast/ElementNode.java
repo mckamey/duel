@@ -1,6 +1,11 @@
 package org.duelengine.duel.ast;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 public class ElementNode extends ContainerNode {
 
@@ -68,41 +73,41 @@ public class ElementNode extends ContainerNode {
 	public ElementNode(String name, int index, int line, int column) {
 		super(index, line, column);
 
-		this.tagName = name;
-		this.isVoid = (name == null) || voidTags.contains(name);
-		this.isLinkableTag = (name != null) && linkTags.contains(name);
+		tagName = name;
+		isVoid = (name == null) || voidTags.contains(name);
+		isLinkableTag = (name != null) && linkTags.contains(name);
 	}
 
 	public ElementNode(String name) {
-		this.tagName = name;
-		this.isVoid = (name == null) || voidTags.contains(name);
-		this.isLinkableTag = (name != null) && linkTags.contains(name);
+		tagName = name;
+		isVoid = (name == null) || voidTags.contains(name);
+		isLinkableTag = (name != null) && linkTags.contains(name);
 	}
 
 	public ElementNode(String name, AttributePair[] attr, DuelNode... children) {
 		super(children);
 
-		this.tagName = name;
-		this.isVoid = (name == null) || voidTags.contains(name);
-		this.isLinkableTag = (name != null) && linkTags.contains(name);
+		tagName = name;
+		isVoid = (name == null) || voidTags.contains(name);
+		isLinkableTag = (name != null) && linkTags.contains(name);
 
 		if (attr != null) {
 			for (AttributePair a : attr) {
-				this.attributes.put(mapAttrName(a.getName()), a.getValue());
+				attributes.put(mapAttrName(a.getName()), a.getValue());
 			}
 		}
 	}
 
 	public String getTagName() {
-		return this.tagName;
+		return tagName;
 	}
 
 	public boolean canHaveChildren() {
-		return !this.isVoid;
+		return !isVoid;
 	}
 
 	public boolean isLinkAttribute(String name) {
-		return this.isLinkableTag && linkAttrs.contains(name);
+		return isLinkableTag && linkAttrs.contains(name);
 	}
 
 	public boolean isBoolAttribute(String name) {
@@ -110,11 +115,11 @@ public class ElementNode extends ContainerNode {
 	}
 
 	public boolean hasAttributes() {
-		return !this.attributes.isEmpty();
+		return !attributes.isEmpty();
 	}
 
 	public Set<String> getAttributeNames() {
-		return this.attributes.keySet();
+		return attributes.keySet();
 	}
 
 	public void addAttribute(AttributePair attr)
@@ -122,37 +127,37 @@ public class ElementNode extends ContainerNode {
 		if (attr == null) {
 			throw new NullPointerException("attr");
 		}
-		this.attributes.put(mapAttrName(attr.getName()), attr.getValue());
+		attributes.put(mapAttrName(attr.getName()), attr.getValue());
 	}
 
 	public DuelNode getAttribute(String name) {
-		if (!this.attributes.containsKey(name)) {
+		if (!attributes.containsKey(name)) {
 			return null;
 		}
-		return this.attributes.get(name);
+		return attributes.get(name);
 	}
 
 	public void setAttribute(String name, DuelNode value) {
-		this.attributes.put(mapAttrName(name), value);
+		attributes.put(mapAttrName(name), value);
 	}
 
 	public DuelNode removeAttribute(String name) {
-		if (!this.attributes.containsKey(name)) {
+		if (!attributes.containsKey(name)) {
 			return null;
 		}
-		return this.attributes.remove(name);
+		return attributes.remove(name);
 	}
 
 	public void clearAttributes() {
-		this.attributes.clear();
+		attributes.clear();
 	}
 
 	public boolean isSelf(String tag) {
-		return (this.tagName == null) ? (tag == null) : this.tagName.equalsIgnoreCase(tag);
+		return (tagName == null) ? (tag == null) : tagName.equalsIgnoreCase(tag);
 	}
 
 	public boolean isAncestor(String tag) {
-		ContainerNode parent = this.getParent();
+		ContainerNode parent = getParent();
 
 		while (parent != null) {
 			if (parent instanceof ElementNode && ((ElementNode)parent).isSelf(tag)) {
@@ -165,7 +170,7 @@ public class ElementNode extends ContainerNode {
 	}
 
 	public boolean isAncestorOrSelf(String tag) {
-		return this.isSelf(tag) || this.isAncestor(tag);
+		return isSelf(tag) || isAncestor(tag);
 	}
 
 	/**
@@ -187,20 +192,20 @@ public class ElementNode extends ContainerNode {
 	
 	@Override
 	StringBuilder toString(StringBuilder buffer) {
-		buffer.append("<").append(this.tagName);
+		buffer.append("<").append(tagName);
 
-		for (String name : this.attributes.keySet()) {
+		for (String name : attributes.keySet()) {
 			buffer
 				.append(' ')
 				.append(name)
 				.append("=\"")
-				.append(this.getAttribute(name))
+				.append(getAttribute(name))
 				.append('"');
 		}
 
-		if (this.hasChildren()) {
+		if (hasChildren()) {
 			buffer.append('>');
-			super.toString(buffer).append("</").append(this.tagName);
+			super.toString(buffer).append("</").append(tagName);
 		} else {
 			buffer.append(" /");
 		}
@@ -216,16 +221,16 @@ public class ElementNode extends ContainerNode {
 		}
 
 		ElementNode that = (ElementNode)arg;
-		if (this.tagName == null ? that.tagName != null : !this.tagName.equals(that.tagName)) {
+		if (tagName == null ? that.tagName != null : !tagName.equals(that.tagName)) {
 			return false;
 		}
 
-		for (String name : this.attributes.keySet()) {
+		for (String name : attributes.keySet()) {
 			if (!that.attributes.containsKey(name)) {
 				return false;
 			}
 
-			DuelNode thisValue = this.getAttribute(name);
+			DuelNode thisValue = getAttribute(name);
 			DuelNode thatValue = that.getAttribute(name);
 
 			if (thisValue == null ? thatValue != null : !thisValue.equals(thatValue)) {
@@ -240,9 +245,9 @@ public class ElementNode extends ContainerNode {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = (this.tagName == null) ? 0 : this.tagName.hashCode();
-		if (this.attributes != null) {
-			hash = hash * HASH_PRIME + this.attributes.hashCode();
+		int hash = (tagName == null) ? 0 : tagName.hashCode();
+		if (attributes != null) {
+			hash = hash * HASH_PRIME + attributes.hashCode();
 		}
 		return hash;
 	}

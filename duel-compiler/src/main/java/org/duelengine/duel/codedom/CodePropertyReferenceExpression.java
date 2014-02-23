@@ -13,8 +13,8 @@ public class CodePropertyReferenceExpression extends CodeExpression {
 		this.propertyName = propertyName;
 	}
 
-	public void setTarget(CodeExpression target) {
-		this.target = target;
+	public void setTarget(CodeExpression value) {
+		target = value;
 	}
 
 	public CodeExpression getTarget() {
@@ -22,11 +22,11 @@ public class CodePropertyReferenceExpression extends CodeExpression {
 	}
 
 	public CodeExpression getPropertyName() {
-		return this.propertyName;
+		return propertyName;
 	}
 
 	public void setPropertyName(CodeExpression value) {
-		this.propertyName = value;
+		propertyName = value;
 	}
 
 	@Override
@@ -37,11 +37,11 @@ public class CodePropertyReferenceExpression extends CodeExpression {
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.target != null) {
-				this.target.visit(visitor);
+			if (target != null) {
+				target.visit(visitor);
 			}
-			if (this.propertyName != null) {
-				this.propertyName.visit(visitor);
+			if (propertyName != null) {
+				propertyName.visit(visitor);
 			}
 		}
 	}
@@ -68,11 +68,11 @@ public class CodePropertyReferenceExpression extends CodeExpression {
 		final int HASH_PRIME = 1000003;
 
 		int hash = super.hashCode();
-		if (this.target != null) {
-			hash = hash * HASH_PRIME + this.target.hashCode();
+		if (target != null) {
+			hash = hash * HASH_PRIME + target.hashCode();
 		}
-		if (this.propertyName != null) {
-			hash = hash * HASH_PRIME + this.propertyName.hashCode();
+		if (propertyName != null) {
+			hash = hash * HASH_PRIME + propertyName.hashCode();
 		}
 		return hash;
 	}

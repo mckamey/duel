@@ -1,7 +1,5 @@
 package org.duelengine.duel;
 
-import java.util.*;
-
 public class ClockClientIDStrategy implements ClientIDStrategy {
 
 	private final String prefix;
@@ -10,12 +8,12 @@ public class ClockClientIDStrategy implements ClientIDStrategy {
 		this("_");
 	}
 
-	public ClockClientIDStrategy(String prefix) {
-		this.prefix = prefix;
+	public ClockClientIDStrategy(String value) {
+		prefix = value;
 	}
 
 	@Override
 	public String nextID() {
-		return this.prefix + new Date().getTime();
+		return prefix + System.currentTimeMillis();
 	}
 }

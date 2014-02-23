@@ -1,8 +1,11 @@
 package org.duelengine.duel;
 
-import java.io.*;
+import java.io.IOException;
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The skeletal implementation of DUEL view runtime.
@@ -19,26 +22,26 @@ public abstract class DuelView {
 
 	protected DuelView() {
 		// allow view to define child views
-		this.init();
+		init();
 	}
 
-	protected DuelView(DuelPart... parts) {
+	protected DuelView(DuelPart... viewParts) {
 
 		// first allow view to define child views and default parts
-		this.init();
+		init();
 
 		// then allow caller to replace any parts by name
-		if (parts != null && parts.length > 0) {
-			if (this.parts == null) {
-				this.parts = new HashMap<String, DuelPart>(parts.length);
+		if (viewParts != null && viewParts.length > 0) {
+			if (parts == null) {
+				parts = new HashMap<String, DuelPart>(viewParts.length);
 			}
 
-			for (DuelPart part : parts) {
+			for (DuelPart part : viewParts) {
 				if (part == null || part.getPartName() == null) {
 					continue;
 				}
 
-				this.parts.put(part.getPartName(), part);
+				parts.put(part.getPartName(), part);
 			}
 		}
 	}
@@ -60,7 +63,7 @@ public abstract class DuelView {
 		}
 
 		// build a context
-		this.render(new DuelContext().setOutput(output));
+		render(new DuelContext().setOutput(output));
 	}
 
 	/**
@@ -76,7 +79,7 @@ public abstract class DuelView {
 		}
 
 		// build a context
-		this.render(new DuelContext().setOutput(output).setData(data));
+		render(new DuelContext().setOutput(output).setData(data));
 	}
 
 	/**
@@ -90,7 +93,7 @@ public abstract class DuelView {
 			throw new NullPointerException("context");
 		}
 
-		this.render(context, DuelData.asProxy(context.getData(), true), DEFAULT_INDEX, DEFAULT_COUNT, DEFAULT_KEY);
+		render(context, DuelData.asProxy(context.getData(), true), DEFAULT_INDEX, DEFAULT_COUNT, DEFAULT_KEY);
 	}
 
 	/**
@@ -113,11 +116,11 @@ public abstract class DuelView {
 			return;
 		}
 
-		if (this.parts == null) {
-			this.parts = new HashMap<String, DuelPart>(4);
+		if (parts == null) {
+			parts = new HashMap<String, DuelPart>(4);
 		}
 
-		this.parts.put(part.getPartName(), part);
+		parts.put(part.getPartName(), part);
 	}
 
 	/**
@@ -132,11 +135,11 @@ public abstract class DuelView {
 	protected void renderPart(DuelContext context, String partName, Object data, int index, int count, String key)
 		throws IOException {
 
-		if (this.parts == null || !this.parts.containsKey(partName)) {
+		if (parts == null || !parts.containsKey(partName)) {
 			return;
 		}
 
-		DuelPart part = this.parts.get(partName);
+		DuelPart part = parts.get(partName);
 		if (part == null) {
 			return;
 		}

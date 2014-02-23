@@ -43,58 +43,58 @@ public class DuelContext {
 	private SparseMap dirty;
 
 	public Appendable getOutput() {
-		if (this.output == null) {
-			this.output = new StringBuilder();
+		if (output == null) {
+			output = new StringBuilder();
 		}
-		return this.output;
+		return output;
 	}
 
-	public DuelContext setOutput(Appendable output) {
-		this.output = output;
+	public DuelContext setOutput(Appendable value) {
+		output = value;
 
 		return this;
 	}
 
 	public DuelContext setLinkInterceptor(LinkInterceptor value) {
-		this.interceptor = value;
+		interceptor = value;
 
 		return this;
 	}
 
 	public DuelContext setClientID(ClientIDStrategy value) {
-		this.clientID = value;
+		clientID = value;
 
 		return this;
 	}
 
 	public FormatPrefs getFormat() {
-		if (this.format == null) {
-			this.format = new FormatPrefs();
+		if (format == null) {
+			format = new FormatPrefs();
 		}
-		return this.format;
+		return format;
 	}
 
 	public DuelContext setFormat(FormatPrefs value) {
-		this.format = value;
-		this.encoder = null;
+		format = value;
+		encoder = null;
 
 		return this;
 	}
 
 	public Object getData() {
-		return this.data;
+		return data;
 	}
 
-	public DuelContext setData(Object data) {
-		this.data = data;
+	public DuelContext setData(Object value) {
+		data = value;
 
 		return this;
 	}
 
 	public DuelContext clearExtras() {
-		this.extraState = ExtraState.NONE;
-		this.extras = null;
-		this.dirty = null;
+		extraState = ExtraState.NONE;
+		extras = null;
+		dirty = null;
 
 		return this;
 	}
@@ -104,7 +104,7 @@ public class DuelContext {
 			throw new NullPointerException("values");
 		}
 		for (String ident : values.keySet()) {
-			this.putExtra(ident, values.get(ident));
+			putExtra(ident, values.get(ident));
 		}
 
 		return this;
@@ -115,24 +115,24 @@ public class DuelContext {
 			throw new NullPointerException("ident");
 		}
 
-		if (this.extras == null) {
-			this.extras = new SparseMap();
+		if (extras == null) {
+			extras = new SparseMap();
 		}
-		this.extras.putSparse(ident, value);
+		extras.putSparse(ident, value);
 
-		switch (this.extraState) {
+		switch (extraState) {
 			case NONE:
 			case PENDING:
-				this.extraState = ExtraState.PENDING;
+				extraState = ExtraState.PENDING;
 				break;
 			case EMITTED:
 			case DIRTY:
-				this.extraState = ExtraState.DIRTY;
-				if (this.dirty == null) {
-					this.dirty = new SparseMap();
+				extraState = ExtraState.DIRTY;
+				if (dirty == null) {
+					dirty = new SparseMap();
 				}
 				// also add to dirty set
-				this.dirty.putSparse(ident, value);
+				dirty.putSparse(ident, value);
 				break;
 		}
 
@@ -140,13 +140,13 @@ public class DuelContext {
 	}
 
 	boolean hasExtras(String... idents) {
-		if (this.extras == null) {
+		if (extras == null) {
 			return false;
 		}
 
 		if (idents != null) {
 			for (String ident : idents) {
-				if (!this.extras.containsKey(ident)) {
+				if (!extras.containsKey(ident)) {
 					return false;
 				}
 			}
@@ -160,23 +160,23 @@ public class DuelContext {
 			throw new NullPointerException("ident");
 		}
 
-		if (this.extras == null || !this.extras.containsKey(ident)) {
+		if (extras == null || !extras.containsKey(ident)) {
 			return null;
 		}
 
-		return this.extras.get(ident);
+		return extras.get(ident);
 	}
 
 	SparseMap getPendingExtras() {
 
-		SparseMap sparseMap = (this.extraState == ExtraState.DIRTY) ? this.dirty : this.extras;
-		this.extraState = ExtraState.EMITTED;
-		this.dirty = null;
+		SparseMap sparseMap = (extraState == ExtraState.DIRTY) ? dirty : extras;
+		extraState = ExtraState.EMITTED;
+		dirty = null;
 		return sparseMap;
 	}
 
 	boolean hasExtrasPending() {
-		switch (this.extraState) {
+		switch (extraState) {
 			case PENDING:
 			case DIRTY:
 				return true;
@@ -186,26 +186,26 @@ public class DuelContext {
 	}
 
 	DataEncoder getEncoder() {
-		if (this.encoder == null) {
-			this.encoder = new DataEncoder(this.getFormat().getNewline(), this.getFormat().getIndent());
+		if (encoder == null) {
+			encoder = new DataEncoder(getFormat().getNewline(), getFormat().getIndent());
 		}
 
-		return this.encoder;
+		return encoder;
 	}
 
 	String nextID() {
-		if (this.clientID == null) {
-			this.clientID = new IncClientIDStrategy();
+		if (clientID == null) {
+			clientID = new IncClientIDStrategy();
 		}
 
-		return this.clientID.nextID();
+		return clientID.nextID();
 	}
 
 	String transformURL(String url) {
-		if (this.interceptor == null) {
+		if (interceptor == null) {
 			return url;
 		}
 
-		return this.interceptor.transformURL(url);
+		return interceptor.transformURL(url);
 	}
 }

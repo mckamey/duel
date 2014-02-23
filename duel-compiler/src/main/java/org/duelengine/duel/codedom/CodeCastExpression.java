@@ -9,7 +9,7 @@ public class CodeCastExpression extends CodeExpression {
 	private CodeExpression expression;
 
 	public CodeCastExpression() {
-		this.withParens();
+		withParens();
 	}
 
 	public CodeCastExpression(Class<?> type, CodeExpression expression) {
@@ -17,31 +17,31 @@ public class CodeCastExpression extends CodeExpression {
 			this.type = type;
 		}
 		this.expression = expression;
-		this.withParens();
+		withParens();
 	}
 
 	public CodeExpression getExpression() {
-		return this.expression;
+		return expression;
 	}
 
 	public void setExpression(CodeExpression value) {
-		this.expression = value;
+		expression = value;
 	}
 
 	@Override
 	public Class<?> getResultType() {
-		return this.type;
+		return type;
 	}
 
 	public void setResultType(Class<?> value) {
-		this.type = (value == null) ? Object.class : value;
+		type = (value == null) ? Object.class : value;
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.expression != null) {
-				this.expression.visit(visitor);
+			if (expression != null) {
+				expression.visit(visitor);
 			}
 		}
 	}
@@ -59,16 +59,16 @@ public class CodeCastExpression extends CodeExpression {
 			return false;
 		}
 
-		return this.type.equals(that.type);
+		return type.equals(that.type);
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = this.type.hashCode();
-		if (this.expression != null) {
-			hash = hash * HASH_PRIME + this.expression.hashCode();
+		int hash = type.hashCode();
+		if (expression != null) {
+			hash = hash * HASH_PRIME + expression.hashCode();
 		}
 		return hash;
 	}

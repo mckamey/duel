@@ -1,10 +1,38 @@
 package org.duelengine.duel.codegen;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelData;
 import org.duelengine.duel.JSUtility;
-import org.duelengine.duel.codedom.*;
+import org.duelengine.duel.codedom.AccessModifierType;
+import org.duelengine.duel.codedom.CodeArrayCreateExpression;
+import org.duelengine.duel.codedom.CodeBinaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeBinaryOperatorType;
+import org.duelengine.duel.codedom.CodeExpression;
+import org.duelengine.duel.codedom.CodeExpressionStatement;
+import org.duelengine.duel.codedom.CodeIterationStatement;
+import org.duelengine.duel.codedom.CodeMember;
+import org.duelengine.duel.codedom.CodeMethod;
+import org.duelengine.duel.codedom.CodeMethodInvokeExpression;
+import org.duelengine.duel.codedom.CodeMethodReturnStatement;
+import org.duelengine.duel.codedom.CodeObject;
+import org.duelengine.duel.codedom.CodePrimitiveExpression;
+import org.duelengine.duel.codedom.CodePropertyReferenceExpression;
+import org.duelengine.duel.codedom.CodeStatement;
+import org.duelengine.duel.codedom.CodeStatementBlock;
+import org.duelengine.duel.codedom.CodeTernaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeTypeDeclaration;
+import org.duelengine.duel.codedom.CodeTypeReferenceExpression;
+import org.duelengine.duel.codedom.CodeUnaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeUnaryOperatorType;
+import org.duelengine.duel.codedom.CodeVariableCompoundDeclarationStatement;
+import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
+import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
+import org.duelengine.duel.codedom.IdentifierScope;
+import org.duelengine.duel.codedom.ScriptVariableReferenceExpression;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ErrorReporter;
@@ -12,7 +40,30 @@ import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Node;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.Token;
-import org.mozilla.javascript.ast.*;
+import org.mozilla.javascript.ast.ArrayLiteral;
+import org.mozilla.javascript.ast.AstNode;
+import org.mozilla.javascript.ast.AstRoot;
+import org.mozilla.javascript.ast.Block;
+import org.mozilla.javascript.ast.ConditionalExpression;
+import org.mozilla.javascript.ast.ElementGet;
+import org.mozilla.javascript.ast.ExpressionStatement;
+import org.mozilla.javascript.ast.ForLoop;
+import org.mozilla.javascript.ast.FunctionCall;
+import org.mozilla.javascript.ast.FunctionNode;
+import org.mozilla.javascript.ast.InfixExpression;
+import org.mozilla.javascript.ast.Name;
+import org.mozilla.javascript.ast.NewExpression;
+import org.mozilla.javascript.ast.NumberLiteral;
+import org.mozilla.javascript.ast.ObjectLiteral;
+import org.mozilla.javascript.ast.ObjectProperty;
+import org.mozilla.javascript.ast.ParenthesizedExpression;
+import org.mozilla.javascript.ast.PropertyGet;
+import org.mozilla.javascript.ast.ReturnStatement;
+import org.mozilla.javascript.ast.Scope;
+import org.mozilla.javascript.ast.StringLiteral;
+import org.mozilla.javascript.ast.UnaryExpression;
+import org.mozilla.javascript.ast.VariableDeclaration;
+import org.mozilla.javascript.ast.VariableInitializer;
 
 /**
  * Translates JavaScript source code into CodeDOM
@@ -30,11 +81,11 @@ public class ScriptTranslator implements ErrorReporter {
 		this(new CodeTypeDeclaration());
 	}
 
-	public ScriptTranslator(IdentifierScope scope) {
-		if (scope == null) {
-			throw new NullPointerException("scope");
+	public ScriptTranslator(IdentifierScope identScope) {
+		if (identScope == null) {
+			throw new NullPointerException("identScope");
 		}
-		this.scope = scope;
+		scope = identScope;
 	}
 
 	/**
@@ -43,8 +94,8 @@ public class ScriptTranslator implements ErrorReporter {
 	 */
 	public List<CodeMember> translate(String jsSource) {
 
-		this.extraRefs = null;
-		this.extraAssign = false;
+		extraRefs = null;
+		extraAssign = false;
 		String jsFilename = "anonymous.js";
 		ErrorReporter errorReporter = this;
 
@@ -74,14 +125,14 @@ public class ScriptTranslator implements ErrorReporter {
 			return null;
 		}
 
-		List<CodeMember> members = this.visitRoot(root);
+		List<CodeMember> members = visitRoot(root);
 		if (members.size() > 0) {
 			CodeMember method = members.get(0);
-			if (this.extraRefs != null) {
+			if (extraRefs != null) {
 				// store extra identifiers on the member to allow generation of a fallback block
-				method.withUserData(EXTRA_REFS, this.extraRefs.toArray());
+				method.withUserData(EXTRA_REFS, extraRefs.toArray());
 			}
-			if (this.extraAssign) {
+			if (extraAssign) {
 				// flag as potentially modifying values
 				method.withUserData(EXTRA_ASSIGN, true);
 			}
@@ -90,7 +141,7 @@ public class ScriptTranslator implements ErrorReporter {
 	}
 
 	private CodeStatement visitStatement(AstNode node) {
-		CodeObject value = this.visit(node);
+		CodeObject value = visit(node);
 
 		if (value instanceof CodeExpression) {
 			return new CodeExpressionStatement((CodeExpression)value);
@@ -103,7 +154,7 @@ public class ScriptTranslator implements ErrorReporter {
 	}
 
 	private CodeExpression visitExpression(AstNode node) {
-		CodeObject value = this.visit(node);
+		CodeObject value = visit(node);
 
 		if (value instanceof CodeExpressionStatement) {
 			return ((CodeExpressionStatement)value).getExpression();
@@ -123,7 +174,7 @@ public class ScriptTranslator implements ErrorReporter {
 
 		CodeExpression[] expressions = new CodeExpression[length];
 		for (int i=0; i<length; i++) {
-			expressions[i] = this.visitExpression(nodes.get(i));
+			expressions[i] = visitExpression(nodes.get(i));
 		}
 		return expressions;
 	}
@@ -136,26 +187,26 @@ public class ScriptTranslator implements ErrorReporter {
 		int tokenType = node.getType();
 		switch (tokenType) {
 			case Token.FUNCTION:
-				return this.visitFunction((FunctionNode)node);
+				return visitFunction((FunctionNode)node);
 			case Token.BLOCK:
 				if (node instanceof Block) {
-					return this.visitBlock((Block)node);
+					return visitBlock((Block)node);
 				}
 				if (node instanceof Scope) {
-					return this.visitScope((Scope)node);
+					return visitScope((Scope)node);
 				}
 
 				throw new ScriptTranslationException("Unexpected block token ("+node.getClass()+"):\n"+(node.debugPrint()), node);
 			case Token.GETPROP:
-				return this.visitProperty((PropertyGet)node);
+				return visitProperty((PropertyGet)node);
 			case Token.GETELEM:
-				return this.visitProperty((ElementGet)node);
+				return visitProperty((ElementGet)node);
 			case Token.RETURN:
-				return this.visitReturn((ReturnStatement)node);
+				return visitReturn((ReturnStatement)node);
 			case Token.NAME:
-				return this.visitVarRef((Name)node, false);
+				return visitVarRef((Name)node, false);
 			case Token.LP:
-				CodeExpression expr = this.visitExpression(((ParenthesizedExpression)node).getExpression());
+				CodeExpression expr = visitExpression(((ParenthesizedExpression)node).getExpression());
 				if (expr != null) {
 					expr.withParens();
 				}
@@ -179,32 +230,32 @@ public class ScriptTranslator implements ErrorReporter {
 			case Token.NULL:
 				return CodePrimitiveExpression.NULL;
 			case Token.FOR:
-				return this.visitForLoop((ForLoop)node);
+				return visitForLoop((ForLoop)node);
 			case Token.VAR:
-				return this.visitVarDecl((VariableDeclaration)node);
+				return visitVarDecl((VariableDeclaration)node);
 			case Token.ARRAYLIT:
-				return this.visitArrayLiteral((ArrayLiteral)node);
+				return visitArrayLiteral((ArrayLiteral)node);
 			case Token.OBJECTLIT:
-				return this.visitObjectLiteral((ObjectLiteral)node);
+				return visitObjectLiteral((ObjectLiteral)node);
 			case Token.CALL:
-				return this.visitFunctionCall((FunctionCall)node);
+				return visitFunctionCall((FunctionCall)node);
 			case Token.HOOK:
-				return this.visitTernary((ConditionalExpression)node);
+				return visitTernary((ConditionalExpression)node);
 			case Token.NEW:
-				return this.visitNew((NewExpression)node);
+				return visitNew((NewExpression)node);
 			case Token.EXPR_VOID:
 				ExpressionStatement voidExpr = (ExpressionStatement)node;
 				if (voidExpr.hasSideEffects()) {
 					// TODO: determine when this could occur
 				}
 				// unwrap expression node
-				return this.visit(voidExpr.getExpression());
+				return visit(voidExpr.getExpression());
 		    case Token.IN:
-		    	return this.visitIn((InfixExpression)node);
+		    	return visitIn((InfixExpression)node);
 		    case Token.INSTANCEOF:
-		    	return this.visitInstanceOf((InfixExpression)node);
+		    	return visitInstanceOf((InfixExpression)node);
 		    case Token.TYPEOF:
-		    	return this.visitTypeOf((UnaryExpression)node);
+		    	return visitTypeOf((UnaryExpression)node);
 			case Token.THIS:
 			case Token.THISFN:
 				// TODO: evaluate if should allow custom extensions via 'this'
@@ -213,13 +264,13 @@ public class ScriptTranslator implements ErrorReporter {
 		    case Token.LEAVEWITH :
 				throw new ScriptTranslationException("'with' not legal in binding expressions", node);
 			default:
-				CodeBinaryOperatorType binary = this.mapBinaryOperator(tokenType);
+				CodeBinaryOperatorType binary = mapBinaryOperator(tokenType);
 				if (binary != CodeBinaryOperatorType.NONE) {
-					return this.visitBinaryOp((InfixExpression)node, binary);
+					return visitBinaryOp((InfixExpression)node, binary);
 				}
-				CodeUnaryOperatorType unary = this.mapUnaryOperator(tokenType);
+				CodeUnaryOperatorType unary = mapUnaryOperator(tokenType);
 				if (unary != CodeUnaryOperatorType.NONE) {
-					return this.visitUnaryOp((UnaryExpression)node, unary);
+					return visitUnaryOp((UnaryExpression)node, unary);
 				}
 
 				throw new ScriptTranslationException("Token not yet supported ("+node.getClass()+"):\n"+(node.debugPrint()), node);
@@ -227,22 +278,22 @@ public class ScriptTranslator implements ErrorReporter {
 	}
 
 	private CodeObject visitProperty(ElementGet node) {
-		CodeExpression target = this.visitExpression(node.getTarget());
-		CodeExpression property = this.visitExpression(node.getElement());
+		CodeExpression target = visitExpression(node.getTarget());
+		CodeExpression property = visitExpression(node.getElement());
 
 		return new CodePropertyReferenceExpression(target, property);
 	}
 
 	private CodeObject visitProperty(PropertyGet node) {
-		CodeExpression target = this.visitExpression(node.getTarget());
+		CodeExpression target = visitExpression(node.getTarget());
 		CodeExpression property = new CodePrimitiveExpression(node.getProperty().getIdentifier());
 
 		return new CodePropertyReferenceExpression(target, property);
 	}
 
 	private CodeExpression visitIn(InfixExpression node) {
-		CodeExpression key = this.visitExpression(node.getLeft());
-		CodeExpression target = this.visitExpression(node.getRight());
+		CodeExpression key = visitExpression(node.getLeft());
+		CodeExpression target = visitExpression(node.getRight());
 
 		return new CodeMethodInvokeExpression(
 			Boolean.class,
@@ -253,7 +304,7 @@ public class ScriptTranslator implements ErrorReporter {
 	}
 
 	private CodeExpression visitInstanceOf(InfixExpression node) {
-		CodeExpression target = this.visitExpression(node.getLeft());
+		CodeExpression target = visitExpression(node.getLeft());
 		AstNode type = node.getRight();
 		if (!(type instanceof Name)) {
 			throw new ScriptTranslationException("Unexpected type expression ("+type.getClass()+")", node);
@@ -278,7 +329,7 @@ public class ScriptTranslator implements ErrorReporter {
 	}
 
 	private CodeExpression visitTypeOf(UnaryExpression node) {
-		CodeExpression operand = this.visitExpression(node.getOperand());
+		CodeExpression operand = visitExpression(node.getOperand());
 
 		return new CodeMethodInvokeExpression(
 			String.class,
@@ -288,8 +339,8 @@ public class ScriptTranslator implements ErrorReporter {
 	}
 
 	private CodeExpression visitBinaryOp(InfixExpression node, CodeBinaryOperatorType operator) {
-		CodeExpression left = this.visitExpression(node.getLeft());
-		CodeExpression right = this.visitExpression(node.getRight());
+		CodeExpression left = visitExpression(node.getLeft());
+		CodeExpression right = visitExpression(node.getRight());
 		
 		return new CodeBinaryOperatorExpression(operator, left, right);
 	}
@@ -382,7 +433,7 @@ public class ScriptTranslator implements ErrorReporter {
 			}
 		}
 
-		CodeExpression operand = this.visitExpression(node.getOperand());
+		CodeExpression operand = visitExpression(node.getOperand());
 		return new CodeUnaryOperatorExpression(operator, (CodeExpression)operand);
 	}
 
@@ -411,9 +462,9 @@ public class ScriptTranslator implements ErrorReporter {
 	}
 
 	private CodeObject visitTernary(ConditionalExpression node) {
-		CodeExpression testExpr = this.visitExpression(node.getTestExpression());
-		CodeExpression trueExpr = this.visitExpression(node.getTrueExpression());
-		CodeExpression falseExpr = this.visitExpression(node.getFalseExpression());
+		CodeExpression testExpr = visitExpression(node.getTestExpression());
+		CodeExpression trueExpr = visitExpression(node.getTrueExpression());
+		CodeExpression falseExpr = visitExpression(node.getFalseExpression());
 
 		return new CodeTernaryOperatorExpression(testExpr, trueExpr, falseExpr);
 	}
@@ -426,7 +477,7 @@ public class ScriptTranslator implements ErrorReporter {
 			if (!(nameNode instanceof Name)) {
 				throw new ScriptTranslationException("Unexpected VAR node type ("+nameNode.getClass()+")", node);
 			}
-			CodeObject target = this.visitVarRef((Name)nameNode, true);
+			CodeObject target = visitVarRef((Name)nameNode, true);
 			if (!(target instanceof CodeVariableReferenceExpression)) {
 				throw new ScriptTranslationException("Unexpected VAR type ("+target.getClass()+")", node);
 			}
@@ -435,7 +486,7 @@ public class ScriptTranslator implements ErrorReporter {
 			CodeVariableDeclarationStatement decl = new CodeVariableDeclarationStatement(
 					varRef.getResultType(),
 					varRef.getIdent(),
-					this.visitExpression(init.getInitializer()));
+					visitExpression(init.getInitializer()));
 
 			vars.addVar(decl);
 		}
@@ -472,9 +523,9 @@ public class ScriptTranslator implements ErrorReporter {
 		} else if ("key".equals(ident)) {
 			return new CodeVariableReferenceExpression(String.class, ident);
 
-		} else if (declaration || this.scope.isLocalIdent(ident)) {
+		} else if (declaration || scope.isLocalIdent(ident)) {
 			// map to the unique server-side identifier
-			ident = this.scope.uniqueIdent(ident);
+			ident = scope.uniqueIdent(ident);
 
 			// TODO: can this surface result type?
 			return new CodeVariableReferenceExpression(Object.class, ident);
@@ -485,12 +536,12 @@ public class ScriptTranslator implements ErrorReporter {
 		if (!(node.getParent().getType() == Token.ASSIGN &&
 			((InfixExpression)node.getParent()).getLeft() == node)) {
 
-			if (this.extraRefs == null) {
-				this.extraRefs = new ArrayList<String>();
+			if (extraRefs == null) {
+				extraRefs = new ArrayList<String>();
 			}
-			this.extraRefs.add(ident);
+			extraRefs.add(ident);
 		} else {
-			this.extraAssign = true;
+			extraAssign = true;
 		}
 
 		return new ScriptVariableReferenceExpression(ident);
@@ -498,11 +549,11 @@ public class ScriptTranslator implements ErrorReporter {
 
 	private CodeObject visitForLoop(ForLoop node) {
 		CodeIterationStatement loop = new CodeIterationStatement(
-			this.visitStatement(node.getInitializer()),
-			this.visitExpression(node.getCondition()),
-			this.visitStatement(node.getIncrement()));
+			visitStatement(node.getInitializer()),
+			visitExpression(node.getCondition()),
+			visitStatement(node.getIncrement()));
 
-		CodeObject body = this.visit(node.getBody());
+		CodeObject body = visit(node.getBody());
 		if (body instanceof CodeStatementBlock) {
 			loop.getStatements().addAll((CodeStatementBlock)body);
 		} else {
@@ -516,7 +567,7 @@ public class ScriptTranslator implements ErrorReporter {
 		CodeMethod method = new CodeMethod(
 			AccessModifierType.PRIVATE,
 			Object.class,
-			this.scope.nextIdent("code_"),
+			scope.nextIdent("code_"),
 			null);
 
 		if (node.depth() == 1) {
@@ -531,7 +582,7 @@ public class ScriptTranslator implements ErrorReporter {
 			throw new ScriptTranslationException("Nested functions not yet supported.", node);
 		}
 
-		CodeObject body = this.visit(node.getBody());
+		CodeObject body = visit(node.getBody());
 		if (body instanceof CodeStatementBlock) {
 			method.getStatements().addAll((CodeStatementBlock)body);
 
@@ -566,14 +617,14 @@ public class ScriptTranslator implements ErrorReporter {
 	}
 
 	private CodeMethodReturnStatement visitReturn(ReturnStatement node) {
-		CodeExpression value = this.visitExpression(node.getReturnValue());
+		CodeExpression value = visitExpression(node.getReturnValue());
 
 		// always return a value
 		return new CodeMethodReturnStatement(value != null ? value : CodePrimitiveExpression.NULL);
 	}
 
 	private CodeObject visitFunctionCall(FunctionCall node) {
-		CodeExpression target = this.visitExpression(node.getTarget());
+		CodeExpression target = visitExpression(node.getTarget());
 		if (!(target instanceof CodePropertyReferenceExpression)) {
 			throw new ScriptTranslationException("Unsupported function call ("+node.getClass()+"):\n"+(node.debugPrint()), node.getTarget());
 		}
@@ -584,7 +635,7 @@ public class ScriptTranslator implements ErrorReporter {
 			throw new ScriptTranslationException("Unsupported function call ("+node.getClass()+"):\n"+(node.debugPrint()), node.getTarget());
 		}
 		String methodName = DuelData.coerceString(((CodePrimitiveExpression)nameExpr).getValue());
-		CodeExpression[] args = this.visitExpressionList(node.getArguments());
+		CodeExpression[] args = visitExpressionList(node.getArguments());
 
 		CodeObject methodCall = CodeDOMUtility.translateMethodCall(propertyRef.getResultType(), propertyRef.getTarget(), methodName, args);
 		if (methodCall == null) {
@@ -598,7 +649,7 @@ public class ScriptTranslator implements ErrorReporter {
 		if (target instanceof Name) {
 			String ident = ((Name)target).getIdentifier();
 			if ("Array".equals(ident)) {
-				return this.visitArrayCtor(node);
+				return visitArrayCtor(node);
 			}
 
 			// TODO: add other JS types 
@@ -617,9 +668,9 @@ public class ScriptTranslator implements ErrorReporter {
 			AstNode key = property.getLeft();
 			initializers[i*2] = (key.getType() == Token.NAME) ?
 				new CodePrimitiveExpression(((Name)key).getIdentifier()) :
-				this.visitExpression(key);
+				visitExpression(key);
 
-			initializers[i*2+1] = this.visitExpression(property.getRight());
+			initializers[i*2+1] = visitExpression(property.getRight());
 		}
 
 		return new CodeMethodInvokeExpression(
@@ -630,13 +681,13 @@ public class ScriptTranslator implements ErrorReporter {
 	}
 
 	private CodeObject visitArrayLiteral(ArrayLiteral node) {
-		CodeExpression[] initializers = this.visitExpressionList(node.getElements());
+		CodeExpression[] initializers = visitExpressionList(node.getElements());
 
 		return new CodeArrayCreateExpression(Object.class, initializers);
 	}
 
 	private CodeObject visitArrayCtor(NewExpression node) {
-		CodeExpression[] initializers = this.visitExpressionList(node.getArguments());
+		CodeExpression[] initializers = visitExpressionList(node.getArguments());
 		if (initializers != null &&
 			(initializers.length == 1) &&
 			(initializers[0] instanceof CodePrimitiveExpression)) {
@@ -654,7 +705,7 @@ public class ScriptTranslator implements ErrorReporter {
 	private CodeObject visitScope(Scope scope) {
 		CodeStatementBlock statements = new CodeStatementBlock();
         for (Node node : scope) {
-            CodeObject value = this.visit((AstNode)node);
+            CodeObject value = visit((AstNode)node);
 
             if (value == null) {
             	continue;
@@ -678,7 +729,7 @@ public class ScriptTranslator implements ErrorReporter {
 	private CodeStatementBlock visitBlock(Block block) {
 		CodeStatementBlock statements = new CodeStatementBlock();
         for (Node node : block) {
-            CodeObject value = this.visit((AstNode)node);
+            CodeObject value = visit((AstNode)node);
 
             if (value == null) {
             	continue;
@@ -702,7 +753,7 @@ public class ScriptTranslator implements ErrorReporter {
 	private List<CodeMember> visitRoot(AstRoot root) {
 		List<CodeMember> members = new ArrayList<CodeMember>();
         for (Node node : root) {
-            CodeObject member = this.visit((AstNode)node);
+            CodeObject member = visit((AstNode)node);
 
             if (member == null) {
             	continue;
@@ -724,7 +775,7 @@ public class ScriptTranslator implements ErrorReporter {
 
 	@Override
 	public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
-		throw this.runtimeError(message, sourceName, line, lineSource, lineOffset);
+		throw runtimeError(message, sourceName, line, lineSource, lineOffset);
 	}
 
 	@Override

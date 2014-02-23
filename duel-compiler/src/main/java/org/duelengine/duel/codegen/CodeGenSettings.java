@@ -158,9 +158,7 @@ public class CodeGenSettings {
 	}
 
 	String getServerName(String viewName) {
-		if (viewName != null) {
-			viewName = viewName.trim();
-		}
+		viewName = (viewName != null) ? viewName.trim() : "";
 
 		if ((serverPrefix == null) || (serverPrefix.length() < 1)) {
 			return viewName;

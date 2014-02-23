@@ -19,12 +19,12 @@ public class LiteralNode extends DuelNode {
 	}
 
 	public final String getValue() {
-		return this.value;
+		return value;
 	}
 
 	@Override
 	public String toString() {
-		return new StringBuilder(this.value).toString();
+		return new StringBuilder(value).toString();
 	}
 
 	@Override
@@ -35,14 +35,14 @@ public class LiteralNode extends DuelNode {
 		}
 
 		LiteralNode that = (LiteralNode)arg;
-		return (this.value == null ? that.value == null : this.value.equals(that.value));
+		return (value == null ? that.value == null : value.equals(that.value));
 	}
 
 	@Override
 	public int hashCode() {
 		int hash = 0;
-		if (this.value != null) {
-			hash = this.value.hashCode();
+		if (value != null) {
+			hash = value.hashCode();
 		}
 		return hash;
 	}

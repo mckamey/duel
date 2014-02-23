@@ -1,6 +1,8 @@
 package org.duelengine.duel.codedom;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents a constructor call
@@ -21,15 +23,15 @@ public class CodeObjectCreateExpression extends CodeExpression {
 	}
 
 	public String getTypeName() {
-		return this.typeName;
+		return typeName;
 	}
 
 	public void setTypeName(String value) {
-		this.typeName = value;
+		typeName = value;
 	}
 
 	public List<CodeExpression> getArguments() {
-		return this.arguments;
+		return arguments;
 	}
 
 	@Override
@@ -40,7 +42,7 @@ public class CodeObjectCreateExpression extends CodeExpression {
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			for (CodeExpression expression : this.arguments) {
+			for (CodeExpression expression : arguments) {
 				if (expression != null) {
 					expression.visit(visitor);
 				}
@@ -81,9 +83,9 @@ public class CodeObjectCreateExpression extends CodeExpression {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = super.hashCode() * HASH_PRIME + this.arguments.hashCode();
-		if (this.typeName != null) {
-			hash = hash * HASH_PRIME + this.typeName.hashCode();
+		int hash = super.hashCode() * HASH_PRIME + arguments.hashCode();
+		if (typeName != null) {
+			hash = hash * HASH_PRIME + typeName.hashCode();
 		}
 		return hash;
 	}

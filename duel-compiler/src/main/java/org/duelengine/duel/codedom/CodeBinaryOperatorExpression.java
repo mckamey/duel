@@ -18,32 +18,32 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 	}
 
 	public CodeBinaryOperatorType getOperator() {
-		return this.operator;
+		return operator;
 	}
 
 	public void setOperator(CodeBinaryOperatorType value) {
-		this.operator = value;
+		operator = value;
 	}
 
 	public CodeExpression getRight() {
-		return this.right;
+		return right;
 	}
 
 	public void setRight(CodeExpression value) {
-		this.right = value;
+		right = value;
 	}
 
 	public CodeExpression getLeft() {
-		return this.left;
+		return left;
 	}
 	
 	public void setLeft(CodeExpression value) {
-		this.left = value;
+		left = value;
 	}
 
 	@Override
 	public Class<?> getResultType() {
-		switch (this.operator) {
+		switch (operator) {
 			case ADD:
 			case ADD_ASSIGN:
 				// TODO: ADD is ambiguous
@@ -71,8 +71,8 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 
 			case BOOLEAN_AND:
 			case BOOLEAN_OR:
-				if (this.left == null || !DuelData.isBoolean(this.left.getResultType()) ||
-					this.right == null || !DuelData.isBoolean(this.right.getResultType())) {
+				if (left == null || !DuelData.isBoolean(left.getResultType()) ||
+					right == null || !DuelData.isBoolean(right.getResultType())) {
 					return Object.class;
 				}
 				return Boolean.class;
@@ -88,11 +88,11 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 				return Boolean.class;
 
 			case ASSIGN:
-				if (this.left != null && !this.left.getResultType().equals(Object.class)) {
-					return this.left.getResultType();
+				if (left != null && !left.getResultType().equals(Object.class)) {
+					return left.getResultType();
 
-				} else if (this.right != null) {
-					return this.right.getResultType();
+				} else if (right != null) {
+					return right.getResultType();
 				} 
 
 				return Object.class;
@@ -105,11 +105,11 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.left != null) {
-				this.left.visit(visitor);
+			if (left != null) {
+				left.visit(visitor);
 			}
-			if (this.right != null) {
-				this.right.visit(visitor);
+			if (right != null) {
+				right.visit(visitor);
 			}
 		}
 	}
@@ -141,12 +141,12 @@ public class CodeBinaryOperatorExpression extends CodeExpression {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = super.hashCode()* HASH_PRIME + this.operator.hashCode();
-		if (this.left != null) {
-			hash = hash * HASH_PRIME + this.left.hashCode();
+		int hash = super.hashCode()* HASH_PRIME + operator.hashCode();
+		if (left != null) {
+			hash = hash * HASH_PRIME + left.hashCode();
 		}
-		if (this.right != null) {
-			hash = hash * HASH_PRIME + this.right.hashCode();
+		if (right != null) {
+			hash = hash * HASH_PRIME + right.hashCode();
 		}
 		return hash;
 	}

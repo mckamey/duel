@@ -19,9 +19,9 @@ public class ExpressionNode extends CodeBlockNode {
 	@Override
 	public String getClientCode() {
 		StringBuilder buffer = new StringBuilder(INTRO1);
-		buffer.append(this.formatParamList());
+		buffer.append(formatParamList());
 		buffer.append(INTRO2);
-		String value = this.getValue();
+		String value = getValue();
 		if (value != null) {
 			buffer.append(value);
 		}

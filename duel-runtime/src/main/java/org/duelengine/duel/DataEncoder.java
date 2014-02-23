@@ -21,12 +21,12 @@ public class DataEncoder {
 	public static class Snippet {
 		private final String snippet;
 
-		public Snippet(String snippet) {
-			this.snippet = snippet;
+		public Snippet(String value) {
+			snippet = value;
 		}
 		
 		public String getSnippet() {
-			return this.snippet;
+			return snippet;
 		}
 	}
 
@@ -52,14 +52,14 @@ public class DataEncoder {
 		this(null, null);
 	}
 
-	public DataEncoder(String newline, String indent) {
-		this.newline = (newline != null) ? newline : "";
-		this.indent = (indent != null) ? indent : "";
-		this.prettyPrint = (this.indent.length() > 0) || (this.newline.length() > 0);
+	public DataEncoder(String newlineStr, String indentStr) {
+		newline = (newlineStr != null) ? newlineStr : "";
+		indent = (indentStr != null) ? indentStr : "";
+		prettyPrint = (indent.length() > 0) || (newline.length() > 0);
 	}
 
 	public boolean isPrettyPrint() {
-		return this.prettyPrint;
+		return prettyPrint;
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class DataEncoder {
 
 		StringBuilder buffer = new StringBuilder();
 		try {
-			this.write(buffer, data, EncodingFormat.ECMASCRIPT, 0);
+			write(buffer, data, EncodingFormat.ECMASCRIPT, 0);
 
 		} catch (IOException ex) {
 			throw new IllegalStateException(ex);
@@ -89,7 +89,7 @@ public class DataEncoder {
 
 		StringBuilder buffer = new StringBuilder();
 		try {
-			this.write(buffer, data, EncodingFormat.JSON, 0);
+			write(buffer, data, EncodingFormat.JSON, 0);
 
 		} catch (IOException ex) {
 			throw new IllegalStateException(ex);
@@ -106,7 +106,7 @@ public class DataEncoder {
 	public void writeJSON(Appendable output, Object data)
 		throws IOException {
 
-		this.write(output, data, EncodingFormat.JSON, 0);
+		write(output, data, EncodingFormat.JSON, 0);
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class DataEncoder {
 			 */
 			return;
 		}
-		this.write(output, data, EncodingFormat.ECMASCRIPT, 0);
+		write(output, data, EncodingFormat.ECMASCRIPT, 0);
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class DataEncoder {
 	public void write(Appendable output, Object data, int depth)
 		throws IOException {
 
-		this.write(output, data, EncodingFormat.ECMASCRIPT, depth);
+		write(output, data, EncodingFormat.ECMASCRIPT, depth);
 	}
 
 	/**
@@ -173,24 +173,24 @@ public class DataEncoder {
 			output.append(((Snippet)data).getSnippet());
 
 		} else if (String.class.equals(dataType)) {
-			this.writeString(output, (String)data, format);
+			writeString(output, (String)data, format);
 
 		} else if (DuelData.isNumber(dataType)) {
-			this.writeNumber(output, data, format);
+			writeNumber(output, data, format);
 
 		} else if (DuelData.isBoolean(dataType)) {
-			this.writeBoolean(output, DuelData.coerceBoolean(data), format);
+			writeBoolean(output, DuelData.coerceBoolean(data), format);
 
 		} else if (DuelData.isArray(dataType)) {
-			this.writeArray(output, DuelData.coerceCollection(data), format, depth);
+			writeArray(output, DuelData.coerceCollection(data), format, depth);
 
 		} else if (Date.class.equals(dataType)) {
-			this.writeDate(output, (Date)data, format);
+			writeDate(output, (Date)data, format);
 
 			// need to also serialize RegExp literals
 
 		} else {
-			this.writeObject(output, DuelData.coerceMap(data), format, depth);
+			writeObject(output, DuelData.coerceMap(data), format, depth);
 		}
 	}
 
@@ -215,7 +215,7 @@ public class DataEncoder {
 			// if overflows IEEE-754 precision then emit as String
 			if (invalidIEEE754(numberLong)) {
 				// TODO: allow disabling this behavior for non-ECMAScript clients
-				this.writeString(output, Long.toString(numberLong), format);
+				writeString(output, Long.toString(numberLong), format);
 
 			} else {
 				output.append(Long.toString(numberLong));
@@ -249,7 +249,7 @@ public class DataEncoder {
 			output.append(")");
 
 		} else {
-			this.writeString(output, ISO8601.format(data), format);
+			writeString(output, ISO8601.format(data), format);
 		}
 	}
 
@@ -269,7 +269,7 @@ public class DataEncoder {
 			}
 
 			if (singleAttr) {
-				if (this.prettyPrint) {
+				if (prettyPrint) {
 					output.append(' ');
 				}
 
@@ -281,20 +281,20 @@ public class DataEncoder {
 					hasChildren = needsDelim = true;
 				}
 
-				if (this.prettyPrint) {
-					this.writeln(output, depth);
+				if (prettyPrint) {
+					writeln(output, depth);
 				}
 			}
 
-			this.write(output, item, format, depth);
+			write(output, item, format, depth);
 		}
 
 		depth--;
-		if (this.prettyPrint) {
+		if (prettyPrint) {
 			if (singleAttr) {
 				output.append(' ');
 			} else if (hasChildren) {
-				this.writeln(output, depth);
+				writeln(output, depth);
 			}
 		}
 		output.append(']');
@@ -319,7 +319,7 @@ public class DataEncoder {
 			}
 
 			if (singleAttr) {
-				if (this.prettyPrint) {
+				if (prettyPrint) {
 					output.append(' ');
 				}
 			} else {
@@ -330,26 +330,26 @@ public class DataEncoder {
 					hasChildren = needsDelim = true;
 				}
 
-				if (this.prettyPrint) {
-					this.writeln(output, depth);
+				if (prettyPrint) {
+					writeln(output, depth);
 				}
 			}
 
-			this.writePropertyName(output, property.getKey(), format);
-			if (this.prettyPrint) {
+			writePropertyName(output, property.getKey(), format);
+			if (prettyPrint) {
 				output.append(" : ");
 			} else {
 				output.append(':');
 			}
-			this.write(output, value, format, depth);
+			write(output, value, format, depth);
 		}
 
 		depth--;
-		if (this.prettyPrint) {
+		if (prettyPrint) {
 			if (singleAttr) {
 				output.append(' ');
 			} else if (hasChildren) {
-				this.writeln(output, depth);
+				writeln(output, depth);
 			}
 		}
 		output.append('}');
@@ -364,7 +364,7 @@ public class DataEncoder {
 			output.append(name);
 
 		} else {
-			this.writeString(output, name, format);
+			writeString(output, name, format);
 		}
 	}
 
@@ -487,26 +487,26 @@ public class DataEncoder {
 			}
 
 			output.append(ns);
-			if (this.prettyPrint) {
+			if (prettyPrint) {
 				output.append(' ');
 			}
 			output.append('=');
-			if (this.prettyPrint) {
+			if (prettyPrint) {
 				output.append(' ');
 			}
 			output.append(ns);
-			if (this.prettyPrint) {
+			if (prettyPrint) {
 				output.append(' ');
 			}
 			output.append("||");
-			if (this.prettyPrint) {
+			if (prettyPrint) {
 				output.append(' ');
 			}
 			output.append("{};");
 
 			// next iteration
 			nextDot = ident.indexOf('.', nextDot+1);
-			this.writeln(output, 0);
+			writeln(output, 0);
 			wroteNS = true;
 		}
 
@@ -544,21 +544,21 @@ public class DataEncoder {
 			namespaces.add(ns);
 
 			if (isRoot) {
-				this.writeln(output, 0);
+				writeln(output, 0);
 				output.append("var ");
 				output.append(ns);
 				output.append(';');
 				isRoot = false;
 			}
 
-			this.writeln(output, 0);
+			writeln(output, 0);
 			output.append("if (typeof ");
 			output.append(ns);
 			output.append(" === 'undefined') {");
-			this.writeln(output, 1);
+			writeln(output, 1);
 			output.append(ns);
 			output.append(" = {};");
-			this.writeln(output, 0);
+			writeln(output, 0);
 			output.append('}');
 
 			// next iteration
@@ -567,7 +567,7 @@ public class DataEncoder {
 		}
 
 		if (needsNewline) {
-			this.writeln(output, 0);
+			writeln(output, 0);
 		}
 	}
 
@@ -575,17 +575,17 @@ public class DataEncoder {
 		throws IOException {
 
 		while (depth-- > 0) {
-			output.append(this.indent);
+			output.append(indent);
 		}
 	}
 
 	public void writeln(Appendable output, int depth)
 		throws IOException {
 
-		output.append(this.newline);
+		output.append(newline);
 
 		while (depth-- > 0) {
-			output.append(this.indent);
+			output.append(indent);
 		}
 	}
 
@@ -619,28 +619,28 @@ public class DataEncoder {
 
 		// begin by flattening the heirarchy whenever a SparseMap is encountered
 		Map<String, Object> vars = new LinkedHashMap<String, Object>();
-		this.accumulateVars(items, vars, new StringBuilder());
+		accumulateVars(items, vars, new StringBuilder());
 
 		// emit as a code block of var declarations
 		List<String> namespaces = new ArrayList<String>();
 		for (Map.Entry<String, Object> externalVar : vars.entrySet()) {
 			String key = externalVar.getKey();
-			this.writeNamespace(output, namespaces, key);
+			writeNamespace(output, namespaces, key);
 
 			if (key.indexOf('.') < 0) {
 				output.append("var ");
 			}
 			output.append(key);
-			if (this.prettyPrint) {
+			if (prettyPrint) {
 				output.append(' ');
 			}
 			output.append('=');
-			if (this.prettyPrint) {
+			if (prettyPrint) {
 				output.append(' ');
 			}
-			this.write(output, externalVar.getValue());
+			write(output, externalVar.getValue());
 			output.append(';');
-			this.writeln(output, 0);
+			writeln(output, 0);
 		}
 	}
 
@@ -670,14 +670,14 @@ public class DataEncoder {
 						buffer.append(ROOT);
 					}
 					buffer.append('[');
-					this.writeString(buffer, key, EncodingFormat.ECMASCRIPT);
+					writeString(buffer, key, EncodingFormat.ECMASCRIPT);
 					buffer.append(']');
 				}
 				Object value = child.getValue();
 				if (isSparseMap && !(value instanceof SparseMap)) {
 					vars.put(buffer.toString(), value);
 				}
-				this.accumulateVars(value, vars, buffer);
+				accumulateVars(value, vars, buffer);
 				buffer.setLength(length);
 			}
 
@@ -688,9 +688,9 @@ public class DataEncoder {
 					buffer.append(ROOT);
 				}
 				buffer.append('[');
-				this.writeNumber(buffer, i++, EncodingFormat.ECMASCRIPT);
+				writeNumber(buffer, i++, EncodingFormat.ECMASCRIPT);
 				buffer.append(']');
-				this.accumulateVars(child, vars, buffer);
+				accumulateVars(child, vars, buffer);
 				buffer.setLength(length);
 			}
 		}

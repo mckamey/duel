@@ -25,46 +25,46 @@ public class CodeIterationStatement extends CodeStatement {
 	}
 
 	public CodeStatement getInitStatement() {
-		return this.initStatement;
+		return initStatement;
 	}
 
 	public void setInitStatement(CodeStatement value) {
-		this.initStatement = value;
+		initStatement = value;
 	}
 
 	public CodeExpression getTestExpression() {
-		return this.testExpression;
+		return testExpression;
 	}
 
 	public void setTestExpression(CodeExpression value) {
-		this.testExpression = value;
+		testExpression = value;
 	}
 
 	public CodeStatement getIncrementStatement() {
-		return this.incrementStatement;
+		return incrementStatement;
 	}
 
 	public void setIncrementStatement(CodeStatement value) {
-		this.incrementStatement = value;
+		incrementStatement = value;
 	}
 
 	public CodeStatementCollection getStatements() {
-		return this.statements;
+		return statements;
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.initStatement != null) {
-				this.initStatement.visit(visitor);
+			if (initStatement != null) {
+				initStatement.visit(visitor);
 			}
-			if (this.testExpression != null) {
-				this.testExpression.visit(visitor);
+			if (testExpression != null) {
+				testExpression.visit(visitor);
 			}
-			if (this.incrementStatement != null) {
-				this.incrementStatement.visit(visitor);
+			if (incrementStatement != null) {
+				incrementStatement.visit(visitor);
 			}
-			for (CodeStatement statement : this.statements) {
+			for (CodeStatement statement : statements) {
 				if (statement != null) {
 					statement.visit(visitor);
 				}
@@ -99,15 +99,15 @@ public class CodeIterationStatement extends CodeStatement {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = this.statements.hashCode();
-		if (this.initStatement != null) {
-			hash = hash * HASH_PRIME + this.initStatement.hashCode();
+		int hash = statements.hashCode();
+		if (initStatement != null) {
+			hash = hash * HASH_PRIME + initStatement.hashCode();
 		}
-		if (this.testExpression != null) {
-			hash = hash * HASH_PRIME + this.testExpression.hashCode();
+		if (testExpression != null) {
+			hash = hash * HASH_PRIME + testExpression.hashCode();
 		}
-		if (this.incrementStatement != null) {
-			hash = hash * HASH_PRIME + this.incrementStatement.hashCode();
+		if (incrementStatement != null) {
+			hash = hash * HASH_PRIME + incrementStatement.hashCode();
 		}
 		return hash;
 	}

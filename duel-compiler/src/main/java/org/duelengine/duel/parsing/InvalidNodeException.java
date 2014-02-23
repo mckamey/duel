@@ -10,32 +10,32 @@ public class InvalidNodeException extends SyntaxException {
 
 	private final DuelNode node;
 
-	public InvalidNodeException(String message, DuelNode node) {
+	public InvalidNodeException(String message, DuelNode duelNode) {
 		super(message,
-			(node != null) ? node.getIndex() : -1,
-			(node != null) ? node.getLine() : -1,
-			(node != null) ? node.getColumn() : -1);
+			(duelNode != null) ? duelNode.getIndex() : -1,
+			(duelNode != null) ? duelNode.getLine() : -1,
+			(duelNode != null) ? duelNode.getColumn() : -1);
 
-		this.node = node;
+		node = duelNode;
 	}
 
-	public InvalidNodeException(String message, DuelNode node, Throwable cause) {
+	public InvalidNodeException(String message, DuelNode duelNode, Throwable cause) {
 		super(message,
-			(node != null) ? node.getIndex() : -1,
-			(node != null) ? node.getLine() : -1,
-			(node != null) ? node.getColumn() : -1,
+			(duelNode != null) ? duelNode.getIndex() : -1,
+			(duelNode != null) ? duelNode.getLine() : -1,
+			(duelNode != null) ? duelNode.getColumn() : -1,
 			cause);
 
-		this.node = node;
+		node = duelNode;
 	}
 
-	public InvalidNodeException(String message, int index, int line, int column, DuelNode node, Throwable cause) {
+	public InvalidNodeException(String message, int index, int line, int column, DuelNode duelNode, Throwable cause) {
 		super(message, index, line, column, cause);
 
-		this.node = node;
+		node = duelNode;
 	}
 
 	public DuelNode getNode() {
-		return this.node;
+		return node;
 	}
 }

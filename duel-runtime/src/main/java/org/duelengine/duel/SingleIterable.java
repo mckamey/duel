@@ -1,6 +1,7 @@
 package org.duelengine.duel;
 
-import java.util.*;
+import java.util.AbstractList;
+import java.util.Iterator;
 
 /**
  * Adapts a single Object partially implemented List without allocating a List.
@@ -14,24 +15,24 @@ class SingleIterable extends AbstractList<Object> {
 		private final Object value;
 		private boolean consumed;
 
-		public SingleIterator(Object value) {
-			this.value = value;
+		public SingleIterator(Object proxyValue) {
+			value = proxyValue;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return !this.consumed;
+			return !consumed;
 		}
 
 		@Override
 		public Object next() {
-			if (this.consumed) {
+			if (consumed) {
 				// JavaScript style out of bounds
 				return null;
 			}
 
-			this.consumed = true;
-			return this.value;
+			consumed = true;
+			return value;
 		}
 
 		@Override
@@ -42,13 +43,13 @@ class SingleIterable extends AbstractList<Object> {
 	
 	private final Object value;
 
-	public SingleIterable(Object value) {
-		this.value = value;
+	public SingleIterable(Object proxyValue) {
+		value = proxyValue;
 	}
 
 	@Override
 	public Iterator<Object> iterator() {
-		return new SingleIterator(this.value);
+		return new SingleIterator(value);
 	}
 
 	@Override
@@ -63,7 +64,7 @@ class SingleIterable extends AbstractList<Object> {
 
 	@Override
 	public Object[] toArray() {
-		return new Object[] { this.value };
+		return new Object[] { value };
 	}
 
 	@Override
@@ -73,16 +74,16 @@ class SingleIterable extends AbstractList<Object> {
 			return null;
 		}
 
-		return this.value;
+		return value;
 	}
 
 	@Override
 	public int indexOf(Object val) {
-		return (this.value == val) ? 0 : -1;
+		return (value == val) ? 0 : -1;
 	}
 
 	@Override
 	public int lastIndexOf(Object val) {
-		return this.indexOf(val);
+		return indexOf(val);
 	}
 }

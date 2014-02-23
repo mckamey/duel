@@ -37,7 +37,7 @@ public class FORCommandNode extends CommandNode {
 			throw new NullPointerException("attr");
 		}
 
-		this.setAttribute(attr.getName(), attr.getValue());
+		setAttribute(attr.getName(), attr.getValue());
 	}
 
 	@Override

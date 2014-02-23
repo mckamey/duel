@@ -2,7 +2,7 @@ package org.duelengine.duel.codegen;
 
 import java.io.IOException;
 
-import org.duelengine.duel.ast.*;
+import org.duelengine.duel.ast.VIEWCommandNode;
 
 public interface CodeGenerator {
 

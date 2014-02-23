@@ -1,6 +1,7 @@
 package org.duelengine.duel.ast;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ContainerNode extends DuelNode {
 	private final List<DuelNode> children = new ArrayList<DuelNode>();
@@ -12,33 +13,33 @@ public class ContainerNode extends DuelNode {
 	protected ContainerNode(DuelNode... children) {
 		if (children != null) {
 			for (DuelNode child : children) {
-				this.appendChild(child);
+				appendChild(child);
 			}
 		}
 	}
 
 	public boolean hasChildren() {
-		return !this.children.isEmpty();
+		return !children.isEmpty();
 	}
 
 	public int childCount() {
-		return this.children.size();
+		return children.size();
 	}
 
 	public List<DuelNode> getChildren() {
-		return this.children;
+		return children;
 	}
 
 	public DuelNode getFirstChild() {
-		return this.children.isEmpty() ? null : this.children.get(0);
+		return children.isEmpty() ? null : children.get(0);
 	}
 
 	public DuelNode getLastChild() {
-		return this.children.isEmpty() ? null : this.children.get(this.children.size()-1);
+		return children.isEmpty() ? null : children.get(children.size()-1);
 	}
 
 	public void appendChild(DuelNode child) {
-		this.children.add(child);
+		children.add(child);
 		child.setParent(this);
 	}
 
@@ -47,10 +48,10 @@ public class ContainerNode extends DuelNode {
 			return false;
 		}
 
-		for (int i=0, length=this.children.size(); i<length; i++) {
-			DuelNode child = this.children.get(i);
+		for (int i=0, length=children.size(); i<length; i++) {
+			DuelNode child = children.get(i);
 			if (child == oldChild) {
-				this.children.remove(i);
+				children.remove(i);
 				child.setParent(null);
 				return true;
 			}
@@ -61,14 +62,14 @@ public class ContainerNode extends DuelNode {
 
 	public boolean replaceChild(DuelNode newChild, DuelNode oldChild) {
 		if (oldChild == null) {
-			this.appendChild(newChild);
+			appendChild(newChild);
 			return true;
 		}
 
-		for (int i=0, length=this.children.size(); i<length; i++) {
-			DuelNode child = this.children.get(i);
+		for (int i=0, length=children.size(); i<length; i++) {
+			DuelNode child = children.get(i);
 			if (child == oldChild) {
-				this.children.set(i, newChild);
+				children.set(i, newChild);
 				newChild.setParent(this);
 				child.setParent(null);
 				return true;
@@ -79,8 +80,8 @@ public class ContainerNode extends DuelNode {
 	}
 
 	StringBuilder toString(StringBuilder buffer) {
-		if (!this.children.isEmpty()) {
-			for (DuelNode child : this.children) {
+		if (!children.isEmpty()) {
+			for (DuelNode child : children) {
 				buffer.append(child);
 			}
 		}
@@ -90,7 +91,7 @@ public class ContainerNode extends DuelNode {
 
 	@Override
 	public String toString() {
-		return this.toString(new StringBuilder()).toString();
+		return toString(new StringBuilder()).toString();
 	}
 
 	@Override
@@ -101,12 +102,12 @@ public class ContainerNode extends DuelNode {
 		}
 
 		ContainerNode that = (ContainerNode)arg;
-		if (this.children.size() != that.children.size()) {
+		if (children.size() != that.children.size()) {
 			return false;
 		}
 
-		for (int i=0, length=this.children.size(); i<length; i++) {
-			DuelNode a = this.children.get(i);
+		for (int i=0, length=children.size(); i<length; i++) {
+			DuelNode a = children.get(i);
 			DuelNode b = that.children.get(i);
 			if (a == null ? b != null : !a.equals(b)) {
 				return false;
@@ -121,7 +122,7 @@ public class ContainerNode extends DuelNode {
 		final int HASH_PRIME = 1000003;
 
 		int hash = 0;
-		for (DuelNode child : this.children) {
+		for (DuelNode child : children) {
 			if (child == null) {
 				continue;
 			}

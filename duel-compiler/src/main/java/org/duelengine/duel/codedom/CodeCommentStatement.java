@@ -12,7 +12,7 @@ public class CodeCommentStatement extends CodeStatement {
 	}
 
 	public String getValue() {
-		return this.value;
+		return value;
 	}
 
 	public void setValue(String value) {
@@ -32,6 +32,6 @@ public class CodeCommentStatement extends CodeStatement {
 
 	@Override
 	public int hashCode() {
-		return (this.value == null) ? 0 : this.value.hashCode();
+		return (value == null) ? 0 : value.hashCode();
 	}
 }

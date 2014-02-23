@@ -1,6 +1,8 @@
 package org.duelengine.duel.codedom;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class CodeArrayCreateExpression extends CodeExpression {
 
@@ -9,39 +11,39 @@ public class CodeArrayCreateExpression extends CodeExpression {
 	private final List<CodeExpression> initializers = new ArrayList<CodeExpression>();
 
 	public CodeArrayCreateExpression() {
-		this.setType(null);
+		setType(null);
 	}
 
 	public CodeArrayCreateExpression(Class<?> type, int size) {
-		this.setType(type);
+		setType(type);
 		this.size = size;
 	}
 
-	public CodeArrayCreateExpression(Class<?> type, CodeExpression... initializers) {
-		this.setType(type);
-		if (initializers != null) {
-			this.initializers.addAll(Arrays.asList(initializers));
+	public CodeArrayCreateExpression(Class<?> type, CodeExpression... initializerExpressions) {
+		setType(type);
+		if (initializerExpressions != null) {
+			initializers.addAll(Arrays.asList(initializerExpressions));
 		}
 	}
 
 	public Class<?> getType() {
-		return this.type;
+		return type;
 	}
 
 	public void setType(Class<?> value) {
-		this.type = (value != null) ? value : Object.class;
+		type = (value != null) ? value : Object.class;
 	}
 
 	public int getSize() {
-		return this.size;
+		return size;
 	}
 
 	public void setSize(int value) {
-		this.size = value;
+		size = value;
 	}
 
 	public List<CodeExpression> getInitializers() {
-		return this.initializers;
+		return initializers;
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class CodeArrayCreateExpression extends CodeExpression {
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			for (CodeExpression expression : this.initializers) {
+			for (CodeExpression expression : initializers) {
 				if (expression != null) {
 					expression.visit(visitor);
 				}
@@ -69,21 +71,21 @@ public class CodeArrayCreateExpression extends CodeExpression {
 
 		CodeArrayCreateExpression that = (CodeArrayCreateExpression)arg;
 
-		if (this.size != that.size) {
+		if (size != that.size) {
 			return false;
 		}
 		
-		if (this.type == null ? that.type != null : !this.type.equals(that.type)) {
+		if (type == null ? that.type != null : !type.equals(that.type)) {
 			return false;
 		}
 
-		int length = this.initializers.size();
+		int length = initializers.size();
 		if (length != that.initializers.size()) {
 			return false;
 		}
 
 		for (int i=0; i<length; i++) {
-			CodeExpression thisArg = this.initializers.get(i);
+			CodeExpression thisArg = initializers.get(i);
 			CodeExpression thatArg = that.initializers.get(i);
 			if (thisArg == null ? thatArg != null : !thisArg.equals(thatArg)) {
 				return false;
@@ -97,10 +99,10 @@ public class CodeArrayCreateExpression extends CodeExpression {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = super.hashCode() * HASH_PRIME + this.initializers.hashCode();
-		hash = hash * HASH_PRIME + this.size;
-		if (this.type != null) {
-			hash = hash * HASH_PRIME + this.type.hashCode();
+		int hash = super.hashCode() * HASH_PRIME + initializers.hashCode();
+		hash = hash * HASH_PRIME + size;
+		if (type != null) {
+			hash = hash * HASH_PRIME + type.hashCode();
 		}
 		return hash;
 	}

@@ -26,11 +26,11 @@ public class CALLCommandNode extends CommandNode {
 	}
 	
 	public void setDefer(boolean value) {
-		this.defer = value;
+		defer = value;
 	}
 
 	public boolean isDefer() {
-		return this.defer;
+		return defer;
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class CALLCommandNode extends CommandNode {
 			throw new NullPointerException("attr");
 		}
 
-		this.setAttribute(attr.getName(), attr.getValue());
+		setAttribute(attr.getName(), attr.getValue());
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class CALLCommandNode extends CommandNode {
 		}
 		
 		if (name.equalsIgnoreCase(DEFER)) {
-			this.setDefer(true);
+			setDefer(true);
 			return;
 		}
 
@@ -81,7 +81,7 @@ public class CALLCommandNode extends CommandNode {
 		}
 
 		// add a default part which contains anything else
-		if (this.defaultPart == null) {
+		if (defaultPart == null) {
 			// ignore inter-element whitespace nodes if
 			// no other inter-element content has been added
 			if (child instanceof LiteralNode &&
@@ -90,11 +90,11 @@ public class CALLCommandNode extends CommandNode {
 			}
 
 			// unnamed part contains the extra nodes
-			this.defaultPart = new PARTCommandNode(this.getIndex(), this.getLine(), this.getColumn());
-			super.appendChild(this.defaultPart);
+			defaultPart = new PARTCommandNode(getIndex(), getLine(), getColumn());
+			super.appendChild(defaultPart);
 		}
 
-		this.defaultPart.appendChild(child);
+		defaultPart.appendChild(child);
 	}
 
 	@Override
@@ -104,12 +104,12 @@ public class CALLCommandNode extends CommandNode {
 			return super.replaceChild(newChild, oldChild);
 		}
 
-		if (this.defaultPart == null) {
+		if (defaultPart == null) {
 			// fail
 			return false;
 		}
 
-		return this.defaultPart.replaceChild(newChild, oldChild);
+		return defaultPart.replaceChild(newChild, oldChild);
 	}
 	
 	private static boolean isNullOrWhiteSpace(String value) {

@@ -23,32 +23,32 @@ public class CodeParameterDeclarationExpression extends CodeExpression {
 	}
 
 	public Class<?> getType() {
-		return this.type;
+		return type;
 	}
 
 	public void setType(Class<?> value) {
-		this.type = (value == null) ? Object.class : value;
+		type = (value == null) ? Object.class : value;
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	public void setName(String value) {
-		this.name = value;
+		name = value;
 	}
 
 	public boolean isVarArgs() {
-		return this.varArgs;
+		return varArgs;
 	}
 
 	public void setVarArgs(boolean value) {
-		this.varArgs = value;
+		varArgs = value;
 	}
 
 	@Override
 	public Class<?> getResultType() {
-		return this.type;
+		return type;
 	}
 
 	@Override
@@ -60,20 +60,20 @@ public class CodeParameterDeclarationExpression extends CodeExpression {
 
 		CodeParameterDeclarationExpression that = (CodeParameterDeclarationExpression)arg;
 
-		if (this.name == null ? that.name != null : !this.name.equals(that.name)) {
+		if (name == null ? that.name != null : !name.equals(that.name)) {
 			return false;
 		}
 
-		return this.type.equals(that.type) && super.equals(arg);
+		return type.equals(that.type) && super.equals(arg);
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = super.hashCode() * HASH_PRIME + this.type.hashCode();
-		if (this.name != null) {
-			hash = hash * HASH_PRIME + this.name.hashCode();
+		int hash = super.hashCode() * HASH_PRIME + type.hashCode();
+		if (name != null) {
+			hash = hash * HASH_PRIME + name.hashCode();
 		}
 		return hash;
 	}

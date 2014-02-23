@@ -40,15 +40,15 @@ public class DuelToken {
 	}
 
 	public DuelTokenType getToken() {
-		return this.type;
+		return type;
 	}
 
 	public String getValue() {
-		return this.value;
+		return value;
 	}
 
 	public BlockValue getBlock() {
-		return this.block;
+		return block;
 	}
 
 	public int getIndex() {
@@ -65,12 +65,12 @@ public class DuelToken {
 
 	@Override
 	public String toString() {
-		StringBuilder buffer = new StringBuilder(this.type.toString());
-		if (this.value != null) {
-			buffer.append(": ").append(this.value);
+		StringBuilder buffer = new StringBuilder(type.toString());
+		if (value != null) {
+			buffer.append(": ").append(value);
 		}
-		else if (this.block != null) {
-			buffer.append(": ").append(this.block);
+		else if (block != null) {
+			buffer.append(": ").append(block);
 		}
 		return buffer.toString();
 	}
@@ -84,21 +84,21 @@ public class DuelToken {
 
 		DuelToken that = (DuelToken)arg;
 		return
-			(this.type.equals(that.type)) &&
-			(this.value == null ? that.value == null : this.value.equals(that.value)) &&
-			(this.block == null ? that.block == null : this.block.equals(that.block));
+			(type.equals(that.type)) &&
+			(value == null ? that.value == null : value.equals(that.value)) &&
+			(block == null ? that.block == null : block.equals(that.block));
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = this.type.hashCode();
-		if (this.value != null) {
-			hash = hash * HASH_PRIME + this.value.hashCode();
+		int hash = type.hashCode();
+		if (value != null) {
+			hash = hash * HASH_PRIME + value.hashCode();
 		}
-		if (this.block != null) {
-			hash = hash * HASH_PRIME + this.block.hashCode();
+		if (block != null) {
+			hash = hash * HASH_PRIME + block.hashCode();
 		}
 		return hash;
 	}

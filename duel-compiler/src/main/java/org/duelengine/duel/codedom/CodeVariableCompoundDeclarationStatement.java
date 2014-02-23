@@ -1,6 +1,7 @@
 package org.duelengine.duel.codedom;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a compound variable declaration statement
@@ -16,7 +17,7 @@ public class CodeVariableCompoundDeclarationStatement extends CodeStatement {
 	public CodeVariableCompoundDeclarationStatement(CodeVariableDeclarationStatement... vars) {
 		if (vars != null) {
 			for (CodeVariableDeclarationStatement var : vars) {
-				this.addVar(var);
+				addVar(var);
 			}
 		}
 	}
@@ -26,21 +27,21 @@ public class CodeVariableCompoundDeclarationStatement extends CodeStatement {
 			return;
 		}
 
-		this.vars.add(value);
+		vars.add(value);
 	}
 
 	public List<CodeVariableDeclarationStatement> getVars() {
-		return this.vars;
+		return vars;
 	}
 
 	public CodeVariableDeclarationStatement getVar(int index) {
-		return this.vars.get(index);
+		return vars.get(index);
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			for (CodeVariableDeclarationStatement statement : this.vars) {
+			for (CodeVariableDeclarationStatement statement : vars) {
 				if (statement != null) {
 					statement.visit(visitor);
 				}
@@ -76,6 +77,6 @@ public class CodeVariableCompoundDeclarationStatement extends CodeStatement {
 
 	@Override
 	public int hashCode() {
-		return this.vars.hashCode();
+		return vars.hashCode();
 	}
 }

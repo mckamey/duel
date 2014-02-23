@@ -1,8 +1,29 @@
 package org.duelengine.duel.parsing;
 
-import java.util.*;
 import java.io.IOException;
-import org.duelengine.duel.ast.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import org.duelengine.duel.ast.CALLCommandNode;
+import org.duelengine.duel.ast.CodeCommentNode;
+import org.duelengine.duel.ast.CommandNode;
+import org.duelengine.duel.ast.CommentNode;
+import org.duelengine.duel.ast.ContainerNode;
+import org.duelengine.duel.ast.DocTypeNode;
+import org.duelengine.duel.ast.DuelNode;
+import org.duelengine.duel.ast.ElementNode;
+import org.duelengine.duel.ast.ExpressionNode;
+import org.duelengine.duel.ast.FORCommandNode;
+import org.duelengine.duel.ast.IFCommandNode;
+import org.duelengine.duel.ast.LiteralNode;
+import org.duelengine.duel.ast.MarkupExpressionNode;
+import org.duelengine.duel.ast.PARTCommandNode;
+import org.duelengine.duel.ast.StatementNode;
+import org.duelengine.duel.ast.UnknownNode;
+import org.duelengine.duel.ast.VIEWCommandNode;
+import org.duelengine.duel.ast.XORCommandNode;
 
 /**
  * Processes a token sequence into AST
@@ -14,44 +35,44 @@ public class DuelParser {
 
 	/**
 	 * Parses token sequence into AST
-	 * @param tokens
+	 * @param tokenSequence
 	 * @return
 	 */
-	public List<VIEWCommandNode> parse(DuelToken... tokens)
+	public List<VIEWCommandNode> parse(DuelToken... tokenSequence)
 		throws Exception {
 
-		return this.parse(tokens != null ? Arrays.asList(tokens).iterator() : null);
+		return parse(tokenSequence != null ? Arrays.asList(tokenSequence).iterator() : null);
 	}
 
 	/**
 	 * Parses token sequence into AST
-	 * @param tokens
+	 * @param tokenSequence
 	 * @return
 	 */
-	public List<VIEWCommandNode> parse(Iterable<DuelToken> tokens)
+	public List<VIEWCommandNode> parse(Iterable<DuelToken> tokenSequence)
 		throws Exception {
 
-		return this.parse(tokens != null ? tokens.iterator() : null);
+		return parse(tokenSequence != null ? tokenSequence.iterator() : null);
 	}
 
 	/**
 	 * Parses token sequence into AST
-	 * @param tokens
+	 * @param tokenSequence
 	 * @return
 	 */
-	public List<VIEWCommandNode> parse(Iterator<DuelToken> tokens)
+	public List<VIEWCommandNode> parse(Iterator<DuelToken> tokenSequence)
 		throws IOException {
 
-		if (tokens == null) {
-			throw new NullPointerException("tokens");
+		if (tokenSequence == null) {
+			throw new NullPointerException("tokenSequence");
 		}
 
-		this.tokens = tokens;
+		tokens = tokenSequence;
 		try {
 
 			ContainerNode document = new ContainerNode(0, 0, 0);
-			while (this.hasNext()) {
-				this.parseNext(document);
+			while (hasNext()) {
+				parseNext(document);
 			}
 
 			List<VIEWCommandNode> views = new ArrayList<VIEWCommandNode>(1);
@@ -75,8 +96,8 @@ public class DuelParser {
 			return views;
 			
 		} finally {
-			this.tokens = null;
-			this.next = null;
+			tokens = null;
+			next = null;
 		}
 	}
 
@@ -87,19 +108,19 @@ public class DuelParser {
 	 */
 	private void parseNext(ContainerNode parent)
 		throws IOException {
-		switch (this.next.getToken()) {
+		switch (next.getToken()) {
 			case LITERAL:
-				this.parseLiteral(parent);
+				parseLiteral(parent);
 				break;
 
 			case ELEM_BEGIN:
-				this.parseElem(parent);
+				parseElem(parent);
 				break;
 
 			case ELEM_END:
 				if (parent instanceof ElementNode) {
 					ElementNode parentElem = (ElementNode)parent;
-					if (parentElem.isAncestorOrSelf(this.next.getValue())) {
+					if (parentElem.isAncestorOrSelf(next.getValue())) {
 						// pass on up
 						return;
 					}
@@ -107,23 +128,23 @@ public class DuelParser {
 
 				// ignore extraneous close tags
 				// consume token
-				this.next = null;
+				next = null;
 				break;
 
 			case BLOCK:
-				this.parseBlock(parent);
+				parseBlock(parent);
 				break;
 
 			case ERROR:
 				// TODO: back with interface?
-				if (this.tokens instanceof DuelLexer) {
-					throw new InvalidTokenException("Syntax error: "+this.next.getValue(), this.next, ((DuelLexer)this.tokens).getLastError());
+				if (tokens instanceof DuelLexer) {
+					throw new InvalidTokenException("Syntax error: "+next.getValue(), next, ((DuelLexer)tokens).getLastError());
 				}
 
-				throw new InvalidTokenException("Syntax error: "+this.next.getValue(), this.next);
+				throw new InvalidTokenException("Syntax error: "+next.getValue(), next);
 
 			default:
-				throw new InvalidTokenException("Invalid token: "+this.next, this.next);
+				throw new InvalidTokenException("Invalid token: "+next, next);
 		}
 	}
 
@@ -138,14 +159,14 @@ public class DuelParser {
 			LiteralNode lastLit = ((LiteralNode)last);
 
 			// perform constant folding of literal strings
-			lastLit.setValue(lastLit.getValue() + this.next.getValue());
+			lastLit.setValue(lastLit.getValue() + next.getValue());
 		} else {
 			// add directly to output
-			parent.appendChild(new LiteralNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+			parent.appendChild(new LiteralNode(next.getValue(), next.getIndex(), next.getLine(), next.getColumn()));
 		}
 
 		// consume token
-		this.next = null;
+		next = null;
 	}
 
 	/**
@@ -155,57 +176,57 @@ public class DuelParser {
 	private void parseElem(ContainerNode parent)
 		throws IOException {
 
-		String tagName = this.next.getValue();
-		ElementNode elem = createElement(tagName, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+		String tagName = next.getValue();
+		ElementNode elem = createElement(tagName, next.getIndex(), next.getLine(), next.getColumn());
 		parent.appendChild(elem);
 
 		// consume token
-		this.next = null;
+		next = null;
 		String attrName = null;
 
-		while (this.hasNext()) {
-			switch (this.next.getToken()) {
+		while (hasNext()) {
+			switch (next.getToken()) {
 				case ATTR_NAME:
-					attrName = this.next.getValue();
+					attrName = next.getValue();
 					// set just in case no value
 					elem.setAttribute(attrName, null);
 
 					// consume token
-					this.next = null;
+					next = null;
 					break;
 
 				case ATTR_VALUE:
 					if (attrName == null) {
-						throw new InvalidTokenException("Attribute name was missing", this.next);
+						throw new InvalidTokenException("Attribute name was missing", next);
 					}
 
-					BlockValue block = this.next.getBlock();
+					BlockValue block = next.getBlock();
 					DuelNode attrVal;
 					if (block != null) {
-						attrVal = this.createBlock(block, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+						attrVal = createBlock(block, next.getIndex(), next.getLine(), next.getColumn());
 					} else {
-						attrVal = new LiteralNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+						attrVal = new LiteralNode(next.getValue(), next.getIndex(), next.getLine(), next.getColumn());
 					}
 					elem.setAttribute(attrName, attrVal);
 					attrName = null;
 
 					// consume token
-					this.next = null;
+					next = null;
 					break;
 
 				case ELEM_END:
-					String tag = this.next.getValue();
+					String tag = next.getValue();
 					if (tag != null) {
 						tag = tag.toLowerCase();
 						if (elem.isSelf(tag)) {
 							// consume token
-							this.next = null;
+							next = null;
 
-							this.rewriteConditionalAttr(elem);
+							rewriteConditionalAttr(elem);
 							return;
 						}
 						if (elem.isAncestor(tag)) {
-							this.rewriteConditionalAttr(elem);
+							rewriteConditionalAttr(elem);
 
 							// pass next on up
 							return;
@@ -214,17 +235,17 @@ public class DuelParser {
 
 					// ignore extraneous close tags
 					// consume token
-					this.next = null;
+					next = null;
 					break;
 
 				default:
 					if (!elem.canHaveChildren()) {
-						this.rewriteConditionalAttr(elem);
+						rewriteConditionalAttr(elem);
 
 						// pass next on up
 						return;
 					}
-					this.parseNext(elem);
+					parseNext(elem);
 					break;
 			}
 		}
@@ -235,17 +256,17 @@ public class DuelParser {
 	 * @param parent
 	 */
 	private void parseBlock(ContainerNode parent) {
-		BlockValue block = this.next.getBlock();
+		BlockValue block = next.getBlock();
 
 		if (block != null) {
-			DuelNode node = this.createBlock(block, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+			DuelNode node = createBlock(block, next.getIndex(), next.getLine(), next.getColumn());
 			if (node != null) {
 				parent.appendChild(node);
 			}
 		}
 
 		// consume token
-		this.next = null;
+		next = null;
 	}
 
 	private void rewriteConditionalAttr(ElementNode elem) {
@@ -308,11 +329,11 @@ public class DuelParser {
 	 */
 	private boolean hasNext() {
 		// ensure non-null value
-		while (this.next == null && this.tokens.hasNext()) {
-			this.next = this.tokens.next();
+		while (next == null && tokens.hasNext()) {
+			next = tokens.next();
 		}
 
-		return (this.next != null);
+		return (next != null);
 	}
 
 	/**

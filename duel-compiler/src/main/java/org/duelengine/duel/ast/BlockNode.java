@@ -21,15 +21,15 @@ public abstract class BlockNode extends DuelNode {
 	}
 
 	public String getBegin() {
-		return this.begin;
+		return begin;
 	}
 
 	public String getEnd() {
-		return this.end;
+		return end;
 	}
 
 	public String getValue() {
-		return this.value;
+		return value;
 	}
 
 	public void setValue(String value) {
@@ -37,14 +37,14 @@ public abstract class BlockNode extends DuelNode {
 	}
 
 	StringBuilder toString(StringBuilder buffer) {
-		if (this.begin != null) {
-			buffer.append(this.begin);
+		if (begin != null) {
+			buffer.append(begin);
 		}
-		if (this.value != null) {
-			buffer.append(this.value);
+		if (value != null) {
+			buffer.append(value);
 		}
-		if (this.end != null) {
-			buffer.append(this.end);
+		if (end != null) {
+			buffer.append(end);
 		}
 
 		return buffer;
@@ -52,7 +52,7 @@ public abstract class BlockNode extends DuelNode {
 
 	@Override
 	public String toString() {
-		return this.toString(new StringBuilder()).toString();
+		return toString(new StringBuilder()).toString();
 	}
 
 	@Override
@@ -74,14 +74,14 @@ public abstract class BlockNode extends DuelNode {
 		final int HASH_PRIME = 1000003;
 
 		int hash = 0;
-		if (this.begin != null) {
-			hash = hash * HASH_PRIME + this.begin.hashCode();
+		if (begin != null) {
+			hash = hash * HASH_PRIME + begin.hashCode();
 		}
-		if (this.end != null) {
-			hash = hash * HASH_PRIME + this.end.hashCode();
+		if (end != null) {
+			hash = hash * HASH_PRIME + end.hashCode();
 		}
-		if (this.value != null) {
-			hash = hash * HASH_PRIME + this.value.hashCode();
+		if (value != null) {
+			hash = hash * HASH_PRIME + value.hashCode();
 		}
 		return hash;
 	}

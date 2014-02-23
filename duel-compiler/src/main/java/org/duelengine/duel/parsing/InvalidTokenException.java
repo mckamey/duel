@@ -8,26 +8,26 @@ public class InvalidTokenException extends SyntaxException {
 
 	private final DuelToken token;
 
-	public InvalidTokenException(String message, DuelToken token) {
+	public InvalidTokenException(String message, DuelToken duelToken) {
 		super(message,
-			(token != null) ? token.getIndex() : -1,
-			(token != null) ? token.getLine() : -1,
-			(token != null) ? token.getColumn() : -1);
+			(duelToken != null) ? duelToken.getIndex() : -1,
+			(duelToken != null) ? duelToken.getLine() : -1,
+			(duelToken != null) ? duelToken.getColumn() : -1);
 
-		this.token = token;
+		token = duelToken;
 	}
 
-	public InvalidTokenException(String message, DuelToken token, Throwable cause) {
+	public InvalidTokenException(String message, DuelToken duelToken, Throwable cause) {
 		super(message,
-			(token != null) ? token.getIndex() : -1,
-			(token != null) ? token.getLine() : -1,
-			(token != null) ? token.getColumn() : -1,
+			(duelToken != null) ? duelToken.getIndex() : -1,
+			(duelToken != null) ? duelToken.getLine() : -1,
+			(duelToken != null) ? duelToken.getColumn() : -1,
 			cause);
 
-		this.token = token;
+		token = duelToken;
 	}
 
 	public DuelToken getToken() {
-		return this.token;
+		return token;
 	}
 }

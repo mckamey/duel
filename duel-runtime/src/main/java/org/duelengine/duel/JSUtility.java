@@ -1,6 +1,9 @@
 package org.duelengine.duel;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 public final class JSUtility {
 

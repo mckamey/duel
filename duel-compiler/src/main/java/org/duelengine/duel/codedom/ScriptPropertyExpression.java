@@ -11,15 +11,15 @@ public class ScriptPropertyExpression extends ScriptExpression {
 	}
 
 	public ScriptPropertyExpression(String value) {
-		this.propertyName = value;
+		propertyName = value;
 	}
 
 	public String getValue() {
-		return this.propertyName;
+		return propertyName;
 	}
 
 	public void setValue(String value) {
-		this.propertyName = value;
+		propertyName = value;
 	}
 
 	@Override
@@ -47,8 +47,8 @@ public class ScriptPropertyExpression extends ScriptExpression {
 		final int HASH_PRIME = 1000003;
 
 		int hash = super.hashCode();
-		if (this.propertyName != null) {
-			hash = hash * HASH_PRIME + this.propertyName.hashCode();
+		if (propertyName != null) {
+			hash = hash * HASH_PRIME + propertyName.hashCode();
 		}
 		return hash;
 	}

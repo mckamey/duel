@@ -1,6 +1,6 @@
 package org.duelengine.duel;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * A simple abstraction for writing HTML.
@@ -80,7 +80,7 @@ public class HTMLFormatter {
 		output.append(' ').append(name);
 		if (value != null) {
 			output.append("=\"");
-			this.writeLiteral(output, value, true, true);
+			writeLiteral(output, value, true, true);
 			output.append('"');
 		}
 
@@ -114,13 +114,13 @@ public class HTMLFormatter {
 	public HTMLFormatter writeLiteral(Appendable output, String value)
 		throws IOException {
 
-		return this.writeLiteral(output, value, false, false);
+		return writeLiteral(output, value, false, false);
 	}
 
 	public HTMLFormatter writeLiteral(Appendable output, String value, boolean encodeNonASCII)
 		throws IOException {
 
-		return this.writeLiteral(output, value, false, encodeNonASCII);
+		return writeLiteral(output, value, false, encodeNonASCII);
 	}
 
 	private HTMLFormatter writeLiteral(Appendable output, String value, boolean isAttribute, boolean encodeNonASCII)

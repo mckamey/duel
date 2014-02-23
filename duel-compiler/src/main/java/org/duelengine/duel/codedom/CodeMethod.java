@@ -1,6 +1,8 @@
 package org.duelengine.duel.codedom;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents an instance method
@@ -22,7 +24,7 @@ public class CodeMethod extends CodeMember {
 
 		super(access, methodName);
 
-		this.setReturnType(returnType);
+		setReturnType(returnType);
 
 		if (parameters != null) {
 			this.parameters.addAll(Arrays.asList(parameters));
@@ -35,67 +37,67 @@ public class CodeMethod extends CodeMember {
 	}
 
 	public Class<?> getReturnType() {
-		return this.returnType;
+		return returnType;
 	}
 
 	public void setReturnType(Class<?> value) {
-		this.returnType = (value != null) ? value : Void.class;
+		returnType = (value != null) ? value : Void.class;
 	}
 
 	public boolean isOverride() {
-		return this.override;
+		return override;
 	}
 
 	public void setOverride(boolean value) {
-		this.override = value;
+		override = value;
 	}
 
 	public CodeMethod withOverride() {
-		this.override = true;
+		override = true;
 		return this;
 	}
 
 	public List<CodeParameterDeclarationExpression> getParameters() {
-		return this.parameters;
+		return parameters;
 	}
 
 	public void addParameter(Class<?> type, String name) {
-		this.addParameter(new CodeParameterDeclarationExpression(type, name));
+		addParameter(new CodeParameterDeclarationExpression(type, name));
 	}
 
 	public void addParameter(CodeParameterDeclarationExpression parameter) {
-		this.parameters.add(parameter);
+		parameters.add(parameter);
 	}
 
 	public List<Class<?>> getThrows() {
-		return this.exceptions;
+		return exceptions;
 	}
 
 	public void addThrows(Class<?> type) {
-		this.exceptions.add(type);
+		exceptions.add(type);
 	}
 
-	public CodeMethod withThrows(Class<?>... exceptions) {
-		if (exceptions != null) {
-			this.exceptions.addAll(Arrays.asList(exceptions));
+	public CodeMethod withThrows(Class<?>... types) {
+		if (types != null) {
+			exceptions.addAll(Arrays.asList(types));
 		}
 		
 		return this;
 	}
 
 	public CodeStatementCollection getStatements() {
-		return this.statements;
+		return statements;
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			for (CodeParameterDeclarationExpression parameter : this.parameters) {
+			for (CodeParameterDeclarationExpression parameter : parameters) {
 				if (parameter != null) {
 					parameter.visit(visitor);
 				}
 			}
-			for (CodeStatement statement : this.statements) {
+			for (CodeStatement statement : statements) {
 				if (statement != null) {
 					statement.visit(visitor);
 				}
@@ -156,9 +158,9 @@ public class CodeMethod extends CodeMember {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = (((super.hashCode() * HASH_PRIME) + this.parameters.hashCode()) * HASH_PRIME + this.exceptions.hashCode()) * HASH_PRIME + this.statements.hashCode();
-		if (this.returnType != null) {
-			hash = hash * HASH_PRIME + this.returnType.hashCode();
+		int hash = (((super.hashCode() * HASH_PRIME) + parameters.hashCode()) * HASH_PRIME + exceptions.hashCode()) * HASH_PRIME + statements.hashCode();
+		if (returnType != null) {
+			hash = hash * HASH_PRIME + returnType.hashCode();
 		}
 
 		return hash;

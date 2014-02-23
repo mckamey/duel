@@ -13,42 +13,42 @@ public class CodeTernaryOperatorExpression extends CodeExpression {
 	}
 
 	public CodeTernaryOperatorExpression(CodeExpression testExpr, CodeExpression trueExpr, CodeExpression falseExpr) {
-		this.testExpression = testExpr;
-		this.trueExpression = trueExpr;
-		this.falseExpression = falseExpr;
+		testExpression = testExpr;
+		trueExpression = trueExpr;
+		falseExpression = falseExpr;
 	}
 
 	public CodeExpression getTestExpression() {
-		return this.testExpression;
+		return testExpression;
 	}
 
 	public void setTestExpression(CodeExpression value) {
-		this.testExpression = value;
+		testExpression = value;
 	}
 
 	public CodeExpression getTrueExpression() {
-		return this.trueExpression;
+		return trueExpression;
 	}
 	
 	public void setTrueExpression(CodeExpression value) {
-		this.trueExpression = value;
+		trueExpression = value;
 	}
 
 	public CodeExpression getFalseExpression() {
-		return this.falseExpression;
+		return falseExpression;
 	}
 
 	public void setFalseExpression(CodeExpression value) {
-		this.falseExpression = value;
+		falseExpression = value;
 	}
 
 	@Override
 	public Class<?> getResultType() {
-		if (this.trueExpression != null && !Object.class.equals(this.trueExpression.getResultType())) {
-			return this.trueExpression.getResultType();
+		if (trueExpression != null && !Object.class.equals(trueExpression.getResultType())) {
+			return trueExpression.getResultType();
 
-		} else if (this.falseExpression != null) {
-			return this.falseExpression.getResultType();
+		} else if (falseExpression != null) {
+			return falseExpression.getResultType();
 		} 
 
 		return Object.class;
@@ -57,14 +57,14 @@ public class CodeTernaryOperatorExpression extends CodeExpression {
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.testExpression != null) {
-				this.testExpression.visit(visitor);
+			if (testExpression != null) {
+				testExpression.visit(visitor);
 			}
-			if (this.trueExpression != null) {
-				this.trueExpression.visit(visitor);
+			if (trueExpression != null) {
+				trueExpression.visit(visitor);
 			}
-			if (this.falseExpression != null) {
-				this.falseExpression.visit(visitor);
+			if (falseExpression != null) {
+				falseExpression.visit(visitor);
 			}
 		}
 	}
@@ -98,14 +98,14 @@ public class CodeTernaryOperatorExpression extends CodeExpression {
 		final int HASH_PRIME = 1000003;
 
 		int hash = super.hashCode();
-		if (this.testExpression != null) {
-			hash = hash * HASH_PRIME + this.testExpression.hashCode();
+		if (testExpression != null) {
+			hash = hash * HASH_PRIME + testExpression.hashCode();
 		}
-		if (this.trueExpression != null) {
-			hash = hash * HASH_PRIME + this.trueExpression.hashCode();
+		if (trueExpression != null) {
+			hash = hash * HASH_PRIME + trueExpression.hashCode();
 		}
-		if (this.falseExpression != null) {
-			hash = hash * HASH_PRIME + this.falseExpression.hashCode();
+		if (falseExpression != null) {
+			hash = hash * HASH_PRIME + falseExpression.hashCode();
 		}
 		return hash;
 	}

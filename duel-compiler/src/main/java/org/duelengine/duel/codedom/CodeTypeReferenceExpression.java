@@ -5,20 +5,20 @@ public class CodeTypeReferenceExpression extends CodeExpression {
 	private Class<?> resultType;
 
 	public CodeTypeReferenceExpression() {
-		this.setResultType(null);
+		setResultType(null);
 	}
 
 	public CodeTypeReferenceExpression(Class<?> type) {
-		this.setResultType(type);
+		setResultType(type);
 	}
 
 	public void setResultType(Class<?> value) {
-		this.resultType = (value == null) ? Object.class : value;
+		resultType = (value == null) ? Object.class : value;
 	}
 	
 	@Override
 	public Class<?> getResultType() {
-		return this.resultType;
+		return resultType;
 	}
 
 	@Override
@@ -40,8 +40,8 @@ public class CodeTypeReferenceExpression extends CodeExpression {
 		final int HASH_PRIME = 1000003;
 
 		int hash = super.hashCode();
-		if (this.resultType != null) {
-			hash = hash * HASH_PRIME + this.resultType.hashCode();
+		if (resultType != null) {
+			hash = hash * HASH_PRIME + resultType.hashCode();
 		}
 		return hash;
 	}

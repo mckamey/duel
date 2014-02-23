@@ -1,6 +1,6 @@
 package org.duelengine.duel;
 
-import java.util.*;
+import java.util.UUID;
 
 public class UniqueClientIDStrategy implements ClientIDStrategy {
 
@@ -10,12 +10,12 @@ public class UniqueClientIDStrategy implements ClientIDStrategy {
 		this("_");
 	}
 
-	public UniqueClientIDStrategy(String prefix) {
-		this.prefix = prefix;
+	public UniqueClientIDStrategy(String value) {
+		prefix = value;
 	}
 
 	@Override
 	public String nextID() {
-		return this.prefix + UUID.randomUUID().toString();
+		return prefix + UUID.randomUUID().toString();
 	}
 }

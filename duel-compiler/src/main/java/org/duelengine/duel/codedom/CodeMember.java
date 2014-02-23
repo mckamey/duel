@@ -9,28 +9,28 @@ public abstract class CodeMember extends CodeObject {
 	private String name;
 
 	public CodeMember() {
-		this.access = AccessModifierType.DEFAULT;
+		access = AccessModifierType.DEFAULT;
 	}
 
 	public CodeMember(AccessModifierType access, String name) {
-		this.name = name;
 		this.access = (access != null) ? access : AccessModifierType.DEFAULT;
+		this.name = name;
 	}
 
 	public AccessModifierType getAccess() {
-		return this.access;
+		return access;
 	}
 
 	public void setAccess(AccessModifierType value) {
-		this.access = (value != null) ? value : AccessModifierType.DEFAULT;
+		access = (value != null) ? value : AccessModifierType.DEFAULT;
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	public void setName(String value) {
-		this.name = value;
+		name = value;
 	}
 
 	@Override
@@ -47,20 +47,20 @@ public abstract class CodeMember extends CodeObject {
 
 		CodeMember that = (CodeMember)arg;
 
-		if (this.name == null ? that.name != null : !this.name.equals(that.name)) {
+		if (name == null ? that.name != null : !name.equals(that.name)) {
 			return false;
 		}
 
-		return this.access == that.access;
+		return access == that.access;
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = (this.access == null) ? 0 :this.access.hashCode();
-		if (this.name != null) {
-			hash = hash * HASH_PRIME + this.name.hashCode();
+		int hash = (access == null) ? 0 :access.hashCode();
+		if (name != null) {
+			hash = hash * HASH_PRIME + name.hashCode();
 		}
 
 		return hash;

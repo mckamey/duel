@@ -8,9 +8,9 @@ public abstract class DuelNode {
 	private ContainerNode parent;
 
 	protected DuelNode() {
-		this.index = -1;
-		this.line = -1;
-		this.column = -1;
+		index = -1;
+		line = -1;
+		column = -1;
 	}
 
 	protected DuelNode(int index, int line, int column) {
@@ -32,10 +32,10 @@ public abstract class DuelNode {
 	}
 
 	public ContainerNode getParent() {
-		return this.parent;
+		return parent;
 	}
 
-	void setParent(ContainerNode parent) {
-		this.parent = parent;
+	void setParent(ContainerNode value) {
+		parent = value;
 	}
 }

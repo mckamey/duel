@@ -1,6 +1,7 @@
 package org.duelengine.duel;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Represents sparsely populated graph of data to be
@@ -23,7 +24,7 @@ public class SparseMap extends LinkedHashMap<String, Object> {
 			throw new NullPointerException("ident");
 		}
 		if (!JSUtility.isValidIdentifier(ident, true)) {
-			return this.put(ident, value);
+			return put(ident, value);
 		}
 
 		Map parent = this;

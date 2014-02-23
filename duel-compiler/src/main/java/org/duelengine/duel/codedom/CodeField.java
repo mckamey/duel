@@ -24,26 +24,26 @@ public class CodeField extends CodeMember {
 	}
 
 	public Class<?> getType() {
-		return this.type;
+		return type;
 	}
 
 	public void setType(Class<?> value) {
-		this.type = (value != null) ? value : Object.class;
+		type = (value != null) ? value : Object.class;
 	}
 
 	public CodeExpression getInitExpression() {
-		return this.initExpression;
+		return initExpression;
 	}
 
 	public void setInitExpression(CodeExpression value) {
-		this.initExpression = value;
+		initExpression = value;
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.initExpression != null) {
-				this.initExpression.visit(visitor);
+			if (initExpression != null) {
+				initExpression.visit(visitor);
 			}
 		}
 	}
@@ -71,11 +71,11 @@ public class CodeField extends CodeMember {
 		final int HASH_PRIME = 1000003;
 
 		int hash = super.hashCode();
-		if (this.type != null) {
-			hash = hash * HASH_PRIME + this.type.hashCode();
+		if (type != null) {
+			hash = hash * HASH_PRIME + type.hashCode();
 		}
-		if (this.initExpression != null) {
-			hash = hash * HASH_PRIME + this.initExpression.hashCode();
+		if (initExpression != null) {
+			hash = hash * HASH_PRIME + initExpression.hashCode();
 		}
 
 		return hash;

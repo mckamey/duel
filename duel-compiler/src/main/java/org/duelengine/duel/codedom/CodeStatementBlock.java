@@ -8,29 +8,29 @@ public class CodeStatementBlock extends CodeObject {
 	private final CodeStatementCollection statements;
 
 	public CodeStatementBlock() {
-		this.statements = new CodeStatementCollection(this);
+		statements = new CodeStatementCollection(this);
 	}
 
 	public CodeStatementCollection getStatements() {
-		return this.statements;
+		return statements;
 	}
 
 	public void addAll(CodeStatementBlock statements) {
-		this.statements.addAll(statements);
+		statements.addAll(statements);
 	}
 
 	public void add(CodeExpression expression) {
-		this.statements.add(expression);
+		statements.add(expression);
 	}
 
 	public void add(CodeStatement statement) {
-		this.statements.add(statement);
+		statements.add(statement);
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			for (CodeStatement statement : this.statements) {
+			for (CodeStatement statement : statements) {
 				if (statement != null) {
 					statement.visit(visitor);
 				}
@@ -56,6 +56,6 @@ public class CodeStatementBlock extends CodeObject {
 
 	@Override
 	public int hashCode() {
-		return this.statements.hashCode();
+		return statements.hashCode();
 	}
 }

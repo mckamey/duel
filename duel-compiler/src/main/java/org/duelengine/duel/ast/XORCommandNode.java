@@ -20,12 +20,12 @@ public class XORCommandNode extends CommandNode {
 	}
 
 	private IFCommandNode getLastCase() {
-		if (this.lastCase == null) {
-			this.lastCase = new IFCommandNode(this.getIndex(), this.getLine(), this.getColumn());
-			super.appendChild(this.lastCase);
+		if (lastCase == null) {
+			lastCase = new IFCommandNode(getIndex(), getLine(), getColumn());
+			super.appendChild(lastCase);
 		}
 
-		return this.lastCase;
+		return lastCase;
 	}
 
 	@Override
@@ -36,23 +36,23 @@ public class XORCommandNode extends CommandNode {
 	@Override
 	public void addAttribute(AttributePair attr) {
 		// attributes all reside on IF commands
-		this.getLastCase().addAttribute(attr);
+		getLastCase().addAttribute(attr);
 	}
 
 	@Override
 	public void setAttribute(String name, DuelNode value) {
 		// attributes all reside on IF commands
-		this.getLastCase().setAttribute(name, value);
+		getLastCase().setAttribute(name, value);
 	}
 
 	@Override
 	public void appendChild(DuelNode child) {
 		if (child instanceof IFCommandNode) {
-			this.lastCase = (IFCommandNode)child;
+			lastCase = (IFCommandNode)child;
 			super.appendChild(child);
 
 		} else {
-			this.getLastCase().appendChild(child);
+			getLastCase().appendChild(child);
 		}
 	}
 }

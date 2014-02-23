@@ -1,6 +1,10 @@
 package org.duelengine.duel.codedom;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a class definition
@@ -16,8 +20,8 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 	private final List<CodeMember> members = new ArrayList<CodeMember>();
 
 	public CodeTypeDeclaration() {
-		this.baseType = Object.class;
-		this.access = AccessModifierType.DEFAULT;
+		baseType = Object.class;
+		access = AccessModifierType.DEFAULT;
 	}
 
 	public CodeTypeDeclaration(AccessModifierType access, String typeNS, String typeName, Class<?> baseType, CodeMember... members) {
@@ -28,41 +32,41 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 
 		if (members != null) {
 			for (CodeMember member : members) {
-				this.add(member);
+				add(member);
 			}
 		}
 	}
 
 	public AccessModifierType getAccess() {
-		return this.access;
+		return access;
 	}
 
 	public void setAccess(AccessModifierType value) {
-		this.access = (value != null) ? value : AccessModifierType.DEFAULT;
+		access = (value != null) ? value : AccessModifierType.DEFAULT;
 	}
 
 	public Class<?> getBaseType() {
-		return this.baseType;
+		return baseType;
 	}
 
 	public void setBaseType(Class<?> value) {
-		this.baseType = (value != null) ? value : Object.class;
+		baseType = (value != null) ? value : Object.class;
 	}
 
 	public void setTypeName(String value) {
-		this.typeName = value;
+		typeName = value;
 	}
 
 	public String getTypeName() {
-		return this.typeName;
+		return typeName;
 	}
 
 	public void setNamespace(String value) {
-		this.typeNS = value;
+		typeNS = value;
 	}
 
 	public String getNamespace() {
-		return this.typeNS;
+		return typeNS;
 	}
 
 	/**
@@ -70,46 +74,46 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 	 * @return
 	 */
 	public List<CodeMember> getMembers() {
-		return this.members;
+		return members;
 	}
 
 	public void add(CodeMember member) {
-		this.members.add(member);
+		members.add(member);
 	}
 
-	public void addAll(Collection<? extends CodeMember> members) {
-		this.members.addAll(members);
+	public void addAll(Collection<? extends CodeMember> value) {
+		members.addAll(value);
 	}
 
 	@Override
 	public boolean isLocalIdent(String ident) {
-		return (this.identMap != null) && this.identMap.containsKey(ident);
+		return (identMap != null) && identMap.containsKey(ident);
 	}
 
 	@Override
 	public String uniqueIdent(String ident) {
-		if (this.identMap == null) {
-			this.identMap = new HashMap<String, String>();
+		if (identMap == null) {
+			identMap = new HashMap<String, String>();
 		}
-		else if (this.identMap.containsKey(ident)) {
-			return this.identMap.get(ident);
+		else if (identMap.containsKey(ident)) {
+			return identMap.get(ident);
 		}
 
-		String unique = this.nextIdent(ident);
-		this.identMap.put(ident, unique);
+		String unique = nextIdent(ident);
+		identMap.put(ident, unique);
 		return unique;
 	}
 
 	@Override
 	public String nextIdent(String prefix) {
 		// generate a unique var name
-		return prefix+(++this.nextID);
+		return prefix+(++nextID);
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			for (CodeMember member : this.members) {
+			for (CodeMember member : members) {
 				if (member != null) {
 					member.visit(visitor);
 				}
@@ -157,18 +161,18 @@ public class CodeTypeDeclaration extends CodeMember implements IdentifierScope {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = (this.access == null) ? 0 :this.access.hashCode();
-		if (this.baseType != null) {
-			hash = hash * HASH_PRIME + this.baseType.hashCode();
+		int hash = (access == null) ? 0 :access.hashCode();
+		if (baseType != null) {
+			hash = hash * HASH_PRIME + baseType.hashCode();
 		}
-		if (this.typeNS != null) {
-			hash = hash * HASH_PRIME + this.typeNS.hashCode();
+		if (typeNS != null) {
+			hash = hash * HASH_PRIME + typeNS.hashCode();
 		}
-		if (this.typeName != null) {
-			hash = hash * HASH_PRIME + this.typeName.hashCode();
+		if (typeName != null) {
+			hash = hash * HASH_PRIME + typeName.hashCode();
 		}
-		if (this.members != null) {
-			hash = hash * HASH_PRIME + this.members.hashCode();
+		if (members != null) {
+			hash = hash * HASH_PRIME + members.hashCode();
 		}
 		return hash;
 	}

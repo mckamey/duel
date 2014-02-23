@@ -1,11 +1,24 @@
 package org.duelengine.duel.compiler;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 import org.duelengine.duel.ast.VIEWCommandNode;
-import org.duelengine.duel.codegen.*;
-import org.duelengine.duel.parsing.*;
+import org.duelengine.duel.codegen.ClientCodeGen;
+import org.duelengine.duel.codegen.CodeGenSettings;
+import org.duelengine.duel.codegen.CodeGenerator;
+import org.duelengine.duel.codegen.JavaCodeGen;
+import org.duelengine.duel.parsing.DuelLexer;
+import org.duelengine.duel.parsing.DuelParser;
+import org.duelengine.duel.parsing.SyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,56 +33,56 @@ public class DuelCompiler {
 	private String serverPrefix;
 
 	public String getInputDir() {
-		return this.inputDir.getAbsolutePath();
+		return inputDir.getAbsolutePath();
 	}
 
 	public void setInputDir(String value) {
-		this.inputDir = (value != null) ? new File(value.replace('\\', '/')) : null;
+		inputDir = (value != null) ? new File(value.replace('\\', '/')) : null;
 	}
 
 	public String getOutputClientDir() {
-		return this.outputClientDir.getAbsolutePath();
+		return outputClientDir.getAbsolutePath();
 	}
 
 	public void setOutputClientDir(String value) {
-		this.outputClientDir = (value != null) ? new File(value.replace('\\', '/')) : null;
+		outputClientDir = (value != null) ? new File(value.replace('\\', '/')) : null;
 	}
 
 	public String getOutputServerDir() {
-		return this.outputServerDir.getAbsolutePath();
+		return outputServerDir.getAbsolutePath();
 	}
 
 	public void setOutputServerDir(String value) {
-		this.outputServerDir = (value != null) ? new File(value.replace('\\', '/')) : null;
+		outputServerDir = (value != null) ? new File(value.replace('\\', '/')) : null;
 	}
 
 	public String getClientPrefix() {
-		return this.clientPrefix;
+		return clientPrefix;
 	}
 
 	public void setClientPrefix(String value) {
-		this.clientPrefix = value;
+		clientPrefix = value;
 	}
 
 	public String getServerPrefix() {
-		return this.serverPrefix;
+		return serverPrefix;
 	}
 
 	public void setServerPrefix(String value) {
-		this.serverPrefix = value;
+		serverPrefix = value;
 	}
 
 	private boolean ensureSettings() {
-		if (this.inputDir == null || !this.inputDir.exists()) {
-			throw new IllegalArgumentException("ERROR: input directory is empty: "+this.inputDir);
+		if (inputDir == null || !inputDir.exists()) {
+			throw new IllegalArgumentException("ERROR: input directory is empty: "+inputDir);
 		}
 
-		if (this.outputClientDir == null) {
-			this.outputClientDir = this.inputDir.isDirectory() ? this.inputDir :  this.inputDir.getParentFile();
+		if (outputClientDir == null) {
+			outputClientDir = inputDir.isDirectory() ? inputDir :  inputDir.getParentFile();
 		}
 
-		if (this.outputServerDir == null) {
-			this.outputServerDir = this.inputDir.isDirectory() ? this.inputDir :  this.inputDir.getParentFile();
+		if (outputServerDir == null) {
+			outputServerDir = inputDir.isDirectory() ? inputDir :  inputDir.getParentFile();
 		}
 
 		return true;
@@ -80,13 +93,13 @@ public class DuelCompiler {
 	 * @throws IOException 
 	 */
 	public void execute() throws IOException {
-		if (!this.ensureSettings()) {
+		if (!ensureSettings()) {
 			return;
 		}
 
-		List<File> inputFiles = findFiles(this.inputDir);
+		List<File> inputFiles = findFiles(inputDir);
 		if (inputFiles.size() < 1) {
-			throw new IllegalArgumentException("ERROR: no input files found: "+this.inputDir);
+			throw new IllegalArgumentException("ERROR: no input files found: "+inputDir);
 		}
 
 		for (File inputFile : inputFiles) {
@@ -100,7 +113,7 @@ public class DuelCompiler {
 				}
 
 			} catch (SyntaxException ex) {
-				this.reportSyntaxError(inputFile, ex);
+				reportSyntaxError(inputFile, ex);
 				continue;
 			}
 
@@ -108,8 +121,8 @@ public class DuelCompiler {
 			CodeGenSettings settings = new CodeGenSettings();
 			settings.setIndent("\t");
 			settings.setNewline(System.getProperty("line.separator"));
-			settings.setClientNamePrefix(this.clientPrefix);
-			settings.setServerNamePrefix(this.serverPrefix);
+			settings.setClientNamePrefix(clientPrefix);
+			settings.setServerNamePrefix(serverPrefix);
 
 			// compact client-side
 			settings.setConvertLineEndings(false);
@@ -139,7 +152,7 @@ public class DuelCompiler {
 
 			if (clientViews > 0) {
 				try {
-					File outputFile = new File(this.outputClientDir, outputName+codegen.getFileExtension());
+					File outputFile = new File(outputClientDir, outputName+codegen.getFileExtension());
 					outputFile.getParentFile().mkdirs();
 
 					FileWriter writer = new FileWriter(outputFile, false);
@@ -151,7 +164,7 @@ public class DuelCompiler {
 					}
 
 				} catch (SyntaxException ex) {
-					this.reportSyntaxError(inputFile, ex);
+					reportSyntaxError(inputFile, ex);
 				}
 			}
 
@@ -167,7 +180,7 @@ public class DuelCompiler {
 				}
 
 				try {
-					File outputFile = new File(this.outputServerDir, settings.getServerPath(view.getName(), codegen));
+					File outputFile = new File(outputServerDir, settings.getServerPath(view.getName(), codegen));
 					outputFile.getParentFile().mkdirs();
 
 					FileWriter writer = new FileWriter(outputFile, false);
@@ -179,7 +192,7 @@ public class DuelCompiler {
 					}
 
 				} catch (SyntaxException ex) {
-					this.reportSyntaxError(inputFile, ex);
+					reportSyntaxError(inputFile, ex);
 				}
 			}
 		}
@@ -223,14 +236,14 @@ public class DuelCompiler {
 				log.error("^");
 			}
 
-			if (this.verbose) {
+			if (verbose) {
 				ex.printStackTrace();
 			}
 
 		} catch (Exception ex2) {
 			ex.printStackTrace();
 
-			if (this.verbose) {
+			if (verbose) {
 				ex2.printStackTrace();
 			}
 		}

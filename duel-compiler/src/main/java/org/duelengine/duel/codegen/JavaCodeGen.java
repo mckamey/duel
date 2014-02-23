@@ -1,11 +1,49 @@
 package org.duelengine.duel.codegen;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import org.duelengine.duel.*;
+import org.duelengine.duel.DuelContext;
+import org.duelengine.duel.DuelData;
+import org.duelengine.duel.DuelView;
 import org.duelengine.duel.ast.VIEWCommandNode;
-import org.duelengine.duel.codedom.*;
+import org.duelengine.duel.codedom.AccessModifierType;
+import org.duelengine.duel.codedom.CodeArrayCreateExpression;
+import org.duelengine.duel.codedom.CodeBinaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeBinaryOperatorType;
+import org.duelengine.duel.codedom.CodeCastExpression;
+import org.duelengine.duel.codedom.CodeCommentStatement;
+import org.duelengine.duel.codedom.CodeConditionStatement;
+import org.duelengine.duel.codedom.CodeConstructor;
+import org.duelengine.duel.codedom.CodeExpression;
+import org.duelengine.duel.codedom.CodeExpressionStatement;
+import org.duelengine.duel.codedom.CodeField;
+import org.duelengine.duel.codedom.CodeFieldReferenceExpression;
+import org.duelengine.duel.codedom.CodeIterationStatement;
+import org.duelengine.duel.codedom.CodeMember;
+import org.duelengine.duel.codedom.CodeMethod;
+import org.duelengine.duel.codedom.CodeMethodInvokeExpression;
+import org.duelengine.duel.codedom.CodeMethodReturnStatement;
+import org.duelengine.duel.codedom.CodeObject;
+import org.duelengine.duel.codedom.CodeObjectCreateExpression;
+import org.duelengine.duel.codedom.CodeParameterDeclarationExpression;
+import org.duelengine.duel.codedom.CodePrimitiveExpression;
+import org.duelengine.duel.codedom.CodePropertyReferenceExpression;
+import org.duelengine.duel.codedom.CodeStatement;
+import org.duelengine.duel.codedom.CodeStatementBlock;
+import org.duelengine.duel.codedom.CodeTernaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeThisReferenceExpression;
+import org.duelengine.duel.codedom.CodeTypeDeclaration;
+import org.duelengine.duel.codedom.CodeTypeReferenceExpression;
+import org.duelengine.duel.codedom.CodeUnaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeVariableCompoundDeclarationStatement;
+import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
+import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
+import org.duelengine.duel.codedom.ScriptVariableReferenceExpression;
 
 /**
  * Code generator which emits Java source from CodeDOM classes
@@ -26,8 +64,8 @@ public class JavaCodeGen implements CodeGenerator {
 		this(null);
 	}
 
-	public JavaCodeGen(CodeGenSettings settings) {
-		this.settings = (settings != null) ? settings : new CodeGenSettings();
+	public JavaCodeGen(CodeGenSettings codeGenSettings) {
+		settings = (codeGenSettings != null) ? codeGenSettings : new CodeGenSettings();
 	}
 
 	@Override
@@ -45,7 +83,7 @@ public class JavaCodeGen implements CodeGenerator {
 	public void write(Appendable output, VIEWCommandNode... views)
 		throws IOException {
 
-		this.write(output, views != null ? Arrays.asList(views) : null);
+		write(output, views != null ? Arrays.asList(views) : null);
 	}
 
 	/**
@@ -71,17 +109,17 @@ public class JavaCodeGen implements CodeGenerator {
 				continue;
 			}
 
-			CodeTypeDeclaration viewType = new CodeDOMBuilder(this.settings).buildView(view);
+			CodeTypeDeclaration viewType = new CodeDOMBuilder(settings).buildView(view);
 
 			if (importsWritten) {
-				this.writeln(output, 0);
+				writeln(output, 0);
 			} else {
-				this.writePackage(output, viewType.getNamespace());
+				writePackage(output, viewType.getNamespace());
 				importsWritten = true;
 			}
 
-			this.writeTypeDeclaration(output, viewType, 0);
-			this.writeln(output, 0);
+			writeTypeDeclaration(output, viewType, 0);
+			writeln(output, 0);
 		}
 	}
 
@@ -90,25 +128,25 @@ public class JavaCodeGen implements CodeGenerator {
 
 		if (code instanceof CodeTypeDeclaration) {
 			CodeTypeDeclaration viewType = (CodeTypeDeclaration)code;
-			this.writePackage(output, viewType.getNamespace());
-			this.writeTypeDeclaration(output, viewType, 0);
-			this.writeln(output, 0);
+			writePackage(output, viewType.getNamespace());
+			writeTypeDeclaration(output, viewType, 0);
+			writeln(output, 0);
 
 		} else if (code instanceof CodeStatement) {
-			this.writeStatement(output, (CodeStatement)code, 0);
+			writeStatement(output, (CodeStatement)code, 0);
 
 		} else if (code instanceof CodeExpression) {
-			this.writeExpression(output, (CodeExpression)code);
+			writeExpression(output, (CodeExpression)code);
 
 		} else if (code instanceof CodeMember) {
-			this.writeMember(output, "Ctor", (CodeMember)code, 0);
+			writeMember(output, "Ctor", (CodeMember)code, 0);
 
 		} else if (code instanceof CodeStatementBlock) {
 			output.append('{');
 			for (CodeStatement statement : ((CodeStatementBlock)code).getStatements()) {
-				this.writeStatement(output, statement, 1);
+				writeStatement(output, statement, 1);
 			}
-			this.writeln(output, 0);
+			writeln(output, 0);
 			output.append('}');
 
 		} else if (code != null) {
@@ -120,25 +158,25 @@ public class JavaCodeGen implements CodeGenerator {
 		throws IOException {
 
 		// write intro
-		this.writeAccessModifier(output, type.getAccess());
+		writeAccessModifier(output, type.getAccess());
 		output.append("class ").append(type.getTypeName());
 		Class<?> baseType = type.getBaseType();
 		if (baseType != null) {
 			output.append(" extends ");
-			this.writeTypeName(output, baseType);
+			writeTypeName(output, baseType);
 		}
 		output.append(" {");
 		depth++;
 
 		String typeName = type.getTypeName();
 		for (CodeMember member : type.getMembers()) {
-			this.writeln(output, depth, 2);
-			this.writeMember(output, typeName, member, depth);
+			writeln(output, depth, 2);
+			writeMember(output, typeName, member, depth);
 		}
 
 		// write outro
 		depth--;
-		this.writeln(output, depth);
+		writeln(output, depth);
 		output.append('}');
 	}
 
@@ -146,16 +184,16 @@ public class JavaCodeGen implements CodeGenerator {
 		throws IOException {
 
 		if (member instanceof CodeConstructor) {
-			this.writeConstructor(output, (CodeConstructor)member, typeName, depth);
+			writeConstructor(output, (CodeConstructor)member, typeName, depth);
 
 		} else if (member instanceof CodeMethod) {
-			this.writeMethod(output, (CodeMethod)member, depth);
+			writeMethod(output, (CodeMethod)member, depth);
 
 		} else if (member instanceof CodeField) {
-			this.writeField(output, (CodeField)member);
+			writeField(output, (CodeField)member);
 
 		} else if (member instanceof CodeTypeDeclaration) {
-			this.writeTypeDeclaration(output, (CodeTypeDeclaration)member, depth);
+			writeTypeDeclaration(output, (CodeTypeDeclaration)member, depth);
 
 		} else if (member != null) {
 			throw new UnsupportedOperationException("Not implemented: "+member.getClass());
@@ -165,7 +203,7 @@ public class JavaCodeGen implements CodeGenerator {
 	private void writeConstructor(Appendable output, CodeConstructor ctor, String typeName, int depth)
 		throws IOException {
 
-		this.writeAccessModifier(output, ctor.getAccess());
+		writeAccessModifier(output, ctor.getAccess());
 		output.append(typeName).append("(");
 
 		boolean needsDelim = false;
@@ -181,7 +219,7 @@ public class JavaCodeGen implements CodeGenerator {
 		depth++;
 		List<CodeExpression> args = ctor.getBaseCtorArgs();
 		if (args.size() > 0) {
-			this.writeln(output, depth);
+			writeln(output, depth);
 			output.append("super(");
 			needsDelim = false;
 			for (CodeExpression expression : args) {
@@ -190,13 +228,13 @@ public class JavaCodeGen implements CodeGenerator {
 				} else {
 					needsDelim = true;
 				}
-				this.writeExpression(output, expression);
+				writeExpression(output, expression);
 			}
 			output.append(");");
 		} else {
 			args = ctor.getChainedCtorArgs();
 			if (args.size() > 0) {
-				this.writeln(output, depth);
+				writeln(output, depth);
 				output.append("this(");
 				needsDelim = false;
 				for (CodeExpression expression : args) {
@@ -205,17 +243,17 @@ public class JavaCodeGen implements CodeGenerator {
 					} else {
 						needsDelim = true;
 					}
-					this.writeExpression(output, expression);
+					writeExpression(output, expression);
 				}
 				output.append(");");
 			}
 		}
 
 		for (CodeStatement statement : ctor.getStatements()) {
-			this.writeStatement(output, statement, depth);
+			writeStatement(output, statement, depth);
 		}
 		depth--;
-		this.writeln(output, depth);
+		writeln(output, depth);
 		output.append("}");
 	}
 
@@ -224,10 +262,10 @@ public class JavaCodeGen implements CodeGenerator {
 
 		if (method.isOverride()) {
 			output.append("@Override");
-			this.writeln(output, depth);
+			writeln(output, depth);
 		}
-		this.writeAccessModifier(output, method.getAccess());
-		this.writeTypeName(output, method.getReturnType());
+		writeAccessModifier(output, method.getAccess());
+		writeTypeName(output, method.getReturnType());
 		output.append(' ').append(method.getName()).append('(');
 
 		boolean needsDelim = false;
@@ -237,7 +275,7 @@ public class JavaCodeGen implements CodeGenerator {
 			} else {
 				needsDelim = true;
 			}
-			this.writeParameterDeclaration(output, param);
+			writeParameterDeclaration(output, param);
 		}
 		output.append(')');
 		needsDelim = false;
@@ -248,29 +286,29 @@ public class JavaCodeGen implements CodeGenerator {
 				output.append(" throws ");
 				needsDelim = true;
 			}
-			this.writeTypeName(output, exception);
+			writeTypeName(output, exception);
 		}
 		output.append(" {");
 		depth++;
 		for (CodeStatement statement : method.getStatements()) {
-			this.writeStatement(output, statement, depth);
+			writeStatement(output, statement, depth);
 		}
 		depth--;
-		this.writeln(output, depth);
+		writeln(output, depth);
 		output.append("}");
 	}
 
 	private void writeField(Appendable output, CodeField field)
 		throws IOException {
 
-		this.writeAccessModifier(output, field.getAccess());
-		this.writeTypeName(output, field.getType());
+		writeAccessModifier(output, field.getAccess());
+		writeTypeName(output, field.getType());
 		output.append(' ').append(field.getName());
 		
 		CodeExpression initExpression = field.getInitExpression();
 		if (initExpression != null) {
 			output.append(" = ");
-			this.writeExpression(output, initExpression);
+			writeExpression(output, initExpression);
 		}
 
 		output.append(';');
@@ -278,7 +316,7 @@ public class JavaCodeGen implements CodeGenerator {
 
 	private void writeParameterDeclaration(Appendable output, CodeParameterDeclarationExpression param) throws IOException {
 
-		this.writeTypeName(output, param.getResultType());
+		writeTypeName(output, param.getResultType());
 		if (param.isVarArgs()) {
 			output.append("... ");
 		} else {
@@ -290,7 +328,7 @@ public class JavaCodeGen implements CodeGenerator {
 	private void writeStatement(Appendable output, CodeStatement statement, int depth)
 		throws IOException {
 
-		this.writeStatement(output, statement, depth, false);
+		writeStatement(output, statement, depth, false);
 	}
 
 	private void writeStatement(Appendable output, CodeStatement statement, int depth, boolean inline)
@@ -301,31 +339,31 @@ public class JavaCodeGen implements CodeGenerator {
 		}
 
 		if (!inline) {
-			this.writeln(output, depth);
+			writeln(output, depth);
 		}
 
 		boolean needsSemicolon; 
 		if (statement instanceof CodeExpressionStatement) {
-			this.writeExpression(output, ((CodeExpressionStatement)statement).getExpression(), ParensSetting.SUPPRESS);
+			writeExpression(output, ((CodeExpressionStatement)statement).getExpression(), ParensSetting.SUPPRESS);
 			needsSemicolon = true;
 
 		} else if (statement instanceof CodeConditionStatement) {
-			needsSemicolon = this.writeConditionStatement(output, (CodeConditionStatement)statement, depth);
+			needsSemicolon = writeConditionStatement(output, (CodeConditionStatement)statement, depth);
 
 		} else if (statement instanceof CodeVariableDeclarationStatement) {
-			needsSemicolon = this.writeVariableDeclarationStatement(output, (CodeVariableDeclarationStatement)statement, inline);
+			needsSemicolon = writeVariableDeclarationStatement(output, (CodeVariableDeclarationStatement)statement, inline);
 
 		} else if (statement instanceof CodeIterationStatement) {
-			needsSemicolon = this.writeIterationStatement(output, (CodeIterationStatement)statement, depth);
+			needsSemicolon = writeIterationStatement(output, (CodeIterationStatement)statement, depth);
 
 		} else if (statement instanceof CodeVariableCompoundDeclarationStatement) {
-			needsSemicolon = this.writeVariableCompoundDeclarationStatement(output, (CodeVariableCompoundDeclarationStatement)statement, depth, inline);
+			needsSemicolon = writeVariableCompoundDeclarationStatement(output, (CodeVariableCompoundDeclarationStatement)statement, depth, inline);
 
 		} else if (statement instanceof CodeMethodReturnStatement) {
-			needsSemicolon = this.writeMethodReturn(output, (CodeMethodReturnStatement)statement);
+			needsSemicolon = writeMethodReturn(output, (CodeMethodReturnStatement)statement);
 
 		} else if (statement instanceof CodeCommentStatement) {
-			needsSemicolon = this.writeComment(output, (CodeCommentStatement)statement);
+			needsSemicolon = writeComment(output, (CodeCommentStatement)statement);
 
 		} else {
 			throw new UnsupportedOperationException("Statement not yet supported: "+statement.getClass());
@@ -353,7 +391,7 @@ public class JavaCodeGen implements CodeGenerator {
 		CodeExpression expr = statement.getExpression();
 		if (expr != null) {
 			output.append(' ');
-			this.writeExpression(output, expr);
+			writeExpression(output, expr);
 		}
 			
 		return true;
@@ -362,7 +400,7 @@ public class JavaCodeGen implements CodeGenerator {
 	private void writeExpression(Appendable output, CodeExpression expression)
 		throws IOException {
 
-		this.writeExpression(output, expression, ParensSetting.AUTO);
+		writeExpression(output, expression, ParensSetting.AUTO);
 	}
 
 	private void writeExpression(Appendable output, CodeExpression expression, ParensSetting parens)
@@ -386,7 +424,7 @@ public class JavaCodeGen implements CodeGenerator {
 		}
 
 		if (expression instanceof CodePrimitiveExpression) {
-			this.writePrimitive(output, ((CodePrimitiveExpression)expression).getValue());
+			writePrimitive(output, ((CodePrimitiveExpression)expression).getValue());
 
 		} else if (expression instanceof CodeVariableReferenceExpression) {
 			output.append(((CodeVariableReferenceExpression)expression).getIdent());
@@ -395,7 +433,7 @@ public class JavaCodeGen implements CodeGenerator {
 			if (needsParens) {
 				output.append('(');
 			}
-			this.writeBinaryOperator(output, (CodeBinaryOperatorExpression)expression);
+			writeBinaryOperator(output, (CodeBinaryOperatorExpression)expression);
 			if (needsParens) {
 				output.append(')');
 			}
@@ -404,55 +442,55 @@ public class JavaCodeGen implements CodeGenerator {
 			if (needsParens) {
 				output.append('(');
 			}
-			this.writeUnaryOperator(output, (CodeUnaryOperatorExpression)expression);
+			writeUnaryOperator(output, (CodeUnaryOperatorExpression)expression);
 			if (needsParens) {
 				output.append(')');
 			}
 
 		} else if (expression instanceof CodePropertyReferenceExpression) {
-			this.writePropertyReference(output, (CodePropertyReferenceExpression)expression);
+			writePropertyReference(output, (CodePropertyReferenceExpression)expression);
 
 		} else if (expression instanceof CodeTernaryOperatorExpression) {
 			if (needsParens) {
 				output.append('(');
 			}
-			this.writeTernaryOperator(output, (CodeTernaryOperatorExpression)expression);
+			writeTernaryOperator(output, (CodeTernaryOperatorExpression)expression);
 			if (needsParens) {
 				output.append(')');
 			}
 
 		} else if (expression instanceof CodeArrayCreateExpression) {
-			this.writeArrayCreate(output, (CodeArrayCreateExpression)expression);
+			writeArrayCreate(output, (CodeArrayCreateExpression)expression);
 
 		} else if (expression instanceof CodeMethodInvokeExpression) {
-			this.writeMethodInvoke(output, (CodeMethodInvokeExpression)expression);
+			writeMethodInvoke(output, (CodeMethodInvokeExpression)expression);
 
 		} else if (expression instanceof CodeFieldReferenceExpression) {
-			this.writeFieldReference(output, (CodeFieldReferenceExpression)expression);
+			writeFieldReference(output, (CodeFieldReferenceExpression)expression);
 
 		} else if (expression instanceof CodeTypeReferenceExpression) {
-			this.writeTypeName(output, ((CodeTypeReferenceExpression)expression).getResultType());
+			writeTypeName(output, ((CodeTypeReferenceExpression)expression).getResultType());
 
 		} else if (expression instanceof CodeThisReferenceExpression) {
 			output.append("this");
 
 		} else if (expression instanceof CodeParameterDeclarationExpression) {
-			this.writeParameterDeclaration(output, (CodeParameterDeclarationExpression)expression);
+			writeParameterDeclaration(output, (CodeParameterDeclarationExpression)expression);
 
 		} else if (expression instanceof CodeObjectCreateExpression) {
-			this.writeObjectCreate(output, (CodeObjectCreateExpression)expression);
+			writeObjectCreate(output, (CodeObjectCreateExpression)expression);
 
 		} else if (expression instanceof CodeCastExpression) {
 			if (needsParens) {
 				output.append('(');
 			}
-			this.writeCast(output, (CodeCastExpression)expression);
+			writeCast(output, (CodeCastExpression)expression);
 			if (needsParens) {
 				output.append(')');
 			}
 
 		} else if (expression instanceof ScriptVariableReferenceExpression) {
-			this.writeExtraDataReference(output, (ScriptVariableReferenceExpression)expression);
+			writeExtraDataReference(output, (ScriptVariableReferenceExpression)expression);
 			
 		} else if (expression != null) {
 			throw new UnsupportedOperationException("Unexpected expression: "+expression.getClass());
@@ -462,7 +500,7 @@ public class JavaCodeGen implements CodeGenerator {
 	private void writeFieldReference(Appendable output, CodeFieldReferenceExpression expression)
 		throws IOException {
 
-		this.writeExpression(output, expression.getTarget());
+		writeExpression(output, expression.getTarget());
 		output.append('.').append(expression.getFieldName());
 	}
 
@@ -470,7 +508,7 @@ public class JavaCodeGen implements CodeGenerator {
 		throws IOException {
 
 		// translate into dynamic helper method call
-		this.writeExpression(
+		writeExpression(
 			output,
 			new CodeMethodInvokeExpression(
 				expression.getResultType(),
@@ -498,7 +536,7 @@ public class JavaCodeGen implements CodeGenerator {
 			case IDENTITY_EQUALITY:
 				if (!CodePrimitiveExpression.NULL.equals(left) &&
 					!CodePrimitiveExpression.NULL.equals(right)) {
-					this.writeExpression(output, CodeDOMUtility.equal(left, right));
+					writeExpression(output, CodeDOMUtility.equal(left, right));
 					return;
 				}
 				operator = " == ";
@@ -508,17 +546,17 @@ public class JavaCodeGen implements CodeGenerator {
 				if (!CodePrimitiveExpression.NULL.equals(left) &&
 					!CodePrimitiveExpression.NULL.equals(right)) {
 
-					this.writeExpression(output, CodeDOMUtility.notEqual(left, right));
+					writeExpression(output, CodeDOMUtility.notEqual(left, right));
 					return;
 				}
 				operator = " != ";
 				asNumber = false;
 				break;
 			case VALUE_EQUALITY:
-				this.writeExpression(output, CodeDOMUtility.coerceEqual(left, right));
+				writeExpression(output, CodeDOMUtility.coerceEqual(left, right));
 				return;
 			case VALUE_INEQUALITY:
-				this.writeExpression(output, CodeDOMUtility.coerceNotEqual(left, right));
+				writeExpression(output, CodeDOMUtility.coerceNotEqual(left, right));
 				return;
 			case GREATER_THAN:
 				operator = " > ";
@@ -548,7 +586,7 @@ public class JavaCodeGen implements CodeGenerator {
 			case ADD_ASSIGN:
 				// asString trumps asNumber
 				asString = DuelData.isString(CodeDOMUtility.toPrimitive(left.getResultType()));
-				this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.ADD, left,
+				writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.ADD, left,
 					asString ? CodeDOMUtility.ensureString(left) : CodeDOMUtility.ensureNumber(left),
 					asString ? CodeDOMUtility.ensureString(right) : CodeDOMUtility.ensureNumber(right)));
 				return;
@@ -557,7 +595,7 @@ public class JavaCodeGen implements CodeGenerator {
 				break;
 			case SUBTRACT_ASSIGN:
 				if (leftIsPropertyRef || leftIsExtraRef || !CodeDOMUtility.isNumber(left)) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SUBTRACT,
+					writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SUBTRACT,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
@@ -569,7 +607,7 @@ public class JavaCodeGen implements CodeGenerator {
 				break;
 			case MULTIPLY_ASSIGN:
 				if (leftIsPropertyRef || leftIsExtraRef || !CodeDOMUtility.isNumber(left)) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MULTIPLY,
+					writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MULTIPLY,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
@@ -581,7 +619,7 @@ public class JavaCodeGen implements CodeGenerator {
 				break;
 			case DIVIDE_ASSIGN:
 				if (leftIsPropertyRef || leftIsExtraRef || !CodeDOMUtility.isNumber(left)) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.DIVIDE,
+					writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.DIVIDE,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
@@ -593,7 +631,7 @@ public class JavaCodeGen implements CodeGenerator {
 				break;
 			case MODULUS_ASSIGN:
 				if (leftIsPropertyRef || leftIsExtraRef || !CodeDOMUtility.isNumber(left)) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MODULUS,
+					writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.MODULUS,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
@@ -605,7 +643,7 @@ public class JavaCodeGen implements CodeGenerator {
 				break;
 			case BITWISE_AND_ASSIGN:
 				if (leftIsPropertyRef || leftIsExtraRef || !CodeDOMUtility.isNumber(left)) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_AND,
+					writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_AND,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
@@ -617,7 +655,7 @@ public class JavaCodeGen implements CodeGenerator {
 				break;
 			case BITWISE_OR_ASSIGN:
 				if (leftIsPropertyRef || leftIsExtraRef || !CodeDOMUtility.isNumber(left)) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_OR,
+					writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_OR,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
@@ -629,7 +667,7 @@ public class JavaCodeGen implements CodeGenerator {
 				break;
 			case BITWISE_XOR_ASSIGN:
 				if (leftIsPropertyRef || leftIsExtraRef || !CodeDOMUtility.isNumber(left)) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_XOR,
+					writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.BITWISE_XOR,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
@@ -639,7 +677,7 @@ public class JavaCodeGen implements CodeGenerator {
 			case BOOLEAN_AND:
 				if (!DuelData.isBoolean(left.getResultType()) || !DuelData.isBoolean(right.getResultType())) {
 					// convert to JavaScript semantics for boolean AND
-					this.writeExpression(output,
+					writeExpression(output,
 						new CodeMethodInvokeExpression(
 							Object.class,
 							new CodeThisReferenceExpression(),
@@ -654,7 +692,7 @@ public class JavaCodeGen implements CodeGenerator {
 			case BOOLEAN_OR:
 				if (!DuelData.isBoolean(left.getResultType()) || !DuelData.isBoolean(right.getResultType())) {
 					// convert to JavaScript semantics for boolean OR
-					this.writeExpression(output,
+					writeExpression(output,
 						new CodeMethodInvokeExpression(
 							Object.class,
 							new CodeThisReferenceExpression(),
@@ -671,7 +709,7 @@ public class JavaCodeGen implements CodeGenerator {
 				break;
 			case SHIFT_LEFT_ASSIGN:
 				if (leftIsPropertyRef || leftIsExtraRef || !CodeDOMUtility.isNumber(left)) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_LEFT,
+					writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_LEFT,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
@@ -683,7 +721,7 @@ public class JavaCodeGen implements CodeGenerator {
 				break;
 			case SHIFT_RIGHT_ASSIGN:
 				if (leftIsPropertyRef || leftIsExtraRef || !CodeDOMUtility.isNumber(left)) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_RIGHT,
+					writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.SHIFT_RIGHT,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
@@ -695,7 +733,7 @@ public class JavaCodeGen implements CodeGenerator {
 				break;
 			case USHIFT_RIGHT_ASSIGN:
 				if (leftIsPropertyRef || leftIsExtraRef || !CodeDOMUtility.isNumber(left)) {
-					this.writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.USHIFT_RIGHT,
+					writeExpression(output, CodeDOMUtility.asAssignment(CodeBinaryOperatorType.USHIFT_RIGHT,
 						left, CodeDOMUtility.ensureNumber(left), CodeDOMUtility.ensureNumber(right)));
 					return;
 				}
@@ -710,7 +748,7 @@ public class JavaCodeGen implements CodeGenerator {
 			if (leftIsPropertyRef) {
 				// translate into dynamic helper method call
 				CodePropertyReferenceExpression leftPropRef = (CodePropertyReferenceExpression)left; 
-				this.writeExpression(
+				writeExpression(
 					output,
 					new CodeMethodInvokeExpression(
 						expression.getResultType(),
@@ -723,7 +761,7 @@ public class JavaCodeGen implements CodeGenerator {
 			} else if (leftIsExtraRef) {
 				// translate into dynamic helper method call
 				ScriptVariableReferenceExpression leftVarRef = (ScriptVariableReferenceExpression)left; 
-				this.writeExpression(
+				writeExpression(
 					output,
 					new CodeMethodInvokeExpression(
 						expression.getResultType(),
@@ -735,26 +773,26 @@ public class JavaCodeGen implements CodeGenerator {
 				return;
 			}
 
-			this.writeExpression(output, left);
+			writeExpression(output, left);
 
 		} else if (asString) {
-			this.writeExpression(output, CodeDOMUtility.ensureString(left));
+			writeExpression(output, CodeDOMUtility.ensureString(left));
 		} else if (asNumber) {
-			this.writeExpression(output, CodeDOMUtility.ensureNumber(left));
+			writeExpression(output, CodeDOMUtility.ensureNumber(left));
 		} else {
-			this.writeExpression(output, left);
+			writeExpression(output, left);
 		}
 
 		output.append(operator);
 
 		if (isAssign) {
-			this.writeExpression(output, CodeDOMUtility.ensureType(left.getResultType(), right));
+			writeExpression(output, CodeDOMUtility.ensureType(left.getResultType(), right));
 		} else if (asString) {
-			this.writeExpression(output, CodeDOMUtility.ensureString(right));
+			writeExpression(output, CodeDOMUtility.ensureString(right));
 		} else if (asNumber) {
-			this.writeExpression(output, CodeDOMUtility.ensureNumber(right));
+			writeExpression(output, CodeDOMUtility.ensureNumber(right));
 		} else {
-			this.writeExpression(output, right);
+			writeExpression(output, right);
 		}
 	}
 
@@ -786,7 +824,7 @@ public class JavaCodeGen implements CodeGenerator {
 				if (!CodeDOMUtility.isNumber(expr)) {
 					// convert into type safe expression
 					// data-- => echo(asNumber(data), (data = asNumber(data)-1))
-					this.writeExpression(output, CodeDOMUtility.safePostDecrement(expr));
+					writeExpression(output, CodeDOMUtility.safePostDecrement(expr));
 					return;
 				}
 
@@ -798,7 +836,7 @@ public class JavaCodeGen implements CodeGenerator {
 				if (!CodeDOMUtility.isNumber(expr)) {
 					// convert into type safe expression
 					// data-- => echo(asNumber(data), (data = asNumber(data)+1))
-					this.writeExpression(output, CodeDOMUtility.safePostIncrement(expr));
+					writeExpression(output, CodeDOMUtility.safePostIncrement(expr));
 					return;
 				}
 
@@ -810,7 +848,7 @@ public class JavaCodeGen implements CodeGenerator {
 				if (!CodeDOMUtility.isNumber(expr)) {
 					// convert into type safe expression
 					// --data => (data = (asNumber(data)-1))
-					this.writeExpression(output, CodeDOMUtility.safePreDecrement(expr));
+					writeExpression(output, CodeDOMUtility.safePreDecrement(expr));
 					return;
 				}
 
@@ -821,7 +859,7 @@ public class JavaCodeGen implements CodeGenerator {
 				if (!CodeDOMUtility.isNumber(expr)) {
 					// convert into type safe expression
 					// ++data => (data = (asNumber(data)+1))
-					this.writeExpression(output, CodeDOMUtility.safePreIncrement(expr));
+					writeExpression(output, CodeDOMUtility.safePreIncrement(expr));
 					return;
 				}
 
@@ -833,28 +871,28 @@ public class JavaCodeGen implements CodeGenerator {
 		}
 
 		if (isPost) {
-			this.writeExpression(output, expr);
+			writeExpression(output, expr);
 			output.append(operator);
 		} else {
 			output.append(operator);
-			this.writeExpression(output, expr);
+			writeExpression(output, expr);
 		}
 	}
 
 	private void writeTernaryOperator(Appendable output, CodeTernaryOperatorExpression expression)
 		throws IOException {
 
-		this.writeExpression(output, CodeDOMUtility.ensureBoolean(expression.getTestExpression()));
+		writeExpression(output, CodeDOMUtility.ensureBoolean(expression.getTestExpression()));
 		output.append(" ? ");
-		this.writeExpression(output, expression.getTrueExpression());
+		writeExpression(output, expression.getTrueExpression());
 		output.append(" : ");
-		this.writeExpression(output, expression.getFalseExpression());
+		writeExpression(output, expression.getFalseExpression());
 	}
 
 	private boolean writeVariableDeclarationStatement(Appendable output, CodeVariableDeclarationStatement statement, boolean inline)
 		throws IOException {
 
-		this.writeTypeName(output, statement.getType());
+		writeTypeName(output, statement.getType());
 		output.append(' ').append(statement.getName());
 		CodeExpression initExpr = statement.getInitExpression();
 		if (initExpr != null) {
@@ -863,7 +901,7 @@ public class JavaCodeGen implements CodeGenerator {
 			} else {
 				output.append(" = ");
 			}
-			this.writeExpression(output, initExpr);
+			writeExpression(output, initExpr);
 		}
 
 		return true;
@@ -877,7 +915,7 @@ public class JavaCodeGen implements CodeGenerator {
 			return false;
 		}
 
-		this.writeTypeName(output, vars.get(0).getType());
+		writeTypeName(output, vars.get(0).getType());
 		output.append(' ');
 		depth++;
 		boolean needsDelim = false;
@@ -887,7 +925,7 @@ public class JavaCodeGen implements CodeGenerator {
 				if (inline) {
 					output.append(' ');
 				} else {
-					this.writeln(output, depth);
+					writeln(output, depth);
 				}
 			} else {
 				needsDelim = true;
@@ -900,7 +938,7 @@ public class JavaCodeGen implements CodeGenerator {
 				} else {
 					output.append(" = ");
 				}
-				this.writeExpression(output, initExpr);
+				writeExpression(output, initExpr);
 			}
 		}
 		depth--;
@@ -910,23 +948,23 @@ public class JavaCodeGen implements CodeGenerator {
 	private void writeExtraDataReference(Appendable output, ScriptVariableReferenceExpression expression)
 		throws IOException {
 
-		this.writeExpression(output, CodeDOMUtility.lookupExtraVar(expression.getIdent()));
+		writeExpression(output, CodeDOMUtility.lookupExtraVar(expression.getIdent()));
 	}
 
 	private boolean writeConditionStatement(Appendable output, CodeConditionStatement statement, int depth)
 		throws IOException {
 
 		output.append("if (");
-		this.writeExpression(output, CodeDOMUtility.ensureBoolean(statement.getCondition()), ParensSetting.SUPPRESS);
+		writeExpression(output, CodeDOMUtility.ensureBoolean(statement.getCondition()), ParensSetting.SUPPRESS);
 		output.append(") {");
 		depth++;
 
 		for (CodeStatement trueStatement : statement.getTrueStatements()) {
-			this.writeStatement(output, trueStatement, depth);
+			writeStatement(output, trueStatement, depth);
 		}
 
 		depth--;
-		this.writeln(output, depth);
+		writeln(output, depth);
 		output.append('}');
 
 		if (statement.getFalseStatements().size() > 0) {
@@ -939,13 +977,13 @@ public class JavaCodeGen implements CodeGenerator {
 				output.append('{');
 				depth++;
 				for (CodeStatement falseStatement : statement.getFalseStatements()) {
-					this.writeStatement(output, falseStatement, depth);
+					writeStatement(output, falseStatement, depth);
 				}
 				depth--;
-				this.writeln(output, depth);
+				writeln(output, depth);
 				output.append('}');
 			} else {
-				this.writeConditionStatement(output, (CodeConditionStatement)statement.getFalseStatements().getLastStatement(), depth);
+				writeConditionStatement(output, (CodeConditionStatement)statement.getFalseStatements().getLastStatement(), depth);
 			}
 		}
 
@@ -957,19 +995,19 @@ public class JavaCodeGen implements CodeGenerator {
 
 		output.append("for (");
 
-		this.writeStatement(output, statement.getInitStatement(), depth, true);
+		writeStatement(output, statement.getInitStatement(), depth, true);
 		output.append("; ");
-		this.writeExpression(output, CodeDOMUtility.ensureBoolean(statement.getTestExpression()));
+		writeExpression(output, CodeDOMUtility.ensureBoolean(statement.getTestExpression()));
 		output.append("; ");
-		this.writeStatement(output, statement.getIncrementStatement(), depth, true);
+		writeStatement(output, statement.getIncrementStatement(), depth, true);
 
 		output.append(") {");
 		depth++;
 		for (CodeStatement childStatement : statement.getStatements()) {
-			this.writeStatement(output, childStatement, depth);
+			writeStatement(output, childStatement, depth);
 		}
 		depth--;
-		this.writeln(output, depth);
+		writeln(output, depth);
 		output.append('}');
 
 		return false;
@@ -979,7 +1017,7 @@ public class JavaCodeGen implements CodeGenerator {
 		throws IOException {
 
 		String methodName = expression.getMethodName();
-		this.writeExpression(output, expression.getTarget());
+		writeExpression(output, expression.getTarget());
 		output.append('.').append(methodName).append('(');
 		boolean needsDelim = false;
 		List<CodeExpression> args = expression.getArguments();
@@ -990,7 +1028,7 @@ public class JavaCodeGen implements CodeGenerator {
 			} else {
 				needsDelim = true;
 			}
-			this.writeExpression(output, arg, singleArg ? ParensSetting.SUPPRESS : ParensSetting.AUTO);
+			writeExpression(output, arg, singleArg ? ParensSetting.SUPPRESS : ParensSetting.AUTO);
 		}
 		output.append(')');
 	}
@@ -999,9 +1037,9 @@ public class JavaCodeGen implements CodeGenerator {
 		throws IOException {
 
 		output.append('(');
-		this.writeTypeName(output, expression.getResultType());
+		writeTypeName(output, expression.getResultType());
 		output.append(')');
-		this.writeExpression(output, expression.getExpression(), ParensSetting.FORCE);
+		writeExpression(output, expression.getExpression(), ParensSetting.FORCE);
 	}
 
 	private void writeTypeName(Appendable output, Class<?> type)
@@ -1054,7 +1092,7 @@ public class JavaCodeGen implements CodeGenerator {
 		List<CodeExpression> args = expression.getInitializers();
 		if (args.size() < 1) {
 			output.append("new java.util.ArrayList<");
-			this.writeTypeName(output, expression.getType());
+			writeTypeName(output, expression.getType());
 			output.append(">(");
 			if (expression.getSize() > 0) {
 				output.append(Integer.toString(expression.getSize()));
@@ -1072,7 +1110,7 @@ public class JavaCodeGen implements CodeGenerator {
 			} else {
 				needsDelim = true;
 			}
-			this.writeExpression(output, arg, singleArg ? ParensSetting.SUPPRESS : ParensSetting.AUTO);
+			writeExpression(output, arg, singleArg ? ParensSetting.SUPPRESS : ParensSetting.AUTO);
 		}
 		output.append(")");
 	}
@@ -1090,7 +1128,7 @@ public class JavaCodeGen implements CodeGenerator {
 			} else {
 				needsDelim = true;
 			}
-			this.writeExpression(output, arg, singleArg ? ParensSetting.SUPPRESS : ParensSetting.AUTO);
+			writeExpression(output, arg, singleArg ? ParensSetting.SUPPRESS : ParensSetting.AUTO);
 		}
 		output.append(')');
 	}
@@ -1100,13 +1138,13 @@ public class JavaCodeGen implements CodeGenerator {
 
 		if (ns != null && ns.length() > 0) {
 			output.append("package ").append(ns).append(";");
-			this.writeln(output, 0, 2);
+			writeln(output, 0, 2);
 		}
 
 		output.append("import java.io.*;");
-		this.writeln(output, 0);
+		writeln(output, 0);
 		output.append("import ").append(DUEL_PACKAGE).append(".*;");
-		this.writeln(output, 0, 2);
+		writeln(output, 0, 2);
 	}
 
 	private void writePrimitive(Appendable output, Object value)
@@ -1119,7 +1157,7 @@ public class JavaCodeGen implements CodeGenerator {
 
 		Class<?> type = value.getClass();
 		if (String.class.equals(type)) {
-			this.writeString(output, (String)value);
+			writeString(output, (String)value);
 
 		} else if (DuelData.isNumber(type)) {
 			double number = ((Number)value).doubleValue();
@@ -1132,7 +1170,7 @@ public class JavaCodeGen implements CodeGenerator {
 			}
 
 		} else if (Character.class.equals(type)) {
-			this.writeCharacter(output, (Character)value);
+			writeCharacter(output, (Character)value);
 
 		} else {
 			output.append(String.valueOf(value));
@@ -1150,17 +1188,17 @@ public class JavaCodeGen implements CodeGenerator {
 				output.append("'\\\\'");
 				break;
 			case '\t':
-				String indent = this.settings.getIndent();
-				if (this.settings.getConvertLineEndings() && !"\t".equals(indent)) {
-					this.writeString(output, indent);
+				String indent = settings.getIndent();
+				if (settings.getConvertLineEndings() && !"\t".equals(indent)) {
+					writeString(output, indent);
 				} else {
 					output.append("'\\t'");
 				}
 				break;
 			case '\n':
-				String newline = this.settings.getNewline();
-				if (this.settings.getConvertLineEndings() && !"\n".equals(newline)) {
-					this.writeString(output, newline);
+				String newline = settings.getNewline();
+				if (settings.getConvertLineEndings() && !"\n".equals(newline)) {
+					writeString(output, newline);
 				} else {
 					output.append("'\\n'");
 				}
@@ -1195,16 +1233,16 @@ public class JavaCodeGen implements CodeGenerator {
 			return;
 		}
 
-		if (this.settings.getConvertLineEndings()) {
+		if (settings.getConvertLineEndings()) {
 			// not very efficient but allows simple normalization
-			if (!"\t".equals(this.settings.getIndent())) {
-				value = value.replace("\t", this.settings.getIndent());
+			if (!"\t".equals(settings.getIndent())) {
+				value = value.replace("\t", settings.getIndent());
 			}
 			// if the source came via the DuelLexer then CRLF have been
 			// compressed to single LF and these will not be present
 			value = value.replace("\r\n", "\n").replace("\r", "\n");
-			if (!"\n".equals(this.settings.getNewline())) {
-				value = value.replace("\n", this.settings.getNewline());
+			if (!"\n".equals(settings.getNewline())) {
+				value = value.replace("\n", settings.getNewline());
 			}
 		}
 
@@ -1267,18 +1305,18 @@ public class JavaCodeGen implements CodeGenerator {
 	private void writeln(Appendable output, int depth)
 		throws IOException {
 
-		this.writeln(output, depth, 1);
+		writeln(output, depth, 1);
 	}
 
 	private void writeln(Appendable output, int depth, int newlines)
 		throws IOException {
 
-		String newline = this.settings.getNewline();
+		String newline = settings.getNewline();
 		for (int i=newlines; i>0; i--) {
 			output.append(newline);
 		}
 
-		String indent = this.settings.getIndent();
+		String indent = settings.getIndent();
 		for (int i=depth; i>0; i--) {
 			output.append(indent);
 		}

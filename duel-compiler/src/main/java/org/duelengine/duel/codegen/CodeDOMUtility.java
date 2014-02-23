@@ -1,11 +1,36 @@
 package org.duelengine.duel.codegen;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelData;
 import org.duelengine.duel.DuelPart;
 import org.duelengine.duel.DuelView;
-import org.duelengine.duel.codedom.*;
+import org.duelengine.duel.codedom.AccessModifierType;
+import org.duelengine.duel.codedom.CodeBinaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeBinaryOperatorType;
+import org.duelengine.duel.codedom.CodeConstructor;
+import org.duelengine.duel.codedom.CodeExpression;
+import org.duelengine.duel.codedom.CodeExpressionStatement;
+import org.duelengine.duel.codedom.CodeMember;
+import org.duelengine.duel.codedom.CodeMethod;
+import org.duelengine.duel.codedom.CodeMethodInvokeExpression;
+import org.duelengine.duel.codedom.CodeMethodReturnStatement;
+import org.duelengine.duel.codedom.CodeObject;
+import org.duelengine.duel.codedom.CodeParameterDeclarationExpression;
+import org.duelengine.duel.codedom.CodePrimitiveExpression;
+import org.duelengine.duel.codedom.CodeStatement;
+import org.duelengine.duel.codedom.CodeStatementCollection;
+import org.duelengine.duel.codedom.CodeThisReferenceExpression;
+import org.duelengine.duel.codedom.CodeTypeDeclaration;
+import org.duelengine.duel.codedom.CodeTypeReferenceExpression;
+import org.duelengine.duel.codedom.CodeUnaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeUnaryOperatorType;
+import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
+import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
+import org.duelengine.duel.codedom.IdentifierScope;
 
 final class CodeDOMUtility {
 
@@ -60,7 +85,7 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeVariableDeclarationStatement nextID(IdentifierScope scope) {
-		// String id_XXX = this.nextID(context);
+		// String id_XXX = nextID(context);
 		return new CodeVariableDeclarationStatement(
 			String.class,
 			scope.nextIdent("id_"),
@@ -72,12 +97,12 @@ final class CodeDOMUtility {
 	}
 
 	public static CodeStatement emitLiteralValue(String literal) {
-		// this.write(context, "literal");
+		// write(context, "literal");
 		return emitExpression(new CodePrimitiveExpression((literal.length() == 1) ? literal.charAt(0) : literal));
 	}
 
 	public static CodeStatement emitVarValue(CodeVariableDeclarationStatement localVar) {
-		// this.write(context, varName);
+		// write(context, varName);
 		return emitExpression(new CodeVariableReferenceExpression(localVar));
 	}
 
@@ -91,7 +116,7 @@ final class CodeDOMUtility {
 			return emitExpression(expression);
 		}
 
-		// this.htmlEncode(output, expression);
+		// htmlEncode(output, expression);
 		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(
 				Void.class,
@@ -106,7 +131,7 @@ final class CodeDOMUtility {
 		if (String.class.equals(exprType) ||
 			Character.class.equals(exprType)) {
 
-			// this.write(output, expression);
+			// write(output, expression);
 			return new CodeExpressionStatement(
 				new CodeMethodInvokeExpression(
 					Void.class,
@@ -117,7 +142,7 @@ final class CodeDOMUtility {
 
 		}
 
-		// this.write(output, expression);
+		// write(output, expression);
 		return new CodeExpressionStatement(
 			new CodeMethodInvokeExpression(
 				Void.class,

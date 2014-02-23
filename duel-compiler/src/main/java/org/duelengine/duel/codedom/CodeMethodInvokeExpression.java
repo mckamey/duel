@@ -1,6 +1,8 @@
 package org.duelengine.duel.codedom;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents a method call
@@ -13,54 +15,54 @@ public class CodeMethodInvokeExpression extends CodeExpression {
 	private final List<CodeExpression> arguments = new ArrayList<CodeExpression>();
 
 	public CodeMethodInvokeExpression() {
-		this.setResultType(null);
+		setResultType(null);
 	}
 
 	public CodeMethodInvokeExpression(Class<?> returnType, CodeExpression target, String methodName, CodeExpression... args) {
-		this.setResultType(returnType);
+		setResultType(returnType);
 		this.target = target;
 		this.methodName = methodName;
 		if (args != null) {
-			this.arguments.addAll(Arrays.asList(args));
+			arguments.addAll(Arrays.asList(args));
 		}
 	}
 
 	public CodeExpression getTarget() {
-		return this.target;
+		return target;
 	}
 
 	public void setTarget(CodeExpression value) {
-		this.target = value;
+		target = value;
 	}
 
 	public String getMethodName() {
-		return this.methodName;
+		return methodName;
 	}
 
 	public void setMethodName(String value) {
-		this.methodName = value;
+		methodName = value;
 	}
 
 	public List<CodeExpression> getArguments() {
-		return this.arguments;
+		return arguments;
 	}
 
 	@Override
 	public Class<?> getResultType() {
-		return this.resultType;
+		return resultType;
 	}
 
 	public void setResultType(Class<?> value) {
-		this.resultType = (value != null) ? value : Object.class;
+		resultType = (value != null) ? value : Object.class;
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.target != null) {
-				this.target.visit(visitor);
+			if (target != null) {
+				target.visit(visitor);
 			}
-			for (CodeExpression expression : this.arguments) {
+			for (CodeExpression expression : arguments) {
 				if (expression != null) {
 					expression.visit(visitor);
 				}
@@ -108,15 +110,15 @@ public class CodeMethodInvokeExpression extends CodeExpression {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = super.hashCode() * HASH_PRIME + this.arguments.hashCode();
-		if (this.resultType != null) {
-			hash = hash * HASH_PRIME + this.resultType.hashCode();
+		int hash = super.hashCode() * HASH_PRIME + arguments.hashCode();
+		if (resultType != null) {
+			hash = hash * HASH_PRIME + resultType.hashCode();
 		}
-		if (this.target != null) {
-			hash = hash * HASH_PRIME + this.target.hashCode();
+		if (target != null) {
+			hash = hash * HASH_PRIME + target.hashCode();
 		}
-		if (this.methodName != null) {
-			hash = hash * HASH_PRIME + this.methodName.hashCode();
+		if (methodName != null) {
+			hash = hash * HASH_PRIME + methodName.hashCode();
 		}
 		return hash;
 	}

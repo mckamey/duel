@@ -1,6 +1,9 @@
 package org.duelengine.duel.codedom;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Represents a sequence of statements
@@ -43,48 +46,48 @@ public class CodeStatementCollection extends ArrayList<CodeStatement> implements
 	}
 
 	public boolean add(CodeExpression expression) {
-		return this.add(new CodeExpressionStatement(expression));
+		return add(new CodeExpressionStatement(expression));
 	}
 
 	public CodeStatement getFirstStatement() {
-		if (this.isEmpty()) {
+		if (isEmpty()) {
 			return null;
 		}
 
-		return this.get(0);
+		return get(0);
 	}
 
 	public CodeStatement getLastStatement() {
-		if (this.isEmpty()) {
+		if (isEmpty()) {
 			return null;
 		}
 
-		return this.get(this.size()-1);
+		return get(size()-1);
 	}
 
 	@Override
 	public boolean isLocalIdent(String ident) {
-		return (this.identMap != null) && this.identMap.containsKey(ident);
+		return (identMap != null) && identMap.containsKey(ident);
 	}
 
 	@Override
 	public String uniqueIdent(String ident) {
-		if (this.identMap == null) {
-			this.identMap = new HashMap<String, String>();
+		if (identMap == null) {
+			identMap = new HashMap<String, String>();
 		}
-		else if (this.identMap.containsKey(ident)) {
-			return this.identMap.get(ident);
+		else if (identMap.containsKey(ident)) {
+			return identMap.get(ident);
 		}
 
-		String unique = this.nextIdent(ident);
-		this.identMap.put(ident, unique);
+		String unique = nextIdent(ident);
+		identMap.put(ident, unique);
 		return unique;
 	}
 
 	@Override
 	public String nextIdent(String prefix) {
 		// generate a unique var name
-		return prefix+(++this.nextID);
+		return prefix+(++nextID);
 	}
 
 	@Override

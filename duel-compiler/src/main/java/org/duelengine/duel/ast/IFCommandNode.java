@@ -22,7 +22,7 @@ public class IFCommandNode extends CommandNode {
 	}
 
 	public CodeBlockNode getTest() {
-		DuelNode node = this.getAttribute(TEST);
+		DuelNode node = getAttribute(TEST);
 		if (node instanceof CodeBlockNode || node == null) {
 			return (CodeBlockNode)node;
 		}
@@ -43,7 +43,7 @@ public class IFCommandNode extends CommandNode {
 			throw new NullPointerException("attr");
 		}
 
-		this.setAttribute(attr.getName(), attr.getValue());
+		setAttribute(attr.getName(), attr.getValue());
 	}
 
 	@Override

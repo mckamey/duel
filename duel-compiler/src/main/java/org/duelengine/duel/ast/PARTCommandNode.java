@@ -13,19 +13,19 @@ public class PARTCommandNode extends CommandNode {
 	public PARTCommandNode(int index, int line, int column) {
 		super(CMD, NAME, false, index, line, column);
 
-		this.setAttribute("name", null);
+		setAttribute("name", null);
 	}
 
 	public PARTCommandNode(AttributePair[] attr, DuelNode... children) {
 		super(CMD, NAME, false, attr, children);
 
-		if (this.name == null) {
-			this.setAttribute("name", null);
+		if (name == null) {
+			setAttribute("name", null);
 		}
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	@Override
@@ -41,32 +41,32 @@ public class PARTCommandNode extends CommandNode {
 			throw new NullPointerException("attr");
 		}
 
-		this.setAttribute(attr.getName(), attr.getValue());
+		setAttribute(attr.getName(), attr.getValue());
 	}
 
 	@Override
-	public void setAttribute(String name, DuelNode value) {
-		if (name == null || name.isEmpty()) {
+	public void setAttribute(String attrName, DuelNode attrValue) {
+		if (attrName == null || attrName.isEmpty()) {
 			throw new NullPointerException("name");
 		}
-		if (!name.equalsIgnoreCase("name")) {
-			throw new InvalidNodeException("Attribute invalid on PART declaration: "+name, value);
+		if (!attrName.equalsIgnoreCase("name")) {
+			throw new InvalidNodeException("Attribute invalid on PART declaration: "+attrName, attrValue);
 		}
-		if (value != null && !(value instanceof LiteralNode)) {
-			throw new InvalidNodeException("PART name must be a string literal: "+value.getClass(), value);
-		}
-
-		if (value == null) {
-			value = new LiteralNode(DEFAULT_NAME, this.getIndex(), this.getLine(), this.getColumn());
+		if (attrValue != null && !(attrValue instanceof LiteralNode)) {
+			throw new InvalidNodeException("PART name must be a string literal: "+attrValue.getClass(), attrValue);
 		}
 
-		String partName = ((LiteralNode)value).getValue();
+		if (attrValue == null) {
+			attrValue = new LiteralNode(DEFAULT_NAME, getIndex(), getLine(), getColumn());
+		}
+
+		String partName = ((LiteralNode)attrValue).getValue();
 		if (partName == null) {
-			((LiteralNode)value).setValue(DEFAULT_NAME);
+			((LiteralNode)attrValue).setValue(DEFAULT_NAME);
 			partName = DEFAULT_NAME;
 		}
 
-		this.name = partName;
-		super.setAttribute("name", value);
+		name = partName;
+		super.setAttribute("name", attrValue);
 	}
 }

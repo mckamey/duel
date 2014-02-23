@@ -7,15 +7,15 @@ public abstract class CodeExpression extends CodeObject {
 	public abstract Class<?> getResultType();
 
 	public void setParens(boolean value) {
-		this.parens = value;
+		parens = value;
 	}
 
 	public boolean hasParens() {
-		return this.parens;
+		return parens;
 	}
 
 	public CodeExpression withParens() {
-		this.parens = true;
+		parens = true;
 		return this;
 	}
 

@@ -1,10 +1,22 @@
 package org.duelengine.duel.codegen;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 import org.duelengine.duel.DataEncoder;
-import org.duelengine.duel.ast.*;
+import org.duelengine.duel.ast.CALLCommandNode;
+import org.duelengine.duel.ast.CodeBlockNode;
+import org.duelengine.duel.ast.CodeCommentNode;
+import org.duelengine.duel.ast.CommentNode;
+import org.duelengine.duel.ast.DocTypeNode;
+import org.duelengine.duel.ast.DuelNode;
+import org.duelengine.duel.ast.ElementNode;
+import org.duelengine.duel.ast.ExpressionNode;
+import org.duelengine.duel.ast.LiteralNode;
+import org.duelengine.duel.ast.VIEWCommandNode;
 import org.duelengine.duel.parsing.InvalidNodeException;
 
 /**
@@ -20,9 +32,9 @@ public class ClientCodeGen implements CodeGenerator {
 		this(null);
 	}
 
-	public ClientCodeGen(CodeGenSettings settings) {
-		this.settings = (settings != null) ? settings : new CodeGenSettings();
-		this.encoder = new DataEncoder(this.settings.getNewline(), this.settings.getIndent());
+	public ClientCodeGen(CodeGenSettings codeGenSettings) {
+		settings = (codeGenSettings != null) ? codeGenSettings : new CodeGenSettings();
+		encoder = new DataEncoder(settings.getNewline(), settings.getIndent());
 	}
 
 	@Override
@@ -40,7 +52,7 @@ public class ClientCodeGen implements CodeGenerator {
 	public void write(Appendable output, VIEWCommandNode... views)
 		throws IOException {
 
-		this.write(output, views != null ? Arrays.asList(views) : null);
+		write(output, views != null ? Arrays.asList(views) : null);
 	}
 
 	/**
@@ -61,7 +73,7 @@ public class ClientCodeGen implements CodeGenerator {
 		}
 
 		output.append("/*global duel */");
-		this.writeln(output, 0);
+		writeln(output, 0);
 
 		List<String> namespaces = new ArrayList<String>();
 		for (VIEWCommandNode view : views) {
@@ -69,18 +81,18 @@ public class ClientCodeGen implements CodeGenerator {
 				continue;
 			}
 
-			this.writeln(output, 0);
+			writeln(output, 0);
 
 			// prepend the client-side prefix
-			String viewName = this.settings.getClientName(view.getName());
+			String viewName = settings.getClientName(view.getName());
 			try {
-				if (this.encoder.writeNamespace(output, namespaces, viewName)) {
-					this.writeln(output, 0);
+				if (encoder.writeNamespace(output, namespaces, viewName)) {
+					writeln(output, 0);
 				}
 			} catch (IllegalArgumentException ex) {
 				throw new InvalidNodeException("Invalid view name: "+viewName, view.getAttribute("name"), ex);
 			}
-			this.writeView(output, view, viewName);
+			writeView(output, view, viewName);
 		}
 	}
 
@@ -99,40 +111,40 @@ public class ClientCodeGen implements CodeGenerator {
 			if (child instanceof ElementNode &&
 				(((ElementNode)child).hasChildren() ||
 				((ElementNode)child).hasAttributes())) {
-				this.writeln(output, 1);
+				writeln(output, 1);
 			}
 
 			// just emit the single child
-			this.writeNode(output, child, 1, false);
+			writeNode(output, child, 1, false);
 		} else {
 			// wrap in a document fragment
-			this.writeElement(output, "", view, 0, false);
+			writeElement(output, "", view, 0, false);
 		}
 
 		output.append(");");
-		this.writeln(output, 0);
+		writeln(output, 0);
 	}
 
 	private void writeNode(Appendable output, DuelNode node, int depth, boolean preMode)
 		throws IOException {
 
 		if (node instanceof LiteralNode) {
-			this.writeString(output, ((LiteralNode)node).getValue(), preMode);
+			writeString(output, ((LiteralNode)node).getValue(), preMode);
 
 		} else if (node instanceof ElementNode) {
-			this.writeElement(output, ((ElementNode)node).getTagName(), (ElementNode)node, depth, preMode);
+			writeElement(output, ((ElementNode)node).getTagName(), (ElementNode)node, depth, preMode);
 
 		} else if (node instanceof CodeBlockNode) {
-			this.writeCodeBlock(output, (CodeBlockNode)node);
+			writeCodeBlock(output, (CodeBlockNode)node);
 
 		} else if (node instanceof CommentNode) {
-			this.writeSpecialElement(output, "!", ((CommentNode)node).getValue(), depth, preMode);
+			writeSpecialElement(output, "!", ((CommentNode)node).getValue(), depth, preMode);
 
 		} else if (node instanceof CodeCommentNode) {
-			this.writeComment(output, ((CodeCommentNode)node).getValue());
+			writeComment(output, ((CodeCommentNode)node).getValue());
 
 		} else if (node instanceof DocTypeNode) {
-			this.writeSpecialElement(output, "!DOCTYPE", ((DocTypeNode)node).getValue(), depth, preMode);
+			writeSpecialElement(output, "!DOCTYPE", ((DocTypeNode)node).getValue(), depth, preMode);
 
 		} else if (node != null) {
 			throw new UnsupportedOperationException("Node not yet implemented: "+node.getClass());
@@ -161,18 +173,18 @@ public class ClientCodeGen implements CodeGenerator {
 		output.append('[');
 		depth++;
 
-		this.writeString(output, name, preMode);
+		writeString(output, name, preMode);
 
 		boolean hasValue = (value != null) && (value.length() > 0);
 		if (hasValue) {
 			output.append(',');
-			this.writeln(output, depth);
-			this.writeString(output, value, preMode);
+			writeln(output, depth);
+			writeString(output, value, preMode);
 		}
 
 		depth--;
 		if (hasValue) {
-			this.writeln(output, depth);
+			writeln(output, depth);
 		}
 		output.append(']');
 	}
@@ -186,7 +198,7 @@ public class ClientCodeGen implements CodeGenerator {
 		output.append('[');
 		depth++;
 
-		this.writeString(output, tagName, preMode);
+		writeString(output, tagName, preMode);
 
 		if (node.hasAttributes()) {
 			Set<String> attrs = node.getAttributeNames();
@@ -195,7 +207,7 @@ public class ClientCodeGen implements CodeGenerator {
 			output.append(", {");
 			depth++;
 
-			boolean addPrefix = (node instanceof CALLCommandNode) && this.settings.hasClientNamePrefix();
+			boolean addPrefix = (node instanceof CALLCommandNode) && settings.hasClientNamePrefix();
 
 			boolean needsDelim = false;
 			for (String attr : attrs) {
@@ -208,10 +220,10 @@ public class ClientCodeGen implements CodeGenerator {
 					} else {
 						needsDelim = true;
 					}
-					this.writeln(output, depth);
+					writeln(output, depth);
 				}
 
-				this.writeString(output, attr, preMode);
+				writeString(output, attr, preMode);
 				output.append(" : ");
 				DuelNode attrVal = node.getAttribute(attr);
 				if (attrVal == null) {
@@ -222,9 +234,9 @@ public class ClientCodeGen implements CodeGenerator {
 					if (addPrefix && "view".equalsIgnoreCase(attr) && attrVal instanceof ExpressionNode) {
 						// prepend the client-side prefix
 						ExpressionNode nameAttr = (ExpressionNode)attrVal; 
-						attrVal = new ExpressionNode(this.settings.getClientName(nameAttr.getValue()), nameAttr.getIndex(), nameAttr.getLine(), nameAttr.getColumn());
+						attrVal = new ExpressionNode(settings.getClientName(nameAttr.getValue()), nameAttr.getIndex(), nameAttr.getLine(), nameAttr.getColumn());
 					}
-					this.writeNode(output, attrVal, depth, preMode);
+					writeNode(output, attrVal, depth, preMode);
 				}
 			}
 
@@ -232,7 +244,7 @@ public class ClientCodeGen implements CodeGenerator {
 			if (singleAttr) {
 				output.append(' ');
 			} else {
-				this.writeln(output, depth);
+				writeln(output, depth);
 			}
 			output.append('}');
 		}
@@ -252,7 +264,7 @@ public class ClientCodeGen implements CodeGenerator {
 
 		for (int i=0; i<length; i++) {
 			DuelNode child = children.get(i);
-			if (this.settings.getNormalizeWhitespace() &&
+			if (settings.getNormalizeWhitespace() &&
 				!preMode &&
 				child instanceof LiteralNode &&
 				(child == node.getFirstChild() || child == node.getLastChild())) {
@@ -270,8 +282,8 @@ public class ClientCodeGen implements CodeGenerator {
 			needsDelim = false;
 			hasChildren = true;
 
-			this.writeln(output, depth);
-			this.writeNode(output, child, depth, preMode);
+			writeln(output, depth);
+			writeNode(output, child, depth, preMode);
 
 			// less efficient but allows better comma placement
 			if (!(child instanceof CodeCommentNode)) {
@@ -287,7 +299,7 @@ public class ClientCodeGen implements CodeGenerator {
 
 		depth--;
 		if (hasChildren) {
-			this.writeln(output, depth);
+			writeln(output, depth);
 		}
 		output.append(']');
 	}
@@ -300,20 +312,20 @@ public class ClientCodeGen implements CodeGenerator {
 			return;
 		}
 
-		if (!preMode && this.settings.getNormalizeWhitespace() && value.length() > 0) {
+		if (!preMode && settings.getNormalizeWhitespace() && value.length() > 0) {
 			// not very efficient but allows simple normalization
 			value = value.replaceAll("^[\\r\\n]+", "").replaceAll("[\\r\\n]+$", "").replaceAll("\\s+", " ");
 			if (value.isEmpty()) {
 				value = " ";
 			}
 
-		} else if (this.settings.getConvertLineEndings()) {
+		} else if (settings.getConvertLineEndings()) {
 			// not very efficient but allows simple normalization
-			if (!"\t".equals(this.settings.getIndent())) {
-				value = value.replace("\t", this.settings.getIndent());
+			if (!"\t".equals(settings.getIndent())) {
+				value = value.replace("\t", settings.getIndent());
 			}
-			if (!"\n".equals(this.settings.getNewline())) {
-				value = value.replace("\n", this.settings.getNewline());
+			if (!"\n".equals(settings.getNewline())) {
+				value = value.replace("\n", settings.getNewline());
 			}
 		}
 
@@ -378,9 +390,9 @@ public class ClientCodeGen implements CodeGenerator {
 	private void writeln(Appendable output, int depth)
 		throws IOException {
 
-		output.append(this.settings.getNewline());
+		output.append(settings.getNewline());
 
-		String indent = this.settings.getIndent();
+		String indent = settings.getIndent();
 		while (depth-- > 0) {
 			output.append(indent);
 		}

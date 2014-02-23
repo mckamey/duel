@@ -23,8 +23,8 @@ public class CodeFieldReferenceExpression extends CodeExpression {
 		}
 	}
 
-	public void setTarget(CodeExpression target) {
-		this.target = target;
+	public void setTarget(CodeExpression value) {
+		target = value;
 	}
 
 	public CodeExpression getTarget() {
@@ -32,31 +32,31 @@ public class CodeFieldReferenceExpression extends CodeExpression {
 	}
 
 	public String getFieldName() {
-		return this.fieldName;
+		return fieldName;
 	}
 
 	public void setFieldName(String value) {
-		this.fieldName = value;
+		fieldName = value;
 	}
 
 	public Class<?> getFieldType() {
-		return this.fieldType;
+		return fieldType;
 	}
 
 	public void setFieldType(Class<?> value) {
-		this.fieldType = (value == null) ? Object.class : value;
+		fieldType = (value == null) ? Object.class : value;
 	}
 
 	@Override
 	public Class<?> getResultType() {
-		return this.fieldType;
+		return fieldType;
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.target != null) {
-				this.target.visit(visitor);
+			if (target != null) {
+				target.visit(visitor);
 			}
 		}
 	}
@@ -86,14 +86,14 @@ public class CodeFieldReferenceExpression extends CodeExpression {
 		final int HASH_PRIME = 1000003;
 
 		int hash = super.hashCode();
-		if (this.target != null) {
-			hash = hash * HASH_PRIME + this.target.hashCode();
+		if (target != null) {
+			hash = hash * HASH_PRIME + target.hashCode();
 		}
-		if (this.fieldName != null) {
-			hash = hash * HASH_PRIME + this.fieldName.hashCode();
+		if (fieldName != null) {
+			hash = hash * HASH_PRIME + fieldName.hashCode();
 		}
-		if (this.fieldType != null) {
-			hash = hash * HASH_PRIME + this.fieldType.hashCode();
+		if (fieldType != null) {
+			hash = hash * HASH_PRIME + fieldType.hashCode();
 		}
 		return hash;
 	}

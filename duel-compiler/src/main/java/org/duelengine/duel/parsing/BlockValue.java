@@ -6,10 +6,10 @@ public class BlockValue {
 	private final String end;
 	private final String value;
 
-	public BlockValue(String begin, String end, String value) {
-		this.begin = begin;
-		this.end = end;
-		this.value = value;
+	public BlockValue(String beginDelim, String endDelim, String blockValue) {
+		begin = beginDelim;
+		end = endDelim;
+		value = blockValue;
 	}
 
 	public String getBegin() {
@@ -27,14 +27,14 @@ public class BlockValue {
 	@Override
 	public String toString() {
 		StringBuilder buffer = new StringBuilder();
-		if (this.begin != null) {
-			buffer.append(this.begin);
+		if (begin != null) {
+			buffer.append(begin);
 		}
-		if (this.value != null) {
-			buffer.append(this.value);
+		if (value != null) {
+			buffer.append(value);
 		}
-		if (this.end != null) {
-			buffer.append(this.end);
+		if (end != null) {
+			buffer.append(end);
 		}
 		return buffer.toString();
 	}
@@ -48,9 +48,9 @@ public class BlockValue {
 
 		BlockValue that = (BlockValue)arg;
 		return
-			(this.begin == null ? that.begin == null : this.begin.equals(that.begin)) &&
-			(this.end == null ? that.end == null : this.end.equals(that.end)) &&
-			(this.value == null ? that.value == null : this.value.equals(that.value));
+			(begin == null ? that.begin == null : begin.equals(that.begin)) &&
+			(end == null ? that.end == null : end.equals(that.end)) &&
+			(value == null ? that.value == null : value.equals(that.value));
 	}
 
 	@Override
@@ -58,14 +58,14 @@ public class BlockValue {
 		final int HASH_PRIME = 1000003;
 
 		int hash = 0;
-		if (this.begin != null) {
-			hash = hash * HASH_PRIME + this.begin.hashCode();
+		if (begin != null) {
+			hash = hash * HASH_PRIME + begin.hashCode();
 		}
-		if (this.end != null) {
-			hash = hash * HASH_PRIME + this.end.hashCode();
+		if (end != null) {
+			hash = hash * HASH_PRIME + end.hashCode();
 		}
-		if (this.value != null) {
-			hash = hash * HASH_PRIME + this.value.hashCode();
+		if (value != null) {
+			hash = hash * HASH_PRIME + value.hashCode();
 		}
 		return hash;
 	}

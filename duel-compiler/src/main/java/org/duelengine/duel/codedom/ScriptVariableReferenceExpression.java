@@ -15,11 +15,11 @@ public class ScriptVariableReferenceExpression extends ScriptExpression {
 	}
 
 	public String getIdent() {
-		return this.ident;
+		return ident;
 	}
 
 	public void setIdent(String value) {
-		this.ident = value;
+		ident = value;
 	}
 
 	@Override
@@ -46,8 +46,8 @@ public class ScriptVariableReferenceExpression extends ScriptExpression {
 		final int HASH_PRIME = 1000003;
 
 		int hash = super.hashCode();
-		if (this.ident != null) {
-			hash = hash * HASH_PRIME + this.ident.hashCode();
+		if (ident != null) {
+			hash = hash * HASH_PRIME + ident.hashCode();
 		}
 		return hash;
 	}

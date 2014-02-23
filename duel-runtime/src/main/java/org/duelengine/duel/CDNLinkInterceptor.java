@@ -2,7 +2,12 @@ package org.duelengine.duel;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +50,8 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 		// use URI class to check for proper host syntax
 		this.cdnHost = formatURL(cdnHost);
 
-		log.info("cdnHost="+this.cdnHost);
-		log.info("isDevMode="+this.isDevMode);
+		log.info("cdnHost="+cdnHost);
+		log.info("isDevMode="+isDevMode);
 	}
 
 	private static String formatURL(String path) {
@@ -81,25 +86,25 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 	 }
 
 	public String transformURL(String url) {
-		if (!this.cdnMap.containsKey(url)) {
+		if (!cdnMap.containsKey(url)) {
 			return url;
 		}
 
 		// lookup CDN resource
-		String cdnURL = this.cdnMap.get(url);
+		String cdnURL = cdnMap.get(url);
 
-		if (this.isDevMode) {
-			if (!this.cdnMap.containsKey(cdnURL)) {
+		if (isDevMode) {
+			if (!cdnMap.containsKey(cdnURL)) {
 				// scripts & stylesheets served directly
 				return url;
 			}
 
 			// merge files serve generated placeholder
-			cdnURL = this.cdnMap.get(cdnURL);
+			cdnURL = cdnMap.get(cdnURL);
 		}
 
 		// CDN resources are compacted and optionally served from a different root
-		return this.cdnHost + cdnURL;
+		return cdnHost + cdnURL;
 	}
 
 	/**

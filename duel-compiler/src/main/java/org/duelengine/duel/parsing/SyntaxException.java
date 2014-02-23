@@ -27,12 +27,12 @@ public class SyntaxException extends IllegalArgumentException {
 	}
 
 	public int getIndex() {
-		return this.index;
+		return index;
 	}
 	public int getLine() {
-		return this.line;
+		return line;
 	}
 	public int getColumn() {
-		return this.column;
+		return column;
 	}
 }

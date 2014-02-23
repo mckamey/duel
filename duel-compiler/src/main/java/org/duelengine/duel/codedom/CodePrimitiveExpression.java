@@ -13,8 +13,8 @@ public class CodePrimitiveExpression extends CodeExpression {
 
 	private final Object value;
 
-	public CodePrimitiveExpression(Object value) {
-		Class<?> type = (value == null) ? null : value.getClass();
+	public CodePrimitiveExpression(Object primative) {
+		Class<?> type = (primative == null) ? null : primative.getClass();
 		if (type != null &&
 			!type.isPrimitive() &&
 			!Boolean.class.equals(type) &&
@@ -25,16 +25,16 @@ public class CodePrimitiveExpression extends CodeExpression {
 			throw new IllegalArgumentException("Invalid primitive value: "+type.getName());
 		}
 
-		this.value = value;
+		value = primative;
 	}
 
 	public Object getValue() {
-		return this.value;
+		return value;
 	}
 
 	@Override
 	public Class<?> getResultType() {
-		return (this.value == null) ? Object.class : this.value.getClass();
+		return (value == null) ? Object.class : value.getClass();
 	}
 
 	@Override
@@ -57,8 +57,8 @@ public class CodePrimitiveExpression extends CodeExpression {
 		final int HASH_PRIME = 1000003;
 
 		int hash = super.hashCode();
-		if (this.value != null) {
-			hash = hash * HASH_PRIME + this.value.hashCode();
+		if (value != null) {
+			hash = hash * HASH_PRIME + value.hashCode();
 		}
 		return hash;
 	}

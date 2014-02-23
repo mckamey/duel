@@ -23,7 +23,7 @@ public abstract class CodeBlockNode extends BlockNode {
 		// it could result in false positives
 		// but it should reduce bulk for most cases
 
-		String value = this.getValue();
+		String value = getValue();
 		if (value == null) {
 			return ArgList.NONE;
 		}
@@ -48,7 +48,7 @@ public abstract class CodeBlockNode extends BlockNode {
 	}
 
 	protected String formatParamList() {
-		switch (this.getParamList()) {
+		switch (getParamList()) {
 			case DATA:
 				return "data";
 			case INDEX:
@@ -63,7 +63,7 @@ public abstract class CodeBlockNode extends BlockNode {
 	}
 
 	public int getArgSize() {
-		switch (this.getParamList()) {
+		switch (getParamList()) {
 			case DATA:
 				return 1;
 			case INDEX:

@@ -21,34 +21,34 @@ public class CodeVariableDeclarationStatement extends CodeStatement {
 	}
 
 	public Class<?> getType() {
-		return this.type;
+		return type;
 	}
 
 	public void setType(Class<?> value) {
-		this.type = (value == null) ? Object.class : value;
+		type = (value == null) ? Object.class : value;
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	public void setName(String value) {
-		this.name = value;
+		name = value;
 	}
 
 	public CodeExpression getInitExpression() {
-		return this.initExpression;
+		return initExpression;
 	}
 
 	public void setInitExpression(CodeExpression value) {
-		this.initExpression = value;
+		initExpression = value;
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.initExpression != null) {
-				this.initExpression.visit(visitor);
+			if (initExpression != null) {
+				initExpression.visit(visitor);
 			}
 		}
 	}
@@ -77,12 +77,12 @@ public class CodeVariableDeclarationStatement extends CodeStatement {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = this.type.hashCode();
-		if (this.name != null) {
-			hash = hash * HASH_PRIME + this.name.hashCode();
+		int hash = type.hashCode();
+		if (name != null) {
+			hash = hash * HASH_PRIME + name.hashCode();
 		}
-		if (this.initExpression != null) {
-			hash = hash * HASH_PRIME + this.initExpression.hashCode();
+		if (initExpression != null) {
+			hash = hash * HASH_PRIME + initExpression.hashCode();
 		}
 		return hash;
 	}

@@ -13,66 +13,59 @@ public class FormatPrefs {
 	private boolean scriptTypeAttr;
 
 	public String getEncoding() {
-		return this.encoding;
+		return encoding;
 	}
 
 	public FormatPrefs setEncoding(String value) {
 		if (value == null || value.isEmpty()) {
 			// ensure non-empty
-			this.encoding = UTF8_ENCODING;
+			encoding = UTF8_ENCODING;
+
 		} else {
-			this.encoding = value;
+			encoding = value;
 		}
 
 		return this;
 	}
 
 	public String getNewline() {
-		return this.newline;
+		return newline;
 	}
 
 	public FormatPrefs setNewline(String value) {
-		if (value == null) {
-			// ensure non-null
-			this.newline = "";
-		} else {
-			this.newline = value;
-		}
+		// ensure non-null
+		newline = (value == null) ? "" : value;
 
 		return this;
 	}
 
 	public String getIndent() {
-		return this.indent;
+		return indent;
 	}
 
 	public FormatPrefs setIndent(String value) {
-		if (value == null) {
-			// ensure non-null
-			this.indent = "";
-		} else {
-			this.indent = value;
-		}
+		// ensure non-null
+		indent = (value == null) ? "" : value;
 
 		return this;
 	}
 
 	public boolean getEncodeNonASCII() {
-		return this.encodeNonASCII;
+		return encodeNonASCII;
 	}
 
 	public FormatPrefs setEncodeNonASCII(boolean value) {
-		this.encodeNonASCII = value;
+		encodeNonASCII = value;
 
 		return this;
 	}
 
 	public boolean getScriptTypeAttr() {
-		return this.scriptTypeAttr;
+		return scriptTypeAttr;
 	}
 
 	public FormatPrefs setScriptTypeAttr(boolean value) {
-		this.scriptTypeAttr = value;
+		scriptTypeAttr = value;
 
 		return this;
 	}

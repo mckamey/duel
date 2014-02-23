@@ -20,13 +20,13 @@ public abstract class CommandNode extends ElementNode {
 
 		if (attr != null) {
 			for (AttributePair a : attr) {
-				this.setAttribute(a.getName(), a.getValue());
+				setAttribute(a.getName(), a.getValue());
 			}
 		}
 	}
 
 	public CommandName getCommand() {
-		return this.command;
+		return command;
 	}
 
 	@Override
@@ -37,14 +37,14 @@ public abstract class CommandNode extends ElementNode {
 			throw new NullPointerException("attr");
 		}
 
-		this.setAttribute(attr.getName(), attr.getValue());
+		setAttribute(attr.getName(), attr.getValue());
 	}
 
 	@Override
 	public void setAttribute(String name, DuelNode value) {
 
 		// ensure all command attributes are code blocks
-		if (this.codeAttrs && value instanceof LiteralNode) {
+		if (codeAttrs && value instanceof LiteralNode) {
 			value = new ExpressionNode(((LiteralNode)value).getValue(), value.getIndex(), value.getLine(), value.getColumn());
 		}
 

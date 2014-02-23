@@ -11,24 +11,24 @@ public class ScriptTranslationException extends SyntaxException {
 
 	private final AstNode node;
 
-	public ScriptTranslationException(String message, AstNode node) {
+	public ScriptTranslationException(String message, AstNode astNode) {
 		super(
 			message,
-			(node != null) ? node.getAbsolutePosition() : 0,
-			(node != null) ? node.getLineno() : 0,
+			(astNode != null) ? astNode.getAbsolutePosition() : 0,
+			(astNode != null) ? astNode.getLineno() : 0,
 			0);
 
-		this.node = node;
+		node = astNode;
 	}
 
-	public ScriptTranslationException(String message, AstNode node, Throwable cause) {
+	public ScriptTranslationException(String message, AstNode astNode, Throwable cause) {
 		super(
 			message,
-			(node != null) ? node.getAbsolutePosition() : 0,
-			(node != null) ? node.getLineno() : 0,
+			(astNode != null) ? astNode.getAbsolutePosition() : 0,
+			(astNode != null) ? astNode.getLineno() : 0,
 			0);
 
-		this.node = node;
+		node = astNode;
 	}
 
 	public ScriptTranslationException(String message, EvaluatorException error) {
@@ -39,11 +39,11 @@ public class ScriptTranslationException extends SyntaxException {
 			(error != null) ? error.columnNumber() : 0,
 			error);
 
-		this.node = null;
+		node = null;
 	}
 
 	public AstNode getNode() {
-		return this.node;
+		return node;
 	}
 
 	/**
@@ -56,12 +56,12 @@ public class ScriptTranslationException extends SyntaxException {
 			String clientCode = node.getClientCode();
 			int start = clientCode.indexOf(node.getValue()) - node.getBegin().length();
 
-			int index = this.getIndex() > start ? this.getIndex()-start : 0;
-			int line = this.getLine() > 0 ? this.getLine()-1 : 0;
-			int column = this.getColumn() > start ? this.getColumn()-start : index;
+			int index = getIndex() > start ? getIndex()-start : 0;
+			int line = getLine() > 0 ? getLine()-1 : 0;
+			int column = getColumn() > start ? getColumn()-start : index;
 
 			return new InvalidNodeException(
-				this.getMessage(),
+				getMessage(),
 				node.getIndex()+index,
 				node.getLine()+line,
 				node.getColumn()+column,

@@ -1,11 +1,63 @@
 package org.duelengine.duel.codegen;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
-import org.duelengine.duel.*;
-import org.duelengine.duel.ast.*;
-import org.duelengine.duel.codedom.*;
+import org.duelengine.duel.DataEncoder;
+import org.duelengine.duel.DuelContext;
+import org.duelengine.duel.DuelData;
+import org.duelengine.duel.DuelView;
+import org.duelengine.duel.HTMLFormatter;
+import org.duelengine.duel.ast.CALLCommandNode;
+import org.duelengine.duel.ast.CodeBlockNode;
+import org.duelengine.duel.ast.CodeCommentNode;
+import org.duelengine.duel.ast.CommandNode;
+import org.duelengine.duel.ast.CommentNode;
+import org.duelengine.duel.ast.DocTypeNode;
+import org.duelengine.duel.ast.DuelNode;
+import org.duelengine.duel.ast.ElementNode;
+import org.duelengine.duel.ast.ExpressionNode;
+import org.duelengine.duel.ast.FORCommandNode;
+import org.duelengine.duel.ast.IFCommandNode;
+import org.duelengine.duel.ast.LiteralNode;
+import org.duelengine.duel.ast.MarkupExpressionNode;
+import org.duelengine.duel.ast.PARTCommandNode;
+import org.duelengine.duel.ast.UnknownNode;
+import org.duelengine.duel.ast.VIEWCommandNode;
+import org.duelengine.duel.ast.XORCommandNode;
+import org.duelengine.duel.codedom.AccessModifierType;
+import org.duelengine.duel.codedom.CodeBinaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeBinaryOperatorType;
+import org.duelengine.duel.codedom.CodeCastExpression;
+import org.duelengine.duel.codedom.CodeCommentStatement;
+import org.duelengine.duel.codedom.CodeConditionStatement;
+import org.duelengine.duel.codedom.CodeExpression;
+import org.duelengine.duel.codedom.CodeExpressionStatement;
+import org.duelengine.duel.codedom.CodeField;
+import org.duelengine.duel.codedom.CodeFieldReferenceExpression;
+import org.duelengine.duel.codedom.CodeIterationStatement;
+import org.duelengine.duel.codedom.CodeMember;
+import org.duelengine.duel.codedom.CodeMethod;
+import org.duelengine.duel.codedom.CodeMethodInvokeExpression;
+import org.duelengine.duel.codedom.CodeMethodReturnStatement;
+import org.duelengine.duel.codedom.CodeObjectCreateExpression;
+import org.duelengine.duel.codedom.CodeParameterDeclarationExpression;
+import org.duelengine.duel.codedom.CodePrimitiveExpression;
+import org.duelengine.duel.codedom.CodeStatement;
+import org.duelengine.duel.codedom.CodeStatementCollection;
+import org.duelengine.duel.codedom.CodeThisReferenceExpression;
+import org.duelengine.duel.codedom.CodeTypeDeclaration;
+import org.duelengine.duel.codedom.CodeUnaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeUnaryOperatorType;
+import org.duelengine.duel.codedom.CodeVariableCompoundDeclarationStatement;
+import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
+import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
 import org.duelengine.duel.parsing.InvalidNodeException;
 
 /**
@@ -33,36 +85,36 @@ public class CodeDOMBuilder {
 		this(null);
 	}
 
-	public CodeDOMBuilder(CodeGenSettings settings) {
-		this.settings = (settings != null) ? settings : new CodeGenSettings();
-		this.buffer = new StringBuilder();
-		this.formatter = new HTMLFormatter();
-		this.encoder = new DataEncoder(this.settings.getNewline(), this.settings.getIndent());
+	public CodeDOMBuilder(CodeGenSettings codeGenSettings) {
+		settings = (codeGenSettings != null) ? codeGenSettings : new CodeGenSettings();
+		buffer = new StringBuilder();
+		formatter = new HTMLFormatter();
+		encoder = new DataEncoder(settings.getNewline(), settings.getIndent());
 	}
 
 	public CodeTypeDeclaration buildView(VIEWCommandNode viewNode) throws IOException {
 		try {
 			// prepend the server-side prefix
-			String fullName = this.settings.getServerName(viewNode.getName());
+			String fullName = settings.getServerName(viewNode.getName());
 			int lastDot = fullName.lastIndexOf('.');
 			String name = fullName.substring(lastDot+1);
 			String ns = (lastDot > 0) ? fullName.substring(0, lastDot) : null;
 
-			this.scopeStack.clear();
-			this.tagMode = TagMode.None;
-			this.hasScripts = false;
-			this.needsExtrasEmitted = true;
-			this.viewType = CodeDOMUtility.createViewType(ns, name);
+			scopeStack.clear();
+			tagMode = TagMode.None;
+			hasScripts = false;
+			needsExtrasEmitted = true;
+			viewType = CodeDOMUtility.createViewType(ns, name);
 
-			CodeMethod method = this.buildRenderMethod(viewNode.getChildren()).withOverride();
+			CodeMethod method = buildRenderMethod(viewNode.getChildren()).withOverride();
 
 			method.setName("render");
 			method.setAccess(AccessModifierType.PROTECTED);
 
-			return this.viewType;
+			return viewType;
 
 		} finally {
-			this.viewType = null;
+			viewType = null;
 		}
 	}
 
@@ -72,7 +124,7 @@ public class CodeDOMBuilder {
 		CodeMethod method = new CodeMethod(
 			AccessModifierType.PRIVATE,
 			Void.class,
-			this.viewType.nextIdent("render_"),
+			viewType.nextIdent("render_"),
 			new CodeParameterDeclarationExpression[] {
 				new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 				new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -81,15 +133,15 @@ public class CodeDOMBuilder {
 				new CodeParameterDeclarationExpression(String.class, "key")
 			}).withThrows(IOException.class);
 
-		this.viewType.add(method);
+		viewType.add(method);
 
-		this.flushBuffer();
-		this.scopeStack.push(method.getStatements());
+		flushBuffer();
+		scopeStack.push(method.getStatements());
 		for (DuelNode node : content) {
-			this.buildNode(node);
+			buildNode(node);
 		}
-		this.flushBuffer();
-		this.scopeStack.pop();
+		flushBuffer();
+		scopeStack.pop();
 
 		return method;
 	}
@@ -100,17 +152,17 @@ public class CodeDOMBuilder {
 				// IE conditional comments get parsed as an unknown literal
 				// this ensures if a script is within a conditional comment
 				// that extras are emitted before the opening of the comment 
-				this.ensureExtrasEmitted(true);
+				ensureExtrasEmitted(true);
 			}
 			String literal = ((LiteralNode)node).getValue();
-			if (this.tagMode == TagMode.SuspendMode || node instanceof UnknownNode) {
-				this.buffer.append(literal);
+			if (tagMode == TagMode.SuspendMode || node instanceof UnknownNode) {
+				buffer.append(literal);
 
 			} else {
 				if (literal != null &&
 					literal.length() > 0 &&
-					this.tagMode != TagMode.PreMode &&
-					this.settings.getNormalizeWhitespace()) {
+					tagMode != TagMode.PreMode &&
+					settings.getNormalizeWhitespace()) {
 
 					// not very efficient but allows simple normalization
 					literal = literal.replaceAll("^[\\r\\n]+", "").replaceAll("[\\r\\n]+$", "").replaceAll("\\s+", " ");
@@ -119,26 +171,26 @@ public class CodeDOMBuilder {
 					}
 				}
 
-				this.formatter.writeLiteral(this.buffer, literal, this.settings.getEncodeNonASCII());
+				formatter.writeLiteral(buffer, literal, settings.getEncodeNonASCII());
 			}
 
 		} else if (node instanceof CommandNode) {
 			CommandNode command = (CommandNode)node;
 			switch (command.getCommand()) {
 				case XOR:
-					this.buildConditional((XORCommandNode)node);
+					buildConditional((XORCommandNode)node);
 					break;
 				case IF:
-					this.buildConditional((IFCommandNode)node, this.scopeStack.peek());
+					buildConditional((IFCommandNode)node, scopeStack.peek());
 					break;
 				case FOR:
-					this.buildIteration((FORCommandNode)node);
+					buildIteration((FORCommandNode)node);
 					break;
 				case CALL:
-					this.buildCall((CALLCommandNode)node);
+					buildCall((CALLCommandNode)node);
 					break;
 				case PART:
-					this.buildPartPlaceholder((PARTCommandNode)node);
+					buildPartPlaceholder((PARTCommandNode)node);
 					break;
 				default:
 					throw new InvalidNodeException("Invalid command node type: "+command.getCommand(), command);
@@ -146,23 +198,23 @@ public class CodeDOMBuilder {
 
 		} else if (node instanceof ElementNode) {
 			ElementNode element = (ElementNode)node;
-			this.buildElement(element);
+			buildElement(element);
 
 		} else if (node instanceof CodeBlockNode) {
-			this.buildCodeBlock((CodeBlockNode)node);
+			buildCodeBlock((CodeBlockNode)node);
 
 		} else if (node instanceof CommentNode) {
 			// emit comment markup
 			CommentNode comment = (CommentNode)node;
-			this.formatter.writeComment(this.buffer, comment.getValue());
+			formatter.writeComment(buffer, comment.getValue());
 
 		} else if (node instanceof DocTypeNode) {
 			// emit doctype
 			DocTypeNode doctype = (DocTypeNode)node;
-			this.formatter.writeDocType(this.buffer, doctype.getValue());
+			formatter.writeDocType(buffer, doctype.getValue());
 
 		} else if (node instanceof CodeCommentNode) {
-			this.buildComment((CodeCommentNode)node);
+			buildComment((CodeCommentNode)node);
 		}
 	}
 
@@ -170,7 +222,7 @@ public class CodeDOMBuilder {
 		throws IOException {
 
 		if (node.isDefer()) {
-			this.buildDeferredCall(node);
+			buildDeferredCall(node);
 			return;
 		}
 
@@ -178,8 +230,8 @@ public class CodeDOMBuilder {
 		CodeField field = new CodeField(
 				AccessModifierType.PRIVATE,
 				DuelView.class,
-				this.viewType.nextIdent("view_"));
-		this.viewType.add(field);
+				viewType.nextIdent("view_"));
+		viewType.add(field);
 
 		// determine the name of the template
 		String viewName = null;
@@ -196,17 +248,17 @@ public class CodeDOMBuilder {
 		}
 
 		// prepend the server-side prefix
-		viewName = this.settings.getServerName(viewName);
+		viewName = settings.getServerName(viewName);
 
 		CodeExpression[] ctorArgs = new CodeExpression[node.getChildren().size()];
 
 		int i = 0;
 		for (DuelNode child : node.getChildren()) {
-			ctorArgs[i++] = this.buildPart((PARTCommandNode)child);
+			ctorArgs[i++] = buildPart((PARTCommandNode)child);
 		}
 
 		// insert an initialization statement into the init method
-		CodeMethod initMethod = this.ensureInitMethod();
+		CodeMethod initMethod = ensureInitMethod();
 		initMethod.getStatements().add(
 			new CodeExpressionStatement(
 				new CodeBinaryOperatorExpression(
@@ -219,7 +271,7 @@ public class CodeDOMBuilder {
 		CodeExpression dataExpr;
 		DuelNode callData = node.getAttribute(CALLCommandNode.DATA);
 		if (callData instanceof CodeBlockNode) {
-			dataExpr = this.translateExpression((CodeBlockNode)callData, false);
+			dataExpr = translateExpression((CodeBlockNode)callData, false);
 		} else {
 			dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
 		}
@@ -227,7 +279,7 @@ public class CodeDOMBuilder {
 		CodeExpression indexExpr;
 		DuelNode callIndex = node.getAttribute(CALLCommandNode.INDEX);
 		if (callIndex instanceof CodeBlockNode) {
-			indexExpr = this.translateExpression((CodeBlockNode)callIndex, false);
+			indexExpr = translateExpression((CodeBlockNode)callIndex, false);
 		} else {
 			indexExpr = new CodeVariableReferenceExpression(int.class, "index");
 		}
@@ -235,7 +287,7 @@ public class CodeDOMBuilder {
 		CodeExpression countExpr;
 		DuelNode callCount = node.getAttribute(CALLCommandNode.COUNT);
 		if (callCount instanceof CodeBlockNode) {
-			countExpr = this.translateExpression((CodeBlockNode)callCount, false);
+			countExpr = translateExpression((CodeBlockNode)callCount, false);
 		} else {
 			countExpr = new CodeVariableReferenceExpression(int.class, "count");
 		}
@@ -243,13 +295,13 @@ public class CodeDOMBuilder {
 		CodeExpression keyExpr;
 		DuelNode callKey = node.getAttribute(CALLCommandNode.KEY);
 		if (callKey instanceof CodeBlockNode) {
-			keyExpr = this.translateExpression((CodeBlockNode)callKey, false);
+			keyExpr = translateExpression((CodeBlockNode)callKey, false);
 		} else {
 			keyExpr = new CodeVariableReferenceExpression(String.class, "key");
 		}
 
-		this.flushBuffer();
-		CodeStatementCollection scope = this.scopeStack.peek();
+		flushBuffer();
+		CodeStatementCollection scope = scopeStack.peek();
 		scope.add(new CodeMethodInvokeExpression(
 			Void.class,
 			new CodeThisReferenceExpression(),
@@ -265,21 +317,21 @@ public class CodeDOMBuilder {
 	private void buildDeferredCall(CALLCommandNode node)
 		throws IOException {
 
-		boolean prettyPrint = this.encoder.isPrettyPrint();
-		CodeStatementCollection scope = this.scopeStack.peek();
+		boolean prettyPrint = encoder.isPrettyPrint();
+		CodeStatementCollection scope = scopeStack.peek();
 
 		// use the script tag as its own replacement element
-		this.hasScripts = true;
-		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
-		if (this.settings.getScriptTypeAttr()) {
-			this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+		hasScripts = true;
+		formatter.writeOpenElementBeginTag(buffer, "script");
+		if (settings.getScriptTypeAttr()) {
+			formatter.writeAttribute(buffer, "type", "text/javascript");
 		}
-		this.formatter.writeOpenAttribute(this.buffer, "id");
-		CodeVariableDeclarationStatement idVar = this.emitClientID();
-		this.formatter
-			.writeCloseAttribute(this.buffer)
-			.writeCloseElementBeginTag(this.buffer);
-		this.ensureExtrasEmitted(false);
+		formatter.writeOpenAttribute(buffer, "id");
+		CodeVariableDeclarationStatement idVar = emitClientID();
+		formatter
+			.writeCloseAttribute(buffer)
+			.writeCloseElementBeginTag(buffer);
+		ensureExtrasEmitted(false);
 
 		// determine the name of the template
 		String viewName = null;
@@ -292,17 +344,17 @@ public class CodeDOMBuilder {
 
 		if (viewName != null) {
 			// prepend the server-side prefix
-			viewName = this.settings.getClientName(viewName);
-			this.buffer.append(viewName);
+			viewName = settings.getClientName(viewName);
+			buffer.append(viewName);
 
 		} else {
 			// wrap the code block as an anonymous DUEL view
-			this.buffer.append("duel(");
+			buffer.append("duel(");
 			if (callView instanceof CodeBlockNode) {
-				CodeExpression viewExpr = this.translateExpression((CodeBlockNode)callView, false);
+				CodeExpression viewExpr = translateExpression((CodeBlockNode)callView, false);
 
 				// emit view expression as a literal result of the expression
-				this.flushBuffer();
+				flushBuffer();
 				scope.add(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -315,17 +367,17 @@ public class CodeDOMBuilder {
 				// TODO: how to handle switcher method cases?
 				throw new InvalidNodeException("Unexpected Call command view attribute: "+callView, callView);
 			}
-			this.buffer.append(")");
+			buffer.append(")");
 		}
 
 		// bind the view
-		this.buffer.append("(");
-		this.flushBuffer();
+		buffer.append("(");
+		flushBuffer();
 
 		CodeExpression dataExpr;
 		DuelNode callData = node.getAttribute(CALLCommandNode.DATA);
 		if (callData instanceof CodeBlockNode) {
-			dataExpr = this.translateExpression((CodeBlockNode)callData, false);
+			dataExpr = translateExpression((CodeBlockNode)callData, false);
 		} else {
 			dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
 		}
@@ -339,16 +391,16 @@ public class CodeDOMBuilder {
 			dataExpr,
 			CodePrimitiveExpression.ONE));
 
-		this.buffer.append(',');
+		buffer.append(',');
 		if (prettyPrint) {
-			this.buffer.append(' ');
+			buffer.append(' ');
 		}
-		this.flushBuffer();
+		flushBuffer();
 
 		CodeExpression indexExpr;
 		DuelNode callIndex = node.getAttribute(CALLCommandNode.INDEX);
 		if (callIndex instanceof CodeBlockNode) {
-			indexExpr = this.translateExpression((CodeBlockNode)callIndex, false);
+			indexExpr = translateExpression((CodeBlockNode)callIndex, false);
 		} else {
 			indexExpr = new CodeVariableReferenceExpression(int.class, "index");
 		}
@@ -362,16 +414,16 @@ public class CodeDOMBuilder {
 			indexExpr,
 			CodePrimitiveExpression.ONE));
 
-		this.buffer.append(',');
+		buffer.append(',');
 		if (prettyPrint) {
-			this.buffer.append(' ');
+			buffer.append(' ');
 		}
-		this.flushBuffer();
+		flushBuffer();
 
 		CodeExpression countExpr;
 		DuelNode callCount = node.getAttribute(CALLCommandNode.COUNT);
 		if (callCount instanceof CodeBlockNode) {
-			countExpr = this.translateExpression((CodeBlockNode)callCount, false);
+			countExpr = translateExpression((CodeBlockNode)callCount, false);
 		} else {
 			countExpr = new CodeVariableReferenceExpression(int.class, "count");
 		}
@@ -385,16 +437,16 @@ public class CodeDOMBuilder {
 			countExpr,
 			CodePrimitiveExpression.ONE));
 
-		this.buffer.append(',');
+		buffer.append(',');
 		if (prettyPrint) {
-			this.buffer.append(' ');
+			buffer.append(' ');
 		}
-		this.flushBuffer();
+		flushBuffer();
 
 		CodeExpression keyExpr;
 		DuelNode callKey = node.getAttribute(CALLCommandNode.KEY);
 		if (callKey instanceof CodeBlockNode) {
-			keyExpr = this.translateExpression((CodeBlockNode)callKey, false);
+			keyExpr = translateExpression((CodeBlockNode)callKey, false);
 		} else {
 			keyExpr = new CodeVariableReferenceExpression(String.class, "key");
 		}
@@ -409,10 +461,10 @@ public class CodeDOMBuilder {
 			CodePrimitiveExpression.ONE));
 
 		// emit patch function call which replaces the DOM node with the result
-		this.buffer.append(").toDOM(");
+		buffer.append(").toDOM(");
 
 		// emit id var or known value
-		this.flushBuffer();
+		flushBuffer();
 		scope.add(new CodeMethodInvokeExpression(
 			Void.class,
 			new CodeThisReferenceExpression(),
@@ -421,18 +473,18 @@ public class CodeDOMBuilder {
 			new CodeVariableReferenceExpression(idVar),
 			CodePrimitiveExpression.ONE));
 
-		this.buffer.append(");");
+		buffer.append(");");
 
 		// last parameter will be the current data
-		this.formatter.writeElementEndTag(this.buffer, "script");
+		formatter.writeElementEndTag(buffer, "script");
 	}
 
 	private CodeObjectCreateExpression buildPart(PARTCommandNode node)
 		throws IOException {
 
 		CodeTypeDeclaration part = CodeDOMUtility.createPartType(
-				this.viewType.nextIdent("part_"));
-		this.viewType.add(part);
+				viewType.nextIdent("part_"));
+		viewType.add(part);
 
 		String partName = node.getName();
 		if (partName == null) {
@@ -447,17 +499,17 @@ public class CodeDOMBuilder {
 			new CodeMethodReturnStatement(new CodePrimitiveExpression(partName))).withOverride();
 		part.add(getNameMethod);
 
-		CodeTypeDeclaration parentView = this.viewType;
+		CodeTypeDeclaration parentView = viewType;
 		try {
-			this.viewType = part;
+			viewType = part;
 
-			CodeMethod renderMethod = this.buildRenderMethod(node.getChildren()).withOverride();
+			CodeMethod renderMethod = buildRenderMethod(node.getChildren()).withOverride();
 
 			renderMethod.setName("render");
 			renderMethod.setAccess(AccessModifierType.PROTECTED);
 
 		} finally {
-			this.viewType = parentView;
+			viewType = parentView;
 		}
 
 		return new CodeObjectCreateExpression(part.getTypeName());
@@ -466,10 +518,10 @@ public class CodeDOMBuilder {
 	private void buildPartPlaceholder(PARTCommandNode part)
 		throws IOException {
 
-		CodeObjectCreateExpression createPart = this.buildPart(part);
+		CodeObjectCreateExpression createPart = buildPart(part);
 
 		// insert an initialization statement into the init method
-		CodeMethod initMethod = this.ensureInitMethod();
+		CodeMethod initMethod = ensureInitMethod();
 		initMethod.getStatements().add(
 			new CodeExpressionStatement(
 				new CodeMethodInvokeExpression(
@@ -479,7 +531,7 @@ public class CodeDOMBuilder {
 					createPart)));
 
 		// parent scope
-		CodeStatementCollection scope = this.scopeStack.peek();
+		CodeStatementCollection scope = scopeStack.peek();
 
 		scope.add(new CodeMethodInvokeExpression(
 			Void.class,
@@ -500,30 +552,30 @@ public class CodeDOMBuilder {
 		}
 
 		// parent scope
-		CodeStatementCollection scope = this.scopeStack.peek();
+		CodeStatementCollection scope = scopeStack.peek();
 
 		// build a helper method to hold the inner content
-		CodeMethod innerBind = this.buildRenderMethod(node.getChildren());
+		CodeMethod innerBind = buildRenderMethod(node.getChildren());
 
 		CodeExpression dataExpr;
 		DuelNode loopCount = node.getAttribute(FORCommandNode.COUNT);
 		if (loopCount instanceof CodeBlockNode) {
-			CodeExpression countExpr = this.translateExpression((CodeBlockNode)loopCount, false);
+			CodeExpression countExpr = translateExpression((CodeBlockNode)loopCount, false);
 
 			DuelNode loopData = node.getAttribute(FORCommandNode.DATA);
 			if (loopData instanceof CodeBlockNode) {
-				dataExpr = this.translateExpression((CodeBlockNode)loopData, false);
+				dataExpr = translateExpression((CodeBlockNode)loopData, false);
 			} else {
 				dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
 			}
 
-			this.buildIterationCount(scope, countExpr, dataExpr, innerBind);
+			buildIterationCount(scope, countExpr, dataExpr, innerBind);
 
 		} else {
 			DuelNode loopObj = node.getAttribute(FORCommandNode.IN);
 			if (loopObj instanceof CodeBlockNode) {
-				CodeExpression objExpr = this.translateExpression((CodeBlockNode)loopObj, false);
-				this.buildIterationObject(scope, objExpr, innerBind);
+				CodeExpression objExpr = translateExpression((CodeBlockNode)loopObj, false);
+				buildIterationObject(scope, objExpr, innerBind);
 
 			} else {
 				DuelNode loopArray = node.getAttribute(FORCommandNode.EACH);
@@ -531,8 +583,8 @@ public class CodeDOMBuilder {
 					throw new InvalidNodeException("FOR loop missing arguments", loopArray);
 				}
 
-				CodeExpression arrayExpr = this.translateExpression((CodeBlockNode)loopArray, false);
-				this.buildIterationArray(scope, arrayExpr, innerBind);
+				CodeExpression arrayExpr = translateExpression((CodeBlockNode)loopArray, false);
+				buildIterationArray(scope, arrayExpr, innerBind);
 			}
 		}
 	}
@@ -747,11 +799,11 @@ public class CodeDOMBuilder {
 	private void buildConditional(XORCommandNode node)
 		throws IOException {
 
-		CodeStatementCollection scope = this.scopeStack.peek();
+		CodeStatementCollection scope = scopeStack.peek();
 
 		for (DuelNode conditional : node.getChildren()) {
 			if (conditional instanceof IFCommandNode) {
-				scope = this.buildConditional((IFCommandNode)conditional, scope);
+				scope = buildConditional((IFCommandNode)conditional, scope);
 			}
 		}
 	}
@@ -759,19 +811,19 @@ public class CodeDOMBuilder {
 	private CodeStatementCollection buildConditional(IFCommandNode node, CodeStatementCollection scope)
 		throws IOException {
 
-		this.flushBuffer();
+		flushBuffer();
 
 		CodeBlockNode testNode = node.getTest();
 
 		if (testNode == null) {
 			// no condition block needed
 			if (node.hasChildren()) {
-				this.scopeStack.push(scope);
+				scopeStack.push(scope);
 				for (DuelNode child : node.getChildren()) {
-					this.buildNode(child);
+					buildNode(child);
 				}
-				this.flushBuffer();
-				this.scopeStack.pop();
+				flushBuffer();
+				scopeStack.pop();
 			}
 			return scope;
 		}
@@ -779,15 +831,15 @@ public class CodeDOMBuilder {
 		CodeConditionStatement condition = new CodeConditionStatement();
 		scope.add(condition);
 
-		condition.setCondition(this.translateExpression(testNode, false));
+		condition.setCondition(translateExpression(testNode, false));
 
 		if (node.hasChildren()) {
-			this.scopeStack.push(condition.getTrueStatements());
+			scopeStack.push(condition.getTrueStatements());
 			for (DuelNode child : node.getChildren()) {
-				this.buildNode(child);
+				buildNode(child);
 			}
-			this.flushBuffer();
-			this.scopeStack.pop();
+			flushBuffer();
+			scopeStack.pop();
 		}
 		
 		return condition.getFalseStatements();
@@ -797,7 +849,7 @@ public class CodeDOMBuilder {
 
 		try {
 			// convert from JavaScript source to CodeDOM
-			List<CodeMember> members = new ScriptTranslator(this.viewType).translate(node.getClientCode());
+			List<CodeMember> members = new ScriptTranslator(viewType).translate(node.getClientCode());
 			boolean firstIsMethod = (members.size() > 0) && members.get(0) instanceof CodeMethod;
 			CodeMethod method = firstIsMethod ? (CodeMethod)members.get(0) : null;
 
@@ -810,12 +862,12 @@ public class CodeDOMBuilder {
 			if (expression != null) {
 				// add remaining CodeDOM members to viewType
 				for (int i=1, length=members.size(); i<length; i++) {
-					this.viewType.add(members.get(i));
+					viewType.add(members.get(i));
 				}
 
 			} else if (firstIsMethod) {
 				// add all CodeDOM members to viewType
-				this.viewType.addAll(members);
+				viewType.addAll(members);
 
 				// have the expression be a method invocation
 				expression = new CodeMethodInvokeExpression(
@@ -831,14 +883,14 @@ public class CodeDOMBuilder {
 
 			if (method.getUserData(ScriptTranslator.EXTRA_ASSIGN) != null) {
 				// flag as potentially modifying extra values
-				this.needsExtrasEmitted = true;
+				needsExtrasEmitted = true;
 			}
 
 			if (canWrite && (method != null) &&
 				method.getUserData(ScriptTranslator.EXTRA_REFS) instanceof Object[]) {
 
 				// flag as potentially modifying extra values
-				this.needsExtrasEmitted = true;
+				needsExtrasEmitted = true;
 
 				Object[] refs = (Object[])members.get(0).getUserData(ScriptTranslator.EXTRA_REFS);
 				CodeExpression[] args = new CodeExpression[refs.length+1];
@@ -857,7 +909,7 @@ public class CodeDOMBuilder {
 
 				if (firstIsMethod && expression instanceof CodeMethodInvokeExpression) {
 					runtimeCheck.getTrueStatements().addAll(method.getStatements());
-					this.viewType.getMembers().remove(method);
+					viewType.getMembers().remove(method);
 				} else {
 					runtimeCheck.getTrueStatements().add(new CodeMethodReturnStatement(expression));
 				}
@@ -865,7 +917,7 @@ public class CodeDOMBuilder {
 				CodeMethod runtimeCheckMethod = new CodeMethod(
 					AccessModifierType.PRIVATE,
 					Object.class,
-					this.viewType.nextIdent("hybrid_"),
+					viewType.nextIdent("hybrid_"),
 					new CodeParameterDeclarationExpression[] {
 						new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 						new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -875,18 +927,18 @@ public class CodeDOMBuilder {
 					},
 					runtimeCheck).withThrows(IOException.class);
 
-				this.viewType.add(runtimeCheckMethod);
+				viewType.add(runtimeCheckMethod);
 
 				// ensure a break in the write stream
-				this.flushBuffer();
-				this.scopeStack.push(runtimeCheck.getFalseStatements());
+				flushBuffer();
+				scopeStack.push(runtimeCheck.getFalseStatements());
 				try {
 					// defer blocks that cannot be fully processed server-side
-					this.buildDeferredWrite(node.getClientCode(), node.getArgSize());
-					this.flushBuffer();
+					buildDeferredWrite(node.getClientCode(), node.getArgSize());
+					flushBuffer();
 
 				} finally {
-					this.scopeStack.pop();
+					scopeStack.pop();
 				}
 
 				// return null if immediately writen
@@ -920,29 +972,29 @@ public class CodeDOMBuilder {
 	private void buildDeferredWrite(String clientCode, int argSize)
 			throws IOException {
 
-		boolean prettyPrint = this.encoder.isPrettyPrint();
-		CodeStatementCollection scope = this.scopeStack.peek();
+		boolean prettyPrint = encoder.isPrettyPrint();
+		CodeStatementCollection scope = scopeStack.peek();
 
 		// use the script tag as its own replacement element
-		this.hasScripts = true;
-		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
-		if (this.settings.getScriptTypeAttr()) {
-			this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+		hasScripts = true;
+		formatter.writeOpenElementBeginTag(buffer, "script");
+		if (settings.getScriptTypeAttr()) {
+			formatter.writeAttribute(buffer, "type", "text/javascript");
 		}
-		this.formatter.writeCloseElementBeginTag(this.buffer);
-		this.ensureExtrasEmitted(false);
+		formatter.writeCloseElementBeginTag(buffer);
+		ensureExtrasEmitted(false);
 
 		// wrap client code as an anonymous DUEL view
-		this.buffer.append("duel(");
+		buffer.append("duel(");
 
 		// emit client code directly
-		this.buffer.append(clientCode);
+		buffer.append(clientCode);
 
 		// immediately invoke anonymous view
-		this.buffer.append(")(");
+		buffer.append(")(");
 
 		if (argSize > 0) {
-			this.flushBuffer();
+			flushBuffer();
 
 			// emit data var as literal
 			scope.add(new CodeMethodInvokeExpression(
@@ -954,11 +1006,11 @@ public class CodeDOMBuilder {
 				CodePrimitiveExpression.ONE));
 
 			if (argSize > 1) {
-				this.buffer.append(',');
+				buffer.append(',');
 				if (prettyPrint) {
-					this.buffer.append(' ');
+					buffer.append(' ');
 				}
-				this.flushBuffer();
+				flushBuffer();
 
 				// emit index var as number
 				scope.add(new CodeMethodInvokeExpression(
@@ -970,11 +1022,11 @@ public class CodeDOMBuilder {
 					CodePrimitiveExpression.ONE));
 
 				if (argSize > 2) {
-					this.buffer.append(',');
+					buffer.append(',');
 					if (prettyPrint) {
-						this.buffer.append(' ');
+						buffer.append(' ');
 					}
-					this.flushBuffer();
+					flushBuffer();
 
 					// emit count var as number
 					scope.add(new CodeMethodInvokeExpression(
@@ -986,11 +1038,11 @@ public class CodeDOMBuilder {
 						CodePrimitiveExpression.ONE));
 
 					if (argSize > 3) {
-						this.buffer.append(',');
+						buffer.append(',');
 						if (prettyPrint) {
-							this.buffer.append(' ');
+							buffer.append(' ');
 						}
-						this.flushBuffer();
+						flushBuffer();
 
 						// emit key var as String
 						scope.add(new CodeMethodInvokeExpression(
@@ -1005,10 +1057,10 @@ public class CodeDOMBuilder {
 			}
 		}
 		// emit write function call which writes result directly to the current document
-		this.buffer.append(").write();");
+		buffer.append(").write();");
 
 		// last parameter will be the current data
-		this.formatter.writeElementEndTag(this.buffer, "script");
+		formatter.writeElementEndTag(buffer, "script");
 	}
 
 	private void buildElement(ElementNode element)
@@ -1017,11 +1069,11 @@ public class CodeDOMBuilder {
 		String tagName = element.getTagName();
 
 		if ("script".equalsIgnoreCase(tagName)) {
-			this.hasScripts = true;
-			this.ensureExtrasEmitted(true);
+			hasScripts = true;
+			ensureExtrasEmitted(true);
 		}
 		
-		this.formatter.writeOpenElementBeginTag(this.buffer, tagName);
+		formatter.writeOpenElementBeginTag(buffer, tagName);
 
 		int argSize = 0;
 		Map<String, DataEncoder.Snippet> deferredAttrs = new LinkedHashMap<String, DataEncoder.Snippet>();
@@ -1029,27 +1081,27 @@ public class CodeDOMBuilder {
 			DuelNode attrVal = element.getAttribute(attrName);
 			
 			if (attrVal == null) {
-				this.formatter.writeAttribute(this.buffer, attrName, null);
+				formatter.writeAttribute(buffer, attrName, null);
 
 			} else if (element.isBoolAttribute(attrName)) {
 				if (attrVal instanceof LiteralNode) {
 					if (DuelData.coerceBoolean(((LiteralNode)attrVal).getValue())) {
-						this.formatter.writeAttribute(this.buffer, attrName, attrName);
+						formatter.writeAttribute(buffer, attrName, attrName);
 					}
 
 				} else if (attrVal instanceof CodeBlockNode) {
 					try {
-						this.flushBuffer();
+						flushBuffer();
 						CodeConditionStatement condition = new CodeConditionStatement();
-						this.scopeStack.peek().add(condition);
+						scopeStack.peek().add(condition);
 
-						condition.setCondition(this.translateExpression((CodeBlockNode)attrVal, false));
+						condition.setCondition(translateExpression((CodeBlockNode)attrVal, false));
 
 						// write attribute if truthy
-						this.scopeStack.push(condition.getTrueStatements());
-						this.formatter.writeAttribute(this.buffer, attrName, attrName);
-						this.flushBuffer();
-						this.scopeStack.pop();
+						scopeStack.push(condition.getTrueStatements());
+						formatter.writeAttribute(buffer, attrName, attrName);
+						flushBuffer();
+						scopeStack.pop();
 
 					} catch (Exception ex) {
 						
@@ -1061,16 +1113,16 @@ public class CodeDOMBuilder {
 				}
 
 			} else if (element.isLinkAttribute(attrName)) {
-				this.formatter.writeOpenAttribute(this.buffer, attrName);
-				this.flushBuffer();
+				formatter.writeOpenAttribute(buffer, attrName);
+				flushBuffer();
 
 				CodeStatement writeStatement;
 				if (attrVal instanceof LiteralNode) {
-					writeStatement = this.buildLinkIntercept(((LiteralNode)attrVal).getValue());
+					writeStatement = buildLinkIntercept(((LiteralNode)attrVal).getValue());
 
 				} else if (attrVal instanceof CodeBlockNode) {
 					try {
-						writeStatement = this.buildLinkIntercept((CodeBlockNode)attrVal);
+						writeStatement = buildLinkIntercept((CodeBlockNode)attrVal);
 
 					} catch (Exception ex) {
 						
@@ -1084,24 +1136,24 @@ public class CodeDOMBuilder {
 					throw new InvalidNodeException("Invalid attribute node type: "+attrVal.getClass(), attrVal);
 				}
 
-				this.scopeStack.peek().add(writeStatement);
+				scopeStack.peek().add(writeStatement);
 
-				this.formatter.writeCloseAttribute(this.buffer);
+				formatter.writeCloseAttribute(buffer);
 
 			} else if (attrVal instanceof LiteralNode) {
-				this.formatter.writeAttribute(this.buffer, attrName, ((LiteralNode)attrVal).getValue());
+				formatter.writeAttribute(buffer, attrName, ((LiteralNode)attrVal).getValue());
 
 			} else if (attrVal instanceof CodeBlockNode) {
 
 				try {
-					CodeStatement writeStatement = this.processCodeBlock((CodeBlockNode)attrVal);
+					CodeStatement writeStatement = processCodeBlock((CodeBlockNode)attrVal);
 					if (writeStatement != null) {
-						this.formatter.writeOpenAttribute(this.buffer, attrName);
-						this.flushBuffer();
-						this.scopeStack.peek().add(writeStatement);
-						this.formatter.writeCloseAttribute(this.buffer);
+						formatter.writeOpenAttribute(buffer, attrName);
+						flushBuffer();
+						scopeStack.peek().add(writeStatement);
+						formatter.writeCloseAttribute(buffer);
 					} else {
-						this.formatter.writeAttribute(this.buffer, attrName, null);
+						formatter.writeAttribute(buffer, attrName, null);
 					}
 
 				} catch (Exception ex) {
@@ -1122,9 +1174,9 @@ public class CodeDOMBuilder {
 		if (deferredAttrs.size() > 0) {
 			DuelNode id = element.getAttribute("id");
 			if (id == null) {
-				this.formatter.writeOpenAttribute(this.buffer, "id");
-				idVar = this.emitClientID();
-				this.formatter.writeCloseAttribute(this.buffer);
+				formatter.writeOpenAttribute(buffer, "id");
+				idVar = emitClientID();
+				formatter.writeCloseAttribute(buffer);
 
 			} else if (id instanceof LiteralNode) {
 				idValue = ((LiteralNode)id).getValue();
@@ -1136,20 +1188,20 @@ public class CodeDOMBuilder {
 		}
 
 		if (element.canHaveChildren()) {
-			this.formatter.writeCloseElementBeginTag(this.buffer);
+			formatter.writeCloseElementBeginTag(buffer);
 
-			TagMode prevMode = this.tagMode;
+			TagMode prevMode = tagMode;
 			if ("script".equalsIgnoreCase(tagName) || "style".equalsIgnoreCase(tagName)) {
-				this.tagMode = TagMode.SuspendMode;
+				tagMode = TagMode.SuspendMode;
 
 			} else if ("pre".equalsIgnoreCase(tagName)) {
-				this.tagMode = TagMode.PreMode;
+				tagMode = TagMode.PreMode;
 			}
 
 			try {
 				for (DuelNode child : element.getChildren()) {
-					if (this.settings.getNormalizeWhitespace() &&
-						this.tagMode == TagMode.None &&
+					if (settings.getNormalizeWhitespace() &&
+						tagMode == TagMode.None &&
 						child instanceof LiteralNode &&
 						(child == element.getFirstChild() || child == element.getLastChild())) {
 
@@ -1159,25 +1211,25 @@ public class CodeDOMBuilder {
 							continue;
 						}
 					}
-					this.buildNode(child);
+					buildNode(child);
 				}
 			} finally {
-				this.tagMode = prevMode;
+				tagMode = prevMode;
 			}
 
 			// ensure changes emitted, if no scripts then no need
-			if (this.hasScripts && "body".equalsIgnoreCase(tagName)) {
-				this.ensureExtrasEmitted(true);
-				this.buffer.append(this.settings.getNewline());
+			if (hasScripts && "body".equalsIgnoreCase(tagName)) {
+				ensureExtrasEmitted(true);
+				buffer.append(settings.getNewline());
 			}
-			this.formatter.writeElementEndTag(this.buffer, tagName);
+			formatter.writeElementEndTag(buffer, tagName);
 
 		} else {
-			this.formatter.writeCloseElementVoidTag(this.buffer);
+			formatter.writeCloseElementVoidTag(buffer);
 		}
 
 		if (deferredAttrs.size() > 0) {
-			this.buildDeferredAttributeExecution(deferredAttrs, idVar, idValue, argSize);
+			buildDeferredAttributeExecution(deferredAttrs, idVar, idValue, argSize);
 		}
 	}
 
@@ -1187,30 +1239,30 @@ public class CodeDOMBuilder {
 		String idValue,
 		int argSize) throws IOException {
 
-		boolean prettyPrint = this.encoder.isPrettyPrint();
+		boolean prettyPrint = encoder.isPrettyPrint();
 
-		CodeStatementCollection scope = this.scopeStack.peek();
+		CodeStatementCollection scope = scopeStack.peek();
 
 		// execute any deferred attributes using idVar
-		this.hasScripts = true;
-		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
-		if (this.settings.getScriptTypeAttr()) {
-			this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+		hasScripts = true;
+		formatter.writeOpenElementBeginTag(buffer, "script");
+		if (settings.getScriptTypeAttr()) {
+			formatter.writeAttribute(buffer, "type", "text/javascript");
 		}
-		this.formatter.writeCloseElementBeginTag(this.buffer);
-		this.ensureExtrasEmitted(false);
+		formatter.writeCloseElementBeginTag(buffer);
+		ensureExtrasEmitted(false);
 
 		// wrap attributes object as an anonymous DUEL view
-		this.buffer.append("duel(");
+		buffer.append("duel(");
 
 		// emit deferredAttrs as a JS Object
-		this.encoder.write(this.buffer, deferredAttrs, 1);
+		encoder.write(buffer, deferredAttrs, 1);
 
 		// immediately invoke anonymous view
-		this.buffer.append(")(");
+		buffer.append(")(");
 
 		if (argSize > 0) {
-			this.flushBuffer();
+			flushBuffer();
 
 			// emit data var as literal
 			scope.add(new CodeMethodInvokeExpression(
@@ -1222,11 +1274,11 @@ public class CodeDOMBuilder {
 				CodePrimitiveExpression.ONE));
 
 			if (argSize > 1) {
-				this.buffer.append(',');
+				buffer.append(',');
 				if (prettyPrint) {
-					this.buffer.append(' ');
+					buffer.append(' ');
 				}
-				this.flushBuffer();
+				flushBuffer();
 
 				// emit index var as number
 				scope.add(new CodeMethodInvokeExpression(
@@ -1238,11 +1290,11 @@ public class CodeDOMBuilder {
 					CodePrimitiveExpression.ONE));
 
 				if (argSize > 2) {
-					this.buffer.append(',');
+					buffer.append(',');
 					if (prettyPrint) {
-						this.buffer.append(' ');
+						buffer.append(' ');
 					}
-					this.flushBuffer();
+					flushBuffer();
 
 					// emit count var as number
 					scope.add(new CodeMethodInvokeExpression(
@@ -1254,11 +1306,11 @@ public class CodeDOMBuilder {
 						CodePrimitiveExpression.ONE));
 
 					if (argSize > 3) {
-						this.buffer.append(',');
+						buffer.append(',');
 						if (prettyPrint) {
-							this.buffer.append(' ');
+							buffer.append(' ');
 						}
-						this.flushBuffer();
+						flushBuffer();
 
 						// emit key var as String
 						scope.add(new CodeMethodInvokeExpression(
@@ -1274,11 +1326,11 @@ public class CodeDOMBuilder {
 		}
 
 		// emit patch function call which merges attributes into DOM node
-		this.buffer.append(").toDOM(");
+		buffer.append(").toDOM(");
 
 		// emit id var or known value
 		if (idVar != null) {
-			this.flushBuffer();
+			flushBuffer();
 			scope.add(new CodeMethodInvokeExpression(
 				Void.class,
 				new CodeThisReferenceExpression(),
@@ -1287,68 +1339,68 @@ public class CodeDOMBuilder {
 				new CodeVariableReferenceExpression(idVar),
 				CodePrimitiveExpression.ONE));
 		} else {
-			this.encoder.write(this.buffer, idValue, 1);
+			encoder.write(buffer, idValue, 1);
 		}
 
-		this.buffer.append(',');
+		buffer.append(',');
 		if (prettyPrint) {
-			this.buffer.append(" true");
+			buffer.append(" true");
 		} else {
-			this.buffer.append('1');
+			buffer.append('1');
 		}
-		this.buffer.append(");");
+		buffer.append(");");
 
 		// last parameter will be the current data
-		this.formatter.writeElementEndTag(this.buffer, "script");
+		formatter.writeElementEndTag(buffer, "script");
 	}
 
 	private void buildCodeBlock(CodeBlockNode node) throws IOException {
 		try {
-			CodeStatement writeStatement = this.processCodeBlock(node);
+			CodeStatement writeStatement = processCodeBlock(node);
 			if (writeStatement == null) {
 				return;
 			}
 
-			this.flushBuffer();
-			this.scopeStack.peek().add(writeStatement);
+			flushBuffer();
+			scopeStack.peek().add(writeStatement);
 			return;
 
 		} catch (Exception ex) {
 			// only defer blocks that cannot be fully processed server-side
-			this.buildDeferredCodeBlock(node.getClientCode(), node.getArgSize());
+			buildDeferredCodeBlock(node.getClientCode(), node.getArgSize());
 		}
 	}
 
 	private void buildDeferredCodeBlock(String clientCode, int argSize)
 			throws IOException {
 
-		boolean prettyPrint = this.encoder.isPrettyPrint();
-		CodeStatementCollection scope = this.scopeStack.peek();
+		boolean prettyPrint = encoder.isPrettyPrint();
+		CodeStatementCollection scope = scopeStack.peek();
 
 		// use the script tag as its own replacement element
-		this.hasScripts = true;
-		this.formatter.writeOpenElementBeginTag(this.buffer, "script");
-		if (this.settings.getScriptTypeAttr()) {
-			this.formatter.writeAttribute(this.buffer, "type", "text/javascript");
+		hasScripts = true;
+		formatter.writeOpenElementBeginTag(buffer, "script");
+		if (settings.getScriptTypeAttr()) {
+			formatter.writeAttribute(buffer, "type", "text/javascript");
 		}
-		this.formatter.writeOpenAttribute(this.buffer, "id");
-		CodeVariableDeclarationStatement idVar = this.emitClientID();
-		this.formatter
-			.writeCloseAttribute(this.buffer)
-			.writeCloseElementBeginTag(this.buffer);
-		this.ensureExtrasEmitted(false);
+		formatter.writeOpenAttribute(buffer, "id");
+		CodeVariableDeclarationStatement idVar = emitClientID();
+		formatter
+			.writeCloseAttribute(buffer)
+			.writeCloseElementBeginTag(buffer);
+		ensureExtrasEmitted(false);
 
 		// wrap client code as an anonymous DUEL view
-		this.buffer.append("duel(");
+		buffer.append("duel(");
 
 		// emit client code directly
-		this.buffer.append(clientCode);
+		buffer.append(clientCode);
 
 		// immediately invoke anonymous view
-		this.buffer.append(")(");
+		buffer.append(")(");
 
 		if (argSize > 0) {
-			this.flushBuffer();
+			flushBuffer();
 
 			// emit data var as literal
 			scope.add(new CodeMethodInvokeExpression(
@@ -1360,11 +1412,11 @@ public class CodeDOMBuilder {
 				CodePrimitiveExpression.ONE));
 
 			if (argSize > 1) {
-				this.buffer.append(',');
+				buffer.append(',');
 				if (prettyPrint) {
-					this.buffer.append(' ');
+					buffer.append(' ');
 				}
-				this.flushBuffer();
+				flushBuffer();
 
 				// emit index var as number
 				scope.add(new CodeMethodInvokeExpression(
@@ -1376,11 +1428,11 @@ public class CodeDOMBuilder {
 					CodePrimitiveExpression.ONE));
 
 				if (argSize > 2) {
-					this.buffer.append(',');
+					buffer.append(',');
 					if (prettyPrint) {
-						this.buffer.append(' ');
+						buffer.append(' ');
 					}
-					this.flushBuffer();
+					flushBuffer();
 
 					// emit count var as number
 					scope.add(new CodeMethodInvokeExpression(
@@ -1392,11 +1444,11 @@ public class CodeDOMBuilder {
 						CodePrimitiveExpression.ONE));
 
 					if (argSize > 3) {
-						this.buffer.append(',');
+						buffer.append(',');
 						if (prettyPrint) {
-							this.buffer.append(' ');
+							buffer.append(' ');
 						}
-						this.flushBuffer();
+						flushBuffer();
 
 						// emit key var as String
 						scope.add(new CodeMethodInvokeExpression(
@@ -1412,10 +1464,10 @@ public class CodeDOMBuilder {
 		}
 
 		// emit patch function call which replaces DOM node with result
-		this.buffer.append(").toDOM(");
+		buffer.append(").toDOM(");
 
 		// emit id var or known value
-		this.flushBuffer();
+		flushBuffer();
 		scope.add(new CodeMethodInvokeExpression(
 			Void.class,
 			new CodeThisReferenceExpression(),
@@ -1424,15 +1476,15 @@ public class CodeDOMBuilder {
 			new CodeVariableReferenceExpression(idVar),
 			CodePrimitiveExpression.ONE));
 
-		this.buffer.append(");");
+		buffer.append(");");
 
 		// last parameter will be the current data
-		this.formatter.writeElementEndTag(this.buffer, "script");
+		formatter.writeElementEndTag(buffer, "script");
 	}
 
 	private CodeVariableDeclarationStatement emitClientID() {
-		this.flushBuffer();
-		CodeStatementCollection scope = this.scopeStack.peek();
+		flushBuffer();
+		CodeStatementCollection scope = scopeStack.peek();
 
 		// the var contains a new unique ident
 		CodeVariableDeclarationStatement localVar = CodeDOMUtility.nextID(scope);
@@ -1471,7 +1523,7 @@ public class CodeDOMBuilder {
 			block = new ExpressionNode(block.getValue(), block.getIndex(), block.getLine(), block.getColumn());
 		}
 
-		CodeExpression codeExpr = this.translateExpression(block, true);
+		CodeExpression codeExpr = translateExpression(block, true);
 		if (codeExpr == null) {
 			return null;
 		}
@@ -1499,7 +1551,7 @@ public class CodeDOMBuilder {
 			block = new ExpressionNode(block.getValue(), block.getIndex(), block.getLine(), block.getColumn());
 		}
 
-		CodeExpression codeExpr = this.translateExpression(block, true);
+		CodeExpression codeExpr = translateExpression(block, true);
 		if (codeExpr == null) {
 			return null;
 		}
@@ -1510,14 +1562,14 @@ public class CodeDOMBuilder {
 	}
 
 	private void ensureExtrasEmitted(boolean needsTags) {
-		if (!this.needsExtrasEmitted) {
+		if (!needsExtrasEmitted) {
 			return;
 		}
 
 		// emit check just inside first script block
-		this.flushBuffer();
+		flushBuffer();
 
-		this.scopeStack.peek().add(
+		scopeStack.peek().add(
 			new CodeMethodInvokeExpression(
 				Void.class,
 				new CodeThisReferenceExpression(),
@@ -1528,18 +1580,18 @@ public class CodeDOMBuilder {
 		// check scope chain for any condition or iteration blocks that
 		// might prevent this from being emitted. if found do not mark.
 		// there is a runtime check as well which will prevent multiple.
-		for (CodeStatementCollection scope : this.scopeStack) {
+		for (CodeStatementCollection scope : scopeStack) {
 			// this is too naive. may not work with inlined methods
 			if (!(scope.getOwner() instanceof CodeMethod)) {
 				return;
 			}
 		}
 
-		this.needsExtrasEmitted = false;
+		needsExtrasEmitted = false;
 	}
 
 	private CodeMethod ensureInitMethod() {
-		for (CodeMember member : this.viewType.getMembers()) {
+		for (CodeMember member : viewType.getMembers()) {
 			if (member instanceof CodeMethod &&
 				"init".equals(((CodeMethod)member).getName())) {
 				return (CodeMethod)member;
@@ -1551,15 +1603,15 @@ public class CodeDOMBuilder {
 			Void.class,
 			"init",
 			null).withOverride();
-		this.viewType.add(initMethod);
+		viewType.add(initMethod);
 
 		return initMethod;
 	}
 	
 	private void buildComment(CodeCommentNode comment) {
-		this.flushBuffer();
+		flushBuffer();
 
-		CodeStatementCollection scope = this.scopeStack.peek();
+		CodeStatementCollection scope = scopeStack.peek();
 		scope.add(new CodeCommentStatement(comment.getValue()));
 	}
 
@@ -1568,15 +1620,15 @@ public class CodeDOMBuilder {
 	 * @return
 	 */
 	private void flushBuffer() {
-		if (this.buffer.length() < 1) {
+		if (buffer.length() < 1) {
 			return;
 		}
 
 		// get the accumulated value
-		CodeStatement emitLit = CodeDOMUtility.emitLiteralValue(this.buffer.toString());
-		this.scopeStack.peek().add(emitLit);
+		CodeStatement emitLit = CodeDOMUtility.emitLiteralValue(buffer.toString());
+		scopeStack.peek().add(emitLit);
 
 		// clear the buffer
-		this.buffer.setLength(0);
+		buffer.setLength(0);
 	}
 }

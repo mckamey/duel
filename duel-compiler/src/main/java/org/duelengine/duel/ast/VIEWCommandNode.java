@@ -20,27 +20,27 @@ public class VIEWCommandNode extends CommandNode {
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	public void setName(String value) {
-		this.name = value;
+		name = value;
 	}
 
 	public boolean isClientOnly() {
-		return this.clientOnly;
+		return clientOnly;
 	}
 
 	public void setClientOnly(boolean value) {
-		this.clientOnly = value;
+		clientOnly = value;
 	}
 
 	public boolean isServerOnly() {
-		return this.serverOnly;
+		return serverOnly;
 	}
 
 	public void setServerOnly(boolean value) {
-		this.serverOnly = value;
+		serverOnly = value;
 	}
 
 	@Override
@@ -56,30 +56,30 @@ public class VIEWCommandNode extends CommandNode {
 			throw new NullPointerException("attr");
 		}
 
-		this.setAttribute(attr.getName(), attr.getValue());
+		setAttribute(attr.getName(), attr.getValue());
 	}
 
 	@Override
-	public void setAttribute(String name, DuelNode value) {
-		if (name == null || name.isEmpty()) {
+	public void setAttribute(String attrName, DuelNode attrValue) {
+		if (attrName == null || attrName.isEmpty()) {
 			throw new NullPointerException("name");
 		}
-		if ("name".equalsIgnoreCase(name)) {
-			if (value != null && !(value instanceof LiteralNode)) {
+		if ("name".equalsIgnoreCase(attrName)) {
+			if (attrValue != null && !(attrValue instanceof LiteralNode)) {
 				// Syntax error
-				throw new InvalidNodeException("VIEW name must be a string literal: "+value.getClass(), value);
+				throw new InvalidNodeException("VIEW name must be a string literal: "+attrValue.getClass(), attrValue);
 			}
 
-			this.name = (value == null ? null : ((LiteralNode)value).getValue());
+			name = (attrValue == null ? null : ((LiteralNode)attrValue).getValue());
 
-		} else if ("client-only".equalsIgnoreCase(name)) {
-			this.clientOnly = true;
+		} else if ("client-only".equalsIgnoreCase(attrName)) {
+			clientOnly = true;
 
-		} else if ("server-only".equalsIgnoreCase(name)) {
-			this.serverOnly = true;
+		} else if ("server-only".equalsIgnoreCase(attrName)) {
+			serverOnly = true;
 
 		} else {
-			throw new InvalidNodeException("Attribute invalid on VIEW declaration: "+name, value);
+			throw new InvalidNodeException("Attribute invalid on VIEW declaration: "+attrName, attrValue);
 		}
 	}
 
@@ -89,24 +89,24 @@ public class VIEWCommandNode extends CommandNode {
 			.append("<")
 			.append(EXT_NAME);
 
-		if (this.name != null && !this.name.isEmpty()) {
+		if (name != null && !name.isEmpty()) {
 			buffer
 				.append(" name=\"")
-				.append(this.name)
+				.append(name)
 				.append('"');
 		}
 
-		if (this.clientOnly) {
+		if (clientOnly) {
 			buffer.append(" client-only");
 		}
 
-		if (this.serverOnly) {
+		if (serverOnly) {
 			buffer.append(" server-only");
 		}
 
-		if (this.hasChildren()) {
+		if (hasChildren()) {
 			buffer.append('>');
-			for (DuelNode child : this.getChildren()) {
+			for (DuelNode child : getChildren()) {
 				buffer.append(child);
 			}
 			buffer.append("</").append(EXT_NAME);

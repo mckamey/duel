@@ -30,33 +30,33 @@ public class CodeConditionStatement extends CodeStatement {
 	}
 
 	public CodeExpression getCondition() {
-		return this.condition;
+		return condition;
 	}
 
 	public void setCondition(CodeExpression value) {
-		this.condition = value;
+		condition = value;
 	}
 
 	public CodeStatementCollection getTrueStatements() {
-		return this.trueStatements;
+		return trueStatements;
 	}
 
 	public CodeStatementCollection getFalseStatements() {
-		return this.falseStatements;
+		return falseStatements;
 	}
 
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.condition != null) {
-				this.condition.visit(visitor);
+			if (condition != null) {
+				condition.visit(visitor);
 			}
-			for (CodeStatement statement : this.trueStatements) {
+			for (CodeStatement statement : trueStatements) {
 				if (statement != null) {
 					statement.visit(visitor);
 				}
 			}
-			for (CodeStatement statement : this.falseStatements) {
+			for (CodeStatement statement : falseStatements) {
 				if (statement != null) {
 					statement.visit(visitor);
 				}
@@ -88,9 +88,9 @@ public class CodeConditionStatement extends CodeStatement {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = this.trueStatements.hashCode() * HASH_PRIME + this.falseStatements.hashCode();
-		if (this.condition != null) {
-			hash = hash * HASH_PRIME + this.condition.hashCode();
+		int hash = trueStatements.hashCode() * HASH_PRIME + falseStatements.hashCode();
+		if (condition != null) {
+			hash = hash * HASH_PRIME + condition.hashCode();
 		}
 		return hash;
 	}

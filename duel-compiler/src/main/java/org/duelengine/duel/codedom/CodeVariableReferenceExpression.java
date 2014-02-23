@@ -10,38 +10,38 @@ public class CodeVariableReferenceExpression extends CodeExpression {
 
 	public CodeVariableReferenceExpression(Class<?> type, String ident) {
 		this.ident = ident;
-		this.setResultType(type);
+		setResultType(type);
 	}
 
 	public CodeVariableReferenceExpression(CodeVariableDeclarationStatement variable) {
 		if (variable != null) {
 			this.ident = variable.getName();
-			this.setResultType(variable.getType());
+			setResultType(variable.getType());
 		}
 	}
 
 	public CodeVariableReferenceExpression(CodeParameterDeclarationExpression variable) {
 		if (variable != null) {
 			this.ident = variable.getName();
-			this.setResultType(variable.getType());
+			setResultType(variable.getType());
 		}
 	}
 
 	public String getIdent() {
-		return this.ident;
+		return ident;
 	}
 
 	public void setIdent(String value) {
-		this.ident = value;
+		ident = value;
 	}
 
 	@Override
 	public Class<?> getResultType() {
-		return this.resultType;
+		return resultType;
 	}
 
 	public void setResultType(Class<?> value) {
-		this.resultType = (value == null) ? Object.class : value;
+		resultType = (value == null) ? Object.class : value;
 	}
 
 	@Override
@@ -66,11 +66,11 @@ public class CodeVariableReferenceExpression extends CodeExpression {
 		final int HASH_PRIME = 1000003;
 
 		int hash = super.hashCode();
-		if (this.ident != null) {
-			hash = hash * HASH_PRIME + this.ident.hashCode();
+		if (ident != null) {
+			hash = hash * HASH_PRIME + ident.hashCode();
 		}
-		if (this.resultType != null) {
-			hash = hash * HASH_PRIME + this.resultType.hashCode();
+		if (resultType != null) {
+			hash = hash * HASH_PRIME + resultType.hashCode();
 		}
 		return hash;
 	}

@@ -9,29 +9,29 @@ public class CodeUnaryOperatorExpression extends CodeExpression {
 	}
 
 	public CodeUnaryOperatorExpression(CodeUnaryOperatorType op, CodeExpression expr) {
-		this.operator = op;
-		this.expression = expr;
+		operator = op;
+		expression = expr;
 	}
 
 	public CodeUnaryOperatorType getOperator() {
-		return this.operator;
+		return operator;
 	}
 
 	public void setOperator(CodeUnaryOperatorType value) {
-		this.operator = value;
+		operator = value;
 	}
 
 	public CodeExpression getExpression() {
-		return this.expression;
+		return expression;
 	}
 	
 	public void setLeft(CodeExpression value) {
-		this.expression = value;
+		expression = value;
 	}
 
 	@Override
 	public Class<?> getResultType() {
-		switch (this.operator) {
+		switch (operator) {
 			case POSITIVE:
 			case NEGATION:
 			case PRE_INCREMENT:
@@ -52,8 +52,8 @@ public class CodeUnaryOperatorExpression extends CodeExpression {
 	@Override
 	public void visit(CodeVisitor visitor) {
 		if (visitor.visit(this)) {
-			if (this.expression != null) {
-				this.expression.visit(visitor);
+			if (expression != null) {
+				expression.visit(visitor);
 			}
 		}
 	}
@@ -81,9 +81,9 @@ public class CodeUnaryOperatorExpression extends CodeExpression {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = super.hashCode() * HASH_PRIME + this.operator.hashCode();
-		if (this.expression != null) {
-			hash = hash * HASH_PRIME + this.expression.hashCode();
+		int hash = super.hashCode() * HASH_PRIME + operator.hashCode();
+		if (expression != null) {
+			hash = hash * HASH_PRIME + expression.hashCode();
 		}
 		return hash;
 	}

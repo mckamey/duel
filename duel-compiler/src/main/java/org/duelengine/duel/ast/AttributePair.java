@@ -2,35 +2,35 @@ package org.duelengine.duel.ast;
 
 public class AttributePair {
 
-	private String name;
-	private DuelNode value;
+	private String attrName;
+	private DuelNode attrValue;
 
 	public AttributePair(String name, DuelNode value) {
-		this.name = name;
-		this.value = value;
+		attrName = name;
+		attrValue = value;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String value) {
+		attrName = value;
 	}
 
 	public String getName() {
-		return this.name;
+		return attrName;
 	}
 
 	public void setValue(DuelNode value) {
-		this.value = value;
+		this.attrValue = value;
 	}
 
 	public DuelNode getValue() {
-		return this.value;
+		return attrValue;
 	}
 
 	@Override
 	public String toString() {
-		return new StringBuilder(this.name)
+		return new StringBuilder(attrName)
 				.append("=\"")
-				.append(this.value)
+				.append(attrValue)
 				.append('"').toString();
 	}
 
@@ -42,17 +42,17 @@ public class AttributePair {
 		}
 
 		AttributePair that = (AttributePair)arg;
-		return (this.name == null ? that.name == null : this.name.equals(that.name)) &&
-			(this.value == null ? that.value == null : this.value.equals(that.value));
+		return (this.attrName == null ? that.attrName == null : this.attrName.equals(that.attrName)) &&
+				(this.attrValue == null ? that.attrValue == null : this.attrValue.equals(that.attrValue));
 	}
 
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = (this.name == null) ? 0 : this.name.hashCode();
-		if (this.value != null) {
-			hash = hash * HASH_PRIME + this.value.hashCode();
+		int hash = (attrName == null) ? 0 : attrName.hashCode();
+		if (attrValue != null) {
+			hash = hash * HASH_PRIME + attrValue.hashCode();
 		}
 		return hash;
 	}
