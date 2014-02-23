@@ -39,8 +39,8 @@ public class CodeStatementBlock extends CodeObject {
 	}
 
 	@Override
-	public CodeStatementBlock withUserData(Object... pairs) {
-		return (CodeStatementBlock)super.withUserData(pairs);
+	public CodeStatementBlock withMetaData(Object... pairs) {
+		return (CodeStatementBlock)super.withMetaData(pairs);
 	}
 
 	@Override

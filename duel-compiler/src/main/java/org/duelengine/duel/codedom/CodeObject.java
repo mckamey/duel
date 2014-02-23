@@ -4,45 +4,66 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.duelengine.duel.DuelData;
+import org.duelengine.duel.codegen.JavaCodeGen;
 
 public abstract class CodeObject {
 
-	private Map<String, Object> userData;
+	private Map<String, Object> metaData;
 
-	public Object getUserData(String key) {
-		if (userData == null || !userData.containsKey(key)) {
+	/**
+	 * Retrieves a metadata value for the given key
+	 * @param key
+	 * @return
+	 */
+	public Object getMetaData(String key) {
+		if (metaData == null || !metaData.containsKey(key)) {
 			return null;
 		}
 
-		return userData.get(key);
+		return metaData.get(key);
 	}
 
-	public Object putUserData(String key, Object value) {
-		if (userData == null) {
-			userData = new HashMap<String, Object>();
+	/**
+	 * Inserts a metadata value for the given key
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public Object putMetaData(String key, Object value) {
+		if (metaData == null) {
+			metaData = new HashMap<String, Object>(4, 1.0f);
 		}
 
-		return userData.put(key, value);
+		return metaData.put(key, value);
 	}
 
-	public CodeObject withUserData(Object... pairs) {
+	/**
+	 * Inserts multiple metadata key-value pairs
+	 * @param pairs alternating key, value...
+	 * @return
+	 */
+	public CodeObject withMetaData(Object... pairs) {
 		if (pairs == null || pairs.length < 1) {
 			return this;
 		}
 
-		if (userData == null) {
-			userData = new HashMap<String, Object>();
+		final int length = pairs.length/2;
+		if (metaData == null) {
+			metaData = new HashMap<String, Object>(length, 1.0f);
 		}
 
-		int length = pairs.length/2;
 		for (int i=0; i<length; i++) {
 			String key = DuelData.coerceString(pairs[2*i]);
 			Object value = pairs[2*i+1];
-			userData.put(key, value);
+			metaData.put(key, value);
 		}
 		return this;
 	}
 
+	/**
+	 * Walks this code object structure
+	 * @param visitor
+	 */
 	public void visit(CodeVisitor visitor) {
 		visitor.visit(this);
 	}
@@ -55,17 +76,17 @@ public abstract class CodeObject {
 		}
 
 		CodeObject that = (CodeObject)arg;
-		if (this.userData == null) {
-			return (that.userData == null);
+		if (this.metaData == null) {
+			return (that.metaData == null);
 		}
 
-		for (String name : this.userData.keySet()) {
-			if (!that.userData.containsKey(name)) {
+		for (String name : this.metaData.keySet()) {
+			if (!that.metaData.containsKey(name)) {
 				return false;
 			}
 
-			Object thisValue = this.userData.get(name);
-			Object thatValue = that.userData.get(name);
+			Object thisValue = this.metaData.get(name);
+			Object thatValue = that.metaData.get(name);
 
 			if (thisValue == null ? thatValue != null : !thisValue.equals(thatValue)) {
 				return false;
@@ -77,15 +98,17 @@ public abstract class CodeObject {
 
 	@Override
 	public int hashCode() {
-		return (userData != null) ? userData.hashCode() : super.hashCode();
+		return (metaData != null) ? metaData.hashCode() : super.hashCode();
 	}
 
 	@Override
 	public String toString() {
 		try {
+			// debugging helper
 			StringBuilder buffer = new StringBuilder();
-			new org.duelengine.duel.codegen.JavaCodeGen().writeCode(buffer, this);
+			new JavaCodeGen().writeCode(buffer, this);
 			return buffer.toString();
+
 		} catch (Exception ex) {
 			return super.toString()+'\n'+ex.getMessage();
 		}

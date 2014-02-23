@@ -130,11 +130,11 @@ public class ScriptTranslator implements ErrorReporter {
 			CodeMember method = members.get(0);
 			if (extraRefs != null) {
 				// store extra identifiers on the member to allow generation of a fallback block
-				method.withUserData(EXTRA_REFS, extraRefs.toArray());
+				method.putMetaData(EXTRA_REFS, extraRefs.toArray());
 			}
 			if (extraAssign) {
 				// flag as potentially modifying values
-				method.withUserData(EXTRA_ASSIGN, true);
+				method.putMetaData(EXTRA_ASSIGN, true);
 			}
 		}
 		return members;

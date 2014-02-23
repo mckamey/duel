@@ -895,12 +895,12 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(String.class, "key"));
 			}
 
-			if (method.getUserData(ScriptTranslator.EXTRA_ASSIGN) != null) {
+			if (method.getMetaData(ScriptTranslator.EXTRA_ASSIGN) != null) {
 				// flag as potentially modifying extra values
 				needsExtrasEmitted = true;
 			}
 
-			if (canWrite && method.getUserData(ScriptTranslator.EXTRA_REFS) instanceof Object[]) {
+			if (canWrite && method.getMetaData(ScriptTranslator.EXTRA_REFS) instanceof Object[]) {
 				// THIS IS THE BUILDER OF HYBRID DEFERRED EXECUTION
 				// IT IS CURRENTLY BROKEN FOR ATTRIBUTES
 				// SINCE IT DOESN'T ACCOUNT FOR THE CONTEXT 
@@ -908,7 +908,7 @@ public class CodeDOMBuilder {
 				// flag as potentially needing extra values
 				needsExtrasEmitted = true;
 
-				Object[] refs = (Object[])members.get(0).getUserData(ScriptTranslator.EXTRA_REFS);
+				Object[] refs = (Object[])members.get(0).getMetaData(ScriptTranslator.EXTRA_REFS);
 				CodeExpression[] args = new CodeExpression[refs.length+1];
 				args[0] = new CodeVariableReferenceExpression(DuelContext.class, "context");
 				for (int i=0, length=refs.length; i<length; i++) {

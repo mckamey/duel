@@ -34,8 +34,8 @@ public abstract class CodeMember extends CodeObject {
 	}
 
 	@Override
-	public CodeMember withUserData(Object... pairs) {
-		return (CodeMember)super.withUserData(pairs);
+	public CodeMember withMetaData(Object... pairs) {
+		return (CodeMember)super.withMetaData(pairs);
 	}
 
 	@Override

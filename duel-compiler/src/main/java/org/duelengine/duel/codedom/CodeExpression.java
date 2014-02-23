@@ -24,8 +24,8 @@ public abstract class CodeExpression extends CodeObject {
 	}
 
 	@Override
-	public CodeExpression withUserData(Object... pairs) {
-		return (CodeExpression)super.withUserData(pairs);
+	public CodeExpression withMetaData(Object... pairs) {
+		return (CodeExpression)super.withMetaData(pairs);
 	}
 
 	@Override

@@ -6,7 +6,7 @@ package org.duelengine.duel.codedom;
 public abstract class CodeStatement extends CodeObject {
 
 	@Override
-	public CodeStatement withUserData(Object... pairs) {
-		return (CodeStatement)super.withUserData(pairs);
+	public CodeStatement withMetaData(Object... pairs) {
+		return (CodeStatement)super.withMetaData(pairs);
 	}
 }
