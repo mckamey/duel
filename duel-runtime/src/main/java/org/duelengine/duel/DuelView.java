@@ -297,7 +297,9 @@ public abstract class DuelView {
 	 */
 	protected Object getProperty(Object data, Object property) {
 		if (data == null || property == null) {
-			// technically runtime error if data is null
+			// technically NPE if data was null but we
+			// allow here since we chain property accesses
+			// to test if extras are available server-side
 			return JSUtility.UNDEFINED;
 		}
 
@@ -343,7 +345,9 @@ public abstract class DuelView {
 
 		Map<?,?> map = DuelData.coerceMap(data);
 		if (map == null || !map.containsKey(key)) {
-			// technically may be runtime error if map is null
+			// technically NPE if map was null but we
+			// allow here since we chain property accesses
+			// to test if extras are available server-side
 			return JSUtility.UNDEFINED;
 		}
 

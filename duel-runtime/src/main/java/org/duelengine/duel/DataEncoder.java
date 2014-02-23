@@ -159,7 +159,7 @@ public class DataEncoder {
 			return;
 		}
 		if (data == JSUtility.UNDEFINED) {
-			output.append("undefined");
+			output.append(JSUtility.UNDEFINED_KEYWORD);
 			return;
 		}
 

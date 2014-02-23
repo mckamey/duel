@@ -766,7 +766,7 @@ public class ScriptTranslatorTest {
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeMethodReturnStatement(
-					CodePrimitiveExpression.NULL));
+					CodePrimitiveExpression.UNDEFINED));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);

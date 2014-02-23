@@ -7,12 +7,20 @@ import java.util.Set;
 
 public final class JSUtility {
 
+	/**
+	 * Server-side representation of the JS concept of "undefined" 
+	 */
 	public final static Object UNDEFINED = new Object() {
 		@Override
 		public String toString() {
-			return "undefined";
+			return UNDEFINED_KEYWORD;
 		};
 	};
+
+	/**
+	 * The undefined keyword literal
+	 */
+	static final String UNDEFINED_KEYWORD = "undefined";
 
 	private static final String CONFIG_RESOURCE = "org.duelengine.duel.JSUtility";
 	private static Set<String> reserved;

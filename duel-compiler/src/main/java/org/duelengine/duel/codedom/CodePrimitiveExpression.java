@@ -1,10 +1,13 @@
 package org.duelengine.duel.codedom;
 
+import org.duelengine.duel.JSUtility;
+
 /**
  * A read-only primitive expression which may only hold a literal value
  */
 public class CodePrimitiveExpression extends CodeExpression {
 
+	public static final CodePrimitiveExpression UNDEFINED = new CodePrimitiveExpression(JSUtility.UNDEFINED);
 	public static final CodePrimitiveExpression NULL = new CodePrimitiveExpression(null);
 	public static final CodePrimitiveExpression FALSE = new CodePrimitiveExpression(false);
 	public static final CodePrimitiveExpression TRUE = new CodePrimitiveExpression(true);
@@ -14,7 +17,7 @@ public class CodePrimitiveExpression extends CodeExpression {
 	private final Object value;
 
 	public CodePrimitiveExpression(Object primative) {
-		Class<?> type = (primative == null) ? null : primative.getClass();
+		Class<?> type = (primative == null || primative == JSUtility.UNDEFINED) ? null : primative.getClass();
 		if (type != null &&
 			!type.isPrimitive() &&
 			!Boolean.class.equals(type) &&
