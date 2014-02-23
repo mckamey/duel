@@ -11,7 +11,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-compiler</artifactId>
-	<version>0.8.7</version>
+	<version>0.9.0</version>
 	<packaging>jar</packaging>
 
 	<name>DUEL Compiler</name>

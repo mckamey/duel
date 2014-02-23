@@ -5,7 +5,7 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>duel-js</artifactId>
-	<version>0.8.9</version>
+	<version>0.9.0</version>
 	<packaging>pom</packaging>
 
 	<name>DUEL Client Scripts</name>
@@ -33,7 +33,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<closure.version>r2180<!-- r2388 is buggy --></closure.version>
+		<closure.version>r2180<!-- r2388 and later crash --></closure.version>
 		<jslint4java.version>1.4.6<!-- last sane version --></jslint4java.version>
 	</properties>
 
