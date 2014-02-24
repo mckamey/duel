@@ -62,11 +62,14 @@ import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
 import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
 import org.duelengine.duel.codedom.ScriptExpression;
 import org.duelengine.duel.parsing.InvalidNodeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Translates the view AST to CodeDOM tree
  */
 public class CodeDOMBuilder {
+	private final Logger log = LoggerFactory.getLogger(CodeDOMBuilder.class);
 
 	private enum TagMode {
 
@@ -902,18 +905,20 @@ public class CodeDOMBuilder {
 			if (method.hasMetaData(ScriptTranslator.EXTRA_ASSIGN) ||
 				method.hasMetaData(ScriptTranslator.EXTRA_REFS)) {
 
-				if (!canDefer) {
-					throw new InvalidNodeException("Cannot defer to client side", node);
+				if (canDefer) {
+					// hybrid deferred execution scenario (dual-side)
+					// ==============================================
+
+					// flag as accessing extra values
+					needsExtrasEmitted = true;
+
+					// allow caller to build hybrid execution
+					expression.withMetaData(IS_HYBRID, true);
+
+				} else if (method.hasMetaData(ScriptTranslator.EXTRA_REFS)) {
+					// this forces server-only execution
+					log.warn("Cannot defer block; ensure extras are passed to view: " + node.toString());
 				}
-
-				// hybrid deferred execution scenario (dual-side)
-				// ==============================================
-
-				// flag as accessing extra values
-				needsExtrasEmitted = true;
-
-				// allow caller to build hybrid execution
-				expression.withMetaData(IS_HYBRID, true);
 			}
 
 			return expression;

@@ -1,8 +1,10 @@
 package org.duelengine.duel.codegen;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelData;
@@ -75,7 +77,7 @@ public class ScriptTranslator implements ErrorReporter {
 	public static final String EXTRA_ASSIGN = "ScriptTranslator.EXTRA_ASSIGN";
 
 	private final IdentifierScope scope;
-	private List<String> extraRefs;
+	private Set<String> extraRefs;
 	private boolean extraAssign;
 
 	public ScriptTranslator() {
@@ -538,7 +540,7 @@ public class ScriptTranslator implements ErrorReporter {
 			((InfixExpression)node.getParent()).getLeft() == node)) {
 
 			if (extraRefs == null) {
-				extraRefs = new ArrayList<String>();
+				extraRefs = new HashSet<String>();
 			}
 			extraRefs.add(ident);
 		} else {

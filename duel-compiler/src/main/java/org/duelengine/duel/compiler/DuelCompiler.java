@@ -128,7 +128,7 @@ public class DuelCompiler {
 			settings.setConvertLineEndings(false);
 			settings.setNormalizeWhitespace(true);
 
-			String outputName = inputFile.getName();
+			String outputName = null;
 			for (VIEWCommandNode view : views) {
 				if (view.isServerOnly()) {
 					// skip server-only views
@@ -137,20 +137,16 @@ public class DuelCompiler {
 
 				// use the first view
 				outputName = settings.getClientPath(view.getName());
+				if (outputName == null || outputName.isEmpty()) {
+					outputName = inputFile.getName().substring(0, inputFile.getName().lastIndexOf('.'));
+				}
 				break;
 			}
 
 			CodeGenerator codegen = new ClientCodeGen(settings);
 
 			// ensure has client-views before generating file
-			int clientViews = 0;
-			for (VIEWCommandNode view : views) {
-				if (!view.isServerOnly()) {
-					clientViews++;
-				}
-			}
-
-			if (clientViews > 0) {
+			if (outputName != null) {
 				try {
 					File outputFile = new File(outputClientDir, outputName+codegen.getFileExtension());
 					outputFile.getParentFile().mkdirs();

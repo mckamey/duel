@@ -2828,4 +2828,87 @@ public class CodeDOMBuilderTest {
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void forcedServerOnlyTest() throws IOException {
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
+			},
+			new LiteralNode("BEFORE"),
+			new CALLCommandNode(
+				new AttributePair[] {
+					new AttributePair("view", new LiteralNode("foo.bar.Yada")),
+					new AttributePair("data", new ExpressionNode("foo.bar"))
+				}),
+			new LiteralNode("AFTER"));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			"foo.bar",
+			"Blah",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("BEFORE"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"renderView",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeFieldReferenceExpression(
+							new CodeThisReferenceExpression(),
+							org.duelengine.duel.DuelView.class,
+							"view_2"),
+						new CodePropertyReferenceExpression(
+							new ScriptVariableReferenceExpression("foo"),
+							new CodePrimitiveExpression("bar")).withParens(),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("AFTER")))
+				).withOverride().withThrows(IOException.class),
+			new CodeField(
+				AccessModifierType.PRIVATE,
+				org.duelengine.duel.DuelView.class,
+				"view_2"),
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"init",
+				null,
+				new CodeExpressionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.ASSIGN,
+						new CodeFieldReferenceExpression(
+							new CodeThisReferenceExpression(),
+							org.duelengine.duel.DuelView.class,
+							"view_2"),
+						new CodeObjectCreateExpression("foo.bar.Yada")))
+				).withOverride());
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+
+		assertEquals(expected, actual);
+	}
 }
