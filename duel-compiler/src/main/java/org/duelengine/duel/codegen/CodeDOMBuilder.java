@@ -212,7 +212,9 @@ public class CodeDOMBuilder {
 					buildPartPlaceholder((PARTCommandNode)node);
 					break;
 				default:
-					throw new InvalidNodeException("Invalid command node type: "+command.getCommand(), command);
+					InvalidNodeException ex = new InvalidNodeException("Invalid command node type: "+command.getCommand(), command);
+					log.error(ex.getMessage(), ex);
+					throw ex;
 			}
 
 		} else if (node instanceof ElementNode) {
@@ -263,7 +265,9 @@ public class CodeDOMBuilder {
 
 		if (viewName == null) {
 			// TODO: how to handle switcher method cases?
-			throw new InvalidNodeException("Unexpected Call command view attribute: "+attr, attr);
+			InvalidNodeException ex = new InvalidNodeException("Unexpected Call command view attribute: "+attr, attr);
+			log.error(ex.getMessage(), ex);
+			throw ex;
 		}
 
 		// prepend the server-side prefix
@@ -387,7 +391,9 @@ public class CodeDOMBuilder {
 
 			} else {
 				// TODO: how to handle switcher method cases?
-				throw new InvalidNodeException("Unexpected Call command view attribute: "+callView, callView);
+				InvalidNodeException ex = new InvalidNodeException("Unexpected Call command view attribute: "+callView, callView);
+				log.error(ex.getMessage(), ex);
+				throw ex;
 			}
 			buffer.append(")");
 		}
@@ -510,7 +516,9 @@ public class CodeDOMBuilder {
 
 		String partName = node.getName();
 		if (partName == null) {
-			throw new InvalidNodeException("PART command is missing name", node);
+			InvalidNodeException ex = new InvalidNodeException("PART command is missing name", node);
+			log.error(ex.getMessage(), ex);
+			throw ex;
 		}
 
 		CodeMethod getNameMethod = new CodeMethod(
@@ -602,7 +610,9 @@ public class CodeDOMBuilder {
 			} else {
 				DuelNode loopArray = node.getAttribute(FORCommandNode.EACH);
 				if (!(loopArray instanceof CodeBlockNode)) {
-					throw new InvalidNodeException("FOR loop missing arguments", loopArray);
+					InvalidNodeException ex = new InvalidNodeException("FOR loop missing arguments", loopArray);
+					log.error(ex.getMessage(), ex);
+					throw ex;
 				}
 
 				CodeExpression arrayExpr = translateExpression((CodeBlockNode)loopArray, false);
@@ -875,7 +885,9 @@ public class CodeDOMBuilder {
 			boolean firstIsMethod = (members.size() > 0) && members.get(0) instanceof CodeMethod;
 			if (!firstIsMethod) {
 				// is this ever possible? code blocks should always translate to client-side functions
-				throw new InvalidNodeException("Node should start with method", node);
+				InvalidNodeException ex = new InvalidNodeException("Node should start with method", node);
+				log.error(ex.getMessage(), ex);
+				throw ex;
 			}
 
 			CodeMethod method = (CodeMethod)members.get(0);
@@ -935,7 +947,9 @@ public class CodeDOMBuilder {
 			if (message == null) {
 				message = ex.toString();
 			}
-			throw new InvalidNodeException(message, node, ex);
+			InvalidNodeException ex2 = new InvalidNodeException(message, node, ex);
+			log.error(ex.getMessage(), ex2);
+			throw ex2;
 		}
 	}
 
@@ -1116,7 +1130,9 @@ public class CodeDOMBuilder {
 					}
 
 				} else {
-					throw new InvalidNodeException("Invalid attribute node type: "+attrVal.getClass(), attrVal);
+					InvalidNodeException ex = new InvalidNodeException("Invalid attribute node type: "+attrVal.getClass(), attrVal);
+					log.error(ex.getMessage(), ex);
+					throw ex;
 				}
 
 				formatter.writeOpenAttribute(buffer, attrName);
@@ -1207,13 +1223,17 @@ public class CodeDOMBuilder {
 				scopeStack.pop();
 
 			} else {
-				throw new InvalidNodeException("Invalid attribute node type: "+attrVal.getClass(), attrVal);
+				InvalidNodeException ex = new InvalidNodeException("Invalid attribute node type: "+attrVal.getClass(), attrVal);
+				log.error(ex.getMessage(), ex);
+				throw ex;
 			}
 		}
 
 		CodeVariableDeclarationStatement idVar = null;
 		String idValue = null;
 		if (deferredAttrs.size() > 0 || hybridAttrs.size() > 0) {
+			// TODO: it would be nice if the id attribute was only emitted if has deferred attrs or emitted hybrid
+
 			DuelNode id = element.getAttribute("id");
 			if (id == null) {
 				formatter.writeOpenAttribute(buffer, "id");
@@ -1225,7 +1245,9 @@ public class CodeDOMBuilder {
 
 			} else {
 				// TODO: find cases where this may be legitimate
-				throw new InvalidNodeException("Invalid ID attribute node type: "+id.getClass(), id);
+				InvalidNodeException ex = new InvalidNodeException("Invalid ID attribute node type: "+id.getClass(), id);
+				log.error(ex.getMessage(), ex);
+				throw ex;
 			}
 		}
 
@@ -1272,43 +1294,102 @@ public class CodeDOMBuilder {
 
 		// emit all deferred and hybrid attributes
 		if (deferredAttrs.size() > 0 || hybridAttrs.size() > 0) {
-			// TODO: it might be nice to consolidate all of these at the view level and emit them at the end
-			// also it would be great if the script tag is only emitted if has deferred attrs or emitted hybrid
+			buildDeferredAttributeExecutions(deferredAttrs, hybridAttrs, idVar, idValue, argSize);
+		}
+	}
+
+	private void buildDeferredAttributeExecutions(
+			Map<String, DataEncoder.Snippet> deferredAttrs,
+			List<HybridDeferredAttribute> hybridAttrs,
+			CodeVariableDeclarationStatement idVar, String idValue, int argSize) throws IOException {
+
+		// TODO: add unit test which demonstrate both deferred and hybrid together
+		// TODO: it would be nice to consolidate all of these at the view level and emit them at the end
+
+		boolean hasTags = false;
+		if (deferredAttrs.size() > 0) {
+			hasTags = true;
+
 			hasScripts = true;
 			formatter.writeOpenElementBeginTag(buffer, "script");
 			if (settings.getScriptTypeAttr()) {
 				formatter.writeAttribute(buffer, "type", "text/javascript");
 			}
 			formatter.writeCloseElementBeginTag(buffer);
-	
-			for (HybridDeferredAttribute hybridAttr : hybridAttrs) {
-				CodeConditionStatement hybridTest = new CodeConditionStatement(
-						new CodeBinaryOperatorExpression(
-							CodeBinaryOperatorType.IDENTITY_EQUALITY,
-							hybridAttr.getValueRef(),
-							ScriptExpression.UNDEFINED));
-	
-				flushBuffer();
-				scopeStack.peek().add(hybridTest);
-				scopeStack.push(hybridTest.getTrueStatements());
-	
-				Map<String, DataEncoder.Snippet> map = new HashMap<String, DataEncoder.Snippet>();
-				map.put(hybridAttr.getAttrName(), DataEncoder.asSnippet(hybridAttr.getClientCode()));
-				buildDeferredAttributeExecution(
-						map,
-						idVar,
-						idValue,
-						hybridAttr.getArgSize());
-	
+
+			// execute any deferred attributes for element at idVar
+			buildDeferredAttributeExecution(deferredAttrs, idVar, idValue, argSize);
+		}
+
+		CodeVariableDeclarationStatement hasTagsVar = null;
+		if (!hasTags) {
+			hasTagsVar = new CodeVariableDeclarationStatement(
+				boolean.class,
+				scopeStack.peek().nextIdent("hasTags_"),
+				CodePrimitiveExpression.FALSE);
+			scopeStack.peek().add(hasTagsVar);
+		}
+
+		for (HybridDeferredAttribute hybridAttr : hybridAttrs) {
+			CodeConditionStatement hybridTest = new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.IDENTITY_EQUALITY,
+						hybridAttr.getValueRef(),
+						ScriptExpression.UNDEFINED));
+
+			flushBuffer();
+			scopeStack.peek().add(hybridTest);
+			scopeStack.push(hybridTest.getTrueStatements());
+
+			if (!hasTags) {
+				hasScripts = true;
+
+				CodeConditionStatement tagsTest = new CodeConditionStatement(
+						new CodeUnaryOperatorExpression(
+							CodeUnaryOperatorType.LOGICAL_NEGATION,
+							new CodeVariableReferenceExpression(hasTagsVar)),
+						new CodeExpressionStatement(new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.ASSIGN,
+							new CodeVariableReferenceExpression(hasTagsVar),
+							CodePrimitiveExpression.TRUE)));
+
+				scopeStack.peek().add(tagsTest);
+				scopeStack.push(tagsTest.getTrueStatements());
+
+				formatter.writeOpenElementBeginTag(buffer, "script");
+				if (settings.getScriptTypeAttr()) {
+					formatter.writeAttribute(buffer, "type", "text/javascript");
+				}
+				formatter.writeCloseElementBeginTag(buffer);
 				flushBuffer();
 				scopeStack.pop();
 			}
-			if (deferredAttrs.size() > 0) {
-				// execute any deferred attributes for element at idVar
-				buildDeferredAttributeExecution(deferredAttrs, idVar, idValue, argSize);
-			}
+
+			Map<String, DataEncoder.Snippet> map = new HashMap<String, DataEncoder.Snippet>();
+			map.put(hybridAttr.getAttrName(), DataEncoder.asSnippet(hybridAttr.getClientCode()));
+			buildDeferredAttributeExecution(
+					map,
+					idVar,
+					idValue,
+					hybridAttr.getArgSize());
+
+			flushBuffer();
+			scopeStack.pop();
+		}
+
+		if (hasTags) {
+			formatter.writeElementEndTag(buffer, "script");
+
+		} else {
+			CodeConditionStatement tagsTest = new CodeConditionStatement(
+				new CodeVariableReferenceExpression(hasTagsVar));
+
+			scopeStack.peek().add(tagsTest);
+			scopeStack.push(tagsTest.getTrueStatements());
 
 			formatter.writeElementEndTag(buffer, "script");
+			flushBuffer();
+			scopeStack.pop();
 		}
 	}
 

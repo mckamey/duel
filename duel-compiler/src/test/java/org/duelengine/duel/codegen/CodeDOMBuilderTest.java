@@ -2239,17 +2239,32 @@ public class CodeDOMBuilderTest {
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodeVariableReferenceExpression(String.class, "id_5"))),
+				new CodeVariableDeclarationStatement(boolean.class, "hasTags_6", CodePrimitiveExpression.FALSE),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("\">Lorem ipsum.</p><script>"))),
+					new CodePrimitiveExpression("\">Lorem ipsum.</p>"))),
 				new CodeConditionStatement(
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.IDENTITY_EQUALITY,
 						new CodeVariableReferenceExpression(Object.class, "val_4"),
 						ScriptExpression.UNDEFINED),
+					new CodeConditionStatement(
+						new CodeUnaryOperatorExpression(
+							CodeUnaryOperatorType.LOGICAL_NEGATION,
+							new CodeVariableReferenceExpression(boolean.class, "hasTags_6")),
+						new CodeExpressionStatement(new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.ASSIGN,
+							new CodeVariableReferenceExpression(boolean.class, "hasTags_6"),
+							CodePrimitiveExpression.TRUE)),
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression("<script>")))),
 					new CodeExpressionStatement(new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
@@ -2275,17 +2290,40 @@ public class CodeDOMBuilderTest {
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression(",1);")))),
+				new CodeConditionStatement(
+					new CodeVariableReferenceExpression(boolean.class, "hasTags_6"),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("</script>")))),
+				new CodeVariableDeclarationStatement(boolean.class, "hasTags_7", CodePrimitiveExpression.FALSE),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("</script></div><script>"))),
+					new CodePrimitiveExpression("</div>"))),
 				new CodeConditionStatement(
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.IDENTITY_EQUALITY,
 						new CodeVariableReferenceExpression(Object.class, "val_1"),
 						ScriptExpression.UNDEFINED),
+					new CodeConditionStatement(
+						new CodeUnaryOperatorExpression(
+							CodeUnaryOperatorType.LOGICAL_NEGATION,
+							new CodeVariableReferenceExpression(boolean.class, "hasTags_7")),
+						new CodeExpressionStatement(new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.ASSIGN,
+							new CodeVariableReferenceExpression(boolean.class, "hasTags_7"),
+							CodePrimitiveExpression.TRUE)),
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression("<script>")))),
 					new CodeExpressionStatement(new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
@@ -2316,6 +2354,20 @@ public class CodeDOMBuilderTest {
 						CodeBinaryOperatorType.IDENTITY_EQUALITY,
 						new CodeVariableReferenceExpression(Object.class, "val_2"),
 						ScriptExpression.UNDEFINED),
+					new CodeConditionStatement(
+						new CodeUnaryOperatorExpression(
+							CodeUnaryOperatorType.LOGICAL_NEGATION,
+							new CodeVariableReferenceExpression(boolean.class, "hasTags_7")),
+						new CodeExpressionStatement(new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.ASSIGN,
+							new CodeVariableReferenceExpression(boolean.class, "hasTags_7"),
+							CodePrimitiveExpression.TRUE)),
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression("<script>")))),
 					new CodeExpressionStatement(new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
@@ -2341,12 +2393,14 @@ public class CodeDOMBuilderTest {
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression(",1);")))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("</script>")))
+				new CodeConditionStatement(
+					new CodeVariableReferenceExpression(boolean.class, "hasTags_7"),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("</script>"))))
 			).withOverride().withThrows(IOException.class)
 		);
 
