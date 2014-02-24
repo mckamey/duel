@@ -1232,13 +1232,49 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement idVar = null;
 		String idValue = null;
 		if (deferredAttrs.size() > 0 || hybridAttrs.size() > 0) {
-			// TODO: it would be nice if the id attribute was only emitted if has deferred attrs or emitted hybrid
-
 			DuelNode id = element.getAttribute("id");
 			if (id == null) {
+				// TODO: it would be nice if the id attribute was only emitted if has deferred attrs or emitted hybrid
+				boolean testIfIdNeeded = deferredAttrs.isEmpty() && hybridAttrs.size() > 0;
+
+				// assign a new unique ident to the element
+				idVar = CodeDOMUtility.nextID(scopeStack.peek());
+				scopeStack.peek().add(idVar);
+
+				if (testIfIdNeeded) {
+					CodeConditionStatement hybridTest = new CodeConditionStatement();
+					for (HybridDeferredAttribute hybridAttr : hybridAttrs) {
+						CodeBinaryOperatorExpression partialTest = new CodeBinaryOperatorExpression(
+								CodeBinaryOperatorType.IDENTITY_EQUALITY,
+								hybridAttr.getValueRef(),
+								ScriptExpression.UNDEFINED);
+
+						if (hybridTest.getCondition() == null) {
+							hybridTest.setCondition(partialTest);
+
+						} else {
+							hybridTest.setCondition(
+								new CodeBinaryOperatorExpression(
+									CodeBinaryOperatorType.BOOLEAN_OR,
+									hybridTest.getCondition(),
+									partialTest));
+						}
+					}
+					flushBuffer();
+					scopeStack.peek().add(hybridTest);
+					scopeStack.push(hybridTest.getTrueStatements());
+				}
+
+				// emit the id attribute
 				formatter.writeOpenAttribute(buffer, "id");
-				idVar = emitClientID();
+				flushBuffer();
+				scopeStack.peek().add(CodeDOMUtility.emitVarValue(idVar));
 				formatter.writeCloseAttribute(buffer);
+
+				if (testIfIdNeeded) {
+					flushBuffer();
+					scopeStack.pop();
+				}
 
 			} else if (id instanceof LiteralNode) {
 				idValue = ((LiteralNode)id).getValue();

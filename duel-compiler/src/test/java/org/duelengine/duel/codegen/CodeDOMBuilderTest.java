@@ -1795,12 +1795,6 @@ public class CodeDOMBuilderTest {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("<div id=\""))),
 				new CodeVariableDeclarationStatement(
 					String.class,
 					"id_1",
@@ -1814,13 +1808,13 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodeVariableReferenceExpression(String.class, "id_1"))),
+					new CodePrimitiveExpression("<div id=\""))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("\"><p id=\""))),
+					new CodeVariableReferenceExpression(String.class, "id_1"))),
 				new CodeVariableDeclarationStatement(
 					String.class,
 					"id_2",
@@ -1829,6 +1823,12 @@ public class CodeDOMBuilderTest {
 						new CodeThisReferenceExpression(),
 						"nextID",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("\"><p id=\""))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -2168,12 +2168,6 @@ public class CodeDOMBuilderTest {
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression('"')))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(" class=\"foo-bar\" id=\""))),
 				new CodeVariableDeclarationStatement(String.class, "id_3",
 					new CodeMethodInvokeExpression(
 						String.class,
@@ -2185,13 +2179,42 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodeVariableReferenceExpression(String.class, "id_3"))),
+					new CodePrimitiveExpression(" class=\"foo-bar\""))),
+				new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.BOOLEAN_OR,
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.IDENTITY_EQUALITY,
+							new CodeVariableReferenceExpression(Object.class, "val_1"),
+							ScriptExpression.UNDEFINED),
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.IDENTITY_EQUALITY,
+							new CodeVariableReferenceExpression(Object.class, "val_2"),
+							ScriptExpression.UNDEFINED)),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(" id=\""))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeVariableReferenceExpression(String.class, "id_3"))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression('"')))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("\"><p"))),
+					new CodePrimitiveExpression("><p"))),
 				new CodeVariableDeclarationStatement(Object.class, "val_4",
 					new CodePropertyReferenceExpression(
 						new CodePropertyReferenceExpression(
@@ -2221,31 +2244,42 @@ public class CodeDOMBuilderTest {
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression('"')))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(" id=\""))),
 				new CodeVariableDeclarationStatement(String.class, "id_5",
 					new CodeMethodInvokeExpression(
 						String.class,
 						new CodeThisReferenceExpression(),
 						"nextID",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"write",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodeVariableReferenceExpression(String.class, "id_5"))),
+				new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.IDENTITY_EQUALITY,
+						new CodeVariableReferenceExpression(Object.class, "val_4"),
+						ScriptExpression.UNDEFINED),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(" id=\""))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeVariableReferenceExpression(String.class, "id_5"))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression('"')))),
 				new CodeVariableDeclarationStatement(boolean.class, "hasTags_6", CodePrimitiveExpression.FALSE),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("\">Lorem ipsum.</p>"))),
+					new CodePrimitiveExpression(">Lorem ipsum.</p>"))),
 				new CodeConditionStatement(
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.IDENTITY_EQUALITY,
