@@ -11,6 +11,15 @@ public abstract class CodeObject {
 	private Map<String, Object> metaData;
 
 	/**
+	 * Checks existence of a metadata value for the given key
+	 * @param key
+	 * @return
+	 */
+	public boolean hasMetaData(String key) {
+		return (metaData != null && metaData.containsKey(key));
+	}
+
+	/**
 	 * Retrieves a metadata value for the given key
 	 * @param key
 	 * @return
@@ -35,6 +44,19 @@ public abstract class CodeObject {
 		}
 
 		return metaData.put(key, value);
+	}
+
+	/**
+	 * Retrieves a metadata value for the given key
+	 * @param key
+	 * @return
+	 */
+	public Object removeMetaData(String key) {
+		if (metaData == null || !metaData.containsKey(key)) {
+			return null;
+		}
+
+		return metaData.remove(key);
 	}
 
 	/**
@@ -76,8 +98,8 @@ public abstract class CodeObject {
 		}
 
 		CodeObject that = (CodeObject)arg;
-		if (this.metaData == null) {
-			return (that.metaData == null);
+		if (this.metaData == null || this.metaData.isEmpty()) {
+			return (that.metaData == null || that.metaData.isEmpty());
 		}
 
 		for (String name : this.metaData.keySet()) {

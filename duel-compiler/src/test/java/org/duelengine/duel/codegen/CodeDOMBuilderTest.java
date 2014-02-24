@@ -52,6 +52,7 @@ import org.duelengine.duel.codedom.CodeUnaryOperatorType;
 import org.duelengine.duel.codedom.CodeVariableCompoundDeclarationStatement;
 import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
 import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
+import org.duelengine.duel.codedom.ScriptExpression;
 import org.duelengine.duel.codedom.ScriptVariableReferenceExpression;
 import org.junit.Test;
 
@@ -1851,7 +1852,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("duel({ 'class': function(data, index, count, key) { return (barCSS(key)); } })("))),
+					new CodePrimitiveExpression("duel({'class':function(data, index, count, key){return(barCSS(key));}})("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1864,7 +1865,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", "))),
+					new CodePrimitiveExpression(','))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1877,7 +1878,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", "))),
+					new CodePrimitiveExpression(','))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1890,7 +1891,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", "))),
+					new CodePrimitiveExpression(','))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1916,7 +1917,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", true);</script></div><script>duel({\n\t\t'class': function(data, index) { return (fooCSS(index)); },\n\t\tstyle: function(data) { return (customStyle(data)); }\n\t})("))),
+					new CodePrimitiveExpression(",1);</script></div><script>duel({'class':function(data, index){return(fooCSS(index));},style:function(data){return(customStyle(data));}})("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1929,7 +1930,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", "))),
+					new CodePrimitiveExpression(','))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -1955,7 +1956,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", true);</script>")))
+					new CodePrimitiveExpression(",1);</script>")))
 			).withOverride().withThrows(IOException.class)
 		);
 
@@ -2024,7 +2025,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression("duel(function(data, index) { return (foo(index)); })("))),
+					new CodePrimitiveExpression("duel(function(data, index){return(foo(index));})("))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -2037,7 +2038,7 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodePrimitiveExpression(", "))),
+					new CodePrimitiveExpression(','))),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -2064,6 +2065,276 @@ public class CodeDOMBuilderTest {
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodePrimitiveExpression(");</script></div>")))
+			).withOverride().withThrows(IOException.class)
+		);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void hybridDeferredExecutionAttributesTest() throws IOException {
+
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("Foo"))
+			},
+			new ElementNode("div",
+				new AttributePair[] {
+					new AttributePair("onmouseover", new ExpressionNode(" foo.bar.onhover ")),
+					new AttributePair("onclick", new ExpressionNode(" foo.onclick ")),
+					new AttributePair("class", new LiteralNode("foo-bar"))
+				},
+				new ElementNode("p",
+					new AttributePair[] {
+						new AttributePair("onclick", new ExpressionNode(" foo.baz.onclick "))
+					},
+					new LiteralNode("Lorem ipsum."))
+			));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"Foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("<div"))),
+				new CodeVariableDeclarationStatement(Object.class, "val_1",
+					new CodePropertyReferenceExpression(
+						new CodePropertyReferenceExpression(
+							new ScriptVariableReferenceExpression("foo"),
+							new CodePrimitiveExpression("bar")),
+							new CodePrimitiveExpression("onhover")).withParens()),
+				new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.IDENTITY_INEQUALITY,
+						new CodeVariableReferenceExpression(Object.class, "val_1"),
+						ScriptExpression.UNDEFINED),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(" onmouseover=\""))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"htmlEncode",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeVariableReferenceExpression(Object.class, "val_1"))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression('"')))),
+				new CodeVariableDeclarationStatement(Object.class, "val_2",
+					new CodePropertyReferenceExpression(
+						new ScriptVariableReferenceExpression("foo"),
+						new CodePrimitiveExpression("onclick")).withParens()),
+				new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.IDENTITY_INEQUALITY,
+						new CodeVariableReferenceExpression(Object.class, "val_2"),
+						ScriptExpression.UNDEFINED),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(" onclick=\""))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"htmlEncode",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeVariableReferenceExpression(Object.class, "val_2"))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression('"')))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression(" class=\"foo-bar\" id=\""))),
+				new CodeVariableDeclarationStatement(String.class, "id_3",
+					new CodeMethodInvokeExpression(
+						String.class,
+						new CodeThisReferenceExpression(),
+						"nextID",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodeVariableReferenceExpression(String.class, "id_3"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("\"><p"))),
+				new CodeVariableDeclarationStatement(Object.class, "val_4",
+					new CodePropertyReferenceExpression(
+						new CodePropertyReferenceExpression(
+							new ScriptVariableReferenceExpression("foo"),
+							new CodePrimitiveExpression("baz")),
+							new CodePrimitiveExpression("onclick")).withParens()),
+				new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.IDENTITY_INEQUALITY,
+						new CodeVariableReferenceExpression(Object.class, "val_4"),
+						ScriptExpression.UNDEFINED),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(" onclick=\""))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"htmlEncode",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeVariableReferenceExpression(Object.class, "val_4"))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression('"')))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression(" id=\""))),
+				new CodeVariableDeclarationStatement(String.class, "id_5",
+					new CodeMethodInvokeExpression(
+						String.class,
+						new CodeThisReferenceExpression(),
+						"nextID",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodeVariableReferenceExpression(String.class, "id_5"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("\">Lorem ipsum.</p><script>"))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"writeExtras",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					CodePrimitiveExpression.FALSE)),
+				new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.IDENTITY_EQUALITY,
+						new CodeVariableReferenceExpression(Object.class, "val_4"),
+						ScriptExpression.UNDEFINED),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("duel({onclick:function(){return(foo.baz.onclick);}})().toDOM("))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"dataEncode",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeVariableReferenceExpression(String.class, "id_5"),
+						CodePrimitiveExpression.ONE)),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(",1);")))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("</script></div><script>"))),
+				new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.IDENTITY_EQUALITY,
+						new CodeVariableReferenceExpression(Object.class, "val_1"),
+						ScriptExpression.UNDEFINED),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("duel({onmouseover:function(){return(foo.bar.onhover);}})().toDOM("))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"dataEncode",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeVariableReferenceExpression(String.class, "id_3"),
+						CodePrimitiveExpression.ONE)),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(",1);")))),
+				new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.IDENTITY_EQUALITY,
+						new CodeVariableReferenceExpression(Object.class, "val_2"),
+						ScriptExpression.UNDEFINED),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("duel({onclick:function(){return(foo.onclick);}})().toDOM("))),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"dataEncode",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeVariableReferenceExpression(String.class, "id_3"),
+						CodePrimitiveExpression.ONE)),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(",1);")))),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("</script>")))
 			).withOverride().withThrows(IOException.class)
 		);
 
@@ -2101,74 +2372,81 @@ public class CodeDOMBuilderTest {
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodePrimitiveExpression("<div>"))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"htmlEncode",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodeMethodInvokeExpression(
-						Object.class,
-						new CodeThisReferenceExpression(),
-						"hybrid_3",
-						new CodeVariableReferenceExpression(DuelContext.class, "context"),
-						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodeVariableReferenceExpression(int.class, "index"),
-						new CodeVariableReferenceExpression(int.class, "count"),
-						new CodeVariableReferenceExpression(String.class, "key")))),
+					new CodeVariableDeclarationStatement(Object.class, "val_1",
+						new CodePropertyReferenceExpression(
+							new ScriptVariableReferenceExpression("foo"),
+							new CodePrimitiveExpression("bar")).withParens()),
+					new CodeConditionStatement(
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.IDENTITY_INEQUALITY,
+							new CodeVariableReferenceExpression(Object.class, "val_1"),
+							ScriptExpression.UNDEFINED),
+						new CodeStatement[] {
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"htmlEncode",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodeVariableReferenceExpression(Object.class, "val_1")))
+						},
+						new CodeStatement[] {
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression("<script id=\""))),
+							new CodeVariableDeclarationStatement(String.class, "id_1",
+								new CodeMethodInvokeExpression(
+									String.class,
+									new CodeThisReferenceExpression(),
+									"nextID",
+									new CodeVariableReferenceExpression(DuelContext.class, "context"))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodeVariableReferenceExpression(String.class, "id_1"))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression("\">"))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"writeExtras",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								CodePrimitiveExpression.FALSE)),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression("duel(function(){return(foo.bar);})().toDOM("))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"dataEncode",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodeVariableReferenceExpression(String.class, "id_1"),
+								CodePrimitiveExpression.ONE)),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression(");</script>"))),
+						}),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodePrimitiveExpression("</div>")))
-			).withOverride().withThrows(IOException.class),
-			new CodeMethod(
-				AccessModifierType.PRIVATE,
-				Object.class,
-				"hybrid_3",
-				new CodeParameterDeclarationExpression[] {
-					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
-					new CodeParameterDeclarationExpression(Object.class, "data"),
-					new CodeParameterDeclarationExpression(int.class, "index"),
-					new CodeParameterDeclarationExpression(int.class, "count"),
-					new CodeParameterDeclarationExpression(String.class, "key")
-				},
-				new CodeConditionStatement(
-					new CodeMethodInvokeExpression(
-						boolean.class,
-						new CodeThisReferenceExpression(),
-						"hasExtras",
-						new CodeVariableReferenceExpression(DuelContext.class, "context"),
-						new CodePrimitiveExpression("foo")),
-					new CodeStatement[] {
-						new CodeMethodReturnStatement(
-							new CodePropertyReferenceExpression(
-								new ScriptVariableReferenceExpression("foo"),
-								new CodePrimitiveExpression("bar")).withParens())
-					},
-					new CodeStatement[] {
-						new CodeExpressionStatement(new CodeMethodInvokeExpression(
-							Void.class,
-							new CodeThisReferenceExpression(),
-							"write",
-							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression("<script>"))),
-						new CodeExpressionStatement(new CodeMethodInvokeExpression(
-							Void.class,
-							new CodeThisReferenceExpression(),
-							"writeExtras",
-							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression(false))),
-						new CodeExpressionStatement(new CodeMethodInvokeExpression(
-							Void.class,
-							new CodeThisReferenceExpression(),
-							"write",
-							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression("duel(function() { return (foo.bar); })().write();</script>"))),
-						new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
-					}
-				)
-			).withThrows(IOException.class)
+			).withOverride().withThrows(IOException.class)
 		);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
@@ -2205,20 +2483,93 @@ public class CodeDOMBuilderTest {
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodePrimitiveExpression("<div>"))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"htmlEncode",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodeMethodInvokeExpression(
-						Object.class,
-						new CodeThisReferenceExpression(),
-						"hybrid_3",
-						new CodeVariableReferenceExpression(DuelContext.class, "context"),
-						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodeVariableReferenceExpression(int.class, "index"),
-						new CodeVariableReferenceExpression(int.class, "count"),
-						new CodeVariableReferenceExpression(String.class, "key")))),
+					new CodeVariableDeclarationStatement(Object.class, "val_1",
+						new CodeMethodInvokeExpression(
+							Object.class,
+							new CodeThisReferenceExpression(),
+							"code_2",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodeVariableReferenceExpression(Object.class, "data"),
+							new CodeVariableReferenceExpression(int.class, "index"),
+							new CodeVariableReferenceExpression(int.class, "count"),
+							new CodeVariableReferenceExpression(String.class, "key"))),
+					new CodeConditionStatement(
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.IDENTITY_INEQUALITY,
+							new CodeVariableReferenceExpression(Object.class, "val_1"),
+							ScriptExpression.UNDEFINED),
+						new CodeStatement[] {
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"htmlEncode",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodeVariableReferenceExpression(Object.class, "val_1")))
+						},
+						new CodeStatement[] {
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression("<script id=\""))),
+							new CodeVariableDeclarationStatement(String.class, "id_1",
+								new CodeMethodInvokeExpression(
+									String.class,
+									new CodeThisReferenceExpression(),
+									"nextID",
+									new CodeVariableReferenceExpression(DuelContext.class, "context"))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodeVariableReferenceExpression(String.class, "id_1"))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression("\">"))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"writeExtras",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								CodePrimitiveExpression.FALSE)),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression("duel(function(data){foo.bar = (baz+data);})("))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"dataEncode",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodeVariableReferenceExpression(Object.class, "data"),
+								CodePrimitiveExpression.ONE)),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression(").toDOM("))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"dataEncode",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodeVariableReferenceExpression(String.class, "id_1"),
+								CodePrimitiveExpression.ONE)),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression(");</script>"))),
+						}),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -2229,7 +2580,7 @@ public class CodeDOMBuilderTest {
 			new CodeMethod(
 				AccessModifierType.PRIVATE,
 				Object.class,
-				"hybrid_3",
+				"code_2",
 				new CodeParameterDeclarationExpression[] {
 					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
 					new CodeParameterDeclarationExpression(Object.class, "data"),
@@ -2237,63 +2588,18 @@ public class CodeDOMBuilderTest {
 					new CodeParameterDeclarationExpression(int.class, "count"),
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
-				new CodeConditionStatement(
-					new CodeMethodInvokeExpression(
-						boolean.class,
-						new CodeThisReferenceExpression(),
-						"hasExtras",
-						new CodeVariableReferenceExpression(DuelContext.class, "context"),
-						new CodePrimitiveExpression("foo"),
-						new CodePrimitiveExpression("baz")),
-					new CodeStatement[] {
-						new CodeExpressionStatement(
-							new CodeBinaryOperatorExpression(
-								CodeBinaryOperatorType.ASSIGN,
-								new CodePropertyReferenceExpression(
-									new ScriptVariableReferenceExpression("foo"),
-									new CodePrimitiveExpression("bar")),
-								new CodeBinaryOperatorExpression(
-									CodeBinaryOperatorType.ADD,
-									new ScriptVariableReferenceExpression("baz"),
-									new CodeVariableReferenceExpression(Object.class, "data")).withParens())),
-						new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
-					},
-					new CodeStatement[] {
-						new CodeExpressionStatement(new CodeMethodInvokeExpression(
-							Void.class,
-							new CodeThisReferenceExpression(),
-							"write",
-							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression("<script>"))),
-						new CodeExpressionStatement(new CodeMethodInvokeExpression(
-							Void.class,
-							new CodeThisReferenceExpression(),
-							"writeExtras",
-							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression(false))),
-						new CodeExpressionStatement(new CodeMethodInvokeExpression(
-							Void.class,
-							new CodeThisReferenceExpression(),
-							"write",
-							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression("duel(function(data) { foo.bar = (baz+data); })("))),
-						new CodeExpressionStatement(new CodeMethodInvokeExpression(
-							Void.class,
-							new CodeThisReferenceExpression(),
-							"dataEncode",
-							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodeVariableReferenceExpression(Object.class, "data"),
-							CodePrimitiveExpression.ONE)),
-						new CodeExpressionStatement(new CodeMethodInvokeExpression(
-							Void.class,
-							new CodeThisReferenceExpression(),
-							"write",
-							new CodeVariableReferenceExpression(DuelContext.class, "context"),
-							new CodePrimitiveExpression(").write();</script>"))),
-						new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
-					}
-				)
-			).withThrows(IOException.class)
+				new CodeExpressionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.ASSIGN,
+						new CodePropertyReferenceExpression(
+							new ScriptVariableReferenceExpression("foo"),
+							new CodePrimitiveExpression("bar")),
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.ADD,
+							new ScriptVariableReferenceExpression("baz"),
+							new CodeVariableReferenceExpression(Object.class, "data")).withParens())),
+				new CodeMethodReturnStatement(ScriptExpression.UNDEFINED)
+			)
 		);
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
@@ -2367,7 +2673,7 @@ public class CodeDOMBuilderTest {
 						CodeBinaryOperatorType.ASSIGN,
 						new CodePropertyReferenceExpression(new CodeVariableReferenceExpression(Object.class, "data"), new CodePrimitiveExpression("foo")),
 						new CodePrimitiveExpression(42))),
-				new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+				new CodeMethodReturnStatement(ScriptExpression.UNDEFINED)
 			)
 		);
 
@@ -2405,20 +2711,93 @@ public class CodeDOMBuilderTest {
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodePrimitiveExpression("<div>"))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"htmlEncode",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodeMethodInvokeExpression(
-						Object.class,
-						new CodeThisReferenceExpression(),
-						"code_2",
-						new CodeVariableReferenceExpression(DuelContext.class, "context"),
-						new CodeVariableReferenceExpression(Object.class, "data"),
-						new CodeVariableReferenceExpression(int.class, "index"),
-						new CodeVariableReferenceExpression(int.class, "count"),
-						new CodeVariableReferenceExpression(String.class, "key")))),
+					new CodeVariableDeclarationStatement(Object.class, "val_1",
+						new CodeMethodInvokeExpression(
+							Object.class,
+							new CodeThisReferenceExpression(),
+							"code_2",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodeVariableReferenceExpression(Object.class, "data"),
+							new CodeVariableReferenceExpression(int.class, "index"),
+							new CodeVariableReferenceExpression(int.class, "count"),
+							new CodeVariableReferenceExpression(String.class, "key"))),
+					new CodeConditionStatement(
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.IDENTITY_INEQUALITY,
+							new CodeVariableReferenceExpression(Object.class, "val_1"),
+							ScriptExpression.UNDEFINED),
+						new CodeStatement[] {
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"htmlEncode",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodeVariableReferenceExpression(Object.class, "val_1")))
+						},
+						new CodeStatement[] {
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression("<script id=\""))),
+							new CodeVariableDeclarationStatement(String.class, "id_1",
+								new CodeMethodInvokeExpression(
+									String.class,
+									new CodeThisReferenceExpression(),
+									"nextID",
+									new CodeVariableReferenceExpression(DuelContext.class, "context"))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodeVariableReferenceExpression(String.class, "id_1"))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression("\">"))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"writeExtras",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								CodePrimitiveExpression.FALSE)),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression("duel(function(data){foo = data;})("))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"dataEncode",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodeVariableReferenceExpression(Object.class, "data"),
+								CodePrimitiveExpression.ONE)),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression(").toDOM("))),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"dataEncode",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodeVariableReferenceExpression(String.class, "id_1"),
+								CodePrimitiveExpression.ONE)),
+							new CodeExpressionStatement(new CodeMethodInvokeExpression(
+								Void.class,
+								new CodeThisReferenceExpression(),
+								"write",
+								new CodeVariableReferenceExpression(DuelContext.class, "context"),
+								new CodePrimitiveExpression(");</script>"))),
+						}),
 				new CodeExpressionStatement(new CodeMethodInvokeExpression(
 					Void.class,
 					new CodeThisReferenceExpression(),
@@ -2442,7 +2821,7 @@ public class CodeDOMBuilderTest {
 						CodeBinaryOperatorType.ASSIGN,
 						new ScriptVariableReferenceExpression("foo"),
 						new CodeVariableReferenceExpression(Object.class, "data"))),
-				new CodeMethodReturnStatement(CodePrimitiveExpression.NULL)
+				new CodeMethodReturnStatement(ScriptExpression.UNDEFINED)
 			)
 		);
 

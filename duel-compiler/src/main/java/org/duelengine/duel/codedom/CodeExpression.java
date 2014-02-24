@@ -36,7 +36,11 @@ public abstract class CodeExpression extends CodeObject {
 		}
 
 		CodeExpression that = (CodeExpression)arg;
-		return (this.parens == that.parens);
+		if (this.parens != that.parens) {
+			return false;
+		}
+
+		return super.equals(arg);
 	}
 
 	@Override

@@ -43,6 +43,7 @@ import org.duelengine.duel.codedom.CodeUnaryOperatorExpression;
 import org.duelengine.duel.codedom.CodeVariableCompoundDeclarationStatement;
 import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
 import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
+import org.duelengine.duel.codedom.ScriptExpression;
 import org.duelengine.duel.codedom.ScriptVariableReferenceExpression;
 
 /**
@@ -535,7 +536,9 @@ public class JavaCodeGen implements CodeGenerator {
 		switch (expression.getOperator()) {
 			case IDENTITY_EQUALITY:
 				if (!CodePrimitiveExpression.NULL.equals(left) &&
-					!CodePrimitiveExpression.NULL.equals(right)) {
+					!CodePrimitiveExpression.NULL.equals(right) &&
+					!ScriptExpression.UNDEFINED.equals(left) &&
+					!ScriptExpression.UNDEFINED.equals(right)) {
 					writeExpression(output, CodeDOMUtility.equal(left, right));
 					return;
 				}
@@ -544,8 +547,9 @@ public class JavaCodeGen implements CodeGenerator {
 				break;
 			case IDENTITY_INEQUALITY:
 				if (!CodePrimitiveExpression.NULL.equals(left) &&
-					!CodePrimitiveExpression.NULL.equals(right)) {
-
+					!CodePrimitiveExpression.NULL.equals(right) &&
+					!ScriptExpression.UNDEFINED.equals(left) &&
+					!ScriptExpression.UNDEFINED.equals(right)) {
 					writeExpression(output, CodeDOMUtility.notEqual(left, right));
 					return;
 				}

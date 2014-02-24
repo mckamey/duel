@@ -77,5 +77,5 @@ public abstract class CodeBlockNode extends BlockNode {
 		}
 	}
 
-	public abstract String getClientCode();
+	public abstract String getClientCode(boolean prettyPrint);
 }

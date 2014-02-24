@@ -164,7 +164,7 @@ public class ClientCodeGen implements CodeGenerator {
 	private void writeCodeBlock(Appendable output, CodeBlockNode node)
 		throws IOException {
 
-		output.append(node.getClientCode());
+		output.append(node.getClientCode(encoder.isPrettyPrint()));
 	}
 
 	private void writeSpecialElement(Appendable output, String name, String value, int depth, boolean preMode)

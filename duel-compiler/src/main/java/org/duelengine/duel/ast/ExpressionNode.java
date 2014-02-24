@@ -5,8 +5,10 @@ public class ExpressionNode extends CodeBlockNode {
 	public static final String BEGIN = "<%=";
 	public static final String END = "%>";
 	private static final String INTRO1 = "function(";
-	private static final String INTRO2 = ") { return (";
-	private static final String OUTRO = "); }";
+	private static final String INTRO2 = "){return(";
+	private static final String INTRO2_PRETTY = ") { return (";
+	private static final String OUTRO = ");}";
+	private static final String OUTRO_PRETTY = "); }";
 
 	public ExpressionNode(String expression, int index, int line, int column) {
 		super(BEGIN, END, expression, index, line, column);
@@ -17,14 +19,14 @@ public class ExpressionNode extends CodeBlockNode {
 	}
 
 	@Override
-	public String getClientCode() {
+	public String getClientCode(boolean prettyPrint) {
 		StringBuilder buffer = new StringBuilder(INTRO1);
 		buffer.append(formatParamList());
-		buffer.append(INTRO2);
+		buffer.append(prettyPrint ? INTRO2_PRETTY : INTRO2);
 		String value = getValue();
 		if (value != null) {
-			buffer.append(value);
+			buffer.append(prettyPrint ? value : value.trim());
 		}
-		return buffer.append(OUTRO).toString();
+		return buffer.append(prettyPrint ? OUTRO_PRETTY : OUTRO).toString();
 	}
 }

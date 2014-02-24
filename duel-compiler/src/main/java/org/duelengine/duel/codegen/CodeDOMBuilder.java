@@ -1,7 +1,9 @@
 package org.duelengine.duel.codegen;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,6 +60,7 @@ import org.duelengine.duel.codedom.CodeUnaryOperatorType;
 import org.duelengine.duel.codedom.CodeVariableCompoundDeclarationStatement;
 import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
 import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
+import org.duelengine.duel.codedom.ScriptExpression;
 import org.duelengine.duel.parsing.InvalidNodeException;
 
 /**
@@ -83,6 +86,7 @@ public class CodeDOMBuilder {
 		SUSPEND
 	}
 
+	private static final String IS_HYBRID = "CodeDOMBuilder.IS_HYBRID";
 	private final CodeGenSettings settings;
 	private final HTMLFormatter formatter;
 	private final DataEncoder encoder;
@@ -101,7 +105,7 @@ public class CodeDOMBuilder {
 		settings = (codeGenSettings != null) ? codeGenSettings : new CodeGenSettings();
 		buffer = new StringBuilder();
 		formatter = new HTMLFormatter();
-		encoder = new DataEncoder(settings.getNewline(), settings.getIndent());
+		encoder = new DataEncoder(/*settings.getNewline(), settings.getIndent()*/);
 	}
 
 	public CodeTypeDeclaration buildView(VIEWCommandNode viewNode) throws IOException {
@@ -280,36 +284,39 @@ public class CodeDOMBuilder {
 						viewName.trim(),
 						ctorArgs))));
 
-		CodeExpression dataExpr;
-		DuelNode callData = node.getAttribute(CALLCommandNode.DATA);
-		if (callData instanceof CodeBlockNode) {
-			dataExpr = translateExpression((CodeBlockNode)callData, false);
-		} else {
-			dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
-		}
+		CodeExpression dataExpr, indexExpr, countExpr, keyExpr;
+		try {
+			DuelNode callData = node.getAttribute(CALLCommandNode.DATA);
+			if (callData instanceof CodeBlockNode) {
+				dataExpr = translateExpression((CodeBlockNode)callData, false);
+			} else {
+				dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
+			}
+	
+			DuelNode callIndex = node.getAttribute(CALLCommandNode.INDEX);
+			if (callIndex instanceof CodeBlockNode) {
+				indexExpr = translateExpression((CodeBlockNode)callIndex, false);
+			} else {
+				indexExpr = new CodeVariableReferenceExpression(int.class, "index");
+			}
+	
+			DuelNode callCount = node.getAttribute(CALLCommandNode.COUNT);
+			if (callCount instanceof CodeBlockNode) {
+				countExpr = translateExpression((CodeBlockNode)callCount, false);
+			} else {
+				countExpr = new CodeVariableReferenceExpression(int.class, "count");
+			}
+	
+			DuelNode callKey = node.getAttribute(CALLCommandNode.KEY);
+			if (callKey instanceof CodeBlockNode) {
+				keyExpr = translateExpression((CodeBlockNode)callKey, false);
+			} else {
+				keyExpr = new CodeVariableReferenceExpression(String.class, "key");
+			}
 
-		CodeExpression indexExpr;
-		DuelNode callIndex = node.getAttribute(CALLCommandNode.INDEX);
-		if (callIndex instanceof CodeBlockNode) {
-			indexExpr = translateExpression((CodeBlockNode)callIndex, false);
-		} else {
-			indexExpr = new CodeVariableReferenceExpression(int.class, "index");
-		}
-
-		CodeExpression countExpr;
-		DuelNode callCount = node.getAttribute(CALLCommandNode.COUNT);
-		if (callCount instanceof CodeBlockNode) {
-			countExpr = translateExpression((CodeBlockNode)callCount, false);
-		} else {
-			countExpr = new CodeVariableReferenceExpression(int.class, "count");
-		}
-
-		CodeExpression keyExpr;
-		DuelNode callKey = node.getAttribute(CALLCommandNode.KEY);
-		if (callKey instanceof CodeBlockNode) {
-			keyExpr = translateExpression((CodeBlockNode)callKey, false);
-		} else {
-			keyExpr = new CodeVariableReferenceExpression(String.class, "key");
+		} catch(Exception ex) {
+			buildDeferredCall(node);
+			return;
 		}
 
 		flushBuffer();
@@ -857,11 +864,10 @@ public class CodeDOMBuilder {
 		return condition.getFalseStatements();
 	}
 
-	private CodeExpression translateExpression(CodeBlockNode node, boolean canWrite) {
-
+	private CodeExpression translateExpression(CodeBlockNode node, boolean canDefer) {
 		try {
 			// convert from JavaScript source to CodeDOM
-			List<CodeMember> members = new ScriptTranslator(viewType).translate(node.getClientCode());
+			List<CodeMember> members = new ScriptTranslator(viewType).translate(node.getClientCode(encoder.isPrettyPrint()));
 			boolean firstIsMethod = (members.size() > 0) && members.get(0) instanceof CodeMethod;
 			if (!firstIsMethod) {
 				// is this ever possible? code blocks should always translate to client-side functions
@@ -869,10 +875,8 @@ public class CodeDOMBuilder {
 			}
 
 			CodeMethod method = (CodeMethod)members.get(0);
-
 			// attempt to extract single expression (inline the return expression)
 			CodeExpression expression = CodeDOMUtility.inlineMethod(method);
-
 			if (expression != null) {
 				// add remaining CodeDOM members to viewType
 				for (int i=1, length=members.size(); i<length; i++) {
@@ -895,86 +899,27 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(String.class, "key"));
 			}
 
-			if (method.getMetaData(ScriptTranslator.EXTRA_ASSIGN) != null) {
-				// flag as potentially modifying extra values
+			if (method.hasMetaData(ScriptTranslator.EXTRA_ASSIGN) ||
+				method.hasMetaData(ScriptTranslator.EXTRA_REFS)) {
+
+				if (!canDefer) {
+					throw new InvalidNodeException("Cannot defer to client side", node);
+				}
+
+				// hybrid deferred execution scenario (dual-side)
+				// ==============================================
+
+				// flag as accessing extra values
 				needsExtrasEmitted = true;
+
+				// allow caller to build hybrid execution
+				expression.withMetaData(IS_HYBRID, true);
 			}
 
-			if (canWrite && method.getMetaData(ScriptTranslator.EXTRA_REFS) instanceof Object[]) {
-				// THIS IS THE BUILDER OF HYBRID DEFERRED EXECUTION
-				// IT IS CURRENTLY BROKEN FOR ATTRIBUTES
-				// SINCE IT DOESN'T ACCOUNT FOR THE CONTEXT 
-
-				// flag as potentially needing extra values
-				needsExtrasEmitted = true;
-
-				Object[] refs = (Object[])members.get(0).getMetaData(ScriptTranslator.EXTRA_REFS);
-				CodeExpression[] args = new CodeExpression[refs.length+1];
-				args[0] = new CodeVariableReferenceExpression(DuelContext.class, "context");
-				for (int i=0, length=refs.length; i<length; i++) {
-					args[i+1] = new CodePrimitiveExpression(refs[i]);
-				}
-
-				// if data present, then run server-side, else defer execution to client
-				CodeConditionStatement runtimeCheck = new CodeConditionStatement(
-					new CodeMethodInvokeExpression(
-						boolean.class,
-						new CodeThisReferenceExpression(),
-						"hasExtras",
-						args));
-
-				if (expression instanceof CodeMethodInvokeExpression) {
-					runtimeCheck.getTrueStatements().addAll(method.getStatements());
-					viewType.getMembers().remove(method);
-				} else {
-					runtimeCheck.getTrueStatements().add(new CodeMethodReturnStatement(expression));
-				}
-
-				CodeMethod runtimeCheckMethod = new CodeMethod(
-					AccessModifierType.PRIVATE,
-					Object.class,
-					viewType.nextIdent("hybrid_"),
-					new CodeParameterDeclarationExpression[] {
-						new CodeParameterDeclarationExpression(DuelContext.class, "context"),
-						new CodeParameterDeclarationExpression(Object.class, "data"),
-						new CodeParameterDeclarationExpression(int.class, "index"),
-						new CodeParameterDeclarationExpression(int.class, "count"),
-						new CodeParameterDeclarationExpression(String.class, "key")
-					},
-					runtimeCheck).withThrows(IOException.class);
-
-				viewType.add(runtimeCheckMethod);
-
-				// ensure a break in the write stream
-				flushBuffer();
-				scopeStack.push(runtimeCheck.getFalseStatements());
-				try {
-					// defer blocks that cannot be fully processed server-side
-					buildDeferredWrite(node.getClientCode(), node.getArgSize());
-					flushBuffer();
-
-				} finally {
-					scopeStack.pop();
-				}
-
-				// return null if immediately written
-				runtimeCheck.getFalseStatements().add(new CodeMethodReturnStatement(CodePrimitiveExpression.NULL));
-
-				// have the expression be a method invocation
-				expression = new CodeMethodInvokeExpression(
-					runtimeCheckMethod.getReturnType(),
-					new CodeThisReferenceExpression(),
-					runtimeCheckMethod.getName(),
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					new CodeVariableReferenceExpression(Object.class, "data"),
-					new CodeVariableReferenceExpression(int.class, "index"),
-					new CodeVariableReferenceExpression(int.class, "count"),
-					new CodeVariableReferenceExpression(String.class, "key"));
-			}
 			return expression;
 
 		} catch (ScriptTranslationException ex) {
-			throw ex.adjustErrorStatistics(node);
+			throw ex.adjustErrorStatistics(node, encoder.isPrettyPrint());
 
 		} catch (InvalidNodeException ex) {
 			throw ex;
@@ -988,6 +933,7 @@ public class CodeDOMBuilder {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void buildDeferredWrite(String clientCode, int argSize)
 			throws IOException {
 
@@ -1075,6 +1021,7 @@ public class CodeDOMBuilder {
 				}
 			}
 		}
+
 		// emit write function call which writes result directly to the current document
 		buffer.append(").write();");
 
@@ -1096,6 +1043,7 @@ public class CodeDOMBuilder {
 
 		int argSize = 0;
 		Map<String, DataEncoder.Snippet> deferredAttrs = new LinkedHashMap<String, DataEncoder.Snippet>();
+		List<HybridDeferredAttribute> hybridAttrs = new ArrayList<HybridDeferredAttribute>();
 		for (String attrName : element.getAttributeNames()) {
 			DuelNode attrVal = element.getAttribute(attrName);
 			
@@ -1115,28 +1063,37 @@ public class CodeDOMBuilder {
 
 					} catch (Exception ex) {
 						// defer any attributes that cannot be processed server-side
-						deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode()));
+						deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode(encoder.isPrettyPrint())));
 						argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
 						continue;
 					}
 
-					flushBuffer();
-					CodeConditionStatement condition = new CodeConditionStatement();
-					scopeStack.peek().add(condition);
+					boolean isHybrid = attrExpr.hasMetaData(IS_HYBRID);
+					attrExpr.removeMetaData(IS_HYBRID);
 
-					condition.setCondition(attrExpr);
+					if (!isHybrid) {
+						flushBuffer();
+						CodeConditionStatement condition = new CodeConditionStatement();
+						scopeStack.peek().add(condition);
 
-					// write attribute if truthy
-					scopeStack.push(condition.getTrueStatements());
-					formatter.writeAttribute(buffer, attrName, attrName);
-					flushBuffer();
-					scopeStack.pop();
+						condition.setCondition(attrExpr);
+
+						// write boolean attribute if truthy
+						scopeStack.push(condition.getTrueStatements());
+						formatter.writeAttribute(buffer, attrName, attrName);
+						flushBuffer();
+						scopeStack.pop();
+						continue;
+					}
+
+					// TODO: build out hybrid scenario for boolean attributes
+					// in the meantime, defer to client-side
+					deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode(encoder.isPrettyPrint())));
+					argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
 				}
 
 			} else if (element.isLinkAttribute(attrName)) {
-				formatter.writeOpenAttribute(buffer, attrName);
-				flushBuffer();
-
+				// intercept all href/src/etc. in case needs CDN translation
 				CodeStatement writeStatement;
 				if (attrVal instanceof LiteralNode) {
 					writeStatement = buildLinkIntercept(((LiteralNode)attrVal).getValue());
@@ -1146,9 +1103,8 @@ public class CodeDOMBuilder {
 						writeStatement = buildLinkIntercept((CodeBlockNode)attrVal);
 
 					} catch (Exception ex) {
-						
-						// only defer attributes that cannot be processed server-side
-						deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode()));
+						// defer any attributes that cannot be processed server-side
+						deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode(encoder.isPrettyPrint())));
 						argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
 						continue;
 					}
@@ -1157,35 +1113,92 @@ public class CodeDOMBuilder {
 					throw new InvalidNodeException("Invalid attribute node type: "+attrVal.getClass(), attrVal);
 				}
 
+				formatter.writeOpenAttribute(buffer, attrName);
+				flushBuffer();
 				scopeStack.peek().add(writeStatement);
-
 				formatter.writeCloseAttribute(buffer);
 
 			} else if (attrVal instanceof LiteralNode) {
 				formatter.writeAttribute(buffer, attrName, ((LiteralNode)attrVal).getValue());
 
 			} else if (attrVal instanceof CodeBlockNode) {
+				CodeBlockNode block = (CodeBlockNode)attrVal;
 
-				CodeStatement writeStatement;
+				boolean htmlEncode = true;
+				if (block instanceof MarkupExpressionNode) {
+					// unwrap the markup expression before translation
+					htmlEncode = false;
+					block = new ExpressionNode(block.getValue(), block.getIndex(), block.getLine(), block.getColumn());
+				}
+
+				CodeExpression attrExpr;
 				try {
-					writeStatement = processCodeBlock((CodeBlockNode)attrVal);
+					attrExpr = translateExpression(block, true);
 
 				} catch (Exception ex) {
-					// only defer attributes that cannot be processed server-side
-					deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode()));
-					argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
+					// strictly client-side
+					// defer any attributes that cannot be processed server-side
+					deferredAttrs.put(attrName, DataEncoder.asSnippet(block.getClientCode(encoder.isPrettyPrint())));
+					argSize = Math.max(argSize, (block).getArgSize());
 					continue;
 				}
 
-				if (writeStatement != null) {
+				if (attrExpr == null) {
+					formatter.writeAttribute(buffer, attrName, null);
+					continue;
+				}
+
+				boolean isHybrid = attrExpr.hasMetaData(IS_HYBRID);
+				attrExpr.removeMetaData(IS_HYBRID);
+
+				if (!isHybrid) {
+					// strictly server-side
+					CodeStatement writeStatement = htmlEncode ?
+						CodeDOMUtility.emitExpressionSafe(attrExpr, formatter, settings) :
+						CodeDOMUtility.emitExpression(attrExpr);
+	
 					formatter.writeOpenAttribute(buffer, attrName);
 					flushBuffer();
 					scopeStack.peek().add(writeStatement);
 					formatter.writeCloseAttribute(buffer);
-
-				} else {
-					formatter.writeAttribute(buffer, attrName, null);
+					continue;
 				}
+
+				// dual-side block
+				// hybrid deferred execution for attributes path
+
+				CodeVariableDeclarationStatement valDecl = new CodeVariableDeclarationStatement(
+						Object.class,
+						scopeStack.peek().nextIdent("val_"),
+						attrExpr);
+				flushBuffer();
+				scopeStack.peek().add(valDecl);
+
+				CodeVariableReferenceExpression valRef = new CodeVariableReferenceExpression(valDecl);
+
+				hybridAttrs.add(new HybridDeferredAttribute()
+					.setValueRef(valRef)
+					.setAttrName(attrName)
+					.setClientCode(block.getClientCode(encoder.isPrettyPrint()))
+					.setArgSize(block.getArgSize()));
+
+				CodeConditionStatement hybridTest = new CodeConditionStatement(
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.IDENTITY_INEQUALITY,
+							valRef,
+							ScriptExpression.UNDEFINED));
+
+				scopeStack.peek().add(hybridTest);
+				scopeStack.push(hybridTest.getTrueStatements());
+
+				formatter.writeOpenAttribute(buffer, attrName);
+				flushBuffer();
+				scopeStack.peek().add(htmlEncode ?
+						CodeDOMUtility.emitExpressionSafe(valRef, formatter, settings) :
+						CodeDOMUtility.emitExpression(valRef));
+				formatter.writeCloseAttribute(buffer);
+				flushBuffer();
+				scopeStack.pop();
 
 			} else {
 				throw new InvalidNodeException("Invalid attribute node type: "+attrVal.getClass(), attrVal);
@@ -1194,7 +1207,7 @@ public class CodeDOMBuilder {
 
 		CodeVariableDeclarationStatement idVar = null;
 		String idValue = null;
-		if (deferredAttrs.size() > 0) {
+		if (deferredAttrs.size() > 0 || hybridAttrs.size() > 0) {
 			DuelNode id = element.getAttribute("id");
 			if (id == null) {
 				formatter.writeOpenAttribute(buffer, "id");
@@ -1251,8 +1264,46 @@ public class CodeDOMBuilder {
 			formatter.writeCloseElementVoidTag(buffer);
 		}
 
-		if (deferredAttrs.size() > 0) {
-			buildDeferredAttributeExecution(deferredAttrs, idVar, idValue, argSize);
+		// emit all deferred and hybrid attributes
+		if (deferredAttrs.size() > 0 || hybridAttrs.size() > 0) {
+			// TODO: it might be nice to consolidate all of these at the view level and emit them at the end
+			// also it would be great if the script tag is only emitted if has deferred attrs or emitted hybrid
+			hasScripts = true;
+			formatter.writeOpenElementBeginTag(buffer, "script");
+			if (settings.getScriptTypeAttr()) {
+				formatter.writeAttribute(buffer, "type", "text/javascript");
+			}
+			formatter.writeCloseElementBeginTag(buffer);
+			ensureExtrasEmitted(false);
+	
+			for (HybridDeferredAttribute hybridAttr : hybridAttrs) {
+				CodeConditionStatement hybridTest = new CodeConditionStatement(
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.IDENTITY_EQUALITY,
+							hybridAttr.getValueRef(),
+							ScriptExpression.UNDEFINED));
+	
+				flushBuffer();
+				scopeStack.peek().add(hybridTest);
+				scopeStack.push(hybridTest.getTrueStatements());
+	
+				Map<String, DataEncoder.Snippet> map = new HashMap<String, DataEncoder.Snippet>();
+				map.put(hybridAttr.getAttrName(), DataEncoder.asSnippet(hybridAttr.getClientCode()));
+				buildDeferredAttributeExecution(
+						map,
+						idVar,
+						idValue,
+						hybridAttr.getArgSize());
+	
+				flushBuffer();
+				scopeStack.pop();
+			}
+			if (deferredAttrs.size() > 0) {
+				// execute any deferred attributes for element at idVar
+				buildDeferredAttributeExecution(deferredAttrs, idVar, idValue, argSize);
+			}
+
+			formatter.writeElementEndTag(buffer, "script");
 		}
 	}
 
@@ -1263,17 +1314,7 @@ public class CodeDOMBuilder {
 		int argSize) throws IOException {
 
 		boolean prettyPrint = encoder.isPrettyPrint();
-
 		CodeStatementCollection scope = scopeStack.peek();
-
-		// execute any deferred attributes using idVar
-		hasScripts = true;
-		formatter.writeOpenElementBeginTag(buffer, "script");
-		if (settings.getScriptTypeAttr()) {
-			formatter.writeAttribute(buffer, "type", "text/javascript");
-		}
-		formatter.writeCloseElementBeginTag(buffer);
-		ensureExtrasEmitted(false);
 
 		// wrap attributes object as an anonymous DUEL view
 		buffer.append("duel(");
@@ -1361,6 +1402,7 @@ public class CodeDOMBuilder {
 				new CodeVariableReferenceExpression(DuelContext.class, "context"),
 				new CodeVariableReferenceExpression(idVar),
 				CodePrimitiveExpression.ONE));
+
 		} else {
 			encoder.write(buffer, idValue, 1);
 		}
@@ -1372,25 +1414,70 @@ public class CodeDOMBuilder {
 			buffer.append('1');
 		}
 		buffer.append(");");
-
-		// last parameter will be the current data
-		formatter.writeElementEndTag(buffer, "script");
 	}
 
 	private void buildCodeBlock(CodeBlockNode node) throws IOException {
 		try {
-			CodeStatement writeStatement = processCodeBlock(node);
-			if (writeStatement == null) {
+			boolean htmlEncode = true;
+			if (node instanceof MarkupExpressionNode) {
+				htmlEncode = false;
+				node = new ExpressionNode(node.getValue(), node.getIndex(), node.getLine(), node.getColumn());
+			}
+
+			CodeExpression codeExpr = translateExpression(node, true);
+			if (codeExpr == null) {
 				return;
 			}
 
+			boolean isHybrid = codeExpr.hasMetaData(IS_HYBRID);
+			codeExpr.removeMetaData(IS_HYBRID);
+
+			CodeStatementCollection scope = scopeStack.peek();
+			if (!isHybrid) {
+				// strictly server-side
+				// directly emit result
+				CodeStatement writeStatement = htmlEncode ?
+						CodeDOMUtility.emitExpressionSafe(codeExpr, formatter, settings) :
+						CodeDOMUtility.emitExpression(codeExpr);
+
+				flushBuffer();
+				scope.add(writeStatement);
+				return;
+			}
+
+			// dual-side scenario
+			// if block resolves to UNDEFINED then assume needs executing on client-side
+			// otherwise emit directly from server-side
+
+			CodeVariableDeclarationStatement valDecl = new CodeVariableDeclarationStatement(
+					Object.class,
+					scope.nextIdent("val_"),
+					codeExpr);
 			flushBuffer();
-			scopeStack.peek().add(writeStatement);
-			return;
+			scope.add(valDecl);
+
+			CodeVariableReferenceExpression valRef = new CodeVariableReferenceExpression(valDecl);
+
+			CodeConditionStatement hybridTest = new CodeConditionStatement(
+					new CodeBinaryOperatorExpression(
+						CodeBinaryOperatorType.IDENTITY_INEQUALITY,
+						valRef,
+						ScriptExpression.UNDEFINED),
+					htmlEncode ?
+						CodeDOMUtility.emitExpressionSafe(valRef, formatter, settings) :
+						CodeDOMUtility.emitExpression(valRef));
+
+			scope.add(hybridTest);
+
+			scopeStack.push(hybridTest.getFalseStatements());
+			buildDeferredCodeBlock(node.getClientCode(encoder.isPrettyPrint()), node.getArgSize());
+			flushBuffer();
+			scopeStack.pop();
 
 		} catch (Exception ex) {
+			// strictly client-side
 			// only defer blocks that cannot be fully processed server-side
-			buildDeferredCodeBlock(node.getClientCode(), node.getArgSize());
+			buildDeferredCodeBlock(node.getClientCode(encoder.isPrettyPrint()), node.getArgSize());
 		}
 	}
 
@@ -1557,27 +1644,6 @@ public class CodeDOMBuilder {
 			"transformURL",
 			new CodeVariableReferenceExpression(DuelContext.class, "context"),
 			CodeDOMUtility.ensureString(codeExpr));
-
-		return htmlEncode ?
-			CodeDOMUtility.emitExpressionSafe(codeExpr, formatter, settings) :
-			CodeDOMUtility.emitExpression(codeExpr);
-	}
-
-	/**
-	 * @param block
-	 * @return Code which emits the evaluated value of a code block
-	 */
-	private CodeStatement processCodeBlock(CodeBlockNode block) {
-		boolean htmlEncode = true;
-		if (block instanceof MarkupExpressionNode) {
-			htmlEncode = false;
-			block = new ExpressionNode(block.getValue(), block.getIndex(), block.getLine(), block.getColumn());
-		}
-
-		CodeExpression codeExpr = translateExpression(block, true);
-		if (codeExpr == null) {
-			return null;
-		}
 
 		return htmlEncode ?
 			CodeDOMUtility.emitExpressionSafe(codeExpr, formatter, settings) :

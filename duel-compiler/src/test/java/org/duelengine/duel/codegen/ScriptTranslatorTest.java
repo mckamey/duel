@@ -1,11 +1,35 @@
 package org.duelengine.duel.codegen;
 
-import java.util.*;
-import org.junit.Test;
 import static org.junit.Assert.*;
+
+import java.util.List;
+import java.util.Map;
+
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelData;
-import org.duelengine.duel.codedom.*;
+import org.duelengine.duel.codedom.AccessModifierType;
+import org.duelengine.duel.codedom.CodeArrayCreateExpression;
+import org.duelengine.duel.codedom.CodeBinaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeBinaryOperatorType;
+import org.duelengine.duel.codedom.CodeExpressionStatement;
+import org.duelengine.duel.codedom.CodeIterationStatement;
+import org.duelengine.duel.codedom.CodeMember;
+import org.duelengine.duel.codedom.CodeMethod;
+import org.duelengine.duel.codedom.CodeMethodInvokeExpression;
+import org.duelengine.duel.codedom.CodeMethodReturnStatement;
+import org.duelengine.duel.codedom.CodeParameterDeclarationExpression;
+import org.duelengine.duel.codedom.CodePrimitiveExpression;
+import org.duelengine.duel.codedom.CodePropertyReferenceExpression;
+import org.duelengine.duel.codedom.CodeTernaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeTypeReferenceExpression;
+import org.duelengine.duel.codedom.CodeUnaryOperatorExpression;
+import org.duelengine.duel.codedom.CodeUnaryOperatorType;
+import org.duelengine.duel.codedom.CodeVariableCompoundDeclarationStatement;
+import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
+import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
+import org.duelengine.duel.codedom.ScriptExpression;
+import org.duelengine.duel.codedom.ScriptVariableReferenceExpression;
+import org.junit.Test;
 
 public class ScriptTranslatorTest {
 
@@ -766,7 +790,7 @@ public class ScriptTranslatorTest {
 					new CodeParameterDeclarationExpression(String.class, "key")
 				},
 				new CodeMethodReturnStatement(
-					CodePrimitiveExpression.UNDEFINED));
+					ScriptExpression.UNDEFINED));
 
 		List<CodeMember> actual = new ScriptTranslator().translate(input);
 		assertNotNull(actual);

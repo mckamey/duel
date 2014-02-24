@@ -32,6 +32,7 @@ import org.duelengine.duel.codedom.CodeVariableCompoundDeclarationStatement;
 import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
 import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
 import org.duelengine.duel.codedom.IdentifierScope;
+import org.duelengine.duel.codedom.ScriptExpression;
 import org.duelengine.duel.codedom.ScriptVariableReferenceExpression;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
@@ -70,8 +71,8 @@ import org.mozilla.javascript.ast.VariableInitializer;
  */
 public class ScriptTranslator implements ErrorReporter {
 
-	public static final String EXTRA_REFS = "EXTRA_REFS";
-	public static final String EXTRA_ASSIGN = "EXTRA_ASSIGN";
+	public static final String EXTRA_REFS = "ScriptTranslator.EXTRA_REFS";
+	public static final String EXTRA_ASSIGN = "ScriptTranslator.EXTRA_ASSIGN";
 
 	private final IdentifierScope scope;
 	private List<String> extraRefs;
@@ -503,7 +504,7 @@ public class ScriptTranslator implements ErrorReporter {
 
 		if (JSUtility.isGlobalIdent(ident)) {
 			if ("undefined".equals(ident)) {
-				return CodePrimitiveExpression.UNDEFINED;
+				return ScriptExpression.UNDEFINED;
 			}
 			if ("NaN".equals(ident)) {
 				return new CodePrimitiveExpression(Double.NaN);
@@ -599,7 +600,7 @@ public class ScriptTranslator implements ErrorReporter {
 		if ((node.depth() == 1) &&
 			!(method.getStatements().getLastStatement() instanceof CodeMethodReturnStatement)) {
 			// this is effectively an empty return in JavaScript
-			method.getStatements().add(new CodeMethodReturnStatement(CodePrimitiveExpression.NULL));
+			method.getStatements().add(new CodeMethodReturnStatement(ScriptExpression.UNDEFINED));
 		}
 
 		/*
@@ -620,7 +621,7 @@ public class ScriptTranslator implements ErrorReporter {
 		CodeExpression value = visitExpression(node.getReturnValue());
 
 		// always return a value
-		return new CodeMethodReturnStatement(value != null ? value : CodePrimitiveExpression.NULL);
+		return new CodeMethodReturnStatement(value != null ? value : ScriptExpression.UNDEFINED);
 	}
 
 	private CodeObject visitFunctionCall(FunctionCall node) {

@@ -5,8 +5,10 @@ public class StatementNode extends CodeBlockNode {
 	public static final String BEGIN = "<%";
 	public static final String END = "%>";
 	private static final String INTRO1 = "function(";
-	private static final String INTRO2 = ") { ";
-	private static final String OUTRO = " }";
+	private static final String INTRO2 = "){";
+	private static final String INTRO2_PRETTY = ") { ";
+	private static final String OUTRO = "}";
+	private static final String OUTRO_PRETTY = " }";
 
 	public StatementNode(String statement, int index, int line, int column) {
 		super(BEGIN, END, statement, index, line, column);
@@ -17,14 +19,14 @@ public class StatementNode extends CodeBlockNode {
 	}
 
 	@Override
-	public String getClientCode() {
+	public String getClientCode(boolean prettyPrint) {
 		StringBuilder buffer = new StringBuilder(INTRO1);
 		buffer.append(formatParamList());
-		buffer.append(INTRO2);
+		buffer.append(prettyPrint ? INTRO2_PRETTY : INTRO2);
 		String value = getValue();
 		if (value != null) {
 			buffer.append(value);
 		}
-		return buffer.append(OUTRO).toString();
+		return buffer.append(prettyPrint ? OUTRO_PRETTY : OUTRO).toString();
 	}
 }

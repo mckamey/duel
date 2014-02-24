@@ -7,7 +7,6 @@ import org.duelengine.duel.JSUtility;
  */
 public class CodePrimitiveExpression extends CodeExpression {
 
-	public static final CodePrimitiveExpression UNDEFINED = new CodePrimitiveExpression(JSUtility.UNDEFINED);
 	public static final CodePrimitiveExpression NULL = new CodePrimitiveExpression(null);
 	public static final CodePrimitiveExpression FALSE = new CodePrimitiveExpression(false);
 	public static final CodePrimitiveExpression TRUE = new CodePrimitiveExpression(true);

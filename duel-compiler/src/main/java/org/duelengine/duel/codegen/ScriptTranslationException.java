@@ -51,9 +51,9 @@ public class ScriptTranslationException extends SyntaxException {
 	 * @param ex
 	 * @return
 	 */
-	public SyntaxException adjustErrorStatistics(CodeBlockNode node) {
+	public SyntaxException adjustErrorStatistics(CodeBlockNode node, boolean prettyPrint) {
 		try {
-			String clientCode = node.getClientCode();
+			String clientCode = node.getClientCode(prettyPrint);
 			int start = clientCode.indexOf(node.getValue()) - node.getBegin().length();
 
 			int index = getIndex() > start ? getIndex()-start : 0;
