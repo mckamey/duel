@@ -1,6 +1,7 @@
 package org.duelengine.duel.codegen;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -73,9 +74,6 @@ import org.mozilla.javascript.ast.VariableInitializer;
  */
 public class ScriptTranslator implements ErrorReporter {
 
-	public static final String EXTRA_REFS = "ScriptTranslator.EXTRA_REFS";
-	public static final String EXTRA_ASSIGN = "ScriptTranslator.EXTRA_ASSIGN";
-
 	private final IdentifierScope scope;
 	private Set<String> extraRefs;
 	private boolean extraAssign;
@@ -89,6 +87,17 @@ public class ScriptTranslator implements ErrorReporter {
 			throw new NullPointerException("identScope");
 		}
 		scope = identScope;
+	}
+
+	public Set<String> getExtraRefs() {
+		if (extraRefs == null) {
+			return Collections.emptySet();
+		}
+		return extraRefs;
+	}
+
+	public boolean hasExtraAssign() {
+		return extraAssign;
 	}
 
 	/**
@@ -128,19 +137,7 @@ public class ScriptTranslator implements ErrorReporter {
 			return null;
 		}
 
-		List<CodeMember> members = visitRoot(root);
-		if (members.size() > 0) {
-			CodeMember method = members.get(0);
-			if (extraRefs != null) {
-				// store extra identifiers on the member to allow generation of a fallback block
-				method.putMetaData(EXTRA_REFS, extraRefs.toArray());
-			}
-			if (extraAssign) {
-				// flag as potentially modifying values
-				method.putMetaData(EXTRA_ASSIGN, true);
-			}
-		}
-		return members;
+		return visitRoot(root);
 	}
 
 	private CodeStatement visitStatement(AstNode node) {

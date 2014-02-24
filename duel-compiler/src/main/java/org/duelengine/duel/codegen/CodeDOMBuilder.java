@@ -89,7 +89,7 @@ public class CodeDOMBuilder {
 		SUSPEND
 	}
 
-	private static final String IS_HYBRID = "CodeDOMBuilder.IS_HYBRID";
+	private static final String AS_HYBRID = "CodeDOMBuilder.AS_HYBRID";
 	private final CodeGenSettings settings;
 	private final HTMLFormatter formatter;
 	private final DataEncoder encoder;
@@ -870,7 +870,8 @@ public class CodeDOMBuilder {
 	private CodeExpression translateExpression(CodeBlockNode node, boolean canDefer) {
 		try {
 			// convert from JavaScript source to CodeDOM
-			List<CodeMember> members = new ScriptTranslator(viewType).translate(node.getClientCode(encoder.isPrettyPrint()));
+			ScriptTranslator translator = new ScriptTranslator(viewType);
+			List<CodeMember> members = translator.translate(node.getClientCode(encoder.isPrettyPrint()));
 			boolean firstIsMethod = (members.size() > 0) && members.get(0) instanceof CodeMethod;
 			if (!firstIsMethod) {
 				// is this ever possible? code blocks should always translate to client-side functions
@@ -902,8 +903,8 @@ public class CodeDOMBuilder {
 					new CodeVariableReferenceExpression(String.class, "key"));
 			}
 
-			if (method.hasMetaData(ScriptTranslator.EXTRA_ASSIGN) ||
-				method.hasMetaData(ScriptTranslator.EXTRA_REFS)) {
+			if (translator.hasExtraAssign() ||
+				!translator.getExtraRefs().isEmpty()) {
 
 				if (canDefer) {
 					// hybrid deferred execution scenario (dual-side)
@@ -913,9 +914,9 @@ public class CodeDOMBuilder {
 					needsExtrasEmitted = true;
 
 					// allow caller to build hybrid execution
-					expression.withMetaData(IS_HYBRID, true);
+					expression.withMetaData(AS_HYBRID, true);
 
-				} else if (method.hasMetaData(ScriptTranslator.EXTRA_REFS)) {
+				} else if (!translator.getExtraRefs().isEmpty()) {
 					// this forces server-only execution
 					log.warn("Cannot defer block; ensure extras are passed to view: " + node.toString());
 				}
@@ -1073,8 +1074,8 @@ public class CodeDOMBuilder {
 						continue;
 					}
 
-					boolean isHybrid = attrExpr.hasMetaData(IS_HYBRID);
-					attrExpr.removeMetaData(IS_HYBRID);
+					boolean isHybrid = attrExpr.hasMetaData(AS_HYBRID);
+					attrExpr.removeMetaData(AS_HYBRID);
 
 					if (!isHybrid) {
 						flushBuffer();
@@ -1153,8 +1154,8 @@ public class CodeDOMBuilder {
 					continue;
 				}
 
-				boolean isHybrid = attrExpr.hasMetaData(IS_HYBRID);
-				attrExpr.removeMetaData(IS_HYBRID);
+				boolean isHybrid = attrExpr.hasMetaData(AS_HYBRID);
+				attrExpr.removeMetaData(AS_HYBRID);
 
 				if (!isHybrid) {
 					// strictly server-side
@@ -1279,7 +1280,6 @@ public class CodeDOMBuilder {
 				formatter.writeAttribute(buffer, "type", "text/javascript");
 			}
 			formatter.writeCloseElementBeginTag(buffer);
-			ensureExtrasEmitted(false);
 	
 			for (HybridDeferredAttribute hybridAttr : hybridAttrs) {
 				CodeConditionStatement hybridTest = new CodeConditionStatement(
@@ -1320,6 +1320,8 @@ public class CodeDOMBuilder {
 
 		boolean prettyPrint = encoder.isPrettyPrint();
 		CodeStatementCollection scope = scopeStack.peek();
+
+		ensureExtrasEmitted(false);
 
 		// wrap attributes object as an anonymous DUEL view
 		buffer.append("duel(");
@@ -1434,8 +1436,8 @@ public class CodeDOMBuilder {
 				return;
 			}
 
-			boolean isHybrid = codeExpr.hasMetaData(IS_HYBRID);
-			codeExpr.removeMetaData(IS_HYBRID);
+			boolean isHybrid = codeExpr.hasMetaData(AS_HYBRID);
+			codeExpr.removeMetaData(AS_HYBRID);
 
 			CodeStatementCollection scope = scopeStack.peek();
 			if (!isHybrid) {

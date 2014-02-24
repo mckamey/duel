@@ -2245,17 +2245,17 @@ public class CodeDOMBuilderTest {
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodePrimitiveExpression("\">Lorem ipsum.</p><script>"))),
-				new CodeExpressionStatement(new CodeMethodInvokeExpression(
-					Void.class,
-					new CodeThisReferenceExpression(),
-					"writeExtras",
-					new CodeVariableReferenceExpression(DuelContext.class, "context"),
-					CodePrimitiveExpression.FALSE)),
 				new CodeConditionStatement(
 					new CodeBinaryOperatorExpression(
 						CodeBinaryOperatorType.IDENTITY_EQUALITY,
 						new CodeVariableReferenceExpression(Object.class, "val_4"),
 						ScriptExpression.UNDEFINED),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"writeExtras",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						CodePrimitiveExpression.FALSE)),
 					new CodeExpressionStatement(new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
@@ -2289,6 +2289,12 @@ public class CodeDOMBuilderTest {
 					new CodeExpressionStatement(new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
+						"writeExtras",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						CodePrimitiveExpression.FALSE)),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
 						new CodePrimitiveExpression("duel({onmouseover:function(){return(foo.bar.onhover);}})().toDOM("))),
@@ -2310,6 +2316,12 @@ public class CodeDOMBuilderTest {
 						CodeBinaryOperatorType.IDENTITY_EQUALITY,
 						new CodeVariableReferenceExpression(Object.class, "val_2"),
 						ScriptExpression.UNDEFINED),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"writeExtras",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						CodePrimitiveExpression.FALSE)),
 					new CodeExpressionStatement(new CodeMethodInvokeExpression(
 						Void.class,
 						new CodeThisReferenceExpression(),
