@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletConfig;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.duelengine.duel.CDNLinkInterceptor;
 import org.duelengine.duel.DuelContext;
 import org.duelengine.duel.DuelView;
@@ -133,10 +135,17 @@ public class RoutingServlet extends HttpServlet {
 				.setLinkInterceptor(linkInterceptor)
 				.setData(sitePage.data())
 				.setOutput(response.getWriter());
-	
-			if (sitePage.extras() != null) {
-				// ambient client-side data
-				context.putExtras(sitePage.extras());
+
+			Map<String, Object> extras = config.extras();
+			if (extras != null) {
+				// global ambient client-side data
+				context.putExtras(extras);
+			}
+
+			extras = sitePage.extras();
+			if (extras != null) {
+				// page-level ambient client-side data
+				context.putExtras(extras);
 			}
 
 			DuelView view = sitePage.viewInstance(config.serverPrefix(), Thread.currentThread().getContextClassLoader());

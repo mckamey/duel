@@ -119,9 +119,15 @@ public class SiteBuilder {
 						.setData(sitePage.data())
 						.setOutput(writer);
 
-					Map<String, Object> extras = sitePage.extras();
+					Map<String, Object> extras = config.extras();
 					if (extras != null) {
-						// ambient client-side data
+						// global ambient client-side data
+						context.putExtras(extras);
+					}
+
+					extras = sitePage.extras();
+					if (extras != null) {
+						// page-level ambient client-side data
 						context.putExtras(extras);
 					}
 
@@ -208,9 +214,15 @@ public class SiteBuilder {
 					.setData(sitePage.data())
 					.setOutput(NOOP_OUTPUT);
 
-				Map<String, Object> extras = sitePage.extras();
+				Map<String, Object> extras = config.extras();
 				if (extras != null) {
-					// ambient client-side data
+					// global ambient client-side data
+					context.putExtras(extras);
+				}
+
+				extras = sitePage.extras();
+				if (extras != null) {
+					// page-level ambient client-side data
 					context.putExtras(extras);
 				}
 

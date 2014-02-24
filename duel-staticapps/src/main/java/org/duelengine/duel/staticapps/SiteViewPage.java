@@ -48,7 +48,7 @@ public class SiteViewPage {
 	}
 
 	/**
-	 * Gets the ambient data extras
+	 * Gets the page-level ambient data extras
 	 */
 	@JsonProperty
 	public Map<String, Object> extras() {
@@ -56,7 +56,7 @@ public class SiteViewPage {
 	}
 
 	/**
-	 * Sets the ambient data extras
+	 * Sets the page-level ambient data extras
 	 */
 	@JsonProperty
 	public SiteViewPage extras(Map<String, Object> value) {

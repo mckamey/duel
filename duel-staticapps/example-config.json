@@ -8,6 +8,9 @@
 	"cdnMap": "cdn",
 	"cdnLinksMap": "cdnLinks",
 	"cdnHost": ".",
+	"extras": {
+		"App.version": "v1.0.0"
+	},
 	"views": {
 		"index.html":
 			{

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.duelengine.duel.utils.FileUtil;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
@@ -22,6 +23,7 @@ public class SiteConfig {
 	private String cdnMap;
 	private String cdnLinksMap;
 	private boolean isDevMode;
+	private Map<String, Object> extras;
 	private Map<String, SiteViewPage> views;
 	private String[] files;
 
@@ -184,6 +186,23 @@ public class SiteConfig {
 	@JsonProperty
 	public SiteConfig isDevMode(boolean value) {
 		isDevMode = value;
+		return this;
+	}
+
+	/**
+	 * Gets the global ambient data extras
+	 */
+	@JsonProperty
+	public Map<String, Object> extras() {
+		return extras;
+	}
+
+	/**
+	 * Sets the global ambient data extras
+	 */
+	@JsonProperty
+	public SiteConfig extras(Map<String, Object> value) {
+		extras = value;
 		return this;
 	}
 
