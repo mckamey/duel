@@ -8,19 +8,39 @@
 </head>
 <body>
 	<h1 class="box">DUEL v@duel-version@</h1>
-
 	<img src="duel.png" alt="DUEL" style="float:right" />
-	<h2 style="display:none">Documentation</h2>
-	<dl class="box" style="margin-right:320px;">
-		<dt>Source code</dt>
-		<dd><a href="http://bitbucket.org/mckamey/duel">mercurial</a></dd>
 
-		<dt>Client-side runtime</dt>
+	<p>DUEL is a set of components for building web applications utilizing a JVM-based environment.
+		These components can be used &agrave; la carte or as a complete framework.</p>
+	<p>The <strong>DUEL compiler</strong> and runtime allows UI views to be defined naturally in HTML/CSS/JS. These views then get simultaneously compiled to
+		both JavaScript client-templates and Java server-side classes.
+		The same templates may be used to build rich Ajax UI, server-side pages, or even generation of standalone content like email.</p>
+	<p><strong>DUEL Merge</strong> provides compile-time optimizations for deploying compact and long-cacheable client resources.</p>
+	<p><strong>DUEL MVC</strong> builds upon <a href="http://en.wikipedia.org/wiki/Java_API_for_RESTful_Web_Services">JAX-RS</a> to create a
+		full-featured front-end MVC environment.</p>
+	<p><strong>DUEL Staticapps</strong> is a generator for building dynamic web apps with DUEL templates,
+		which may be deployed to server-less environments like Amazon S3. (<a href="http://internetris.net">for example</a>)</p>
+
+	<h2 style="clear:both;">Source Code</h2>
+	<dl class="box">
+		<dt>Source code</dt>
+		<dd><a href="http://bitbucket.org/mckamey/duel"><strong>DUEL</strong></a>: templates compiler, runtime, &amp; static-app generator.</dd>
+		<dd><a href="http://bitbucket.org/mckamey/duel-merge"><strong>DUEL Merge</strong>: build-time resource management &amp; compaction</a></dd>
+		<dd><a href="http://bitbucket.org/mckamey/duel-mvc"><strong>DUEL MVC</strong> = DUEL + Jersey + Guice</a></dd>
+		<dd><a href="http://bitbucket.org/mckamey/duel-css"><strong>DUEL CSS</strong>: standalone CSS3 (&amp; partial LESS) processor for the JVM</a></dd>
+
+		<dt>Client-Side Unit Tests</st>
+		<dd><a href="unit.html">QUnit test results</a></dd>
+	</dl>
+
+	<h2 style="clear:both;">Components</h2>
+	<dl class="box">
+		<dt>JavaScript runtime</dt>
 		<dd><a href="http://bitbucket.org/mckamey/duel/raw/tip/duel-js/target/duel.js">duel.js</a></dd>
 		<dd><a href="http://bitbucket.org/mckamey/duel/raw/tip/duel-js/target/duel.min.js">duel.min.js</a></dd>
 
-		<dt>Server-side binaries</dt>
-		<dd><a href="http://repo1.maven.org/maven2/org/duelengine/">Maven Central</a></dd>
+		<dt>Java binaries on Maven</dt>
+		<dd><a href="http://central.maven.org/maven2/org/duelengine/">Maven Central</a></dd>
 	</dl>
 
 	<h2>Documentation</h2>
@@ -31,18 +51,7 @@
 		<li><a href="LICENSE.txt">license</a></li>
 	</ul>
 
-	<h2>Resources</h2>
-	<dl class="box">
-		<dt>Client-Side Unit Tests</st>
-		<dd><a href="unit.html">QUnit test results</a></dd>
-
-		<dt>Related Projects</st>
-		<dd><a href="http://bitbucket.org/mckamey/duel-mvc"><b>DUEL MVC</b> = DUEL + Jersey + Guice</a></dd>
-		<dd><a href="http://bitbucket.org/mckamey/duel-merge"><b>DUEL Merge</b>: build-time resource management &amp; compaction</a></dd>
-		<dd><a href="http://bitbucket.org/mckamey/duel-css"><b>DUEL CSS</b>: standalone CSS3 processor for the JVM</a></dd>
-	</dl>
-
-	<p class="copyright">Copyright &copy;2006-2012 <a href="http://mck.me">Stephen M. McKamey</a></p>
+	<p class="copyright">Copyright &copy;2006-2014 <a href="http://mck.me">Stephen M. McKamey</a></p>
 	<script src="ga.js" defer></script>
 </body>
 </html>
