@@ -129,7 +129,10 @@
 						<configuration>
 							<target>
 								<copy todir="${basedir}/target">
-									<fileset dir="${basedir}/src/test/resources" />
+									<fileset dir="${basedir}/src/test/resources">
+										<exclude name="**/*.ico" />
+										<exclude name="**/*.png" />
+									</fileset>
 									<filterchain>
 										<replacetokens>
 											<token key="duel-version" value="${project.version}" />
@@ -145,6 +148,9 @@
 								</copy>
 								<copy file="${basedir}/lib/qunit/qunit.js" todir="${basedir}/target/js"/>
 								<copy file="${basedir}/lib/qunit/qunit.css" todir="${basedir}/target/js"/>
+								<copy file="${basedir}/src/test/resources/favicon.ico" todir="${basedir}/target"/>
+								<copy file="${basedir}/src/test/resources/duel.png" todir="${basedir}/target"/>
+								<copy file="${basedir}/src/test/resources/icon.png" todir="${basedir}/target"/>
 							</target>
 						</configuration>
 					</execution>
