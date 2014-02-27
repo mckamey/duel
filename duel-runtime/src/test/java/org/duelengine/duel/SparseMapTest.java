@@ -266,7 +266,7 @@ public class SparseMapTest {
 			// add invalid expando properties
 			input.putSparse("nested.foo", 42);
 
-			fail("Expected IllegalStateException");
+			fail("Expected IllegalArgumentException");
 		} catch (IllegalArgumentException ex) {
 			// expected
 		}

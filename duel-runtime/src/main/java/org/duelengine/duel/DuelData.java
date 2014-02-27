@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 public final class DuelData {
-	
-	private static final Double ZERO = Double.valueOf(0.0);
 	private static final Double NaN = Double.valueOf(Double.NaN);
 
 	// static class
@@ -101,8 +99,9 @@ public final class DuelData {
 	 */
 	public static String typeOf(Object data) {
 		if (data == null) {
-			// "null" is actually typeof "object" but Java has no way to
-			// represent "undefined" so "undefined" becomes null
+			return "object";
+		}
+		if (JSUtility.UNDEFINED.equals(data)) {
 			return "undefined";
 		}
 		Class<?> exprType = data.getClass();
@@ -127,13 +126,15 @@ public final class DuelData {
 	 * @return
 	 */
 	public static boolean coerceBoolean(Object data) {
-		if (data == null || Boolean.FALSE.equals(data) || "".equals(data)) {
+		if (data == null || "".equals(data) || Boolean.FALSE.equals(data) || JSUtility.UNDEFINED.equals(data)) {
 			return false;
 		}
 
 		if (data instanceof Number) {
-			data = ((Number)data).doubleValue();
-			return !(ZERO.equals(data) || NaN.equals(data));
+			double value = ((Number)data).doubleValue();
+			if ((value == 0.0) || NaN.equals(value)) {
+				return false;
+			}
 		}
 
 		return true;
@@ -153,6 +154,10 @@ public final class DuelData {
 			return ((Boolean)data).booleanValue() ? 1.0 : 0.0;
 		}
 
+		if (JSUtility.UNDEFINED.equals(data)) {
+			return Double.NaN;
+		}
+
 		return coerceBoolean(data) ? Double.NaN : 0.0;
 	}
 
@@ -163,7 +168,10 @@ public final class DuelData {
 	 */
 	public static String coerceString(Object data) {
 		if (data == null) {
-			return "";
+			return "null";
+		}
+		if (JSUtility.UNDEFINED.equals(data)) {
+			return "undefined";
 		}
 
 		Class<?> dataType = data.getClass();
@@ -255,8 +263,9 @@ public final class DuelData {
 	 * @return
 	 */
 	public static Collection<?> coerceCollection(Object data) {
-		if (data == null) {
-			return Collections.EMPTY_LIST;
+		if (data == null || JSUtility.UNDEFINED.equals(data)) {
+			// prevent NPE by substituting empty list
+			return Collections.emptyList();
 		}
 
 		Class<?> dataType = data.getClass();
@@ -288,8 +297,9 @@ public final class DuelData {
 	 * @return
 	 */
 	public static Map<?,?> coerceMap(Object data) {
-		if (data == null) {
-			return Collections.EMPTY_MAP;
+		if (data == null || JSUtility.UNDEFINED.equals(data)) {
+			// prevent NPE by substituting empty map
+			return Collections.emptyMap();
 		}
 
 		Class<?> dataType = data.getClass();
@@ -324,7 +334,7 @@ public final class DuelData {
 	 * @return true if data contains property or key
 	 */
 	public static boolean containsKey(Object data, Object key) {
-		if (data == null) {
+		if (data == null || JSUtility.UNDEFINED.equals(data)) {
 			return false;
 		}
 
@@ -343,7 +353,7 @@ public final class DuelData {
 	 * @return
 	 */
 	static Object asProxy(Object data, boolean readonly) {
-		if (data == null) {
+		if (data == null || JSUtility.UNDEFINED.equals(data)) {
 			return null;
 		}
 
