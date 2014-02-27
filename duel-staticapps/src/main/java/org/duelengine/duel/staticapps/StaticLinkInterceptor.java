@@ -39,6 +39,19 @@ class StaticLinkInterceptor extends CDNLinkInterceptor {
 			return url;
 		}
 
+		// query and hash
+		String suffix = "";
+		int query = url.indexOf('?');
+		if (query >= 0) {
+			suffix += url.substring(query);
+			url = url.substring(0, query);
+		}
+		int hash = url.indexOf('#');
+		if (hash >= 0) {
+			suffix += url.substring(hash);
+			url = url.substring(0, hash);
+		}
+
 		if (cache.containsKey(url)) {
 			return cache.get(url);
 		}
@@ -47,7 +60,7 @@ class StaticLinkInterceptor extends CDNLinkInterceptor {
 		String cdnURL = super.transformURL(url);
 
 		// collect an accumulated list
-		cache.put(url, cdnURL);
+		cache.put(url, cdnURL+suffix);
 
 		// recursively transform and cache child links
 		if (linksBundle.containsKey(url)) {
@@ -79,6 +92,6 @@ class StaticLinkInterceptor extends CDNLinkInterceptor {
 			}
 		}
 
-		return cdnURL;
+		return cdnURL+suffix;
 	}
 }

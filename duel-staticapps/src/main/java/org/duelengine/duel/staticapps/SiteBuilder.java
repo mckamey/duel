@@ -263,11 +263,13 @@ public class SiteBuilder {
 	private void copyResource(File sourceDir, File targetDir, String path, String cdnPath)
 			throws IOException {
 
-		if (cdnPath.indexOf('?') >= 0) {
-			cdnPath = cdnPath.substring(0, cdnPath.indexOf('?'));
+		int query = cdnPath.indexOf('?');
+		if (query >= 0) {
+			cdnPath = cdnPath.substring(0, query);
 		}
-		if (cdnPath.indexOf('#') >= 0) {
-			cdnPath = cdnPath.substring(0, cdnPath.indexOf('#'));
+		int hash = cdnPath.indexOf('#');
+		if (hash >= 0) {
+			cdnPath = cdnPath.substring(0, hash);
 		}
 
 		File source = new File(sourceDir, cdnPath);
@@ -286,7 +288,7 @@ public class SiteBuilder {
 		}
 		if (!source.isFile()) {
 			// report but still copy the rest
-			log.warn("Resource not a file: "+source.getPath());
+			log.debug("Resource not a file: "+source.getPath());
 			try {
 				if (target.isFile() && target.exists() && target.delete()) {
 					log.info("Deleted existing: "+target.getAbsolutePath());

@@ -86,8 +86,21 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 	 }
 
 	public String transformURL(String url) {
+		// query and hash
+		String suffix = "";
+		int query = url.indexOf('?');
+		if (query >= 0) {
+			suffix += url.substring(query);
+			url = url.substring(0, query);
+		}
+		int hash = url.indexOf('#');
+		if (hash >= 0) {
+			suffix += url.substring(hash);
+			url = url.substring(0, hash);
+		}
+
 		if (!cdnMap.containsKey(url)) {
-			return url;
+			return url + suffix;
 		}
 
 		// lookup CDN resource
@@ -96,7 +109,7 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 		if (isDevMode) {
 			if (!cdnMap.containsKey(cdnURL)) {
 				// scripts & stylesheets served directly
-				return url;
+				return url + suffix;
 			}
 
 			// merge files serve generated placeholder
@@ -104,7 +117,7 @@ public class CDNLinkInterceptor implements LinkInterceptor {
 		}
 
 		// CDN resources are compacted and optionally served from a different root
-		return cdnHost + cdnURL;
+		return cdnHost + cdnURL + suffix;
 	}
 
 	/**
