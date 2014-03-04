@@ -930,7 +930,11 @@ public class CodeDOMBuilder {
 
 				} else if (!translator.getExtraRefs().isEmpty()) {
 					// this forces server-only execution
-					log.warn("Cannot defer block; ensure extras are passed to view: " + node.toString());
+					String viewName = viewType.getTypeName();
+					if (viewType.getNamespace() != null || !viewType.getNamespace().isEmpty()) {
+						viewName = viewType.getNamespace()+'.'+viewName;
+					}
+					log.info("Cannot defer block. Ensure extras are passed to "+viewName+": " + node.toString());
 				}
 			}
 
