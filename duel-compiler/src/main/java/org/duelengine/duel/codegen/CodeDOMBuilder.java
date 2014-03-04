@@ -929,10 +929,15 @@ public class CodeDOMBuilder {
 					expression.withMetaData(AS_HYBRID, true);
 
 				} else if (!translator.getExtraRefs().isEmpty()) {
-					// this forces server-only execution
+					// force server-only execution, emit message
 					String viewName = viewType.getTypeName();
-					if (viewType.getNamespace() != null || !viewType.getNamespace().isEmpty()) {
+					if (viewName == null || viewName.isEmpty()) {
+						viewName = viewType.getName();
+					} else if (viewType.getNamespace() != null && !viewType.getNamespace().isEmpty()) {
 						viewName = viewType.getNamespace()+'.'+viewName;
+					}
+					if (viewName == null || viewName.isEmpty()) {
+						viewName = "view";
 					}
 					log.info("Cannot defer block. Ensure extras are passed to "+viewName+": " + node.toString());
 				}
