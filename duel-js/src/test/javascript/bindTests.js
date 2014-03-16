@@ -26,6 +26,23 @@ test('static view', function() {
 	same(actual, expected, '');
 });
 
+test('static boolean attributes', function() {
+
+	var expected =
+		['div', { 'style': 'color:red' },
+			['audio', { 'controls' : null, 'autoplay': 'autoplay' },
+				['track', { 'kind': 'subtitles', 'default' : '' }]
+			],
+			['audio', { 'controls' : 'true', 'autoplay': true },
+				['track', { 'kind': 'subtitles', 'default' : false }]
+			]
+		];
+
+	var actual = duel(expected)().value;
+
+	same(actual, expected, '');
+});
+
 test('simple expressions', function() {
 
 	var data = {
