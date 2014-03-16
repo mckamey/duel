@@ -121,6 +121,7 @@ public class DuelCompiler {
 			CodeGenSettings settings = new CodeGenSettings();
 			settings.setIndent("\t");
 			settings.setNewline(System.getProperty("line.separator"));
+			settings.setXHTMLStyle(false);
 			settings.setClientNamePrefix(clientPrefix);
 			settings.setServerNamePrefix(serverPrefix);
 

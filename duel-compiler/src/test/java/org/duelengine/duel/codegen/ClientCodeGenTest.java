@@ -324,6 +324,69 @@ public class ClientCodeGenTest {
 	}
 
 	@Test
+	public void booleanAttributesTest() throws IOException {
+
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new ElementNode("div", null,
+				new ElementNode("audio", new AttributePair[] {
+						new AttributePair("controls", null),
+						new AttributePair("autoplay", new LiteralNode(""))
+					}),
+				new ElementNode("audio", new AttributePair[] {
+						new AttributePair("controls", new LiteralNode("controls")),
+						new AttributePair("autoplay", new LiteralNode("true"))
+					}),
+				new ElementNode("audio", new AttributePair[] {
+						new AttributePair("controls", new LiteralNode("false")),
+						new AttributePair("autoplay", new LiteralNode("true"))
+					}),
+				new ElementNode("audio", new AttributePair[] {
+						new AttributePair("controls", new LiteralNode("0")),
+						new AttributePair("autoplay", new LiteralNode("1"))
+					}),
+				new ElementNode("audio", new AttributePair[] {
+						new AttributePair("controls", new StatementNode("return !!foo;")),
+						new AttributePair("autoplay", new ExpressionNode("data.foo"))
+					})
+				));
+
+		String expected =
+			"/*global duel */\n\n"+
+			"var foo = duel(\n"+
+			"\t['div',\n"+
+			"\t\t['audio', {\n"+
+			"\t\t\t\t'controls' : true,\n"+
+			"\t\t\t\t'autoplay' : true\n"+
+			"\t\t\t}],\n"+
+			"\t\t['audio', {\n"+
+			"\t\t\t\t'controls' : true,\n"+
+			"\t\t\t\t'autoplay' : true\n"+
+			"\t\t\t}],\n"+
+			"\t\t['audio', {\n"+
+			"\t\t\t\t'controls' : true,\n"+
+			"\t\t\t\t'autoplay' : true\n"+
+			"\t\t\t}],\n"+
+			"\t\t['audio', {\n"+
+			"\t\t\t\t'controls' : true,\n"+
+			"\t\t\t\t'autoplay' : true\n"+
+			"\t\t\t}],\n"+
+			"\t\t['audio', {\n"+
+			"\t\t\t\t'controls' : function() { return !!foo; },\n"+
+			"\t\t\t\t'autoplay' : function(data) { return (data.foo); }\n"+
+			"\t\t\t}]\n"+
+			"\t]);\n";
+
+		StringBuilder output = new StringBuilder();
+		new ClientCodeGen().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void multiViewTest() throws IOException {
 		String expected =
 			"/*global duel */\n\n"+

@@ -15,6 +15,7 @@ public class CodeGenSettings {
 	private String newline = "\n";
 	private boolean convertLineEndings;
 	private boolean normalizeWhitespace;
+	private boolean xhtmlStyle;
 	private boolean encodeNonASCII = true;
 	private boolean scriptTypeAttr;
 	private boolean lowercaseClientPaths = true;
@@ -91,6 +92,22 @@ public class CodeGenSettings {
 	 */
 	public void setConvertLineEndings(boolean value) {
 		convertLineEndings = value;
+	}
+
+	/**
+	 * Gets if emitted markup should follow XHTML style (vs. HTML5 style)
+	 * @return
+	 */
+	public boolean getXHTMLStyle() {
+		return xhtmlStyle;
+	}
+
+	/**
+	 * Sets if emitted markup should follow XHTML style (vs. HTML5 style)
+	 * @param value
+	 */
+	public void setXHTMLStyle(boolean value) {
+		xhtmlStyle = value;
 	}
 
 	/**

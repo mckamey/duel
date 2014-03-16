@@ -13,7 +13,6 @@ import java.util.Stack;
 
 import org.duelengine.duel.DataEncoder;
 import org.duelengine.duel.DuelContext;
-import org.duelengine.duel.DuelData;
 import org.duelengine.duel.DuelView;
 import org.duelengine.duel.HTMLFormatter;
 import org.duelengine.duel.ast.CALLCommandNode;
@@ -1080,12 +1079,7 @@ public class CodeDOMBuilder {
 				formatter.writeAttribute(buffer, attrName, null);
 
 			} else if (element.isBoolAttribute(attrName)) {
-				if (attrVal instanceof LiteralNode) {
-					if (DuelData.coerceBoolean(((LiteralNode)attrVal).getValue())) {
-						formatter.writeAttribute(buffer, attrName, attrName);
-					}
-
-				} else if (attrVal instanceof CodeBlockNode) {
+				if (attrVal instanceof CodeBlockNode) {
 					CodeExpression attrExpr;
 					try {
 						attrExpr = translateExpression((CodeBlockNode)attrVal, false);
@@ -1115,10 +1109,13 @@ public class CodeDOMBuilder {
 						continue;
 					}
 
-					// TODO: build out hybrid scenario for boolean attributes
+					// TODO: validate hybrid scenario for boolean attributes
 					// in the meantime, defer to client-side
 					deferredAttrs.put(attrName, DataEncoder.asSnippet(((CodeBlockNode)attrVal).getClientCode(encoder.isPrettyPrint())));
 					argSize = Math.max(argSize, ((CodeBlockNode)attrVal).getArgSize());
+
+				} else {
+					formatter.writeAttribute(buffer, attrName, settings.getXHTMLStyle() ? attrName : null);
 				}
 
 			} else if (element.isLinkAttribute(attrName)) {
@@ -1334,7 +1331,12 @@ public class CodeDOMBuilder {
 			formatter.writeElementEndTag(buffer, tagName);
 
 		} else {
-			formatter.writeCloseElementVoidTag(buffer);
+			if (settings.getXHTMLStyle()) {
+				formatter.writeCloseElementVoidTag(buffer);
+
+			} else {
+				formatter.writeCloseElementBeginTag(buffer);
+			}
 		}
 
 		// emit all deferred and hybrid attributes

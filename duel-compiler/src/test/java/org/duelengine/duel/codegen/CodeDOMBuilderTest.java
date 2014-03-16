@@ -1278,7 +1278,7 @@ public class CodeDOMBuilderTest {
 						new CodeThisReferenceExpression(),
 						"write",
 						new CodeVariableReferenceExpression(DuelContext.class, "context"),
-						new CodePrimitiveExpression("<hr />"))),
+						new CodePrimitiveExpression("<hr>"))),
 				new CodeExpressionStatement(
 					new CodeMethodInvokeExpression(
 						Void.class,
@@ -1372,6 +1372,167 @@ public class CodeDOMBuilderTest {
 
 		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
 		
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void wrapperViewXHTMLTest() throws IOException {
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo.bar.Blah"))
+			},
+			new ElementNode("div",
+				new AttributePair[] {
+					new AttributePair("class", new LiteralNode("dialog"))
+				},
+				new PARTCommandNode(
+						new AttributePair[] {
+							new AttributePair("name", new LiteralNode("header"))
+						},
+						new ElementNode("h2", null,
+							new LiteralNode("Warning"))),
+				new ElementNode("hr"),
+				new PARTCommandNode(
+						new AttributePair[] {
+							new AttributePair("name", new LiteralNode("body"))
+						},
+						new ElementNode("div", null,
+							new LiteralNode("Lorem ipsum.")))));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			"foo.bar",
+			"Blah",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("<div class=\"dialog\">"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"renderPart",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("header"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("<hr />"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"renderPart",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("body"),
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodeVariableReferenceExpression(int.class, "index"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						new CodeVariableReferenceExpression(String.class, "key"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression("</div>")))
+			).withOverride().withThrows(IOException.class),
+			CodeDOMUtility.createPartType(
+				"part_2",
+				new CodeMethod(
+					AccessModifierType.PUBLIC,
+					String.class,
+					"getPartName",
+					null,
+					new CodeMethodReturnStatement(new CodePrimitiveExpression("header"))).withOverride(),
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression("<h2>Warning</h2>")))
+					).withOverride().withThrows(IOException.class)),
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"init",
+				null,
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"addPart",
+						new CodeObjectCreateExpression("part_2"))),
+				new CodeExpressionStatement(
+					new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"addPart",
+						new CodeObjectCreateExpression("part_3")))).withOverride(),
+			CodeDOMUtility.createPartType(
+				"part_3",
+				new CodeMethod(
+					AccessModifierType.PUBLIC,
+					String.class,
+					"getPartName",
+					null,
+					new CodeMethodReturnStatement(new CodePrimitiveExpression("body"))).withOverride(),
+				new CodeMethod(
+					AccessModifierType.PROTECTED,
+					Void.class,
+					"render",
+					new CodeParameterDeclarationExpression[] {
+						new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+						new CodeParameterDeclarationExpression(Object.class, "data"),
+						new CodeParameterDeclarationExpression(int.class, "index"),
+						new CodeParameterDeclarationExpression(int.class, "count"),
+						new CodeParameterDeclarationExpression(String.class, "key")
+					},
+					new CodeExpressionStatement(
+						new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"write",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodePrimitiveExpression("<div>Lorem ipsum.</div>")))
+					).withOverride().withThrows(IOException.class)));
+
+		CodeGenSettings settings = new CodeGenSettings();
+		settings.setXHTMLStyle(true);
+		CodeTypeDeclaration actual = new CodeDOMBuilder(settings).buildView(input);
+
 		assertEquals(expected, actual);
 	}
 
@@ -1736,6 +1897,89 @@ public class CodeDOMBuilderTest {
 					new CodeThisReferenceExpression(),
 					"write",
 					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("><input type=\"checkbox\""))),
+				new CodeConditionStatement(
+					new CodePropertyReferenceExpression(
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression("isDisabled")).withParens(),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(" disabled=\"disabled\"")))
+				),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("></form>")))
+				).withOverride().withThrows(IOException.class)
+			);
+
+		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void attributesBooleanExpressionsXHTMLTest() throws IOException {
+
+		VIEWCommandNode input = new VIEWCommandNode(
+			new AttributePair[] {
+				new AttributePair("name", new LiteralNode("foo"))
+			},
+			new ElementNode("form",
+				null,
+				new ElementNode("input",
+					new AttributePair[] {
+						new AttributePair("type", new LiteralNode("checkbox")),
+						new AttributePair("checked", new ExpressionNode(" data.isChecked "))
+					}),
+				new ElementNode("input",
+					new AttributePair[] {
+						new AttributePair("type", new LiteralNode("checkbox")),
+						new AttributePair("disabled", new ExpressionNode(" data.isDisabled "))
+					})
+			));
+
+		CodeTypeDeclaration expected = CodeDOMUtility.createViewType(
+			null,
+			"foo",
+			new CodeMethod(
+				AccessModifierType.PROTECTED,
+				Void.class,
+				"render",
+				new CodeParameterDeclarationExpression[] {
+					new CodeParameterDeclarationExpression(DuelContext.class, "context"),
+					new CodeParameterDeclarationExpression(Object.class, "data"),
+					new CodeParameterDeclarationExpression(int.class, "index"),
+					new CodeParameterDeclarationExpression(int.class, "count"),
+					new CodeParameterDeclarationExpression(String.class, "key")
+				},
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodePrimitiveExpression("<form><input type=\"checkbox\""))),
+				new CodeConditionStatement(
+					new CodePropertyReferenceExpression(
+						new CodeVariableReferenceExpression(Object.class, "data"),
+						new CodePrimitiveExpression("isChecked")).withParens(),
+					new CodeExpressionStatement(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"write",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodePrimitiveExpression(" checked=\"checked\"")))
+				),
+				new CodeExpressionStatement(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"write",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
 					new CodePrimitiveExpression(" /><input type=\"checkbox\""))),
 				new CodeConditionStatement(
 					new CodePropertyReferenceExpression(
@@ -1757,7 +2001,9 @@ public class CodeDOMBuilderTest {
 				).withOverride().withThrows(IOException.class)
 			);
 
-		CodeTypeDeclaration actual = new CodeDOMBuilder().buildView(input);
+		CodeGenSettings settings = new CodeGenSettings();
+		settings.setXHTMLStyle(true);
+		CodeTypeDeclaration actual = new CodeDOMBuilder(settings).buildView(input);
 
 		assertEquals(expected, actual);
 	}

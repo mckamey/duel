@@ -147,7 +147,7 @@ public class ClientCodeGen implements CodeGenerator {
 			writeSpecialElement(output, "!DOCTYPE", ((DocTypeNode)node).getValue(), depth, preMode);
 
 		} else if (node != null) {
-			throw new UnsupportedOperationException("Node not yet implemented: "+node.getClass());
+			throw new UnsupportedOperationException("Node type not yet implemented: "+node.getClass());
 		}
 	}
 
@@ -226,10 +226,24 @@ public class ClientCodeGen implements CodeGenerator {
 				writeString(output, attr, preMode);
 				output.append(" : ");
 				DuelNode attrVal = node.getAttribute(attr);
-				if (attrVal == null) {
+				if (node.isBoolAttribute(attr)) {
+					if (attrVal instanceof CodeBlockNode) {
+						// if is code block then allow client-side to evaluate
+						// truthy results emit the boolean attribute
+						writeNode(output, attrVal, depth, preMode);
+
+					} else {
+						// boolean attributes allow empty or missing values as true
+						// if attribute is static but present then force a truthy value
+						output.append("true");
+					}
+
+				} else if (attrVal == null) {
 					output.append("null");
+
 				} else if (attrVal instanceof CommentNode) {
 					output.append("\"\"");
+
 				} else {
 					if (addPrefix && "view".equalsIgnoreCase(attr) && attrVal instanceof ExpressionNode) {
 						// prepend the client-side prefix
