@@ -19,6 +19,7 @@ import org.duelengine.duel.ast.FORCommandNode;
 import org.duelengine.duel.ast.IFCommandNode;
 import org.duelengine.duel.ast.LiteralNode;
 import org.duelengine.duel.ast.MarkupExpressionNode;
+import org.duelengine.duel.ast.MetaElementNode;
 import org.duelengine.duel.ast.PARTCommandNode;
 import org.duelengine.duel.ast.StatementNode;
 import org.duelengine.duel.ast.UnknownNode;
@@ -372,6 +373,10 @@ public class DuelParser {
 
 		if (tagName.equalsIgnoreCase(VIEWCommandNode.EXT_NAME)) {
 			return new VIEWCommandNode(index, line, column);
+		}
+
+		if (tagName.equalsIgnoreCase(MetaElementNode.NAME)) {
+			return new MetaElementNode(index, line, column);
 		}
 
 		return new ElementNode(tagName.toLowerCase(), index, line, column);
