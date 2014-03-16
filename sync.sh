@@ -1,7 +1,5 @@
 #!/bin/bash
 
-clear;clear;
-
 # exclude '.DS_Store' and build files
 s3cmd sync \
 	--cf-invalidate \
@@ -15,4 +13,4 @@ s3cmd sync \
 	./duel-js/target/ \
 	s3://duel/
 
-s3cmd cfinvalinfo cf://E3G86IU7BFHQIK
+# s3cmd cfinvalinfo cf://E3G86IU7BFHQIK

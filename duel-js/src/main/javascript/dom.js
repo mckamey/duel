@@ -22,6 +22,7 @@
 	 * @type {Object.<string>}
 	 */
 	var ATTR_MAP = {
+		'allowfullscreen': 'allowFullscreen',
 		'accesskey': 'accessKey',
 		'bgcolor': 'bgColor',
 		'cellpadding': 'cellPadding',
@@ -31,16 +32,28 @@
 		'colspan': 'colSpan',
 		'contenteditable': 'contentEditable',
 		'defaultchecked': 'defaultChecked',
+		'defaultselected': 'defaultSelected',
+		'defaultmuted': 'defaultMuted',
 		'for': 'htmlFor',
 		'formnovalidate': 'formNoValidate',
 		'hidefocus': 'hideFocus',
 		'ismap': 'isMap',
+		'itemscope': 'itemScope',
 		'maxlength': 'maxLength',
+		'muted': 'defaultMuted',
+		'nohref': 'noHref',
+		'noresize': 'noResize',
+		'noshade': 'noShade',
 		'novalidate': 'noValidate',
+		'nowrap': 'noWrap',
+		'pauseonexit': 'pauseOnExit',
 		'readonly': 'readOnly',
 		'rowspan': 'rowSpan',
+		'selected': 'defaultSelected',
 		'spellcheck': 'spellCheck',
 		'tabindex': 'tabIndex',
+		'truespeed': 'trueSpeed',
+		'typemustmatch': 'typeMustMatch',
 		'usemap': 'useMap',
 		'willvalidate': 'willValidate'
 		// can add more attributes here as needed

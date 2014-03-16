@@ -1,7 +1,7 @@
 /*global window */
 
 /**
- * @license DUEL v0.9.4 http://duelengine.org
+ * @license DUEL v0.9.5 http://duelengine.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -1197,6 +1197,7 @@ var duel = (
 	 * @type {Object.<string>}
 	 */
 	var ATTR_MAP = {
+		'allowfullscreen': 'allowFullscreen',
 		'accesskey': 'accessKey',
 		'bgcolor': 'bgColor',
 		'cellpadding': 'cellPadding',
@@ -1206,16 +1207,28 @@ var duel = (
 		'colspan': 'colSpan',
 		'contenteditable': 'contentEditable',
 		'defaultchecked': 'defaultChecked',
+		'defaultselected': 'defaultSelected',
+		'defaultmuted': 'defaultMuted',
 		'for': 'htmlFor',
 		'formnovalidate': 'formNoValidate',
 		'hidefocus': 'hideFocus',
 		'ismap': 'isMap',
+		'itemscope': 'itemScope',
 		'maxlength': 'maxLength',
+		'muted': 'defaultMuted',
+		'nohref': 'noHref',
+		'noresize': 'noResize',
+		'noshade': 'noShade',
 		'novalidate': 'noValidate',
+		'nowrap': 'noWrap',
+		'pauseonexit': 'pauseOnExit',
 		'readonly': 'readOnly',
 		'rowspan': 'rowSpan',
+		'selected': 'defaultSelected',
 		'spellcheck': 'spellCheck',
 		'tabindex': 'tabIndex',
+		'truespeed': 'trueSpeed',
+		'typemustmatch': 'typeMustMatch',
 		'usemap': 'useMap',
 		'willvalidate': 'willValidate'
 		// can add more attributes here as needed
