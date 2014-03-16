@@ -483,22 +483,52 @@
 	 * @type {Object.<number>}
 	 */
 	var ATTR_BOOL = {
+		'allowfullscreen': 1,
 		'async': 1,
 		'autofocus': 1,
+		'autoplay': 1,
 		'checked': 1,
+		'compact': 1,
+		'controls': 1,
+		'declare': 1,
+		'default': 1,
 		'defaultchecked': 1,
+		'defaultmuted': 1,
+		'defaultselected': 1,
 		'defer': 1,
 		'disabled': 1,
+		'draggable': 1,
+		'enabled': 1,
 		'formnovalidate': 1,
 		'hidden': 1,
 		'indeterminate': 1,
+		'inert': 1,
 		'ismap': 1,
+		'itemscope': 1,
+		'loop': 1,
 		'multiple': 1,
+		'muted': 1,
+		'nohref': 1,
+		'noresize': 1,
+		'noshade': 1,
 		'novalidate': 1,
+		'nowrap': 1,
+		'open': 1,
+		'pauseonexit': 1,
 		'readonly': 1,
 		'required': 1,
+		'reversed': 1,
+		'scoped': 1,
+		'seamless': 1,
+		'selected': 1,
+		'sortable': 1,
 		'spellcheck': 1,
-		'willvalidate': 1
-		// can add more attributes here as needed
+		'translate': 1,
+		'truespeed': 1,
+		'typemustmatch': 1,
+		'visible': 1
+
+		// update non-readonly attributes as spec changes
+		// curl -s "http://www.w3.org/TR/html51/single-page.html" | grep "attribute boolean" > boolean.txt
 	};
 

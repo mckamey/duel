@@ -1,29 +1,35 @@
 	/* render.js --------------------*/
-	
+
 	/**
 	 * Void tag lookup
 	 *  
 	 * @private
 	 * @constant
-	 * @type {Object.<boolean>}
+	 * @type {Object.<number>}
 	 */
 	var VOID_TAGS = {
-		'area' : true,
-		'base' : true,
-		'basefont' : true,
-		'br' : true,
-		'col' : true,
-		'frame' : true,
-		'hr' : true,
-		'img' : true,
-		'input' : true,
-		'isindex' : true,
-		'keygen' : true,
-		'link' : true,
-		'meta' : true,
-		'param' : true,
-		'source' : true,
-		'wbr' : true
+		'area': 1,
+		'base': 1,
+		'basefont': 1,
+		'br': 1,
+		'col': 1,
+		'frame': 1,
+		'embed': 1,
+		'hr': 1,
+		'img': 1,
+		'input': 1,
+		'isindex': 1,
+		'keygen': 1,
+		'link': 1,
+		'menuitem': 1,
+		'meta': 1,
+		'param': 1,
+		'source': 1,
+		'track': 1,
+		'wbr': 1
+
+		// update elements as spec changes
+		// http://www.w3.org/TR/html51/single-page.html#void-elements
 	};
 
 	/**

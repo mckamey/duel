@@ -1,7 +1,7 @@
 /*global window */
 
 /**
- * @license DUEL v0.9.2 http://duelengine.org
+ * @license DUEL v0.9.4 http://duelengine.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -788,23 +788,53 @@ var duel = (
 	 * @type {Object.<number>}
 	 */
 	var ATTR_BOOL = {
+		'allowfullscreen': 1,
 		'async': 1,
 		'autofocus': 1,
+		'autoplay': 1,
 		'checked': 1,
+		'compact': 1,
+		'controls': 1,
+		'declare': 1,
+		'default': 1,
 		'defaultchecked': 1,
+		'defaultmuted': 1,
+		'defaultselected': 1,
 		'defer': 1,
 		'disabled': 1,
+		'draggable': 1,
+		'enabled': 1,
 		'formnovalidate': 1,
 		'hidden': 1,
 		'indeterminate': 1,
+		'inert': 1,
 		'ismap': 1,
+		'itemscope': 1,
+		'loop': 1,
 		'multiple': 1,
+		'muted': 1,
+		'nohref': 1,
+		'noresize': 1,
+		'noshade': 1,
 		'novalidate': 1,
+		'nowrap': 1,
+		'open': 1,
+		'pauseonexit': 1,
 		'readonly': 1,
 		'required': 1,
+		'reversed': 1,
+		'scoped': 1,
+		'seamless': 1,
+		'selected': 1,
+		'sortable': 1,
 		'spellcheck': 1,
-		'willvalidate': 1
-		// can add more attributes here as needed
+		'translate': 1,
+		'truespeed': 1,
+		'typemustmatch': 1,
+		'visible': 1
+
+		// update non-readonly attributes as spec changes
+		// curl -s "http://www.w3.org/TR/html51/single-page.html" | grep "attribute boolean" > boolean.txt
 	};
 
 	/* factory.js --------------------*/
@@ -921,31 +951,37 @@ var duel = (
 	};
 
 	/* render.js --------------------*/
-	
+
 	/**
 	 * Void tag lookup
 	 *  
 	 * @private
 	 * @constant
-	 * @type {Object.<boolean>}
+	 * @type {Object.<number>}
 	 */
 	var VOID_TAGS = {
-		'area' : true,
-		'base' : true,
-		'basefont' : true,
-		'br' : true,
-		'col' : true,
-		'frame' : true,
-		'hr' : true,
-		'img' : true,
-		'input' : true,
-		'isindex' : true,
-		'keygen' : true,
-		'link' : true,
-		'meta' : true,
-		'param' : true,
-		'source' : true,
-		'wbr' : true
+		'area': 1,
+		'base': 1,
+		'basefont': 1,
+		'br': 1,
+		'col': 1,
+		'frame': 1,
+		'embed': 1,
+		'hr': 1,
+		'img': 1,
+		'input': 1,
+		'isindex': 1,
+		'keygen': 1,
+		'link': 1,
+		'menuitem': 1,
+		'meta': 1,
+		'param': 1,
+		'source': 1,
+		'track': 1,
+		'wbr': 1
+
+		// update elements as spec changes
+		// http://www.w3.org/TR/html51/single-page.html#void-elements
 	};
 
 	/**
