@@ -59,6 +59,7 @@ import org.duelengine.duel.codedom.CodeUnaryOperatorType;
 import org.duelengine.duel.codedom.CodeVariableCompoundDeclarationStatement;
 import org.duelengine.duel.codedom.CodeVariableDeclarationStatement;
 import org.duelengine.duel.codedom.CodeVariableReferenceExpression;
+import org.duelengine.duel.codedom.IdentifierScope;
 import org.duelengine.duel.codedom.ScriptExpression;
 import org.duelengine.duel.parsing.InvalidNodeException;
 import org.slf4j.Logger;
@@ -416,7 +417,7 @@ public class CodeDOMBuilder {
 
 				CodeVariableDeclarationStatement valDecl = new CodeVariableDeclarationStatement(
 						Object.class,
-						scope.nextIdent("val_"),
+						identScope().nextIdent("val_"),
 						dataExpr);
 				flushBuffer();
 				scope.add(valDecl);
@@ -673,7 +674,7 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement dataDecl =
 			new CodeVariableDeclarationStatement(
 				Object.class,
-				scope.nextIdent("data_"),
+				identScope().nextIdent("data_"),
 				data);
 		scope.add(dataDecl);
 
@@ -681,14 +682,14 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement indexDecl =
 			new CodeVariableDeclarationStatement(
 				int.class,
-				scope.nextIdent("index_"),
+				identScope().nextIdent("index_"),
 				CodePrimitiveExpression.ZERO);
 
 		// the item count (embedded in for loop init statement)
 		CodeVariableDeclarationStatement countDecl =
 			new CodeVariableDeclarationStatement(
 				int.class,
-				scope.nextIdent("count_"),
+				identScope().nextIdent("count_"),
 				count);
 
 		// the for loop init statement
@@ -730,7 +731,7 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement collectionDecl =
 			new CodeVariableDeclarationStatement(
 				Collection.class,
-				scope.nextIdent("items_"),
+				identScope().nextIdent("items_"),
 				data);
 		scope.add(collectionDecl);
 
@@ -738,14 +739,14 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement indexDecl =
 			new CodeVariableDeclarationStatement(
 				int.class,
-				scope.nextIdent("index_"),
+				identScope().nextIdent("index_"),
 				CodePrimitiveExpression.ZERO);
 
 		// the item count
 		CodeVariableDeclarationStatement countDecl =
 			new CodeVariableDeclarationStatement(
 				int.class,
-				scope.nextIdent("count_"),
+				identScope().nextIdent("count_"),
 				new CodeMethodInvokeExpression(
 					int.class,
 					new CodeVariableReferenceExpression(collectionDecl),
@@ -757,7 +758,7 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement iteratorDecl =
 			new CodeVariableDeclarationStatement(
 				Iterator.class,
-				scope.nextIdent("iterator_"),
+				identScope().nextIdent("iterator_"),
 				new CodeMethodInvokeExpression(
 					Iterator.class,
 					new CodeVariableReferenceExpression(collectionDecl),
@@ -767,7 +768,7 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement entryDecl = 
 			new CodeVariableDeclarationStatement(
 				Map.Entry.class,
-				scope.nextIdent("entry_"),
+				identScope().nextIdent("entry_"),
 				new CodeCastExpression(Map.Entry.class,
 					new CodeMethodInvokeExpression(
 						Object.class,
@@ -814,7 +815,7 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement collectionDecl =
 			new CodeVariableDeclarationStatement(
 				Collection.class,
-				scope.nextIdent("items_"),
+				identScope().nextIdent("items_"),
 				items);
 		scope.add(collectionDecl);
 
@@ -822,14 +823,14 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement indexDecl =
 			new CodeVariableDeclarationStatement(
 				int.class,
-				scope.nextIdent("index_"),
+				identScope().nextIdent("index_"),
 				CodePrimitiveExpression.ZERO);
 
 		// the item count
 		CodeVariableDeclarationStatement countDecl =
 			new CodeVariableDeclarationStatement(
 				int.class,
-				scope.nextIdent("count_"),
+				identScope().nextIdent("count_"),
 				new CodeMethodInvokeExpression(
 					int.class,
 					new CodeVariableReferenceExpression(collectionDecl),
@@ -841,7 +842,7 @@ public class CodeDOMBuilder {
 		CodeVariableDeclarationStatement iteratorDecl =
 			new CodeVariableDeclarationStatement(
 				Iterator.class,
-				scope.nextIdent("iterator_"),
+				identScope().nextIdent("iterator_"),
 				new CodeMethodInvokeExpression(
 					Iterator.class,
 					new CodeVariableReferenceExpression(collectionDecl),
@@ -1244,7 +1245,7 @@ public class CodeDOMBuilder {
 
 				CodeVariableDeclarationStatement valDecl = new CodeVariableDeclarationStatement(
 						Object.class,
-						scopeStack.peek().nextIdent("val_"),
+						identScope().nextIdent("val_"),
 						attrExpr);
 				flushBuffer();
 				scopeStack.peek().add(valDecl);
@@ -1291,7 +1292,7 @@ public class CodeDOMBuilder {
 				boolean testIfIdNeeded = deferredAttrs.isEmpty() && hybridAttrs.size() > 0;
 
 				// assign a new unique ident to the element
-				idVar = CodeDOMUtility.nextID(scopeStack.peek());
+				idVar = CodeDOMUtility.nextID(identScope());
 				scopeStack.peek().add(idVar);
 
 				if (testIfIdNeeded) {
@@ -1419,7 +1420,7 @@ public class CodeDOMBuilder {
 		if (!hasTags) {
 			hasTagsVar = new CodeVariableDeclarationStatement(
 				boolean.class,
-				scopeStack.peek().nextIdent("hasTags_"),
+				identScope().nextIdent("hasTags_"),
 				CodePrimitiveExpression.FALSE);
 			scopeStack.peek().add(hasTagsVar);
 		}
@@ -1633,7 +1634,7 @@ public class CodeDOMBuilder {
 
 			CodeVariableDeclarationStatement valDecl = new CodeVariableDeclarationStatement(
 					Object.class,
-					scope.nextIdent("val_"),
+					identScope().nextIdent("val_"),
 					codeExpr);
 			flushBuffer();
 			scope.add(valDecl);
@@ -1867,7 +1868,7 @@ public class CodeDOMBuilder {
 		CodeStatementCollection scope = scopeStack.peek();
 
 		// the var contains a new unique ident
-		CodeVariableDeclarationStatement localVar = CodeDOMUtility.nextID(scope);
+		CodeVariableDeclarationStatement localVar = CodeDOMUtility.nextID(identScope());
 		scope.add(localVar);
 
 		// emit the value of the var
@@ -1972,6 +1973,16 @@ public class CodeDOMBuilder {
 
 		CodeStatementCollection scope = scopeStack.peek();
 		scope.add(new CodeCommentStatement(comment.getValue()));
+	}
+
+	private IdentifierScope identScope() {
+		for (CodeStatementCollection scope : scopeStack) {
+			if (scope.getOwner() instanceof IdentifierScope) {
+				return ((IdentifierScope)scope.getOwner());
+			}
+		}
+
+		return viewType;
 	}
 
 	/**

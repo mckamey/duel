@@ -2,18 +2,22 @@ package org.duelengine.duel.codedom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an instance method
  */
-public class CodeMethod extends CodeMember {
+public class CodeMethod extends CodeMember implements IdentifierScope {
 
 	private Class<?> returnType;
 	private final List<CodeParameterDeclarationExpression> parameters = new ArrayList<CodeParameterDeclarationExpression>();
 	private final CodeStatementCollection statements;
 	private final List<Class<?>> exceptions = new ArrayList<Class<?>>();
 	private boolean override;
+	private Map<String, String> identMap;
+	private int nextID;
 
 	public CodeMethod() {
 		this(AccessModifierType.DEFAULT, null, null, null);
@@ -87,6 +91,31 @@ public class CodeMethod extends CodeMember {
 
 	public CodeStatementCollection getStatements() {
 		return statements;
+	}
+
+	@Override
+	public boolean isLocalIdent(String ident) {
+		return (identMap != null) && identMap.containsKey(ident);
+	}
+
+	@Override
+	public String uniqueIdent(String ident) {
+		if (identMap == null) {
+			identMap = new HashMap<String, String>();
+		}
+		else if (identMap.containsKey(ident)) {
+			return identMap.get(ident);
+		}
+
+		String unique = nextIdent(ident);
+		identMap.put(ident, unique);
+		return unique;
+	}
+
+	@Override
+	public String nextIdent(String prefix) {
+		// generate a unique var name
+		return prefix+(++nextID);
 	}
 
 	@Override

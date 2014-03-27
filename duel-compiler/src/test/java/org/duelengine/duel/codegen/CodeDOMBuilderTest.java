@@ -3049,7 +3049,7 @@ public class CodeDOMBuilderTest {
 								"write",
 								new CodeVariableReferenceExpression(DuelContext.class, "context"),
 								new CodePrimitiveExpression("<script id=\""))),
-							new CodeVariableDeclarationStatement(String.class, "id_1",
+							new CodeVariableDeclarationStatement(String.class, "id_2",
 								new CodeMethodInvokeExpression(
 									String.class,
 									new CodeThisReferenceExpression(),
@@ -3060,7 +3060,7 @@ public class CodeDOMBuilderTest {
 								new CodeThisReferenceExpression(),
 								"write",
 								new CodeVariableReferenceExpression(DuelContext.class, "context"),
-								new CodeVariableReferenceExpression(String.class, "id_1"))),
+								new CodeVariableReferenceExpression(String.class, "id_2"))),
 							new CodeExpressionStatement(new CodeMethodInvokeExpression(
 								Void.class,
 								new CodeThisReferenceExpression(),
@@ -3084,7 +3084,7 @@ public class CodeDOMBuilderTest {
 								new CodeThisReferenceExpression(),
 								"dataEncode",
 								new CodeVariableReferenceExpression(DuelContext.class, "context"),
-								new CodeVariableReferenceExpression(String.class, "id_1"),
+								new CodeVariableReferenceExpression(String.class, "id_2"),
 								CodePrimitiveExpression.ONE)),
 							new CodeExpressionStatement(new CodeMethodInvokeExpression(
 								Void.class,
@@ -3166,7 +3166,7 @@ public class CodeDOMBuilderTest {
 								"write",
 								new CodeVariableReferenceExpression(DuelContext.class, "context"),
 								new CodePrimitiveExpression("<script id=\""))),
-							new CodeVariableDeclarationStatement(String.class, "id_1",
+							new CodeVariableDeclarationStatement(String.class, "id_2",
 								new CodeMethodInvokeExpression(
 									String.class,
 									new CodeThisReferenceExpression(),
@@ -3177,7 +3177,7 @@ public class CodeDOMBuilderTest {
 								new CodeThisReferenceExpression(),
 								"write",
 								new CodeVariableReferenceExpression(DuelContext.class, "context"),
-								new CodeVariableReferenceExpression(String.class, "id_1"))),
+								new CodeVariableReferenceExpression(String.class, "id_2"))),
 							new CodeExpressionStatement(new CodeMethodInvokeExpression(
 								Void.class,
 								new CodeThisReferenceExpression(),
@@ -3214,7 +3214,7 @@ public class CodeDOMBuilderTest {
 								new CodeThisReferenceExpression(),
 								"dataEncode",
 								new CodeVariableReferenceExpression(DuelContext.class, "context"),
-								new CodeVariableReferenceExpression(String.class, "id_1"),
+								new CodeVariableReferenceExpression(String.class, "id_2"),
 								CodePrimitiveExpression.ONE)),
 							new CodeExpressionStatement(new CodeMethodInvokeExpression(
 								Void.class,
@@ -3394,7 +3394,7 @@ public class CodeDOMBuilderTest {
 								"write",
 								new CodeVariableReferenceExpression(DuelContext.class, "context"),
 								new CodePrimitiveExpression("<script id=\""))),
-							new CodeVariableDeclarationStatement(String.class, "id_1",
+							new CodeVariableDeclarationStatement(String.class, "id_2",
 								new CodeMethodInvokeExpression(
 									String.class,
 									new CodeThisReferenceExpression(),
@@ -3405,7 +3405,7 @@ public class CodeDOMBuilderTest {
 								new CodeThisReferenceExpression(),
 								"write",
 								new CodeVariableReferenceExpression(DuelContext.class, "context"),
-								new CodeVariableReferenceExpression(String.class, "id_1"))),
+								new CodeVariableReferenceExpression(String.class, "id_2"))),
 							new CodeExpressionStatement(new CodeMethodInvokeExpression(
 								Void.class,
 								new CodeThisReferenceExpression(),
@@ -3442,7 +3442,7 @@ public class CodeDOMBuilderTest {
 								new CodeThisReferenceExpression(),
 								"dataEncode",
 								new CodeVariableReferenceExpression(DuelContext.class, "context"),
-								new CodeVariableReferenceExpression(String.class, "id_1"),
+								new CodeVariableReferenceExpression(String.class, "id_2"),
 								CodePrimitiveExpression.ONE)),
 							new CodeExpressionStatement(new CodeMethodInvokeExpression(
 								Void.class,

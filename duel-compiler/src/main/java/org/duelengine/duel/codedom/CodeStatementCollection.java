@@ -1,19 +1,15 @@
 package org.duelengine.duel.codedom;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Represents a sequence of statements
  */
 @SuppressWarnings("serial")
-public class CodeStatementCollection extends ArrayList<CodeStatement> implements IdentifierScope {
+public class CodeStatementCollection extends ArrayList<CodeStatement> {
 
 	private final CodeObject owner;
-	private Map<String, String> identMap;
-	private int nextID;
 
 	public CodeStatementCollection(CodeObject owner) {
 		this.owner = owner;
@@ -63,31 +59,6 @@ public class CodeStatementCollection extends ArrayList<CodeStatement> implements
 		}
 
 		return get(size()-1);
-	}
-
-	@Override
-	public boolean isLocalIdent(String ident) {
-		return (identMap != null) && identMap.containsKey(ident);
-	}
-
-	@Override
-	public String uniqueIdent(String ident) {
-		if (identMap == null) {
-			identMap = new HashMap<String, String>();
-		}
-		else if (identMap.containsKey(ident)) {
-			return identMap.get(ident);
-		}
-
-		String unique = nextIdent(ident);
-		identMap.put(ident, unique);
-		return unique;
-	}
-
-	@Override
-	public String nextIdent(String prefix) {
-		// generate a unique var name
-		return prefix+(++nextID);
 	}
 
 	@Override
