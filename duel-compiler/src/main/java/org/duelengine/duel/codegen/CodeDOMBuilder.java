@@ -401,22 +401,69 @@ public class CodeDOMBuilder {
 		buffer.append("(");
 		flushBuffer();
 
-		CodeExpression dataExpr;
 		DuelNode callData = node.getAttribute(CALLCommandNode.DATA);
 		if (callData instanceof CodeBlockNode) {
-			dataExpr = translateExpression((CodeBlockNode)callData, false);
-		} else {
-			dataExpr = new CodeVariableReferenceExpression(Object.class, "data");
-		}
+			CodeBlockNode callDataBlock = (CodeBlockNode)callData;
+			CodeExpression dataExpr = translateExpression(callDataBlock, true);
 
-		// emit data expression as a literal
-		scope.add(new CodeMethodInvokeExpression(
-			Void.class,
-			new CodeThisReferenceExpression(),
-			"dataEncode",
-			new CodeVariableReferenceExpression(DuelContext.class, "context"),
-			dataExpr,
-			CodePrimitiveExpression.ONE));
+			boolean isHybrid = dataExpr.hasMetaData(AS_HYBRID);
+			dataExpr.removeMetaData(AS_HYBRID);
+
+			if (isHybrid) {
+				// dual-side scenario
+				// if block resolves to UNDEFINED then assume needs executing on client-side
+				// otherwise emit directly from server-side
+
+				CodeVariableDeclarationStatement valDecl = new CodeVariableDeclarationStatement(
+						Object.class,
+						scope.nextIdent("val_"),
+						dataExpr);
+				flushBuffer();
+				scope.add(valDecl);
+
+				CodeVariableReferenceExpression valRef = new CodeVariableReferenceExpression(valDecl);
+
+				CodeConditionStatement hybridTest = new CodeConditionStatement(
+						new CodeBinaryOperatorExpression(
+							CodeBinaryOperatorType.IDENTITY_INEQUALITY,
+							valRef,
+							ScriptExpression.UNDEFINED),
+						new CodeExpressionStatement(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"dataEncode",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodeVariableReferenceExpression(valDecl),
+							CodePrimitiveExpression.ONE)));
+
+				scope.add(hybridTest);
+
+				scopeStack.push(hybridTest.getFalseStatements());
+				buildDeferredCodeExpression(callDataBlock.getClientCode(encoder.isPrettyPrint()), callDataBlock.getArgSize());
+				flushBuffer();
+				scopeStack.pop();
+
+			} else {
+				// emit data expression as a literal
+				scope.add(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"dataEncode",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					dataExpr,
+					CodePrimitiveExpression.ONE));
+			}
+
+		} else {
+			// emit data expression as a literal
+			scope.add(new CodeMethodInvokeExpression(
+				Void.class,
+				new CodeThisReferenceExpression(),
+				"dataEncode",
+				new CodeVariableReferenceExpression(DuelContext.class, "context"),
+				new CodeVariableReferenceExpression(Object.class, "data"),
+				CodePrimitiveExpression.ONE));
+		}
 
 		buffer.append(',');
 		if (prettyPrint) {
@@ -1725,6 +1772,94 @@ public class CodeDOMBuilder {
 
 		// last parameter will be the current data
 		formatter.writeElementEndTag(buffer, "script");
+	}
+
+	private void buildDeferredCodeExpression(String clientCode, int argSize)
+			throws IOException {
+
+		boolean prettyPrint = encoder.isPrettyPrint();
+		CodeStatementCollection scope = scopeStack.peek();
+
+		ensureExtrasEmitted(false);
+
+		// wrap client code as an anonymous DUEL view
+		buffer.append("(");
+
+		// emit client code directly
+		buffer.append(clientCode);
+
+		// immediately invoke anonymous view
+		buffer.append(")(");
+
+		if (argSize > 0) {
+			flushBuffer();
+
+			// emit data var as literal
+			scope.add(new CodeMethodInvokeExpression(
+				Void.class,
+				new CodeThisReferenceExpression(),
+				"dataEncode",
+				new CodeVariableReferenceExpression(DuelContext.class, "context"),
+				new CodeVariableReferenceExpression(Object.class, "data"),
+				CodePrimitiveExpression.ONE));
+
+			if (argSize > 1) {
+				buffer.append(',');
+				if (prettyPrint) {
+					buffer.append(' ');
+				}
+				flushBuffer();
+
+				// emit index var as number
+				scope.add(new CodeMethodInvokeExpression(
+					Void.class,
+					new CodeThisReferenceExpression(),
+					"dataEncode",
+					new CodeVariableReferenceExpression(DuelContext.class, "context"),
+					new CodeVariableReferenceExpression(int.class, "index"),
+					CodePrimitiveExpression.ONE));
+
+				if (argSize > 2) {
+					buffer.append(',');
+					if (prettyPrint) {
+						buffer.append(' ');
+					}
+					flushBuffer();
+
+					// emit count var as number
+					scope.add(new CodeMethodInvokeExpression(
+						Void.class,
+						new CodeThisReferenceExpression(),
+						"dataEncode",
+						new CodeVariableReferenceExpression(DuelContext.class, "context"),
+						new CodeVariableReferenceExpression(int.class, "count"),
+						CodePrimitiveExpression.ONE));
+
+					if (argSize > 3) {
+						buffer.append(',');
+						if (prettyPrint) {
+							buffer.append(' ');
+						}
+						flushBuffer();
+
+						// emit key var as String
+						scope.add(new CodeMethodInvokeExpression(
+							Void.class,
+							new CodeThisReferenceExpression(),
+							"dataEncode",
+							new CodeVariableReferenceExpression(DuelContext.class, "context"),
+							new CodeVariableReferenceExpression(String.class, "key"),
+							CodePrimitiveExpression.ONE));
+					}
+				}
+			}
+		}
+
+		// emit patch function call which replaces DOM node with result
+		buffer.append(")");
+
+		// emit inline expression
+		flushBuffer();
 	}
 
 	private CodeVariableDeclarationStatement emitClientID() {
