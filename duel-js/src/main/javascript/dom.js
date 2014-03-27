@@ -561,9 +561,14 @@
 	Result.prototype.toDOM = function(elem, merge) {
 		// resolve the element ID
 		if (getType(elem) === VAL) {
+			// try as id, then as query selector
 			elem = document.getElementById(
 				// Closure Compiler type cast
-				/** @type{string} */(elem));
+				/** @type{string} */(elem)) || ('querySelector' in document) ?
+				document.querySelector(
+					// Closure Compiler type cast
+					/** @type{string} */(elem)) :
+				null;
 		}
 
 		var view;
