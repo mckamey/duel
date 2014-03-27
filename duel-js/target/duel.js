@@ -1,7 +1,7 @@
 /*global window */
 
 /**
- * @license DUEL v0.9.5 http://duelengine.org
+ * @license DUEL v0.9.6 http://duelengine.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -1736,9 +1736,14 @@ var duel = (
 	Result.prototype.toDOM = function(elem, merge) {
 		// resolve the element ID
 		if (getType(elem) === VAL) {
+			// try as id, then as query selector
 			elem = document.getElementById(
 				// Closure Compiler type cast
-				/** @type{string} */(elem));
+				/** @type{string} */(elem)) || ('querySelector' in document) ?
+				document.querySelector(
+					// Closure Compiler type cast
+					/** @type{string} */(elem)) :
+				null;
 		}
 
 		var view;
