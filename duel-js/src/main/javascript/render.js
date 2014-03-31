@@ -33,15 +33,94 @@
 	};
 
 	/**
+	 * String buffer
+	 * 
+	 * @private
+	 * @this {Buffer}
+	 * @constructor
+	 */
+	function Buffer() {
+		/**
+		 * @type {Array|string}
+		 * @private
+		 */
+		this.value = Buffer.FAST ? '' : [];
+	}
+
+	/**
+	 * IE<9 benefits from Array.join() for large strings
+	 * 
+	 * @private
+	 * @constant
+	 * @type {boolean}
+	 */
+	Buffer.FAST = !(scriptEngine && scriptEngine() < 9);
+
+	/**
+	 * Appends to the internal value
+	 * 
+	 * @public
+	 * @this {Buffer}
+	 * @param {string} a
+	 * @param {string=} b
+	 * @param {string=} c
+	 */
+	Buffer.prototype.append = function(a, b, c) {
+		var args = arguments;
+
+		if (Buffer.FAST) {
+			var len = args.length;
+			if (len > 1) {
+				if (len > 2) {
+					b += c;
+				}
+				a += b;
+			}
+			this.value += a;
+
+		} else {
+			this.value.push.apply(
+				// Closure Compiler type cast
+				/** @type{Array} */(this.value),
+				args);
+		}
+	};
+
+	/**
+	 * Renders the value
+	 * 
+	 * @public
+	 * @override
+	 * @this {Buffer}
+	 * @return {string} value
+	 */
+	Buffer.prototype.toString = function() {
+		return Buffer.FAST ?
+			// Closure Compiler type cast
+			/** @type{string} */(this.value) :
+			this.value.join('');
+	};
+
+//	/**
+//	 * Resets the internal value
+//	 * 
+//	 * @public
+//	 * @this {Buffer}
+//	 */
+//	Buffer.prototype.clear = function() {
+//		this.value = Buffer.FAST ? '' : [];
+//	};
+
+	/**
 	 * Encodes invalid literal characters in strings
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number} val The value
-	 * @return {Array|Object|string|number}
+	 * @return {string}
 	 */
 	function htmlEncode(val) {
 		if (!isString(val)) {
-			return val;
+			return (val !== null && val !== undef) ? ''+val : '';
 		}
 
 		var map = {
@@ -60,11 +139,11 @@
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number} val The value
-	 * @return {Array|Object|string|number}
+	 * @return {string}
 	 */
 	function attrEncode(val) {
 		if (!isString(val)) {
-			return val;
+			return (val !== null && val !== undef) ? ''+val : '';
 		}
 
 		var map = {
@@ -90,6 +169,7 @@
 		if (node[0] === '!DOCTYPE') {
 			// emit doctype
 			buffer.append('<!DOCTYPE ', node[1], '>');
+
 		} else {
 			// emit HTML comment
 			buffer.append('<!--', node[1], '-->');
@@ -128,6 +208,7 @@
 						if (ATTR_BOOL[name.toLowerCase()]) {
 							if (val) {
 								val = name;
+
 							} else {
 								// falsey boolean attributes must not be present
 								continue;
@@ -140,7 +221,7 @@
 
 						buffer.append(' ', name);
 						// Closure Compiler type cast
-						buffer.append('="', /** @type{string} */(attrEncode(val)), '"');
+						buffer.append('="', attrEncode(val), '"');
 					}
 				}
 				i++;
@@ -156,10 +237,10 @@
 			child = node[i];
 			if (isArray(child)) {
 				renderElem(buffer, child);
+
 			} else {
 				// encode string literals
-				// Closure Compiler type cast
-				buffer.append(/** @type{string} */(htmlEncode(child)));
+				buffer.append(htmlEncode(child));
 			}
 		}
 
@@ -167,6 +248,8 @@
 			// emit close tag
 			buffer.append('</', tag, '>');
 		}
+
+		return buffer;
 	}
 
 	/**
@@ -178,9 +261,7 @@
 	 */
 	 function render(view) {
 		try {
-			var buffer = new Buffer();
-			renderElem(buffer, view);
-			return buffer.toString();
+			return renderElem(new Buffer(), view).toString();
 
 		} catch (ex) {
 			// handle error with context

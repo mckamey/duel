@@ -149,138 +149,6 @@ var duel = (
 	}
 
 	/**
-	 * String buffer
-	 * 
-	 * @private
-	 * @this {Buffer}
-	 * @constructor
-	 */
-	function Buffer() {
-		/**
-		 * @type {Array|string}
-		 * @private
-		 */
-		this.value = Buffer.FAST ? '' : [];
-	}
-
-	/**
-	 * Only IE<9 benefits from Array.join()
-	 * 
-	 * @private
-	 * @constant
-	 * @type {boolean}
-	 */
-	Buffer.FAST = !(scriptEngine && scriptEngine() < 9);
-
-	/**
-	 * Appends to the internal value
-	 * 
-	 * @public
-	 * @this {Buffer}
-	 * @param {null|string} v1
-	 * @param {null|string=} v2
-	 * @param {null|string=} v3
-	 */
-	Buffer.prototype.append = function(v1, v2, v3) {
-		if (Buffer.FAST) {
-			if (v1 !== null) {
-				this.value += v1;
-
-				if (v2 !== null && v2 !== undef) {
-					this.value += v2;
-
-					if (v3 !== null && v3 !== undef) {
-						this.value += v3;
-					}
-				}
-			}
-
-		} else {
-			this.value.push.apply(
-				// Closure Compiler type cast
-				/** @type{Array} */(this.value),
-				arguments);
-		}
-	};
-
-	/**
-	 * Clears the internal value
-	 * 
-	 * @public
-	 * @this {Buffer}
-	 */
-	Buffer.prototype.clear = function() {
-		this.value = Buffer.FAST ? '' : [];
-	};
-
-	/**
-	 * Renders the value
-	 * 
-	 * @public
-	 * @override
-	 * @this {Buffer}
-	 * @return {string} value
-	 */
-	Buffer.prototype.toString = function() {
-		return Buffer.FAST ?
-			// Closure Compiler type cast
-			/** @type{string} */(this.value) :
-			this.value.join('');
-	};
-
-	function digits(n) {
-        return (n < 10) ? '0'+n : n;
-    }
-
-	/**
-	 * Formats the value as a string
-	 * 
-	 * @private
-	 * @param {*} val the object being rendered
-	 * @return {string|null}
-	 */
-	function asString(val) {
-		var buffer, needsDelim;
-		switch (getType(val)) {
-			case VAL:
-				return ''+val;
-			case NUL:
-				return '';
-			case ARY:
-				// flatten into simple list
-				buffer = new Buffer();
-				for (var i=0, length=val.length; i<length; i++) {
-					if (needsDelim) {
-						buffer.append(', ');
-					} else {
-						needsDelim = true;
-					}
-					buffer.append(asString(val[i]));
-				}
-				return buffer.toString();
-			case OBJ:
-				// format JSON-like
-				buffer = new Buffer();
-				buffer.append('{');
-				for (var key in val) {
-					if (val.hasOwnProperty(key)) {
-						if (needsDelim) {
-							buffer.append(', ');
-						} else {
-							needsDelim = true;
-						}
-						buffer.append(key, '=', asString(val[key]));
-					}
-				}
-				buffer.append('}');
-				return buffer.toString();
-		}
-
-		// Closure Compiler type cast
-		return /** @type{string} */(val);
-	}
-	
-	/**
 	 * Wraps a binding result with rendering methods
 	 * 
 	 * @private
@@ -985,15 +853,94 @@ var duel = (
 	};
 
 	/**
+	 * String buffer
+	 * 
+	 * @private
+	 * @this {Buffer}
+	 * @constructor
+	 */
+	function Buffer() {
+		/**
+		 * @type {Array|string}
+		 * @private
+		 */
+		this.value = Buffer.FAST ? '' : [];
+	}
+
+	/**
+	 * IE<9 benefits from Array.join() for large strings
+	 * 
+	 * @private
+	 * @constant
+	 * @type {boolean}
+	 */
+	Buffer.FAST = !(scriptEngine && scriptEngine() < 9);
+
+	/**
+	 * Appends to the internal value
+	 * 
+	 * @public
+	 * @this {Buffer}
+	 * @param {string} a
+	 * @param {string=} b
+	 * @param {string=} c
+	 */
+	Buffer.prototype.append = function(a, b, c) {
+		var args = arguments;
+
+		if (Buffer.FAST) {
+			var len = args.length;
+			if (len > 1) {
+				if (len > 2) {
+					b += c;
+				}
+				a += b;
+			}
+			this.value += a;
+
+		} else {
+			this.value.push.apply(
+				// Closure Compiler type cast
+				/** @type{Array} */(this.value),
+				args);
+		}
+	};
+
+	/**
+	 * Renders the value
+	 * 
+	 * @public
+	 * @override
+	 * @this {Buffer}
+	 * @return {string} value
+	 */
+	Buffer.prototype.toString = function() {
+		return Buffer.FAST ?
+			// Closure Compiler type cast
+			/** @type{string} */(this.value) :
+			this.value.join('');
+	};
+
+//	/**
+//	 * Resets the internal value
+//	 * 
+//	 * @public
+//	 * @this {Buffer}
+//	 */
+//	Buffer.prototype.clear = function() {
+//		this.value = Buffer.FAST ? '' : [];
+//	};
+
+	/**
 	 * Encodes invalid literal characters in strings
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number} val The value
-	 * @return {Array|Object|string|number}
+	 * @return {string}
 	 */
 	function htmlEncode(val) {
 		if (!isString(val)) {
-			return val;
+			return (val !== null && val !== undef) ? ''+val : '';
 		}
 
 		var map = {
@@ -1012,11 +959,11 @@ var duel = (
 	 * 
 	 * @private
 	 * @param {Array|Object|string|number} val The value
-	 * @return {Array|Object|string|number}
+	 * @return {string}
 	 */
 	function attrEncode(val) {
 		if (!isString(val)) {
-			return val;
+			return (val !== null && val !== undef) ? ''+val : '';
 		}
 
 		var map = {
@@ -1042,6 +989,7 @@ var duel = (
 		if (node[0] === '!DOCTYPE') {
 			// emit doctype
 			buffer.append('<!DOCTYPE ', node[1], '>');
+
 		} else {
 			// emit HTML comment
 			buffer.append('<!--', node[1], '-->');
@@ -1080,6 +1028,7 @@ var duel = (
 						if (ATTR_BOOL[name.toLowerCase()]) {
 							if (val) {
 								val = name;
+
 							} else {
 								// falsey boolean attributes must not be present
 								continue;
@@ -1092,7 +1041,7 @@ var duel = (
 
 						buffer.append(' ', name);
 						// Closure Compiler type cast
-						buffer.append('="', /** @type{string} */(attrEncode(val)), '"');
+						buffer.append('="', attrEncode(val), '"');
 					}
 				}
 				i++;
@@ -1108,10 +1057,10 @@ var duel = (
 			child = node[i];
 			if (isArray(child)) {
 				renderElem(buffer, child);
+
 			} else {
 				// encode string literals
-				// Closure Compiler type cast
-				buffer.append(/** @type{string} */(htmlEncode(child)));
+				buffer.append(htmlEncode(child));
 			}
 		}
 
@@ -1119,6 +1068,8 @@ var duel = (
 			// emit close tag
 			buffer.append('</', tag, '>');
 		}
+
+		return buffer;
 	}
 
 	/**
@@ -1130,9 +1081,7 @@ var duel = (
 	 */
 	 function render(view) {
 		try {
-			var buffer = new Buffer();
-			renderElem(buffer, view);
-			return buffer.toString();
+			return renderElem(new Buffer(), view).toString();
 
 		} catch (ex) {
 			// handle error with context
@@ -1257,7 +1206,8 @@ var duel = (
 	var ATTR_DOM = {
 		'autocapitalize': 1,
 		'autocomplete': 1,
-		'autocorrect': 1
+		'autocorrect': 1,
+		'type': 1
 		// can add more attributes here as needed
 	};
 

@@ -82,7 +82,8 @@
 	var ATTR_DOM = {
 		'autocapitalize': 1,
 		'autocomplete': 1,
-		'autocorrect': 1
+		'autocorrect': 1,
+		'type': 1
 		// can add more attributes here as needed
 	};
 
