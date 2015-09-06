@@ -29,7 +29,7 @@ public class CodeGenSettings {
 	}
 
 	public boolean hasClientNamePrefix() {
-		return (clientPrefix != null) && (clientPrefix.length() > 0);
+		return (clientPrefix != null) && !clientPrefix.isEmpty();
 	}
 
 	public void setServerNamePrefix(String value) {
@@ -41,7 +41,7 @@ public class CodeGenSettings {
 	}
 
 	public boolean hasServerNamePrefix() {
-		return (serverPrefix != null) && (serverPrefix.length() > 0);
+		return (serverPrefix != null) && !serverPrefix.isEmpty();
 	}
 
 	/**

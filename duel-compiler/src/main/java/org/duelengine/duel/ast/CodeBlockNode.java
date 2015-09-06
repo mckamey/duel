@@ -17,7 +17,7 @@ public abstract class CodeBlockNode extends BlockNode {
 	protected CodeBlockNode(String begin, String end, String value) {
 		super(begin, end, value);
 	}
-	
+
 	public ArgList getParamList() {
 		// NOTE: this is pretty basic right now
 		// it could result in false positives

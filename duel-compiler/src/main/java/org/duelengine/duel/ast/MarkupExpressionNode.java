@@ -23,8 +23,8 @@ public class MarkupExpressionNode extends CodeBlockNode {
 		StringBuilder buffer = new StringBuilder(INTRO1);
 		buffer.append(formatParamList());
 		buffer.append(prettyPrint ? INTRO2_PRETTY : INTRO2);
-		String value = getValue();
-		if (value != null) {
+		if (hasValue()) {
+			String value = getValue();
 			buffer.append(prettyPrint ? value : value.trim());
 		}
 		return buffer.append(prettyPrint ? OUTRO_PRETTY : OUTRO).toString();

@@ -11,10 +11,10 @@ import org.duelengine.duel.ast.CALLCommandNode;
 import org.duelengine.duel.ast.CodeBlockNode;
 import org.duelengine.duel.ast.CodeCommentNode;
 import org.duelengine.duel.ast.CommentNode;
-import org.duelengine.duel.ast.DocTypeNode;
 import org.duelengine.duel.ast.DuelNode;
 import org.duelengine.duel.ast.ElementNode;
 import org.duelengine.duel.ast.ExpressionNode;
+import org.duelengine.duel.ast.SpecialNode;
 import org.duelengine.duel.ast.LiteralNode;
 import org.duelengine.duel.ast.VIEWCommandNode;
 import org.duelengine.duel.parsing.InvalidNodeException;
@@ -137,14 +137,11 @@ public class ClientCodeGen implements CodeGenerator {
 		} else if (node instanceof CodeBlockNode) {
 			writeCodeBlock(output, (CodeBlockNode)node);
 
-		} else if (node instanceof CommentNode) {
-			writeSpecialElement(output, "!", ((CommentNode)node).getValue(), depth, preMode);
-
 		} else if (node instanceof CodeCommentNode) {
 			writeComment(output, ((CodeCommentNode)node).getValue());
 
-		} else if (node instanceof DocTypeNode) {
-			writeSpecialElement(output, "!DOCTYPE", ((DocTypeNode)node).getValue(), depth, preMode);
+		} else if (node instanceof SpecialNode) {
+			writeSpecialNode(output, (SpecialNode)node, depth, preMode);
 
 		} else if (node != null) {
 			throw new UnsupportedOperationException("Node type not yet implemented: "+node.getClass());
@@ -167,23 +164,22 @@ public class ClientCodeGen implements CodeGenerator {
 		output.append(node.getClientCode(encoder.isPrettyPrint()));
 	}
 
-	private void writeSpecialElement(Appendable output, String name, String value, int depth, boolean preMode)
+	private void writeSpecialNode(Appendable output, SpecialNode node, int depth, boolean preMode)
 		throws IOException {
 
 		output.append('[');
 		depth++;
 
-		writeString(output, name, preMode);
+		writeString(output, node.getName(), preMode);
 
-		boolean hasValue = (value != null) && (value.length() > 0);
-		if (hasValue) {
+		if (node.hasValue()) {
 			output.append(',');
 			writeln(output, depth);
-			writeString(output, value, preMode);
+			writeString(output, node.getValue(), preMode);
 		}
 
 		depth--;
-		if (hasValue) {
+		if (node.hasValue()) {
 			writeln(output, depth);
 		}
 		output.append(']');
@@ -326,7 +322,7 @@ public class ClientCodeGen implements CodeGenerator {
 			return;
 		}
 
-		if (!preMode && settings.getNormalizeWhitespace() && value.length() > 0) {
+		if (!preMode && settings.getNormalizeWhitespace() && !value.isEmpty()) {
 			// not very efficient but allows simple normalization
 			value = value.replaceAll("^[\\r\\n]+", "").replaceAll("[\\r\\n]+$", "").replaceAll("\\s+", " ");
 			if (value.isEmpty()) {

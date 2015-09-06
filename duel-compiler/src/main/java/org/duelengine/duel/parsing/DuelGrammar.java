@@ -21,6 +21,7 @@ final class DuelGrammar {
 	public static final char OP_ENTITY_HEX_ALT = 'X';
 	public static final char OP_ENTITY_END = ';';
 
+	public static final String OP_DOCTYPE = "<!doctype";
 	public static final String OP_COMMENT = "<!--";
 	public static final String OP_COMMENT_END = "-->";
 	public static final String OP_CODE_COMMENT = "<%--";

@@ -357,7 +357,7 @@ public class DuelParserTest {
 			DuelToken.elemBegin("view"),
 			DuelToken.attrName("name"),
 			DuelToken.attrValue("foo"),
-			DuelToken.block(new BlockValue("<!DOCTYPE", ">", "html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
+			DuelToken.block(new BlockValue("<!doctype", ">", "html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"")),
 			DuelToken.literal("\n"),
 			DuelToken.elemBegin("html"),
 			DuelToken.attrName("xmlns"),

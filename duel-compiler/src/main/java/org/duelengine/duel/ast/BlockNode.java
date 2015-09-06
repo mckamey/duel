@@ -36,6 +36,10 @@ public abstract class BlockNode extends DuelNode {
 		this.value = value;
 	}
 
+	public boolean hasValue() {
+		return (value != null) && !value.isEmpty();
+	}
+
 	StringBuilder toString(StringBuilder buffer) {
 		if (begin != null) {
 			buffer.append(begin);

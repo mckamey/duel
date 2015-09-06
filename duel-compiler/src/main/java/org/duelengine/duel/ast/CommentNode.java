@@ -1,15 +1,16 @@
 package org.duelengine.duel.ast;
 
-public class CommentNode extends BlockNode {
+public class CommentNode extends SpecialNode {
 
-	public static final String BEGIN = "<!--"; 
-	public static final String END = "-->"; 
+	private static final String NAME = "!";
+	public static final String BEGIN = "<!--";
+	public static final String END = "-->";
 
 	public CommentNode(String value, int index, int line, int column) {
-		super(BEGIN, END, value, index, line, column);
+		super(NAME, BEGIN, END, value, index, line, column);
 	}
 
 	public CommentNode(String value) {
-		super(BEGIN, END, value);
+		super(NAME, BEGIN, END, value);
 	}
 }

@@ -178,8 +178,7 @@ public class CodeDOMBuilder {
 				buffer.append(literal);
 
 			} else {
-				if (literal != null &&
-					literal.length() > 0 &&
+				if (literal != null && !literal.isEmpty() &&
 					tagMode != TagMode.PRE &&
 					settings.getNormalizeWhitespace()) {
 

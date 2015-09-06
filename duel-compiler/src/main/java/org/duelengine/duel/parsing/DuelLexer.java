@@ -653,9 +653,9 @@ public class DuelLexer implements Iterator<DuelToken> {
 						end = ">";
 						value = tryScanBlockValue("", end);
 						if ((value != null) && (value.length() >= 7) &&
-							value.substring(0, 7).equalsIgnoreCase("doctype")) {
+							value.substring(0, 7).equalsIgnoreCase(DuelGrammar.OP_DOCTYPE.substring(2))) {
 							value = value.substring(7).trim();
-							begin = "<!DOCTYPE";
+							begin = DuelGrammar.OP_DOCTYPE;
 						}
 						break;
 				}

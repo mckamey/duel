@@ -3,7 +3,7 @@ package org.duelengine.duel;
 import java.io.IOException;
 
 /**
- * A simple abstraction for writing HTML.
+ * A simple standalone utility for writing HTML.
  * Inherently thread-safe as contains no mutable instance data.
  */
 public class HTMLFormatter {
@@ -38,11 +38,11 @@ public class HTMLFormatter {
 	public HTMLFormatter writeDocType(Appendable output, String value)
 		throws IOException {
 
-		final String OPEN = "<!DOCTYPE";
+		final String OPEN = "<!doctype";
 		final char CLOSE = '>';
 
 		output.append(OPEN);
-		if (value != null && value.length() > 0) {
+		if (value != null && !value.isEmpty()) {
 			output.append(' ').append(value);
 		}
 		output.append(CLOSE);

@@ -52,7 +52,7 @@ public class DataEncoder {
 	public DataEncoder(String newlineStr, String indentStr) {
 		newline = (newlineStr != null) ? newlineStr : "";
 		indent = (indentStr != null) ? indentStr : "";
-		prettyPrint = (indent.length() > 0) || (newline.length() > 0);
+		prettyPrint = !indent.isEmpty() || !newline.isEmpty();
 	}
 
 	public boolean isPrettyPrint() {

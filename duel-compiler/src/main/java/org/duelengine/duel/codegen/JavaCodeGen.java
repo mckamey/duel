@@ -1140,7 +1140,7 @@ public class JavaCodeGen implements CodeGenerator {
 	private void writePackage(Appendable output, String ns)
 		throws IOException {
 
-		if (ns != null && ns.length() > 0) {
+		if (ns != null && !ns.isEmpty()) {
 			output.append("package ").append(ns).append(";");
 			writeln(output, 0, 2);
 		}

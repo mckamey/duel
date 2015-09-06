@@ -1,15 +1,16 @@
 package org.duelengine.duel.ast;
 
-public class DocTypeNode extends BlockNode {
+public class DocTypeNode extends SpecialNode {
 
-	public static final String BEGIN = "<!doctype"; 
+	private static final String NAME = "!doctype";
+	public static final String BEGIN = "<"+NAME;
 	public static final String END = ">"; 
 
 	public DocTypeNode(String value, int index, int line, int column) {
-		super(BEGIN, END, value, index, line, column);
+		super(NAME, BEGIN, END, value, index, line, column);
 	}
 
 	public DocTypeNode(String value) {
-		super(BEGIN, END, value);
+		super(NAME, BEGIN, END, value);
 	}
 }
