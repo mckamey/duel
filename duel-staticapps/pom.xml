@@ -39,7 +39,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<duel.version>0.9.1</duel.version>
+		<duel.version>0.9.6</duel.version>
 		<jackson.version>2.3.1</jackson.version>
 		<codec.version>1.9</codec.version>
 		<slf4j.version>1.7.6</slf4j.version>
@@ -112,10 +112,11 @@
 
 	<build>
 		<plugins>
+			<!-- set the main class -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.4</version>
+				<version>2.5</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -125,21 +126,45 @@
 					</archive>
 				</configuration>
 			</plugin>
+
+			<!-- generate javadoc -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<nohelp>true</nohelp>
+				</configuration>
+			</plugin>
+
+			<!-- copy all dependencies to target -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
+				<!-- Java compiler settings -->
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.3.2</version>
 					<configuration>
 						<source>${jvm.version}</source>
 						<target>${jvm.version}</target>
 					</configuration>
 				</plugin>
-				<plugin>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.7.2</version>
-				</plugin>
+
+				<!-- http://wiki.eclipse.org/M2E_plugin_execution_not_covered -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -147,6 +172,19 @@
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.4,)</versionRange>
+										<goals>
+											<goal>copy-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>

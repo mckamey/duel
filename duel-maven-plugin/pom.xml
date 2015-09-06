@@ -81,7 +81,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-plugin-plugin</artifactId>
-				<version>2.5.1</version>
+				<version>3.3</version>
 				<executions>
 					<execution>
 						<id>generated-helpmojo</id>
@@ -97,18 +97,16 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
+				<!-- Java compiler settings -->
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.3.2</version>
 					<configuration>
 						<source>${jvm.version}</source>
 						<target>${jvm.version}</target>
 					</configuration>
 				</plugin>
-				<plugin>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.7.2</version>
-				</plugin>
+
+				<!-- http://wiki.eclipse.org/M2E_plugin_execution_not_covered -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -123,6 +121,20 @@
 										<versionRange>[1.0.0,)</versionRange>
 										<goals>
 											<goal>enforce</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-plugin-plugin</artifactId>
+										<versionRange>[3.3,)</versionRange>
+										<goals>
+											<goal>helpmojo</goal>
+											<goal>descriptor</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
