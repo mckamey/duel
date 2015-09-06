@@ -266,7 +266,7 @@ test('ignore doctype node', function() {
 
 	var view = duel(
 		['',
-		 	['!DOCTYPE',
+		 	['!doctype',
 		 	 	'html'],
 	 	 	'\n',
 			['html',

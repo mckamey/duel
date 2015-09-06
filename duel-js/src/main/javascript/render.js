@@ -166,9 +166,9 @@
 	 * @param {Array} node The result tree
 	 */
 	function renderComment(buffer, node) {
-		if (node[0] === '!DOCTYPE') {
+		if (node[0].toLowerCase() === '!doctype') {
 			// emit doctype
-			buffer.append('<!DOCTYPE ', node[1], '>');
+			buffer.append('<!doctype ', node[1], '>');
 
 		} else {
 			// emit HTML comment
