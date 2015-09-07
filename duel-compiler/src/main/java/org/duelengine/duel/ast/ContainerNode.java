@@ -43,6 +43,22 @@ public class ContainerNode extends DuelNode {
 		child.setParent(this);
 	}
 
+	public void appendChildren(Iterable<DuelNode> newChildren) {
+		for (DuelNode child : newChildren) {
+			children.add(child);
+			child.setParent(this);
+		}
+	}
+
+	public void removeChildren() {
+		for (DuelNode child : children) {
+			if (child.getParent() == this) {
+				child.setParent(null);
+			}
+		}
+		children.clear();
+	}
+
 	public boolean removeChild(DuelNode oldChild) {
 		if (oldChild == null) {
 			return false;

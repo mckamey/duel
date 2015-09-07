@@ -926,7 +926,7 @@ public class DuelLexerTest {
 		assertArrayEquals(expected, actual);
 	}
 
-	@Ignore
+	@Ignore("Local DocTypes are not supported in HTML5 anyway.")
 	@Test
 	public void doctypeLocalTest() {
 

@@ -219,7 +219,7 @@ public class JavaCodeGen implements CodeGenerator {
 		output.append(") {");
 		depth++;
 		List<CodeExpression> args = ctor.getBaseCtorArgs();
-		if (args.size() > 0) {
+		if (!args.isEmpty()) {
 			writeln(output, depth);
 			output.append("super(");
 			needsDelim = false;
@@ -234,7 +234,7 @@ public class JavaCodeGen implements CodeGenerator {
 			output.append(");");
 		} else {
 			args = ctor.getChainedCtorArgs();
-			if (args.size() > 0) {
+			if (!args.isEmpty()) {
 				writeln(output, depth);
 				output.append("this(");
 				needsDelim = false;
@@ -971,7 +971,7 @@ public class JavaCodeGen implements CodeGenerator {
 		writeln(output, depth);
 		output.append('}');
 
-		if (statement.getFalseStatements().size() > 0) {
+		if (!statement.getFalseStatements().isEmpty()) {
 			boolean nestedConditionals =
 				(statement.getFalseStatements().size() == 1) &&
 				(statement.getFalseStatements().getLastStatement() instanceof CodeConditionStatement);
