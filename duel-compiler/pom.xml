@@ -40,8 +40,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<rhino.version>1.7R4</rhino.version>
-		<slf4j.version>1.7.6</slf4j.version>
-		<junit.version>4.11</junit.version>
+		<slf4j.version>1.7.12</slf4j.version>
+		<junit.version>4.12</junit.version>
 		<jvm.version>1.6</jvm.version>
 	</properties>
 

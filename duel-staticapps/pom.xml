@@ -40,11 +40,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<duel.version>0.9.7</duel.version>
-		<jackson.version>2.3.1</jackson.version>
+		<jackson.version>2.6.1</jackson.version>
 		<codec.version>1.9</codec.version>
-		<slf4j.version>1.7.6</slf4j.version>
+		<slf4j.version>1.7.12</slf4j.version>
 		<servlet.version>3.1.0</servlet.version>
-		<junit.version>4.11</junit.version>
+		<junit.version>4.12</junit.version>
 		<jvm.version>1.6</jvm.version>
 	</properties>
 
