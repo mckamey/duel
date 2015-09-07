@@ -20,11 +20,12 @@ public class CLI {
 		
 		try {
 			if (!configFile.isFile()) {
-				throw new FileNotFoundException(configFile.getPath());
+				throw new FileNotFoundException(configFile.getCanonicalPath());
 			}
 
 			// read config
 			SiteConfig config = new ObjectMapper().reader(SiteConfig.class).readValue(configFile);
+			config.configFile(configFile);
 
 			// build site defined by config
 			new SiteBuilder().build(config);

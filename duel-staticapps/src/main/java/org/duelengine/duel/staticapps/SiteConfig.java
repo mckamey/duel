@@ -3,10 +3,10 @@ package org.duelengine.duel.staticapps;
 import java.io.File;
 import java.util.Map;
 
+import org.duelengine.duel.utils.FileUtil;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.duelengine.duel.utils.FileUtil;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class SiteConfig {
@@ -29,6 +29,7 @@ public class SiteConfig {
 
 	// derivative values
 
+	private File configFile;
 	private File sourceDirFile;
 	private File targetDirFile;
 
@@ -254,5 +255,20 @@ public class SiteConfig {
 	 */
 	public File targetDirFile() {
 		return targetDirFile;
+	}
+
+	/**
+	 * Gets the config location
+	 */
+	public File configFile() {
+		return configFile;
+	}
+
+	/**
+	 * Sets the config location
+	 */
+	public SiteConfig configFile(File value) {
+		configFile = (value != null) ? FileUtil.getCanonicalFile(value) : null;
+		return this;
 	}
 }

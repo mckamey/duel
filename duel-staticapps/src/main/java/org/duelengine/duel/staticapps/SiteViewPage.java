@@ -10,6 +10,7 @@ public class SiteViewPage {
 
 	private String view;
 	private Object data;
+	private String dataFile;
 	private Map<String, Object> extras;
 	private CacheManifest appCache;
 
@@ -44,6 +45,23 @@ public class SiteViewPage {
 	@JsonProperty
 	public SiteViewPage data(Object value) {
 		data = value;
+		return this;
+	}
+
+	/**
+	 * Gets the view data file path
+	 */
+	@JsonProperty
+	public String dataFile() {
+		return dataFile;
+	}
+
+	/**
+	 * Sets the view data file path
+	 */
+	@JsonProperty
+	public SiteViewPage dataFile(String value) {
+		dataFile = value;
 		return this;
 	}
 

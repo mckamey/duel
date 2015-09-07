@@ -17,6 +17,8 @@ import org.duelengine.duel.utils.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class SiteBuilder {
 
 	private static final Logger log = LoggerFactory.getLogger(SiteBuilder.class);
@@ -116,8 +118,25 @@ public class SiteBuilder {
 					DuelContext context = new DuelContext()
 						.setFormat(formatPrefs)
 						.setLinkInterceptor(linkInterceptor)
-						.setData(sitePage.data())
 						.setOutput(writer);
+
+					// ensure paths are relative from config
+					if (sitePage.dataFile() != null) {
+						File dataFile = (config.configFile() == null) ?
+							new File(sitePage.dataFile()).getCanonicalFile() :
+							new File(config.configFile().getParentFile(), sitePage.dataFile()).getCanonicalFile();
+						if (dataFile.exists()) {
+							log.info("Loading data file: "+dataFile);
+							Object data = new ObjectMapper().readValue(dataFile, Object.class);
+							context.setData(data);
+
+						} else {
+							log.error("Data file missing: "+dataFile);
+						}
+
+					} else {
+						context.setData(sitePage.data());
+					}
 
 					Map<String, Object> extras = config.extras();
 					if (extras != null) {

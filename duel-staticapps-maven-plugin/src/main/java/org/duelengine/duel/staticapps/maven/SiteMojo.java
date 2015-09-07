@@ -82,11 +82,12 @@ public abstract class SiteMojo extends AbstractMojo {
 
 		File configFile = new File(configPath);
 		if (!configFile.isFile()) {
-			throw new FileNotFoundException(configFile.getPath());
+			throw new FileNotFoundException(configFile.getCanonicalPath());
 		}
 
 		// deserialize config
 		SiteConfig config = new ObjectMapper().reader(SiteConfig.class).readValue(configFile);
+		config.configFile(configFile);
 
 		// ensure paths are relative from config
 		if (config.sourceDir() != null) {

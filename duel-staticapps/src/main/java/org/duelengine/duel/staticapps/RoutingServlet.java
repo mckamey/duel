@@ -55,10 +55,12 @@ public class RoutingServlet extends HttpServlet {
 			} else {
 				File configFile = new File(configPath);
 				if (configFile.exists()) {
-					log.info("Loading config from file path: "+configFile.getPath());
+					log.info("Loading config from file path: "+configFile.getCanonicalPath());
 					config = new ObjectMapper().reader(SiteConfig.class).readValue(configFile);
+					config.configFile(configFile);
+
 				} else {
-					log.error("File not found from 'config-path' param: "+configPath);
+					log.error("File not found from 'config-path' param: "+configFile.getCanonicalPath());
 					configPath = null;
 				}
 			}
@@ -78,6 +80,7 @@ public class RoutingServlet extends HttpServlet {
 				log.info("Loading config from resource: "+configPath);
 				InputStream stream = getClass().getResourceAsStream(configPath);
 				config = new ObjectMapper().reader(SiteConfig.class).readValue(stream);
+				config.configFile(null);
 
 			} catch (Throwable ex) {
 				log.error("Error loading staticapp config from 'config-resource' param: "+configPath, ex);
@@ -87,6 +90,7 @@ public class RoutingServlet extends HttpServlet {
 		if (config == null) {
 			// dummy noop config
 			config = new SiteConfig();
+			config.configFile(null);
 		}
 
 		format = new FormatPrefs()
@@ -133,8 +137,24 @@ public class RoutingServlet extends HttpServlet {
 			DuelContext context = new DuelContext()
 				.setFormat(format)
 				.setLinkInterceptor(linkInterceptor)
-				.setData(sitePage.data())
 				.setOutput(response.getWriter());
+
+			// ensure paths are relative from config
+			if (sitePage.dataFile() != null) {
+				File dataFile = (config.configFile() == null) ?
+					new File(sitePage.dataFile()).getCanonicalFile() :
+					new File(config.configFile().getParentFile(), sitePage.dataFile()).getCanonicalFile();
+				if (dataFile.exists()) {
+					Object data = new ObjectMapper().readValue(dataFile, Object.class);
+					context.setData(data);
+
+				} else {
+					log.error("Data file missing: "+dataFile);
+				}
+
+			} else {
+				context.setData(sitePage.data());
+			}
 
 			Map<String, Object> extras = config.extras();
 			if (extras != null) {
