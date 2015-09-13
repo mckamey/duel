@@ -20,13 +20,13 @@
 	<licenses>
 		<license>
 			<name>MIT License</name>
-			<url>http://duelengine.org/LICENSE.txt</url>
+			<url>https://github.com/mckamey/duel/raw/master/LICENSE.txt</url>
 		</license>
 	</licenses>
 	<scm>
-		<url>https://bitbucket.org/mckamey/duel</url>
-		<connection>scm:hg:https://bitbucket.org/mckamey/duel</connection>
-		<developerConnection>scm:hg:https://bitbucket.org/mckamey/duel</developerConnection>
+		<url>https://github.com/mckamey/duel</url>
+		<connection>scm:git:https://github.com/mckamey/duel</connection>
+		<developerConnection>scm:git:https://github.com/mckamey/duel</developerConnection>
 	</scm>
 	<developers>
 		<developer>
@@ -42,7 +42,7 @@
 		<rhino.version>1.7R4</rhino.version>
 		<slf4j.version>1.7.12</slf4j.version>
 		<junit.version>4.12</junit.version>
-		<jvm.version>1.6</jvm.version>
+		<jvm.version>1.8</jvm.version>
 	</properties>
 
 	<dependencies>
