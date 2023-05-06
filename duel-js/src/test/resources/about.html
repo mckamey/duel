@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>DUEL » About</title>
+    <link type="text/css" rel="stylesheet" href="styles.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+</head>
+<body>
+
+<h1 class="box">DUEL » About</h1>
+<p style="text-align:center;">[ <strong><a href="/">Home</a></strong> |
+    <strong>About</strong> |
+    <strong><a href="syntax.html">Syntax</a></strong> |
+    <strong><a href="examples.html">Examples</a></strong> |
+	<strong><a href="unit.html">Unit Tests</a></strong> |
+    <strong><a href="LICENSE.txt">License</a></strong> ]
+</p>
+<img src="duel.png" alt="DUEL" style="float:right" />
+<p>DUEL is a <strong>"dual-side" templating</a> engine</strong> (client-side and server-side)
+    using <strong>HTML for layout</strong> and
+    <strong>100% pure JavaScript as the binding language</strong>. The same views may be executed <em>both</em>
+    directly in the browser (client-side template) <em>and</em> on the server (server-side template).
+</p>
+<p>The goal of DUEL is to leverage knowledge in existing technologies to build UI for Ajax web applications. Modern
+    apps require a fluid UI meaning an investment in JavaScript. DUEL takes this one step further by enabling
+    JavaScript to build the entire view. Less context switching means focusing on the real problems rather than
+    fighting the tools.</p>
+<h3><em>In the browser…</em></h3>
+<p>The view becomes a JavaScript function which accepts the data to bind as an argument. Returned is a result which
+    can be used as either a string or to produce DOM elements directly. DUEL works great with your favorite
+    JavaScript library (e.g. jQuery).</p>
+<h3><em>On the server…</em></h3>
+<p>The view is translated into a class which may be natively executed on the server without requiring a JavaScript
+    execution environment. If any code blocks require being executed on the client they will be automatically
+    delegated to the client. Initially, DUEL targets Java as the server language. Goals for the future include
+    expansion into other environments as well.</p>
+<h3><em><a href="syntax.html">Syntax</a></em></h3>
+<p>The <a href="syntax.html">syntax for DUEL
+        views</a> is designed to be familiar, concise and easy to remember.</p>
+<h3><em><a href="examples.html">Examples</a></em></h3>
+<p>See <a href="examples.html">examples of how
+        easy it is</a> to define and use DUEL views.</p>
+<h3><em>History</em></h3>
+<p>DUEL is an evolution of previous view template technologies that began in 2006 with <a
+        href="http://jsonml.org/">JsonML</a>. JsonML paved
+    the way for JBST which was an early client-side template technology. After several years of real world usage,
+    DUEL is the refinement of the good ideas of JBST while adding a viable server-side companion to the concept.</p>
+<h3>License</a></em></h3>
+<p>DUEL is licensed under the <a href="http://duelengine.org/LICENSE.txt">MIT license</a>. Copyright ©2006-2010
+    Stephen M. McKamey.</p>
+
+<script src="ga.js" defer></script>
+
+</body>
+</html>

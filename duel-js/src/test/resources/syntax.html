@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>DUEL » Syntax</title>
+	<link type="text/css" rel="stylesheet" href="styles.css" />
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+</head>
+<body>
+
+<h1 class="box">DUEL » Syntax</h1>
+<p style="text-align:center;">[ <strong><a href="/">Home</a></strong> |
+	<strong><a href="about.html">About</a></strong> |
+	<strong>Syntax</strong> |
+	<strong><a href="examples.html">Examples</a></strong> |
+	<strong><a href="unit.html">Unit Tests</a></strong> |
+	<strong><a href="LICENSE.txt">License</a></strong> ]
+</p>
+<p>The DUEL grammar is an intentionally small, familiar syntax. Each term is intended to be intuitive to remember and is short without abbreviations. DUEL views are defined as HTML/CSS/JavaScript with a small set of special markup tags to control flow and JavaScript code blocks to bind the view template to model data.</p>
+<p>The goal is to deliberately keep the syntax minimal. It should be easy to remember and nothing should need to be looked up during usage.</p>
+<h2><em>Code Blocks</em></h2>
+<p>DUEL code blocks contain 100% pure JavaScript, so there isn't a new language to learn. Since DUEL uses a familiar syntax for code blocks, syntax highlighting in editors is widely supported out of the box. There are three types of code blocks available:</p>
+<h3>Statement Blocks</h3>
+<div class="codehilite highlight"><pre><span></span><span class="cp">&lt;%</span> <span class="sr">/*statements*/</span> <span class="cp">%&gt;</span>
+</pre></div>
+
+<p>When code within a statement block is executed, if any value is returned it will be emitted as part of the output.</p>
+<h3>Expression Blocks</h3>
+<div class="codehilite highlight"><pre><span></span><span class="cp">&lt;%=</span> <span class="sr">/*expression*/</span> <span class="cp">%&gt;</span>
+</pre></div>
+
+<p>When code within an expression block is executed, the result of will be emitted as part of the output, interpretted as plain text. Expression blocks are effectively equivalent to:</p>
+<div class="codehilite highlight"><pre><span></span><span class="cp">&lt;%</span> <span class="k">return</span> <span class="p">(</span><span class="sr">/*expression*/</span><span class="p">);</span> <span class="cp">%&gt;</span>
+</pre></div>
+
+<h3>HTML Expression Block</h3>
+<p><em>Note: these blocks are rarely needed; only when data itself contains markup. Care must be taken to avoid script injection with markup blocks.</em></p>
+<div class="codehilite highlight"><pre><span></span><span class="cp">&lt;%#</span><span class="c"> /*expression*/ </span><span class="cp">%&gt;</span>
+</pre></div>
+
+<p>When code within a markup expression block is executed, the result will be emitted as part of the output, interpreted as HTML.</p>
+<h2><em>Data Values</em></h2>
+<p>The ambient JavaScript data values made available inside code blocks are:</p>
+<ul><li><code>data</code>: contains the model data being bound to the view template
+</li><li><code>index</code>: used within all loops to indicate the item index of the current <code>data</code> being bound
+</li><li><code>count</code>: used within all loops to indicate total number of items being bound
+</li><li><code>key</code>: used within property loops to indicate the property name of the current <code>data</code> being bound
+</li></ul>
+<h2><em>Command Markup</em></h2>
+<p>DUEL reduces potential for "<a href="https://web.archive.org/web/20200621142316/http://www.codinghorror.com/blog/2008/07/web-development-as-tag-soup.html" rel="nofollow">tag soup</a>" by controlling loops and conditionals declaratively through a small set of memorable markup commands. The complete set of DUEL command markup is:</p>
+<h3>View declaration</h3>
+<h5><em>Syntax:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">view</span> <span class="na">name</span><span class="o">=</span><span class="s">"…"</span><span class="p">&gt;</span>
+…
+<span class="p">&lt;/</span><span class="nt">view</span><span class="p">&gt;</span>
+</pre></div>
+
+<p>Sits at the top of a view to define its metadata. The <code>name</code> attribute contains a string literal which defines the name of view type. This optionally may have a close tag at the end of the view.; open views will be auto-closed by the compiler.</p>
+<p>A rarely used feature of this tag is for defining multiple views in the same file. By closing the <code>&lt;/view&gt;</code> tag and opening another, a second named view may be defined.</p>
+<p>This tag is the only child of the file, and may only sit at the root. Views may not be nested, although they may call into one another (See the <code>&lt;call /&gt;</code> command).</p>
+<h5><em>Example:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">view</span> <span class="na">name</span><span class="o">=</span><span class="s">"example.Foo"</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Hello world.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</pre></div>
+
+<h3>Looping and iteration</h3>
+<h4>Array iteration</h4>
+<h5><em>Syntax:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">for</span> <span class="na">each</span><span class="o">=</span><span class="s">"…"</span><span class="p">&gt;</span>
+…
+<span class="p">&lt;/</span><span class="nt">for</span><span class="p">&gt;</span>
+</pre></div>
+
+<p>Wrapped around content to be repeated once per item. The <code>each</code> attribute contains an <code>Array</code> expression defining the list of items to iterate over. The <code>data</code> value will contain the current item, and the <code>index</code> and <code>count</code> values will be updated with the current item index and total item count, respectively.</p>
+<p>If the <code>each</code> attribute does not contain an <code>Array</code> expression, the loop will treat it as if it were the first item in an <code>Array</code>.</p>
+<h5><em>Example:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">for</span> <span class="na">each</span><span class="o">=</span><span class="s">"data.items"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Item <span class="cp">&lt;%=</span> <span class="n">data</span> <span class="cp">%&gt;</span> is <span class="cp">&lt;%=</span> <span class="n">index</span> <span class="cp">%&gt;</span> of <span class="cp">&lt;%=</span> <span class="n">count</span> <span class="cp">%&gt;</span>.<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">for</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</pre></div>
+
+<h4>Property iteration</h4>
+<h5><em>Syntax:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">for</span> <span class="na">in</span><span class="o">=</span><span class="s">"…"</span><span class="p">&gt;</span>
+…
+<span class="p">&lt;/</span><span class="nt">for</span><span class="p">&gt;</span>
+</pre></div>
+
+<p>Wrapped around content to be repeated once per property. The <code>in</code> attribute contains an <code>Object</code> expression, and the loop will iterate over the properties of that object. In this case, <code>data</code> will contain the property value and an additional <code>key</code> value will contain the (<code>String</code>) property name. The <code>index</code> and <code>count</code> values will be updated with the current property index and total count of properties, respectively.</p>
+<h5><em>Example:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">for</span> <span class="na">in</span><span class="o">=</span><span class="s">"data.foo"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Property named <span class="cp">&lt;%=</span> <span class="n">key</span> <span class="cp">%&gt;</span> has the value <span class="cp">&lt;%=</span> <span class="n">data</span> <span class="cp">%&gt;</span> and is <span class="cp">&lt;%=</span> <span class="n">index</span> <span class="cp">%&gt;</span> of <span class="cp">&lt;%=</span> <span class="n">count</span> <span class="cp">%&gt;</span>.<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">for</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</pre></div>
+
+<h4>Counting iteration</h4>
+<h5><em>Syntax:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">for</span> <span class="na">count</span><span class="o">=</span><span class="s">"…"</span> <span class="na">data</span><span class="o">=</span><span class="s">"…"</span><span class="p">&gt;</span>
+…
+<span class="p">&lt;/</span><span class="nt">for</span><span class="p">&gt;</span>
+</pre></div>
+
+<p>Wrapped around content to be repeated <code>count</code> number of times. The <code>count</code> attribute contains a <code>Number</code> expression, and the loop will iterate that number of times. If the <code>data</code> attribute is not specified, <code>data</code> will contain the outer scope's <code>data</code> value otherwise it will contain the result of the <code>data</code> attribute expression. The <code>index</code> and <code>count</code> values will contain the current index and the result of the <code>count</code> attribute expression, respectively.</p>
+<h5><em>Example:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">for</span> <span class="na">count</span><span class="o">=</span><span class="s">"4"</span> <span class="na">data</span><span class="o">=</span><span class="s">"data.foo"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>The same <span class="cp">&lt;%=</span> <span class="n">data</span> <span class="cp">%&gt;</span> for <span class="cp">&lt;%=</span> <span class="n">index</span> <span class="cp">%&gt;</span> of <span class="cp">&lt;%=</span> <span class="n">count</span> <span class="cp">%&gt;</span> items.<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">for</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</pre></div>
+
+<h3>Conditional logic</h3>
+<h4>Conditional blocks</h4>
+<h5><em>Syntax:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">if</span> <span class="na">test</span><span class="o">=</span><span class="s">"…"</span><span class="p">&gt;</span>
+…
+<span class="p">&lt;</span><span class="nt">else</span> <span class="na">if</span><span class="o">=</span><span class="s">"…"</span><span class="p">&gt;</span>
+…
+<span class="p">&lt;</span><span class="nt">else</span><span class="p">&gt;</span>
+…
+<span class="p">&lt;/</span><span class="nt">if</span><span class="p">&gt;</span>
+</pre></div>
+
+<p>Wrapped around conditional content. The <code>test</code> attribute contains a <code>boolean</code> expression indicating if contents should be included in result. Any truthy value will cause the contents of that section to be emitted.</p>
+<p><code>&lt;else&gt;</code> tags sit inside an <code>&lt;if&gt;&lt;/if&gt;</code> block as dividers without closing tags (similarly to <code>&lt;hr&gt;</code> and <code>&lt;br&gt;</code> in HTML). The <code>if</code> attribute contains a <code>boolean</code> expression indicating if contents should be included in result. Alternatively, <code>&lt;else test="…"&gt;</code> may be used for symmetry with <code>&lt;if test="…"&gt;</code>.</p>
+<h5><em>Example:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">if</span> <span class="na">test</span><span class="o">=</span><span class="s">"data === 0"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Zero<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">else</span> <span class="na">if</span><span class="o">=</span><span class="s">"data === 1"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>One<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">else</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Many<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">if</span><span class="p">&gt;</span>
+</pre></div>
+
+<h4>Single element conditional</h4>
+<h5><em>Syntax:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">if</span><span class="o">=</span><span class="s">"…"</span><span class="p">&gt;</span>
+…
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></div>
+
+<p>May be applied to any HTML tag to make it conditionally render. The <code>if</code> attribute contains a <code>boolean</code> expression indicating if contents should be included in result.</p>
+<h5><em>Example:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">if</span><span class="o">=</span><span class="s">"data.items.length === 0"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Sorry, no results were found.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></div>
+
+<h3>Embed other views</h3>
+<h5><em>Syntax:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">call</span> <span class="na">view</span><span class="o">=</span><span class="s">"…"</span> <span class="na">data</span><span class="o">=</span><span class="s">"…"</span> <span class="na">key</span><span class="o">=</span><span class="s">"…"</span> <span class="na">index</span><span class="o">=</span><span class="s">"…"</span> <span class="na">count</span><span class="o">=</span><span class="s">"…"</span> <span class="na">defer</span> <span class="p">/&gt;</span>
+</pre></div>
+
+<p>Calls another template specifying the data to bind. The <code>view</code> attribute is the name of the view to bind, the <code>data</code> attribute defines the data to bind. Optionally <code>key</code>, <code>index</code> and <code>count</code> attributes may be passed through if the view is being called within a loop (e.g. item <code>index</code> of <code>count</code> items).</p>
+<p>The <code>defer</code> attribute is an optional mechanism to express that the call should be deferred and executed client-side.</p>
+<h5><em>Example:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">call</span> <span class="na">view</span><span class="o">=</span><span class="s">"example.Bar"</span> <span class="na">data</span><span class="o">=</span><span class="s">"data.details"</span> <span class="p">/&gt;</span>
+</pre></div>
+
+<h3>Partial views</h3>
+<h5><em>Syntax:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">part</span> <span class="na">name</span><span class="o">=</span><span class="s">"…"</span><span class="p">&gt;</span>
+…
+<span class="p">&lt;/</span><span class="nt">part</span><span class="p">&gt;</span>
+</pre></div>
+
+<p>Sits inside a view as a placeholder for replacement content, or within a <code>&lt;call&gt;&lt;/call&gt;</code> block to define the replacement content. The <code>name</code> attribute is a <code>string</code> expression specifying the name of the part to replace.</p>
+<h5><em>Example:</em></h5>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">call</span> <span class="na">view</span><span class="o">=</span><span class="s">"example.Bar"</span> <span class="na">data</span><span class="o">=</span><span class="s">"data.details"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">part</span> <span class="na">name</span><span class="o">=</span><span class="s">"header"</span><span class="p">&gt;&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="cp">&lt;%=</span> <span class="n">data</span><span class="o">.</span><span class="n">title</span> <span class="cp">%&gt;</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;&lt;/</span><span class="nt">part</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">call</span><span class="p">&gt;</span>
+</pre></div>
+
+<h2><em>Command Arguments</em></h2>
+<p>A shorthand syntax is available for the attributes of markup commands. The attributes in each of the markup elements are implicitly code blocks. This means you can add or leave off the code block syntax based on preference:</p>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">if</span> <span class="na">test</span><span class="o">=</span><span class="s">"index % 2 === 0"</span><span class="p">&gt;</span>
+<span class="cp">&lt;%=</span> <span class="n">index</span> <span class="cp">%&gt;</span> is even.
+<span class="p">&lt;</span><span class="nt">else</span><span class="p">&gt;</span>
+<span class="cp">&lt;%=</span> <span class="n">index</span> <span class="cp">%&gt;</span> is odd.
+<span class="p">&lt;/</span><span class="nt">if</span><span class="p">&gt;</span>
+</pre></div>
+
+<p>is equivalent to:</p>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">if</span> <span class="na">test</span><span class="o">=</span><span class="s">"</span><span class="cp">&lt;%=</span> <span class="n">index</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span> <span class="cp">%&gt;</span><span class="s">"</span><span class="p">&gt;</span>
+<span class="cp">&lt;%=</span> <span class="n">index</span> <span class="cp">%&gt;</span> is even.
+<span class="p">&lt;</span><span class="nt">else</span><span class="p">&gt;</span>
+<span class="cp">&lt;%=</span> <span class="n">index</span> <span class="cp">%&gt;</span> is odd.
+<span class="p">&lt;/</span><span class="nt">if</span><span class="p">&gt;</span>
+</pre></div>
+
+<p>The exception to this shorthand is the <code>name</code> attribute of <code>&lt;view&gt;</code> and <code>&lt;part&gt;</code>. Since it is always a string,</p>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">part</span> <span class="na">name</span><span class="o">=</span><span class="s">"foo"</span><span class="p">&gt;&lt;/</span><span class="nt">part</span><span class="p">&gt;</span>
+</pre></div>
+
+<p>is effectively equivalent to:</p>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">part</span> <span class="na">name</span><span class="o">=</span><span class="s">"</span><span class="cp">&lt;%=</span> <span class="s2">"foo"</span> <span class="cp">%&gt;</span><span class="s">"</span><span class="p">&gt;&lt;/</span><span class="nt">part</span><span class="p">&gt;</span>
+</pre></div>
+
+<script src="ga.js" defer></script>
+</body>
+</html>

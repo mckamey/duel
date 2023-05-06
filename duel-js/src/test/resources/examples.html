@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>DUEL » Examples</title>
+	<link type="text/css" rel="stylesheet" href="styles.css" />
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+</head>
+<body>
+
+<h1 class="box">DUEL » Examples</h1>
+<p style="text-align:center;">[ <strong><a href="/">Home</a></strong> |
+  <strong><a href="about.html">About</a></strong> |
+  <strong><a href="syntax.html">Syntax</a></strong> |
+  <strong>Examples</strong> |
+	<strong><a href="unit.html">Unit Tests</a></strong> |
+  <strong><a href="LICENSE.txt">License</a></strong> ]
+</p>
+
+<h3>View Source</h3>
+<p>Here is an example view where the result differs if there is zero, one, or many items.</p>
+<div class="codehilite highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">view</span> <span class="na">name</span><span class="o">=</span><span class="s">"foo.bar"</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"items"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">h3</span><span class="p">&gt;</span><span class="cp">&lt;%=</span> <span class="n">data</span><span class="o">.</span><span class="n">title</span> <span class="cp">%&gt;</span><span class="p">&lt;/</span><span class="nt">h3</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">if</span> <span class="na">test</span><span class="o">=</span><span class="s">"!data.items || data.items.length === 0"</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">call</span> <span class="na">view</span><span class="o">=</span><span class="s">"foo.warning"</span> <span class="na">data</span><span class="o">=</span><span class="s">"data"</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">part</span> <span class="na">name</span><span class="o">=</span><span class="s">"messageArea"</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">"item empty"</span><span class="p">&gt;</span><span class="cp">&lt;%=</span> <span class="n">data</span><span class="o">.</span><span class="n">title</span> <span class="cp">%&gt;</span> contains no items.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">part</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">call</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">else</span> <span class="na">if</span><span class="o">=</span><span class="s">"data.items.length === 1"</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">"item"</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">b</span><span class="p">&gt;</span><span class="cp">&lt;%=</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">name</span> <span class="cp">%&gt;</span><span class="p">&lt;/</span><span class="nt">b</span><span class="p">&gt;</span> is <span class="p">&lt;</span><span class="nt">i</span><span class="p">&gt;</span><span class="cp">&lt;%=</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">detail</span> <span class="cp">%&gt;</span><span class="p">&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">else</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">for</span> <span class="na">each</span><span class="o">=</span><span class="s">"data.items"</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">"item"</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">b</span><span class="p">&gt;</span><span class="cp">&lt;%=</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span> <span class="cp">%&gt;</span><span class="p">&lt;/</span><span class="nt">b</span><span class="p">&gt;</span> is <span class="p">&lt;</span><span class="nt">i</span><span class="p">&gt;</span><span class="cp">&lt;%=</span> <span class="n">data</span><span class="o">.</span><span class="n">detail</span> <span class="cp">%&gt;</span><span class="p">&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">for</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">if</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></div>
+
+<h3>Client-Side Views</h3>
+<p>To invoke this view from JavaScript, call the view as a function:</p>
+<div class="codehilite highlight"><pre><span></span>var data = {
+title: "Hello world!",
+items: [
+  { name: "One", detail: 101 },
+  { name: "two", detail: 2.718 }
+]
+};
+
+// either get a string as output...
+var markup = foo.bar(data).toString();
+document.getElementById("baz").innerHTML = markup;
+
+// ...or get DOM objects as output
+var result = foo.bar(data).toDOM();
+document.getElementById("baz").appendChild(result);
+</pre></div>
+
+<p>Which would output:</p>
+<div class="codehilite highlight"><pre><span></span>&lt;div class="items"&gt;
+&lt;h3&gt;Hello world!&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li class="item"&gt;
+      &lt;b&gt;One&lt;/b&gt; is &lt;i&gt;101&lt;/i&gt;
+  &lt;/li&gt;
+  &lt;li class="item"&gt;
+      &lt;b&gt;Two&lt;/b&gt; is &lt;i&gt;2.718&lt;/i&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+</pre></div>
+
+<h3>Server-Side Views</h3>
+<h4>Servlet-based Controller</h4>
+<p>To invoke that same view from within Java, instantiate the view and call its render method. Here is a simple Servlet-as-controller example:</p>
+<div class="codehilite highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FooServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+
+  <span class="n">DuelView</span> <span class="n">view</span> <span class="o">=</span> <span class="k">new</span> <span class="n">foo</span><span class="o">.</span><span class="na">bar</span><span class="o">();</span>
+
+  <span class="c1">// can use helper methods to declaratively construct view data graph</span>
+  <span class="c1">// or can directly use POJO/JavaBean types</span>
+  <span class="n">Object</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DuelData</span><span class="o">.</span><span class="na">asMap</span><span class="o">(</span>
+      <span class="s">"title"</span><span class="o">,</span> <span class="s">"Hello world!"</span><span class="o">,</span>
+      <span class="s">"items"</span><span class="o">,</span> <span class="n">DuelData</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
+          <span class="n">DuelData</span><span class="o">.</span><span class="na">asMap</span><span class="o">(</span>
+              <span class="s">"name"</span><span class="o">,</span> <span class="s">"One"</span><span class="o">,</span>
+              <span class="s">"detail"</span><span class="o">,</span> <span class="mi">101</span><span class="o">),</span>
+          <span class="n">DuelData</span><span class="o">.</span><span class="na">asMap</span><span class="o">(</span>
+              <span class="s">"name"</span><span class="o">,</span> <span class="s">"Two"</span><span class="o">,</span>
+              <span class="s">"detail"</span><span class="o">,</span> <span class="mf">2.718</span><span class="o">)</span>
+      <span class="o">));</span>
+
+  <span class="c1">// response headers</span>
+  <span class="n">response</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">"text/html"</span><span class="o">);</span>
+  <span class="n">response</span><span class="o">.</span><span class="na">setCharacterEncoding</span><span class="o">(</span><span class="s">"UTF-8"</span><span class="o">);</span>
+
+  <span class="c1">// response body</span>
+  <span class="n">view</span><span class="o">.</span><span class="na">render</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getWriter</span><span class="o">(),</span> <span class="n">data</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+<h4>Model-View-Controller</h4>
+<p>DUEL views can be used to implement an MVC architecture in a JAX-RS (JSR-311) implementation (e.g. <a href="http://jersey.java.net/" rel="nofollow">Jersey</a>, <a href="http://www.jboss.org/resteasy" rel="nofollow">JBoss RESTeasy</a>, or <a href="http://cxf.apache.org/" rel="nofollow">Apache CXF</a>).
+The JAX-RS resource acts as the controller which produces different content (XML, JSON  or a DUEL view) using MIME-type negotiation.
+<code>ViewResult</code> is a lightweight adapter between <code>DuelView</code> and <code>StreamingOutput</code>.</p>
+<div class="codehilite highlight"><pre><span></span><span class="kn">import</span> <span class="nn">javax.ws.rs.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.duelengine.duel.rs.ViewResult</span><span class="o">;</span>
+
+<span class="nd">@Path</span><span class="o">(</span><span class="s">"/orders"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrdersController</span> <span class="o">{</span>
+
+<span class="nd">@GET</span>
+<span class="nd">@Path</span><span class="o">(</span><span class="s">"{id : \\d+}"</span><span class="o">)</span>
+<span class="nd">@Produces</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">Order</span> <span class="nf">getOrderJSON</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="kt">long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="n">findOrder</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="nd">@GET</span>
+<span class="nd">@Path</span><span class="o">(</span><span class="s">"{id : \\d+}"</span><span class="o">)</span>
+<span class="nd">@Produces</span><span class="o">(</span><span class="s">"application/xml"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">Order</span> <span class="nf">getOrderXML</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="kt">long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="n">findOrder</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="nd">@GET</span>
+<span class="nd">@Path</span><span class="o">(</span><span class="s">"{id : \\d+}"</span><span class="o">)</span>
+<span class="nd">@Produces</span><span class="o">(</span><span class="s">"text/html"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">ViewResult</span> <span class="nf">getOrderView</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="kt">long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">Order</span> <span class="n">orderData</span> <span class="o">=</span> <span class="n">findOrder</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="n">ViewResult</span><span class="o">(</span><span class="n">SingleOrderView</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">data</span><span class="o">(</span><span class="n">orderData</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="c1">// ...</span>
+<span class="o">}</span>
+</pre></div>
+
+<script src="ga.js" defer></script>
+</body>
+</html>
